@@ -1,1 +1,1 @@
-this is the iWC
+# IWC - Intergalactic Workflow Commission
