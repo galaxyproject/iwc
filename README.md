@@ -11,7 +11,7 @@
 ### Methods Proposal
  - discover workflows
  - establish quality standards (version numbers, tools exist, author is set, training available, test exists ...)
- - automated testing of workflows
+ - automated testing of workflows utilizing [Planemo](https://github.com/galaxyproject/planemo) test
  - two layers of test data:
    - basic functionality testing (quick to run, tools exist) 
    - downsampled data (validity of workflow results)
