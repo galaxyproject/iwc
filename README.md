@@ -23,4 +23,4 @@
  - if linting passes, tests pass, and human review passes, PR is merged and added to registry list
 
 ### Meeting minutes:
- * [https://github.com/galaxyproject/iwc/issues/3](the notes) from the initial meeting at GCCBOSC2018 CoFest
+ * (the notes)[https://github.com/galaxyproject/iwc/issues/3] from the initial meeting at GCCBOSC2018 CoFest
