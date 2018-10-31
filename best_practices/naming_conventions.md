@@ -8,17 +8,21 @@
 ###### Bad:
 
 No version number:
-DNA PE + seq frag remap + contamination + aggregate
+*DNA PE + seq frag remap + contamination + aggregate*
 
-Version numbers do not follow a single standard. Not clear which one is the latest one.
+*Version numbers do not follow a single standard. Not clear which one is the latest one.
 DNA PE + seq frag remap + contamination + aggregate v.0.2.1, then DNA PE + seq frag remap + contamination + aggregate v.20180102
 
 Version numbers do not follow a single standard. When sorted by name, they version number may not sort as expected.
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0, then DNA PE + seq frag remap + contamination + aggregate v0.2.1, then DNA PE + seq frag remap + contamination + aggregate_v. 0.2.3
+DNA PE + seq frag remap + contamination + aggregate v.0.2.0, then DNA PE + seq frag remap + contamination + aggregate v0.2.1, then DNA PE + seq frag remap + contamination + aggregate_v. 0.2.3*
 
 ###### Good:
 
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
+**DNA PE + seq frag remap + contamination + aggregate v.0.2.0**
+
+**DNA PE + seq frag remap + contamination + aggregate v.0.2.1
+
+DNA PE + seq frag remap + contamination + aggregate v.0.2.1**
 
 
 ### Version numbering convention.
