@@ -1,35 +1,63 @@
-### Names and version numbers.
-#### Always use workflow names with standard version numbers.
+## Names with version numbers
+### Always use workflow names with standard version numbers.
 
 <workflow name><version number>
 
-##### Examples:
+#### Examples:
 
-###### Bad:
+##### Bad:
 
-No version number:
-
+* No version number:
 *DNA PE + seq frag remap + contamination + aggregate*
 
-Version numbers do not follow a single standard. Not clear which one is the latest one.
-
+* Version numbers do not follow a single standard. Not clear which one is the latest one.
 *DNA PE + seq frag remap + contamination + aggregate v.0.2.1, then DNA PE + seq frag remap + contamination + aggregate v.20180102*
 
 Version numbers do not follow a single standard. When sorted by name, they version number may not sort as expected.
-
 *DNA PE + seq frag remap + contamination + aggregate v.0.2.0, then DNA PE + seq frag remap + contamination + aggregate v0.2.1, then DNA PE + seq frag remap + contamination + aggregate_v. 0.2.3*
 
-###### Good:
+br tag = newline
 
-**DNA PE + seq frag remap + contamination + aggregate v.0.2.0**
+Foo<br />
+bar
+
+* Foo<br />
+baz
+
+Code:
+
+<pre>
+Foo  
+bar
+<pre>
+
+<pre>
+Foo
+<b>baz</b>
+</pre>
+
+<pre>
+Foo
+<i>baz</i>
+</pre>
 
 
-### Version numbering convention.
-#### Use a single commonly used version numbering convention.
 
-Examples:
 
-Bad:
+
+##### Good:
+
+* **DNA PE + seq frag remap + contamination + aggregate v.0.2.0**
+
+
+## Version numbering
+### Use a single, common version numbering convention.
+
+Use a single version numbering convention that is already commonly used for other software packages (in Galaxy and elsewhere). Do not reinvent the wheel. Version numbering is a solved problem. Just use any one of the major conventions, and do not mix them.
+
+#### Examples:
+
+##### Bad:
 
 Does not allow granular changes, and does not encode minor/major changes.
 *v.1, then v.2*
@@ -41,7 +69,7 @@ Encodes dates, but does not encode minor/major changes.
 *v.2018_01_02, then v.2018_01_20, then v.2018_02_13*
 
 
-Good:
+##### Good:
 
 **v.0.0.1: initial version.**
 **v.0.0.1 - next small change, such as add 1 tool.**
@@ -52,27 +80,31 @@ Good:
 **v.1.0.1 - next small change, such as remove 1 tool.**
 
 
-### Workflow functionalities.
-#### Use a single standard delimiter, such as "+" in workflow names to show major workflow functionalities.
+## Workflow functionalities
+### Use a single standard delimiter to separate major workflow functionalities.
 
-Examples:
+Use a single standard delimiter, such as "+" in workflow names to create a workflow name that consists of major workflow functionalities, such as **this thing + that thing + another thing**.
 
-Bad:
+#### Examples:
+
+##### Bad:
 
 Functionalities are mangled together and not clear.
 *DNA PE seq frag remap contamination aggregate v.0.2.0*
 
-Good:
+##### Good:
 
 Functionalities are more clear: this workflow takes DNA paired end reads, uses standard tools, also uses seq frag remap tool, also includes contamination detection, and finally uses aggregate results tool.
 **DNA PE + seq frag remap + contamination + aggregate v.0.2.0**
 
-### Blanks.
-#### Avoid long workflow names without blanks, to enable proper text wrapping display using Galaxy UI Tools panel, Workflows section (on the bottom left).
+## Use blanks
+### Use blanks in long workflow names for text wrapping.
 
-Examples:
+Use blanks in long workflow names to enable proper text wrapping display within the Galaxy UI Tools panel, Workflows section (on the bottom left). Do not use underscores, dots, commas, or anything else, since such names are not wrapped and hard to read inside the the Galaxy UI Tools panel.
 
-Bad:
+#### Examples:
+
+##### Bad:
 
 Underscores do not allow text wrapping.
 *DNA_PE_seq_frag_remap_contamination_aggregate_v.0.2.0*
@@ -80,7 +112,7 @@ Underscores do not allow text wrapping.
 Dots do not allow text wrapping.
 *DNA.PE.seq.frag.remap.contamination.aggregate.v.0.2.0*
 
-Good:
+##### Good:
 
 Blanks allow wrapping.
 **DNA PE + seq frag remap + contamination + aggregate v.0.2.0**
