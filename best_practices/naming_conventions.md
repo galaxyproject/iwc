@@ -26,18 +26,18 @@ baz
 
 Code:
 
-<pre>
-Foo  
+Foo 
+<pre> 
 bar
-<pre>
+</pre>
 
-<pre>
 Foo
+<pre>
 <b>baz</b>
 </pre>
 
-<pre>
 Foo
+<pre>
 <i>baz</i>
 </pre>
 
