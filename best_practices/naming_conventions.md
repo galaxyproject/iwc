@@ -124,7 +124,7 @@ It is a good practice to create a workflow name that consists of several major w
 
 #### Bad:
 
-Functionalities are mangled together and confusing:
+Functionalities are mangled together and confusing to anyone but the developer:
 <pre>
 <i>
 DNA PE seq frag remap contamination aggregate v.0.2.0
