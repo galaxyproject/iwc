@@ -1,3 +1,7 @@
+*"There are only two hard things in Computer Science: cache invalidation and naming things"*
+
+\-- Phil Karlton
+
 ## Names with version numbers
 ### Always use workflow names with standard version numbers.
 
