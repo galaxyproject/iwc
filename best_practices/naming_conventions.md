@@ -1,3 +1,5 @@
+# NAMING CONVENTIONS
+
 *"There are only two hard things in Computer Science: cache invalidation and naming things"*
 
 \-- Phil Karlton
@@ -6,6 +8,15 @@
 ### Always use workflow names with standard version numbers.
 
 <workflow name><version number>
+
+#### Good:
+
+<pre>
+<b>
+DNA PE + seq frag remap + contamination + aggregate v.0.2.0
+DNA PE + seq frag remap + contamination + aggregate v.1.4.13
+</b>
+</pre>
 
 #### Bad:
 
@@ -18,7 +29,7 @@ DNA PE + seq frag remap + contamination + aggregate
 
 User name is *not* a version number. Such names just show the origin of the workflow (shared by user such and such). These names are common because they are Galaxy default names created when workflows are copied.
 
-Switching from user names to user initials could make it worse, because JS can be either Jane Smith or Jian Sun, or a workflow for processing data from JS-2000 brand new sequencer machine, and now your colleagues may be really confused. And which one is the most recent workflow: JS or JD?
+Switching from user names to user initials could make it worse, because JS can be either Jane Smith or James Smythe, or a workflow for processing data from JS-2100 new model instrument, and now your colleagues may be really confused. And also, which one is the most recent workflow: JS or JD?
 <pre>
 <i>
 DNA PE + seq frag remap + contamination + aggregate shared by John Doe shared by Jane Smith
@@ -26,15 +37,6 @@ DNA PE + seq frag remap + contamination + aggregate JD JS
 DNA PE + seq frag remap + contamination + aggregate JS
 DNA PE + seq frag remap + contamination + aggregate JD
 </i>
-</pre>
-
-#### Good:
-
-<pre>
-<b>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
-DNA PE + seq frag remap + contamination + aggregate v.1.4.13
-</b>
 </pre>
 
 
@@ -60,6 +62,8 @@ v.1.0.1: next micro change,  such as upgrade versions of tools without large eff
 </b>
 </pre>
 
+#### Bad:
+
 Version numbers do not follow a single standard. Not clear which one is the latest one:
 <pre>
 <i>
@@ -84,8 +88,6 @@ DNA PE + seq frag remap + contamination + aggregate v 0.4.2
 DNA PE + seq frag remap + contamination + aggregate_v_0_4_3
 </i>
 </pre>
-
-#### Bad:
 
 Five integers is way too much granularity, at least when exposed to users who are not software developers. This is a Galaxy workflow, not a Linux kernel. Some users remember the version numbers by heart (true story), so give them this opportunity by keeping it short and sweet. If you need extra granularity, at least hide it from the users:
 <pre>
@@ -124,20 +126,13 @@ v.2018_02_13
 </pre>
 
 
-## Use blanks
-### Use blanks in long workflow names for text wrapping.
+## Use separators (currently, blanks) in long names
+### Use separators  (currently, blanks) between parts of long workflow names.
 
-Use blanks in long workflow names to enable proper text wrapping display within the Galaxy UI Tools panel, Workflows section (on the bottom left). Do not use underscores, dots, commas, or anything else, since such names are not wrapped and are hard to read inside the the Galaxy UI Tools panel.
+Use separators for legibility and for text wrapping. Currently, use blanks, and, when Galaxy UI supports text wrapping on those, use underscores and dots.
 
-#### Bad:
+Use blanks in long workflow names to enable proper text wrapping display within the Galaxy UI Tools panel, Workflows section (on the bottom left). Text wrapping is essential to easily view long Galaxy workflow names. As of this writing (December, 2018), Galaxy web UI does not support proper text wrapping on non-blank delimiters. Thus, for now do not use underscores, dots, commas, or anything other than blanks.
 
-Underscores or dots do not allow text wrapping:
-<pre>
-<i>
-DNA_PE_seq_frag_remap_contamination_aggregate_v.0.2.0
-DNA.PE.seq.frag.remap.contamination.aggregate.v.0.2.0
-</i>
-</pre>
 
 #### Good:
 
@@ -149,10 +144,37 @@ DNA PE + seq frag remap + contamination + aggregate v.0.2.0
 </pre>
 
 
+#### Bad:
+
+No separators make sit very hard:
+<pre>
+<i>
+DNAPEseqfragremapcontaminationaggregatev020
+</i>
+</pre>
+
+CamelCase is easier to read than no separators at all, but harder to read than other separators. Plus, CamelCase also does not allow text wrapping:
+<pre>
+<i>
+DNAPESeqFragRemapContaminationAggregatev.0.2.0
+</i>
+</pre>
+
+Underscores or dots are easy to read and also compatible with other languages. But currently the do not allow text wrapping in Galaxy UI:
+<pre>
+<i>
+DNA_PE_seq_frag_remap_contamination_aggregate_v.0.2.0
+DNA.PE.seq.frag.remap.contamination.aggregate.v.0.2.0
+</i>
+</pre>
+
+
+NOTE: When when Galaxy UI supports text wrapping on those, use underscores and dots, rather than blanks. The reason for this is that the majority of the best coding practices for programming languages (including Python and other languages used in Galaxy core and tool development) call for names *without blanks*. It helps to enable the Galaxy workflow names to be used if needed as the names of files, directories, variables, methods, classes, tables, columns, etc (almost) "as is", with minimal or no changes. For example, `seq_frag_v_0_2_0` will work as a valid name for variables, columns, etc in many programmming languages, such as Python, bash or SQL, but `seq frag v_0_2_0` and `seq_frag.v.0.2.0` will not always work.
+
 ## Workflow functionalities
 ### Use a single standard delimiter to separate major workflow functionalities.
 
-It is a good practice to create a workflow name that consists of several major workflow functionalities joined together, e.g., `this thing + that thing + another thing`. Use a single standard delimiter, such as ` + ` or `, ` (plus sign or comma). As always, pick one delimiter and stick to it. Note the use of trailing blanks (or leading and trailing blanks) for the delimiters for proper line wrapping.
+It is a good practice to create a workflow name that consists of several major workflow functionalities joined together, e.g., `do this thing + do that thing + do one more thing`. Use a single standard delimiter, such as ` + ` or `, ` (plus sign or comma). As always, pick one delimiter and stick to it. Note the use of trailing blanks (or leading and trailing blanks) for the delimiters for proper line wrapping, for consistency with other programming languages and also with plain English punctuation.
 
 #### Good:
 
