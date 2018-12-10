@@ -53,12 +53,14 @@ Do not reinvent the wheel. Version numbering is a *solved problem*. Just use any
 <pre>
 <b>
 v.0.0.1: initial version.
-v.0.0.1: next micro change,  such as add 1 tool.
-v.0.1.0: next minor change, such as add/remove 3 different tools tools.
-v.0.1.1: next micro change,  such as a change in settings of a few tools with small effects downstream.
-v.0.1.2: next micro change,  such as remove 1 tool.
-v.1.0.0: next major change,  such as add new inputs, change aligners, change reference genome.
-v.1.0.1: next micro change,  such as upgrade versions of tools without large effects downstream.
+v.0.0.1: next micro change,  such as add 1 tool with no substantial effects on the final results.
+v.0.1.0: next minor change, such as add/remove 2-4 different tools with small but substantial effects on the results.
+v.0.1.1: next micro change,  such as a change in settings of a few tools with no substantial effects downstream, small bug fixes.
+v.0.1.2: next micro change,  such as remove 1 tool, add workflow documentation.
+v.1.0.0: next major change,  such as add new inputs, which may have very substantial effects on the UI or the results.
+v.1.0.1: next micro change,  such as upgrade versions of tools without substantial effects downstream.
+v.2.0.0: next major change,  such as change aligners, or major change in the aligner versions, which may have substantial effects on the results.
+v.3.0.0: next major change,  such as change the reference genome, or change the aligner settings from default to very sensitive, or change variant caller settings from min allele frequency 0.2 to 0.02, which may have very substantial effects of the results.
 </b>
 </pre>
 
