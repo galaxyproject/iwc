@@ -39,12 +39,16 @@ It is perfectly fine if the team deliberately decides to **change every best pra
 
 ### REFERENCES
 
+This section may be of interest to developers rather than users.
+
 Galaxy Workflow Best Practices are loosely based on the following sources:
 - Galaxy (to fit better with the rest of the Galaxy development):
   - [Galaxy Tool Development Standards and Best Practices](https://github.com/galaxy-iuc/standards)
   - [Best Practices for Creating Galaxy Tools](https://galaxy-iuc-standards.readthedocs.io/en/latest/best_practices.html)
 
 ### SEE ALSO
+
+This section may be of interest to developers rather than users.
 
 - Other sources that served as templates, inspirations, and sources of ideas. They were also used to avoid reinventing the wheel in design, layout, style, etc:
   - [Perl Best Practices by Damian Conway](https://www.oreilly.com/library/view/perl-best-practices/0596001738/) - the highly influential, industry standard book on Perl Best Practices. Most of the well-known Perl developers wrote glowing reviews for this book on Amazon and elsewhere. Half of the book is non-specific to Perl and can be useful to any developer in any tool or language (Galaxy, Python, etc). The design, layout, and style are really good, so they are adopted for Galaxy Workflow Best Practices as well.

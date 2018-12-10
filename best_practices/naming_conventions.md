@@ -126,7 +126,7 @@ v.2018_02_13
 </pre>
 
 
-## Use separators (currently, blanks) in long names
+## Use separators in long names
 ### Use separators  (currently, blanks) between parts of long workflow names.
 
 Use separators for legibility and for text wrapping. Currently, use blanks, and, when Galaxy UI supports text wrapping on those, use underscores and dots.
