@@ -29,7 +29,7 @@
 
 ### Goals and intended audience
 
-Galaxy Workflow Best Practices are intended to help Galaxy users (such as experimental scientists, bioinformicians, etc), Galaxy workflow developers/maintainers and Galaxy administrators cut the cost and turnaround time of data analysis, maintenance and development by making more mindful decisions about their work. This is similar to best practices that have been used for many years in other computational and data analysis fields (Python, Perl, Ruby, R, bash, etc). 
+Galaxy Workflow Best Practices are intended to help Galaxy users (such as experimental scientists, bioinformaticians, etc), Galaxy workflow developers/maintainers and Galaxy administrators cut the cost and turnaround time of data analysis, maintenance and development by making more mindful decisions about their work. This is similar to best practices that have been used for many years in other computational and data analysis fields (Python, Perl, Ruby, R, bash, etc). 
 
 ### Usage
 
