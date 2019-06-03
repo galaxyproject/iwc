@@ -119,3 +119,17 @@ Make sure you are running the correct workflow version. Usually, this is the lat
 
 - You did not search for the latest version.
 - You did not even remember that different versions exist.
+
+## Keeping workflow versions
+### Follow sensible conventions on keeping multiple workflow versions
+
+Developers should keep most of the workflow versions for record-keeping.
+
+Conventions for the users differ by user, project and work type.
+
+When updating the workflow, recommend that the users delete the old workflow versions to avoid possible confusion. The exceptions include:
+
+- Keeping old copies for record-keeping.
+- Cases when users copied an old version and changed it (added/removed tools and parameters) and are planning to develop and update it on tehir own.
+
+Developers should typically unshare and/or remove from Shared Data | Workflows tab the old workflow versions that are owned by them. But the copies the users made themselves are owned by the users (see Owner column under Workflows tab) and are under their control.
