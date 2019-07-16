@@ -4,139 +4,38 @@
 
 \-- Phil Karlton
 
-## Names with version numbers
-### Use workflow names with version numbers.
+## Workflow names and version numbers
+### Use a simple convention for the workflow names and version numbers.
 
-<workflow name><version number>
+For example, for next generation sequencing data analysis, the names should be:
 
-#### Good:
+`<library prep method>, <analysis method>, <genome>, vYYYYMMDD.V`, where the parts (delimited by comma with blank) are:
 
-<pre>
-<b>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
-DNA PE + seq frag remap + contamination + aggregate v.1.4.13
-</b>
-</pre>
+`<library prep method>` = a short description of the library prep method, e.g., DNA, RNA, EM-seq, low input RNA,
 
-#### Bad:
+`<analysis method>` = "std" or any unusual complexity about this method e.g. 2-stage mapping, or key steps delimited by ` + `,
 
-No version number:
-<pre>
-<i>
-DNA PE + seq frag remap + contamination + aggregate
-</i>
-</pre>
+`<genome>` = short genome name, e.g., GRCh38+mC controls, GENCODE v29,
 
-User name is *not* a version number. Such names just show the origin of the workflow (shared by user such and such). These names are common because they are Galaxy default names created when workflows are copied.
-
-Switching from user names to user initials could make it worse, because JS can be either Jane Smith or James Smythe, or a workflow for processing data from JS-2100 new model instrument, and now your colleagues may be really confused. And also, which one is the most recent workflow: JS or JD?
-<pre>
-<i>
-DNA PE + seq frag remap + contamination + aggregate shared by John Doe shared by Jane Smith
-DNA PE + seq frag remap + contamination + aggregate JD JS
-DNA PE + seq frag remap + contamination + aggregate JS
-DNA PE + seq frag remap + contamination + aggregate JD
-</i>
-</pre>
-
-
-
-## Version numbering
-### Use a single, common version numbering convention.
-
-Use a single version numbering convention that is already commonly used for other software packages (in Galaxy and elsewhere). The workflow names with version numbers should sort from least to most recent ASCIIbetically in other common tools outside Galaxy (UNIX sort, Excel, etc). Version numbers should encode small and big changes in a commonly used, easy to understand format.
-
-Do not reinvent the wheel. Version numbering is a *solved problem*. Just use any one of the major conventions, and do not mix them up. Here is a good one: 3 integers separated by dots, like so: `1.20.3` (`major.minor.micro`, or `major.minor.patch`, or `version.release.modification`), which follows [Best Practices for Creating Galaxy Tools](https://galaxy-iuc-standards.readthedocs.io/en/latest/best_practices/tool_xml.html#tool-versions), which in turn follows the Python [PEP 440 specification](https://www.python.org/dev/peps/pep-0440/).
+`<version>` = date followed by point release / minor version number (e.g. 20190715.0, 20190715.1).
 
 #### Good:
 
 <pre>
 <b>
-v.0.0.1: initial version.
-v.0.0.1: next micro change, such as add 1 tool with no substantial effects on
-                the final results.
-v.0.1.0: next minor change, such as add/remove 2-4 different tools with small
-                but substantial effects on the results.
-v.0.1.1: next micro change, such as a change in settings of a few tools with
-                no substantial effects downstream, small bug fixes.
-v.0.1.2: next micro change, such as remove 1 tool, add workflow documentation.
-v.1.0.0: next major change, such as add new inputs, which may have very
-                substantial effects on the UI or the results.
-v.1.0.1: next micro change, such as upgrade versions of tools without
-                substantial effects downstream.
-v.2.0.0: next major change, such as change aligners, or major change in the
-                aligner versions, which may have substantial effects on the results.
-v.3.0.0: next major change, such as change the reference genome, or change
-                the aligner settings from default to very sensitive, or
-                change variant caller settings from min allele frequency
-                0.2 to 0.02, which may have very substantial effects of the
-                results.
+DNA, seq frag remap + contamination + aggregate, hg19, v20190715.0
 </b>
 </pre>
 
+
 #### Bad:
 
-Version numbers do not follow a single standard. Not clear which one is the latest one:
+Missing critical parts, inconsistent order, inconsistent delimiters:
 <pre>
 <i>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.1
-DNA PE + seq frag remap + contamination + aggregate v.20180102
-</i>
-</pre>
-
-It seems like here version numbers follow a single standard (almost). But they do not! This is a *mess*. When sorted by name, the version numbers may not sort as expected. Worse, the developer always has to guess about what is the standard?
-
-Pick a single standard, and follow it. If you pick something like this: `v.1.23.0`, be consistent. Always use `v`, `.`, then integers and dots, no blanks, underscores, or letters:
-<pre>
-<i>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
-DNA PE + seq frag remap + contamination + aggregate v0.2.1
-DNA PE + seq frag remap + contamination + aggregate v.0.2.2a
-DNA PE + seq frag remap + contamination + aggregate v.0.2.2b
-DNA PE + seq frag remap + contamination + aggregate v.0.2.2c
-DNA PE + seq frag remap + contamination + aggregate version 0.3.1
-DNA PE + seq frag remap + contamination + aggregate v0.4.1
-DNA PE + seq frag remap + contamination + aggregate v 0.4.2
-DNA PE + seq frag remap + contamination + aggregate_v_0_4_3
-</i>
-</pre>
-
-Five integers is way too much granularity, at least when exposed to users who are not software developers. This is a Galaxy workflow, not a Linux kernel. Some users remember the version numbers by heart (true story), so give them this opportunity by keeping it short and sweet. If you need extra granularity, keep it in developer-only versions, and hide it from the users:
-<pre>
-<i>
-v.1.0.2.34.335
-v.1.0.2.34.336
-</i>
-</pre>
-
-A single integer is too little granularity. It does not encode big vs. small changes:
-<pre>
-<i>
-v.1
-v.2
-v.3
-</i>
-</pre>
-
-This is inconsistent. It is not clear if developers and maintainers should use 2 or 3 numbers to encode the version. Also such numbers are harder to parse automatically or sort in other tools outside Galaxy:
-<pre>
-<i>
-v.0.1
-v.0.1.2
-v.0.2
-v.0.2.1
-v.0.2.2
-</i>
-</pre>
-
-Examples below encode dates (good idea in principle, but not always good in practice). It does not encode big vs. small changes (bad). Which version results in a small improvement, and which one has big effects? Also, what is `a` and `b`? Are these 2 versions created on the same day? (Note: using `a` and `b` like so is often an afterthought for such version numbering by date, while other even worse afterthoughts include adding datestamps, which makes version numbers almost impossible to remember for users.) Which one has bigger effects? Because `a` and `b` after a date is not always a common practice, version conventions like this can present a nasty surprise for someone later who writes  code to parse version numbers. For example, one can decide to store version numbers and workflow descriptions. A programmer who has seen only the first two examples (v.2018_01_01, v.2018_01_02, without `a` and `b`), will not read your thoughts and code also parsing `a` and `b` at the end of the date. The resulting parser, if it is good, should fail (bad). Meanwhile, a poor parser will drop the extra `a` and `b`, then mangle the multiple versions into one, and proceed merrily with unpredictable downstream effects:
-<pre>
-<i>
-v.2018_01_01
-v.2018_01_02
-v.2018_01_20a
-v.2018_01_20b
-v.2018_02_13
+seq frag remap + contamination + aggregate, hg19, v20190715.0
+hg19 DNA, seq frag remap + contamination + aggregate, v20190715.0
+DNA - seq frag remap + contamination + aggregate; hg19 - v20190715.0
 </i>
 </pre>
 
@@ -153,7 +52,7 @@ Currently, use blanks. As of this writing (12/11/2018), Galaxy web UI does not s
 Blanks allow text wrapping:
 <pre>
 <b>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
+DNA, seq frag remap + contamination + aggregate, hg19, v20190125.0
 </b>
 </pre>
 
@@ -163,40 +62,39 @@ DNA PE + seq frag remap + contamination + aggregate v.0.2.0
 No separators makes it very hard to read:
 <pre>
 <i>
-DNAPEseqfragremapcontaminationaggregatev020
+DNAPEseqfragremapcontaminationaggregatev201901250
 </i>
 </pre>
 
 CamelCase is easier to read than no separators at all, but harder to read than other separators. Plus, CamelCase also does not allow text wrapping:
 <pre>
 <i>
-DNAPESeqFragRemapContaminationAggregatev.0.2.0
+DNAPESeqFragRemapContaminationAggregatev20190125.0
 </i>
 </pre>
 
 Underscores or dots are easy to read and also compatible with other languages. But currently the do not allow text wrapping in Galaxy UI:
 <pre>
 <i>
-DNA_PE_seq_frag_remap_contamination_aggregate_v.0.2.0
-DNA.PE.seq.frag.remap.contamination.aggregate.v.0.2.0
+DNA_PE_seq_frag_remap_contamination_aggregate_v20190125.0
+DNA.PE.seq.frag.remap.contamination.aggregate.v20190125.0
 </i>
 </pre>
 
 
-NOTE: When when Galaxy UI supports text wrapping on those, use underscores and dots, rather than blanks. The reason for this is that the majority of the best coding practices for programming languages (including Python and other languages used in Galaxy core and tool development) call for names *without blanks*. It helps to enable the Galaxy workflow names to be used if needed as the names of files, directories, variables, methods, classes, tables, columns, etc (almost) "as is", with minimal or no changes. For example, `seq_frag_v_0_2_0` will work as a valid name for variables, columns, etc in many programmming languages, such as Python, bash or SQL, but `seq frag v_0_2_0` and `seq_frag.v.0.2.0` will not always work.
+NOTE: When Galaxy UI supports text wrapping on those, use underscores and dots, rather than blanks, for compatibility with programming languages.
 
 ## Workflow functionalities
-### Use a single standard delimiter, such as +, to separate major workflow functionalities.
+### Use a standard delimiters ("+" or ",") to separate major workflow functionalities.
 
-It is a good practice to create a workflow name that consists of several major workflow functionalities joined together, e.g., `do this thing + do that thing + do one more thing`. Use a single standard delimiter, such as ` + ` or `, ` (plus sign or comma). As always, pick one delimiter and stick to it. Note the use of trailing blanks (or leading and trailing blanks) for the delimiters for proper line wrapping, for consistency with other programming languages and also with plain English punctuation.
+It is a good practice to create a workflow name that has analysis method that consists of several major workflow functionalities joined together, e.g., `do this thing + do that thing + do one more thing`. Use standard delimiters, such as ` + ` or `, ` (plus sign or comma). Note the use of a trailing blank after comma and leading and trailing blank ariund the plus sign for proper line wrapping. This is consistent with English language and programming languages conventions.
 
 #### Good:
 
-Functionalities are more clear: this workflow takes DNA paired end reads, uses standard tools, also uses seq frag remap tool, also includes contamination detection, and finally uses aggregate results tool:
+Functionalities are more clear: this workflow takes DNA reads, uses seq frag remap tool, also includes contamination detection, and finally uses aggregate results tool:
 <pre>
 <b>
-DNA PE + seq frag remap + contamination + aggregate v.0.2.0
-DNA PE, seq frag remap, contamination, aggregate v.0.2.0
+DNA, seq frag remap + contamination + aggregate, hg19, v20190715.0
 </b>
 </pre>
 
@@ -205,14 +103,177 @@ DNA PE, seq frag remap, contamination, aggregate v.0.2.0
 Functionalities are mangled together and confusing to anyone but the developer:
 <pre>
 <i>
-DNA PE seq frag remap contamination aggregate v.0.2.0
+DNA seq frag remap contamination aggregate v20190715.0
 </i>
 </pre>
 
 Delimiters are inconsistent without any compelling reason:
 <pre>
 <i>
-DNA (PE) + seq frag remap + contamination + aggregate v.0.2.0
-DNA_PE_seq_frag_remap, contamination + aggregate v.0.2.0
+DNA + seq frag remap + contamination_aggregate_v20190715.0
+DNA_PE_seq_frag_remap, contamination + aggregate v20190715.0
+</i>
+</pre>
+
+## Tags
+### Use tags in addition to workflow names.
+
+Use tags to group and find workflows. For tags, always use lower case for compound word separation. Required tags should include at least:
+
+- "production" - if this workflow is used in production,
+- input type, e.g., "dna", "rna", "small-rna",
+- instrument type, e.g., "illumina", "nanopore", "pacbio"
+
+
+## Names with version numbers
+### Use workflow names with version numbers.
+
+<workflow name><version number>
+
+#### Good:
+
+<pre>
+<b>
+DNA, seq frag remap  + aggregate, hg19, v20190720.0
+DNA, seq frag remap  + aggregate, hg19, v20190720.1
+</b>
+</pre>
+
+#### Bad:
+
+No version number:
+<pre>
+<i>
+DNA, seq frag remap  + aggregate, hg19
+</i>
+</pre>
+
+User names typically do not belong to workflow names, and should not be used as version numbers:
+<pre>
+<i>
+DNA PE + seq frag remap + contamination + aggregate shared by John Doe shared by Jane Smith
+DNA PE + seq frag remap + contamination + aggregate JD JS
+DNA PE + seq frag remap + contamination + aggregate JS
+DNA PE + seq frag remap + contamination + aggregate JD
+</i>
+</pre>
+
+Such names just show the origin of the workflow (user X either wrote the workflow or just shared it). These names are common mostly because they are Galaxy default names created when workflows are copied.
+
+Switching from user names to user initials could make such "versioning" even worse, because JS can be either a workflow shared by Jane Smith or Jack Sack, or a workflow for processing data from JS-1000 sequencer, and now your colleagues are really confused. Also, which one is the most recent workflow: JS or JD?
+
+
+## Version numbering
+### Use a single, common version numbering convention.
+
+Use a single version numbering convention that is already commonly used for other software packages. Workflow names with version numbers should sort from the least to the most recent ASCIIbetically in other common tools outside of Galaxy (UNIX sort, Excel, etc). 
+
+A good convention to write workflow name and version is like this: `workflow name, vYYYYMMDD.V` , where:
+
+`workflow name` is the name of the workflow (major workflow changes are encoded here),
+
+`vYYYYMMDD.V` - version string, which encodes minor changes,
+
+`v` is the prefix (short for `version`),
+
+`YYYYMMDD` is the release date,
+
+`V` is the version number for that release date, starting with 0.
+
+Use Galaxy auto-generated version, displayed in Workflow | Edit, such as Version 0, Version 1, etc, to encode micro changes. It does not correspond to `V`, and the developer cannot control is explicitly - Galaxy increments it automatically.
+
+#### Good:
+
+<pre>
+<b>
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190720.0
+Galaxy auto-generated version = Version 0
+meaning = initial version, written July 20th, 2019.
+
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190720.0
+Galaxy auto-generated version = Version 1
+meaning = next micro change, done on the same day, such as add/remove a tool
+with no substantial effects on the final results, or change documentation,
+or fix a bug.
+
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190720.1
+Galaxy auto-generated version = Version 0
+meaning = next minor change on the same date, such as add/remove one or more 
+tools, or fix one or more bugs with small but substantial effects on the final
+results.
+
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190723.0
+Galaxy auto-generated version = Version 0
+meaning = next minor change, done on a different date.
+
+
+workflow name and version = DNA, no dups + seq frag remap  + aggregate, GRCh38, v20190723.0
+Galaxy auto-generated version = Version 0
+meaning = next major change, such as add new inputs, change reference genome,
+major change in tool settings (e.g., change from keeping to discarding
+duplicate reads). The change may have large and substantial effects on the UI
+or the results. This is encoded in a different workflow name.
+   
+</b>
+</pre>
+
+Other commonly used versioning conventions include semantic versioning (`major.minor.micro`, such as `2.3.0`), and mixed semantic/date versioning (such as `2.3.0.20190720`). However, we prefer the convention above. It is flexible, clearly shows how recent the version is, and the version numbers are relatively short.
+
+Whatever versioning convention you choose, make sure it makes sense for your team, and try to be reasonably consistent.
+
+#### Bad:
+
+Version numbers do not follow a single standard. Not clear which one is the latest one:
+<pre>
+<i>
+DNA, seq frag remap + contamination + aggregate, hg19, v.0.2.1
+DNA, seq frag remap + contamination + aggregate, hg19, v.20180102
+</i>
+</pre>
+
+It may seem like the version numbers here follow a single standard, but they really do not:
+
+<pre>
+<i>
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723.0
+DNA, seq frag remap + contamination + aggregate, hg19, v.20190723.1
+DNA, seq frag remap + contamination + aggregate, hg19, v_20190723_2
+DNA, seq frag remap + contamination + aggregate, hg19, version 20190723.3
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723a
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723b
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723.0.2
+</i>
+</pre>
+
+Instead, the above versions are a mess. When sorted ASCIIbetically, the version numbers may not sort as expected. Worse, the developer always has to guess the naming convention.
+
+Pick a single standard convention, and follow it. Be consistent. In our convention, always use `v`, then date, dot, integer - no blanks, underscores, or letters.
+
+A version that has a date and 3 numbers offers way too much granularity, at least when exposed to users who are not software developers:
+
+<pre>
+<i>
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723.0.34.335
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723.0.34.336
+</i>
+</pre>
+
+This is just a Galaxy workflow, not a Linux kernel. Some users remember the version numbers by heart (true story), so give them this opportunity by keeping it short and sweet.
+
+A single date has too little granularity. Actively developed workflows can change a few times per day, so versioning should allow this:
+
+<pre>
+<i>
+DNA, seq frag remap + contamination + aggregate, hg19, v20190723
+DNA, seq frag remap + contamination + aggregate, hg19, v20190724
+</i>
+</pre>
+
+Alwasy use a number after the date, even if you think you have a one-off workflow (these workflows often live surprisingly long and require many versions). Having a number for some, but not all, workflows brings unwanted surprises both for humans who try to guess the rules, and for the version parsing code that humans write:
+
+<pre>
+<i>
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190720
+workflow name and version = DNA, seq frag remap  + aggregate, hg19, v20190720.2
 </i>
 </pre>
