@@ -5,7 +5,7 @@
 \-- Anonymous
 
 ## Record-keeping
-### Keep records of the workflows, inputs and parameters
+### Keep records of the workflows, inputs and parameters.
 
 Make your analysis reproducible by keeping records of what, when and how you did the analysis. This simplifies debugging if you workflow fails, enables you to analyze consistently different datasets across time or experimental conditions. It will be really handy when publishing or sharing results with colleagues.
 
@@ -94,15 +94,6 @@ Typically, the important info, from most to least, is:
 - Parameter settings, especially those rarely changed from defaults
 - And lots of surprising things, in case you delete the history
 
-## Citing
-### Cite Galaxy project and all the important tools
-
-This helps Galaxy and tool developers with funding the tools that you rely on.
-
-Include tool versions in citations.
-
-TODO: expand this.
-
 ## Running different workflow versions
 ### Check the workflow version before running it.
 
@@ -121,7 +112,7 @@ Make sure you are running the correct workflow version. Usually, this is the lat
 - You did not even remember that different versions exist.
 
 ## Keeping workflow versions
-### Follow sensible conventions on keeping multiple workflow versions
+### Follow sensible conventions on keeping multiple workflow versions.
 
 Developers should keep most of the workflow versions for record-keeping.
 

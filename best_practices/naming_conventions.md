@@ -5,19 +5,19 @@
 \-- Phil Karlton
 
 ## Workflow names and version numbers
-### Use a simple convention for the workflow names and version numbers.
+### Use a simple convention for workflow names and version numbers.
 
 For example, for next generation sequencing data analysis, the names should be:
 
 `<library prep method>, <analysis method>, <genome>, vYYYYMMDD.V`, where the parts (delimited by comma with blank) are:
 
-`<library prep method>` = a short description of the library prep method, e.g., DNA, RNA, EM-seq, low input RNA,
+`<library prep method>` = a short description of the library prep method, e.g., "DNA", "RNA", "EM-seq", "low input RNA",
 
-`<analysis method>` = "std" or any unusual complexity about this method e.g. 2-stage mapping, or key steps delimited by ` + `,
+`<analysis method>` = "std" or any unusual complexity about this method e.g. "2-stage mapping", or key steps delimited by ` + `,
 
-`<genome>` = short genome name, e.g., GRCh38+mC controls, GENCODE v29,
+`<genome>` = short genome name, e.g., "GRCh38+mC controls", "GENCODE v29",
 
-`<version>` = date followed by point release / minor version number (e.g. 20190715.0, 20190715.1).
+`<version>` = date followed by point release / minor version number (e.g. "20190715.0", "20190715.1").
 
 #### Good:
 
@@ -85,7 +85,7 @@ DNA.PE.seq.frag.remap.contamination.aggregate.v20190125.0
 NOTE: When Galaxy UI supports text wrapping on those, use underscores and dots, rather than blanks, for compatibility with programming languages.
 
 ## Workflow functionalities
-### Use a standard delimiters ("+" or ",") to separate major workflow functionalities.
+### Use a standard delimiters (" + " or ", ") to separate major workflow functionalities.
 
 It is a good practice to create a workflow name that has analysis method that consists of several major workflow functionalities joined together, e.g., `do this thing + do that thing + do one more thing`. Use standard delimiters, such as ` + ` or `, ` (plus sign or comma). Note the use of a trailing blank after comma and leading and trailing blank ariund the plus sign for proper line wrapping. This is consistent with English language and programming languages conventions.
 
@@ -126,7 +126,9 @@ Use tags to group and find workflows. For tags, always use lower case for compou
 
 
 ## Names with version numbers
-### Use workflow names with version numbers.
+### Always use version numbers in addition to workflow names.
+
+All things are impermanent. Assume that all workflows will need to change, too. This includes trivial workflows made of one or two tools.
 
 <workflow name><version number>
 
@@ -269,7 +271,7 @@ DNA, seq frag remap + contamination + aggregate, hg19, v20190724
 </i>
 </pre>
 
-Alwasy use a number after the date, even if you think you have a one-off workflow (these workflows often live surprisingly long and require many versions). Having a number for some, but not all, workflows brings unwanted surprises both for humans who try to guess the rules, and for the version parsing code that humans write:
+Always use a number after the date, even if you think you have a one-off workflow (these workflows often live surprisingly long and require many versions). Having a number for some, but not all, workflows brings unwanted surprises both for humans who try to guess the rules, and for the version parsing code that humans write:
 
 <pre>
 <i>
