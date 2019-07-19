@@ -45,7 +45,7 @@ DNA - seq frag remap + contamination + aggregate; hg19 - v20190715.0
 
 Use separators for legibility and for text wrapping of long workflow names within the Galaxy UI Tools panel, Workflows section (on the bottom left). Text wrapping is essential to easily view long Galaxy workflow names.
 
-Currently, use blanks. As of this writing (12/11/2018), Galaxy web UI does not support proper text wrapping on non-blank separators.  But when Galaxy web UI supports text wrapping on underscores and dots, use those, rather than blanks.
+Currently, use blanks. As of this writing (12/11/2018), Galaxy web UI does not support proper text wrapping on non-blank separators.  But when Galaxy web UI supports text wrapping on underscores and dots, use those, rather than blanks, for compatibility with programming languages.
 
 #### Good:
 
@@ -59,21 +59,15 @@ DNA, seq frag remap + contamination + aggregate, hg19, v20190125.0
 
 #### Bad:
 
-No separators makes it very hard to read:
+No separators or CamelCase makes the name hard to read:
 <pre>
 <i>
 DNAPEseqfragremapcontaminationaggregatev201901250
-</i>
-</pre>
-
-CamelCase is easier to read than no separators at all, but harder to read than other separators. Plus, CamelCase also does not allow text wrapping:
-<pre>
-<i>
 DNAPESeqFragRemapContaminationAggregatev20190125.0
 </i>
 </pre>
 
-Underscores or dots are easy to read and also compatible with other languages. But currently the do not allow text wrapping in Galaxy UI:
+Underscores or dots are easy to read and also compatible with programming languages. But currently they do not allow text wrapping in Galaxy UI:
 <pre>
 <i>
 DNA_PE_seq_frag_remap_contamination_aggregate_v20190125.0
@@ -81,8 +75,6 @@ DNA.PE.seq.frag.remap.contamination.aggregate.v20190125.0
 </i>
 </pre>
 
-
-NOTE: When Galaxy UI supports text wrapping on those, use underscores and dots, rather than blanks, for compatibility with programming languages.
 
 ## Workflow functionalities
 ### Use a standard delimiters (" + " or ", ") to separate major workflow functionalities.
@@ -170,17 +162,17 @@ Switching from user names to user initials could make such "versioning" even wor
 
 Use a single version numbering convention that is already commonly used for other software packages. Workflow names with version numbers should sort from the least to the most recent ASCIIbetically in other common tools outside of Galaxy (UNIX sort, Excel, etc). 
 
-A good convention to write workflow name and version is like this: `workflow name, vYYYYMMDD.V` , where:
+A good convention to write workflow name and version is like this: `workflow name, vYYYYMMDD.N` , where:
 
 `workflow name` is the name of the workflow (major workflow changes are encoded here),
 
-`vYYYYMMDD.V` - version string, which encodes minor changes,
+`vYYYYMMDD.N` - version string, which encodes minor changes,
 
 `v` is the prefix (short for `version`),
 
 `YYYYMMDD` is the release date,
 
-`V` is the version number for that release date, starting with 0.
+`N` is the version number for that release date, starting with 0.
 
 Use Galaxy auto-generated version, displayed in Workflow | Edit, such as Version 0, Version 1, etc, to encode micro changes. It does not correspond to `V`, and the developer cannot control is explicitly - Galaxy increments it automatically.
 
