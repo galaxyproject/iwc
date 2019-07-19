@@ -15,7 +15,7 @@ Treat analysis as you would treat your experiments, and keep records.
 
 Record in a plain text file or your electronic lab notebook the date and the details of the workflow that you ran. Make it enough for you to reproduce the analysis in half a year if you need it. If you analyze the data in a collaboration, make the records good enough for other to reproduce the analysis. A good example is below.
 
-Our workflows usually end in a tool that aggregates the results of different workflow steps, such as BWA mapping, Picard GC bias, Picard MarkDuplcicates, etc,, and stores them in a relational database for subsequent analysis. The aggregate results tool has a free-text input field called "Notes". I use it to copy and paste the chunk of text below, so that every sample/library has metadata attached to it about how the results were obtained. This is in addition and on top of the metadata recorded automatically and manually in other structured numeric and text fields. 
+Our workflows usually end in a tool that aggregates the results of different workflow steps, such as BWA mapping, Picard GC bias, Picard MarkDuplicates, etc, and stores them in a relational database for subsequent analysis. The aggregate results tool has a free-text input field called "Notes". I use it to copy and paste the chunk of text below, so that every sample/library has metadata attached to it about how the results were obtained. This is in addition and on top of the metadata recorded automatically and manually in other structured numeric and text fields. 
 
 <pre>
 <b>
