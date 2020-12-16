@@ -1,0 +1,271 @@
+name: Galaxy Tool Linting and Tests for push and PR
+on: [push, pull_request]
+env:
+  GALAXY_REPO: https://github.com/galaxyproject/galaxy
+  GALAXY_RELEASE: release_20.09
+jobs:
+  # the setup job does two things:
+  # 1. cache the pip cache and .planemo
+  # 2. determine the list of changed repositories
+  # it produces one artifact which contains
+  # - a file with the latest SHA from the chosen branch of the Galaxy repo
+  # - a file containing the list of changed repositories
+  # which are needed in subsequent steps.
+  setup:
+    name: Setup cache and determine changed repositories
+    runs-on: ubuntu-latest
+    outputs:
+      galaxy_head_sha: ${{ steps.get-galaxy-sha.outputs.galaxy_head_sha }}
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: Print github context properties
+      run: |
+        echo 'event: ${{ github.event_name }}'
+        echo 'sha: ${{ github.sha }}'
+        echo 'ref: ${{ github.ref }}'
+        echo 'head_ref: ${{ github.head_ref }}'
+        echo 'base_ref: ${{ github.base_ref }}'
+        echo 'event.before: ${{ github.event.before }}'
+        echo 'event.after: ${{ github.event.after }}'
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Determine latest commit in the Galaxy repo
+      id: get-galaxy-sha
+      run: echo "::set-output name=galaxy_head_sha::$(git ls-remote ${{ env.GALAXY_REPO }} refs/heads/${{ env.GALAXY_RELEASE }} | cut -f1)"
+    - name: Cache .cache/pip
+      uses: actions/cache@v2
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy_head_sha }}
+    - name: Cache .planemo
+      uses: actions/cache@v2
+      id: cache-planemo
+      with:
+        path: ~/.planemo
+        key: planemo_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy_head_sha }}
+    # Install the `wheel` package so that when installing other packages which
+    # are not available as wheels, pip will build a wheel for them, which can be cached.
+    - name: Install wheel
+      run: pip install wheel
+#TODO install from pip once 0.73 released
+#     - name: Install Planemo
+#       run: pip install planemo
+    - uses: actions/checkout@v2
+      with:
+        repository: simonbray/planemo
+        ref: wf-fixes
+        fetch-depth: 0
+    - name: Install Planemo
+      run: |
+        python3 -m pip install .
+        cd ..
+        rm -rf planemo
+    - name: Fake a Planemo run to update cache
+      if: steps.cache-pip.outputs.cache-hit != 'true' || steps.cache-planemo.outputs.cache-hit != 'true'
+      run: |
+        # TODO remove the use of mock-test dir? Disable the use of `| true` https://github.com/galaxyproject/planemo/issues/1117 
+        mkdir mock-test
+        cd mock-test
+        touch tool.xml
+        PIP_QUIET=1 planemo test --galaxy_python_version ${{ matrix.python-version }} --no_conda_auto_init --galaxy_source $GALAXY_REPO --galaxy_branch $GALAXY_RELEASE | true
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    # The range of commits to check for changes is:
+    # - `origin/master...` for all events happening on a feature branch
+    # - for events on the master branch we compare against the sha before the event
+    #   (note that this does not work for feature branch events since we want all
+    #   commits on the feature branch and not just the commits of the last event)
+    # - for pull requests we compare against the 1st ancestor, given the current
+    #   HEAD is the merge between the PR branch and the base branch
+    - name: Set target for comparison (push to the feature branch)
+      if: github.ref != 'refs/heads/master' && github.event_name == 'push'
+      run: |
+        echo "COMPARE=origin/master" >> $GITHUB_ENV
+    - name: Set target for comparison (push to the master branch, e.g. merge)
+      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+      run: echo "COMPARE=${{ github.event.before }}" >> $GITHUB_ENV
+    - name: Set target for comparison (pull request)
+      if: github.event_name == 'pull_request'
+      run: echo "COMPARE=HEAD~" >> $GITHUB_ENV
+    - name: Get changed workflow repositories
+      run: git diff-index --name-only --diff-filter d $COMPARE -- | sed 's@\([^/]\+/[^/]\+/\).*@\1@' | sort -u | grep -v -f .wt_skip > changed_wf_repos.list
+    - name: Show repo list
+      run: cat changed_wf_repos.list
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Workflow artifacts
+        path: changed_wf_repos.list
+
+  # Planemo lint the changed repositories
+  lint:
+    name: Lint tools
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+    steps:
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/download-artifact@v2
+      with:
+        name: Workflow artifacts
+        path: ../workflow_artifacts/
+    - name: Cache .cache/pip
+      uses: actions/cache@v2
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy_head_sha }}
+#TODO install from pip once 0.73 released
+#     - name: Install Planemo
+#       run: pip install planemo
+    - uses: actions/checkout@v2
+      with:
+        repository: simonbray/planemo
+        ref: wf-fixes
+        fetch-depth: 0
+    - name: Install Planemo
+      run: python3 -m pip install .
+    # checkout the repository
+    # and use it as the current working directory
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Planemo lint
+      run: |
+        set -e
+        while read -r REPO; do
+            for GA in $(find $REPO -maxdepth 1 -name "*.ga"); do
+                echo $GA
+                planemo workflow_lint --fail_level error $GA
+            done
+            YML=$(echo $GA | sed 's/.ga$/-tests.yml/')
+            if [ ! -f $YML ]; then
+                echo "No tests found for $GA: missing $YML"
+                exit 1
+            fi
+        done < ../workflow_artifacts/changed_wf_repos.list
+
+  # Planemo test the changed repositories, each chunk creates an artifact
+  # containing HTML and JSON reports for the executed tests
+  test:
+    name: Test worflows
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    steps:
+
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/download-artifact@v2
+      with:
+        name: Workflow artifacts
+        path: ../workflow_artifacts/
+    - name: Cache .cache/pip
+      uses: actions/cache@v2
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy_head_sha }}
+    - name: Cache .planemo
+      uses: actions/cache@v2
+      id: cache-planemo
+      with:
+        path: ~/.planemo
+        key: planemo_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy_head_sha }}
+
+#TODO install from pip once 0.73 released
+#     - name: Install Planemo
+#       run: pip install planemo
+    - uses: actions/checkout@v2
+      with:
+        repository: simonbray/planemo
+        ref: wf-fixes
+        fetch-depth: 0
+    - name: Install Planemo
+      run: python3 -m pip install .
+
+      # checkout the repository
+    # and use it as the current working directory
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1 
+    - name: Planemo test workflows
+      run: |
+        # TODO TEST EXISTENCE OF YML FILES
+        while read -r REPO; do
+            cd $REPO
+            for GA in $(find . -maxdepth 1 -name "*.ga"); do
+                    PIP_QUIET=1 planemo test $GA #--database_connection postgresql://postgres:postgres@localhost:5432/galaxy --biocontainers --no_conda_auto_init --galaxy_source $GALAXY_REPO --galaxy_branch $GALAXY_RELEASE --galaxy_python_version ${{ matrix.python-version }}
+            done
+            cd -
+            docker system prune --all --force --volumes || true
+        done < ../workflow_artifacts/changed_wf_repos.list
+
+  # deploy the tools to the toolsheds (first TTS for testing)
+  deploy:
+    name: Deploy
+    needs: [setup, lint, test]
+    strategy:
+      matrix:
+        python-version: [3.7]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.repository_owner == 'galaxyproject'
+    steps:
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v2
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy_head_sha }}
+#TODO install from pip once 0.73 released
+#     - name: Install Planemo
+#       run: pip install planemo
+    - uses: actions/checkout@v2
+      with:
+        repository: simonbray/planemo
+        ref: wf-fixes
+        fetch-depth: 0
+    - name: Install Planemo
+      run: python3 -m pip install .
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    # Just register all files that are now in the repo
+    # TODO Not sure how this will work exectly, do we need a
+    # release? Or is dockstore just watching master
+    # Should we forbid the creation of new branches that might
+    # get picked up by dockstore?
+    - name: Register in dockstore file
+      run: planemo dockstore_init
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Apply php-cs-fixer changes
