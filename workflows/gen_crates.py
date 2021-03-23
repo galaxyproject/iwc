@@ -33,7 +33,8 @@ def main():
                                       lang="galaxy", gen_cwl=False)
         workflow["name"] = code["name"]
         crate.root_dataset["author"] = author
-        crate.root_dataset["isBasedOn"] = "https://github.com/iwc-workflows/{entry.name}"
+        wf_url = f"https://github.com/iwc-workflows/{entry.name}"
+        workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
         crate.root_dataset["license"] = code["license"]
         suite = crate.add_test_suite(identifier="#test1")
         crate.add_test_instance(suite, GH_URL, resource=GH_RESOURCE,
