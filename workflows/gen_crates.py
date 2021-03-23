@@ -1,3 +1,4 @@
+import json
 import os
 import pathlib
 
@@ -23,12 +24,17 @@ def main():
         assert len(ids) == 1
         wf_id = ids[0]
         wf_source = pathlib.Path(crate_dir) / wf_id
+        with open(wf_source) as f:
+            code = json.load(f)
+        author = [_["name"] for _ in code["creator"]]
+        if len(author) == 1:
+            author = author[0]
         workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                       lang="galaxy", gen_cwl=False)
-        workflow["name"] = entry.name
-        crate.root_dataset["author"] = "Wolfgang Maier"
+        workflow["name"] = code["name"]
+        crate.root_dataset["author"] = author
         crate.root_dataset["isBasedOn"] = "https://github.com/iwc-workflows/{entry.name}"
-        crate.root_dataset["license"] = "MIT"
+        crate.root_dataset["license"] = code["license"]
         suite = crate.add_test_suite(identifier="#test1")
         crate.add_test_instance(suite, GH_URL, resource=GH_RESOURCE,
                                 service="github", identifier="test1_1")
