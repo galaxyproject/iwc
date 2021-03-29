@@ -53,9 +53,9 @@ def main():
         author = [_["name"] for _ in code["creator"]]
         if len(author) == 1:
             author = author[0]
-        test_data_source = pathlib.Path(crate_dir) / "test-data"
+        test_data_source = pathlib.Path(crate_dir) / "test"
         assert test_data_source.is_dir()
-        crate.add_dataset(test_data_source, "test-data")
+        crate.add_dataset(test_data_source, "test")
         workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                       lang="galaxy", gen_cwl=False)
         workflow["name"] = code["name"]
