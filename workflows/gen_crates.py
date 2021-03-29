@@ -13,6 +13,8 @@ ROOT = THIS_DIR / "sars-cov-2-variant-calling"
 GH_URL = "https://api.github.com/repos/galaxyproject/iwc/actions"
 GH_RESOURCE = "runs"
 
+PLANEMO_VERSION = ">=0.74.3"
+
 
 def get_wf_id(crate_dir):
     ids = [_.name for _ in os.scandir(crate_dir) if _.name.endswith(".ga")]
@@ -61,13 +63,15 @@ def main():
         wf_url = f"https://github.com/iwc-workflows/{entry.name}"
         workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
         crate.root_dataset["license"] = code["license"]
-        crate.add_file(planemo_source, planemo_id)
         readme_source = pathlib.Path(crate_dir) / "README.md"
         assert readme_source.is_file()
         crate.add_file(readme_source, "README.md")
         suite = crate.add_test_suite(identifier="#test1")
         crate.add_test_instance(suite, GH_URL, resource=GH_RESOURCE,
                                 service="github", identifier="test1_1")
+        crate.add_test_definition(suite, source=planemo_source,
+                                  dest_path=planemo_id, engine="planemo",
+                                  engine_version=PLANEMO_VERSION)
         crate.metadata.write(crate_dir)
 
 
