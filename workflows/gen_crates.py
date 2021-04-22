@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 
-# https://github.com/ResearchObject/ro-crate-py/tree/8548e74284ad386dbaa72223f46cc6bcdad05efb
+# pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
 
 THIS_DIR = pathlib.Path(__file__).absolute().parent
@@ -30,14 +30,6 @@ def get_planemo_id(crate_dir, wf_id):
     return planemo_id, planemo_source
 
 
-# ro-crate-py TODO: support for NOT generating preview
-def rm_preview(crate):
-    cid = crate.preview.canonical_id()
-    crate.default_entities.remove(crate.preview)
-    crate.preview = None
-    del crate._ROCrate__entity_map[cid]
-
-
 def main():
     for entry in os.scandir(ROOT):
         if not entry.is_dir():
@@ -45,17 +37,13 @@ def main():
         crate_dir = entry.path
         wf_id = get_wf_id(crate_dir)
         planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
-        crate = ROCrate()
-        rm_preview(crate)
+        crate = ROCrate(gen_preview=False)
         wf_source = pathlib.Path(crate_dir) / wf_id
         with open(wf_source) as f:
             code = json.load(f)
         author = [_["name"] for _ in code["creator"]]
         if len(author) == 1:
             author = author[0]
-        test_data_source = pathlib.Path(crate_dir) / "test"
-        assert test_data_source.is_dir()
-        crate.add_dataset(test_data_source, "test")
         workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                       lang="galaxy", gen_cwl=False)
         workflow["name"] = code["name"]
