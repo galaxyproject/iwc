@@ -9,9 +9,8 @@ THIS_DIR = pathlib.Path(__file__).absolute().parent
 
 ROOT = THIS_DIR / "sars-cov-2-variant-calling"
 
-# github actions monitoring not supported yet by life monitor, these may change
-GH_URL = "https://api.github.com/repos/galaxyproject/iwc/actions"
-GH_RESOURCE = "runs"
+GH_URL = "https://api.github.com"
+GH_RESOURCE = "repos/galaxyproject/iwc/actions/workflows/workflow_test.yml"
 
 PLANEMO_VERSION = ">=0.74.3"
 
