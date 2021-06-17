@@ -45,10 +45,12 @@ import pathlib
 # pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
 
+OWNER = "galaxyproject"
+REPO = "iwc"
+GH_WORKFLOW = "workflow_test.yml"
+TARGET_OWNER = "iwc-workflows"
 GH_URL = "https://api.github.com"
-GH_RESOURCE = "repos/galaxyproject/iwc/actions/workflows/workflow_test.yml"
-
-PLANEMO_VERSION = ">=0.74.3"
+PLANEMO_VERSION = ">=0.74.4"
 
 
 def get_wf_id(crate_dir):
@@ -65,7 +67,7 @@ def get_planemo_id(crate_dir, wf_id):
     return planemo_id, planemo_source
 
 
-def process_repo(repo_dir_entry):
+def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
     crate_dir = repo_dir_entry.path
     wf_id = get_wf_id(crate_dir)
     planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
@@ -81,27 +83,28 @@ def process_repo(repo_dir_entry):
     workflow["name"] = code["name"]
     workflow["version"] = code["release"]
     crate.root_dataset["author"] = author
-    wf_url = f"https://github.com/iwc-workflows/{repo_dir_entry.name}"
+    wf_url = f"https://github.com/{target_owner}/{repo_dir_entry.name}"
     workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
     crate.root_dataset["license"] = code["license"]
     readme_source = pathlib.Path(crate_dir) / "README.md"
     assert readme_source.is_file()
     crate.add_file(readme_source, "README.md")
     suite = crate.add_test_suite(identifier="#test1")
-    crate.add_test_instance(suite, GH_URL, resource=GH_RESOURCE,
+    crate.add_test_instance(suite, GH_URL, resource=resource,
                             service="github", identifier="test1_1")
     crate.add_test_definition(suite, source=planemo_source,
                               dest_path=planemo_id, engine="planemo",
-                              engine_version=PLANEMO_VERSION)
+                              engine_version=planemo_version)
     crate.metadata.write(crate_dir)
 
 
 def main(args):
+    resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for root in args.root:
         for entry in os.scandir(root):
             if not entry.is_dir():
                 continue
-            process_repo(entry)
+            process_repo(entry, args.target_owner, resource, args.planemo_version)
 
 
 if __name__ == "__main__":
@@ -110,4 +113,14 @@ if __name__ == "__main__":
     )
     parser.add_argument("root", metavar="ROOT_DIR", help="top-level directory",
                         nargs="*", default=[os.getcwd()])
+    parser.add_argument("--owner", metavar="STRING", default=OWNER,
+                        help="owner of the github workflow that runs the tests")
+    parser.add_argument("--repo", metavar="STRING", default=REPO,
+                        help="repository that contains the github workflow")
+    parser.add_argument("--workflow", metavar="STRING", default=GH_WORKFLOW,
+                        help="github workflow file name (basename)")
+    parser.add_argument("--target-owner", metavar="STRING", default=TARGET_OWNER,
+                        help="target github owner for repository deployment")
+    parser.add_argument("--planemo-version", metavar="STRING", default=PLANEMO_VERSION,
+                        help="planemo version required to test the workflows")
     main(parser.parse_args())
