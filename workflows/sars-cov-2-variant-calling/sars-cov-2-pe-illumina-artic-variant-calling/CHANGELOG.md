@@ -4,7 +4,7 @@
 
 ### Changed
 
-- upgrade multiqc to 1.9+galaxy1
+- Upgrade multiqc to 1.9+galaxy1
 
 
 ## [0.3] - 2021-05-19
