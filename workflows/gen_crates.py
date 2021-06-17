@@ -44,6 +44,7 @@ import pathlib
 
 # pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
+from rocrate.model.person import Person
 
 OWNER = "galaxyproject"
 REPO = "iwc"
@@ -67,6 +68,24 @@ def get_planemo_id(crate_dir, wf_id):
     return planemo_id, planemo_source
 
 
+def handle_creator(ga_json, crate, workflow):
+    try:
+        gh_creators = ga_json["creator"]
+    except KeyError:
+        return
+    ro_creators = []
+    for c in gh_creators:
+        id_ = c.get("identifier")
+        name = c.get("name")
+        if not id_ and not name:
+            continue
+        properties = {'name': name} if name else None
+        ro_creators.append(Person(crate, identifier=id_, properties=properties))
+    if ro_creators:
+        crate.add(*ro_creators)
+        workflow["creator"] = ro_creators
+
+
 def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
     crate_dir = repo_dir_entry.path
     wf_id = get_wf_id(crate_dir)
@@ -75,14 +94,11 @@ def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
     wf_source = pathlib.Path(crate_dir) / wf_id
     with open(wf_source) as f:
         code = json.load(f)
-    author = [_["name"] for _ in code["creator"]]
-    if len(author) == 1:
-        author = author[0]
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
+    handle_creator(code, crate, workflow)
     workflow["name"] = code["name"]
     workflow["version"] = code["release"]
-    crate.root_dataset["author"] = author
     wf_url = f"https://github.com/{target_owner}/{repo_dir_entry.name}"
     workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
     crate.root_dataset["license"] = code["license"]
