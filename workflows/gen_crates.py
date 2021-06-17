@@ -79,6 +79,7 @@ def process_repo(repo_dir_entry):
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
     workflow["name"] = code["name"]
+    workflow["version"] = code["release"]
     crate.root_dataset["author"] = author
     wf_url = f"https://github.com/iwc-workflows/{repo_dir_entry.name}"
     workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
