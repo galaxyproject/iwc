@@ -34,7 +34,6 @@ Level 2 directories are expected to contain:
 - a [Planemo](https://github.com/galaxyproject/planemo) test file with the
   same name as the workflow file, but with a `-test.yml` extension, e.g.,
   `consensus-from-variation-test.yml`;
-- a `README.md` file.
 """
 
 import argparse
@@ -46,17 +45,19 @@ import pathlib
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
 
+# Defaults
 OWNER = "galaxyproject"
 REPO = "iwc"
 GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
-GH_URL = "https://api.github.com"
+GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = ">=0.74.4"
 
 
 def get_wf_id(crate_dir):
     ids = [_.name for _ in os.scandir(crate_dir) if _.name.endswith(".ga")]
-    assert len(ids) == 1
+    if not ids:
+        raise RuntimeError(".ga workflow file not found")
     return ids[0]
 
 
@@ -64,7 +65,8 @@ def get_planemo_id(crate_dir, wf_id):
     tag, _ = os.path.splitext(wf_id)
     planemo_id = f"{tag}-test.yml"
     planemo_source = pathlib.Path(crate_dir) / planemo_id
-    assert planemo_source.is_file()
+    if not planemo_source.is_file():
+        raise RuntimeError(".yml Planemo file not found")
     return planemo_id, planemo_source
 
 
@@ -97,16 +99,22 @@ def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
     handle_creator(code, crate, workflow)
-    workflow["name"] = code["name"]
-    workflow["version"] = code["release"]
+    workflow["name"] = code.get("name", repo_dir_entry.name)
+    try:
+        workflow["version"] = code["release"]
+    except KeyError:
+        pass
     wf_url = f"https://github.com/{target_owner}/{repo_dir_entry.name}"
     workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
-    crate.root_dataset["license"] = code["license"]
+    try:
+        crate.root_dataset["license"] = code["license"]
+    except KeyError:
+        pass
     readme_source = pathlib.Path(crate_dir) / "README.md"
-    assert readme_source.is_file()
-    crate.add_file(readme_source, "README.md")
+    if readme_source.is_file():
+        crate.add_file(readme_source, "README.md")
     suite = crate.add_test_suite(identifier="#test1")
-    crate.add_test_instance(suite, GH_URL, resource=resource,
+    crate.add_test_instance(suite, GH_API_URL, resource=resource,
                             service="github", identifier="test1_1")
     crate.add_test_definition(suite, source=planemo_source,
                               dest_path=planemo_id, engine="planemo",

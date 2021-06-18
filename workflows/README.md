@@ -18,7 +18,7 @@ The structure is as follows:
 
 ## RO-Crate Metadata
 
-At the top-level, along with the workflow category directories, there is a Python script to (re)generate the RO-Crate metadata files, and a requirements file to install its dependencies (mainly [ro-crate-py](https://github.com/ResearchObject/ro-crate-py)):
+At the top-level, along with the workflow category directories, there is a Python tool to (re)generate the RO-Crate metadata files, and a requirements file to install its dependencies (mainly [ro-crate-py](https://github.com/ResearchObject/ro-crate-py)):
 
 ```
 python3 -m venv venv
@@ -26,6 +26,20 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 python gen_crates.py sars-cov-2-variant-calling
+```
+
+The tool expects to find the workflow file and Planemo test file as described above. The `README.md` file is not expected, but it's included in the crate (i.e., listed among the metadata) if found.
+
+The following metadata is not expected, but included in the crate if found in the workflow file:
+
+* `"license"`: a string like `"MIT"`
+* `"release"`: a string like `"0.2"`
+* `"creator"`: a list of objects like:
+
+```json
+[{"class": "Person",
+  "identifier": "https://orcid.org/0000-0002-1825-0097",
+  "name": "Josiah Carberry"}]
 ```
 
 The directory also includes a bash script to zip all crates (i.e., the workflow directories with the `ro-crate-metadata.json` files) in the format required by [WorkflowHub](https://workflowhub.eu). Note that the zip files are placed alongside their corresponding crate directories.
