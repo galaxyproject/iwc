@@ -39,7 +39,8 @@ Level 2 directories are expected to contain:
 import argparse
 import json
 import os
-import pathlib
+import shutil
+from pathlib import Path
 
 # pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
@@ -64,7 +65,7 @@ def get_wf_id(crate_dir):
 def get_planemo_id(crate_dir, wf_id):
     tag, _ = os.path.splitext(wf_id)
     planemo_id = f"{tag}-test.yml"
-    planemo_source = pathlib.Path(crate_dir) / planemo_id
+    planemo_source = Path(crate_dir) / planemo_id
     if not planemo_source.is_file():
         raise RuntimeError(".yml Planemo file not found")
     return planemo_id, planemo_source
@@ -88,12 +89,12 @@ def handle_creator(ga_json, crate, workflow):
         workflow["creator"] = ro_creators
 
 
-def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
+def make_crate(repo_dir_entry, target_owner, resource, planemo_version):
     crate_dir = repo_dir_entry.path
     wf_id = get_wf_id(crate_dir)
     planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
     crate = ROCrate(gen_preview=False)
-    wf_source = pathlib.Path(crate_dir) / wf_id
+    wf_source = Path(crate_dir) / wf_id
     with open(wf_source) as f:
         code = json.load(f)
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
@@ -110,7 +111,7 @@ def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
         crate.root_dataset["license"] = code["license"]
     except KeyError:
         pass
-    readme_source = pathlib.Path(crate_dir) / "README.md"
+    readme_source = Path(crate_dir) / "README.md"
     if readme_source.is_file():
         crate.add_file(readme_source, "README.md")
     suite = crate.add_test_suite(identifier="#test1")
@@ -123,12 +124,24 @@ def process_repo(repo_dir_entry, target_owner, resource, planemo_version):
 
 
 def main(args):
+    if args.zip_dir:
+        zip_dir = Path(args.zip_dir)
+        zip_dir.mkdir(parents=True, exist_ok=True)
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for root in args.root:
         for entry in os.scandir(root):
             if not entry.is_dir():
                 continue
-            process_repo(entry, args.target_owner, resource, args.planemo_version)
+            print(f"processing {entry.path}")
+            if args.no_overwrite and (Path(entry.path) / "ro-crate-metadata.json").is_file():
+                print("  crate exists, not overwriting")
+            else:
+                make_crate(entry, args.target_owner, resource, args.planemo_version)
+            if args.zip_dir:
+                # if args.no_overwrite, zip existing crates
+                path = zip_dir / f"{entry.name}.crate"
+                archive = shutil.make_archive(path, "zip", entry.path)
+                print(f"  archived as {archive}")
 
 
 if __name__ == "__main__":
@@ -147,4 +160,8 @@ if __name__ == "__main__":
                         help="target github owner for repository deployment")
     parser.add_argument("--planemo-version", metavar="STRING", default=PLANEMO_VERSION,
                         help="planemo version required to test the workflows")
+    parser.add_argument("--zip-dir", metavar="DIR_PATH",
+                        help="create Workflow RO-Crate zip archives in this directory")
+    parser.add_argument("--no-overwrite", action="store_true",
+                        help="do not overwrite existing crates")
     main(parser.parse_args())

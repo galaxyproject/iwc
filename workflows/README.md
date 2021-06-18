@@ -42,4 +42,4 @@ The following metadata is not expected, but included in the crate if found in th
   "name": "Josiah Carberry"}]
 ```
 
-The directory also includes a bash script to zip all crates (i.e., the workflow directories with the `ro-crate-metadata.json` files) in the format required by [WorkflowHub](https://workflowhub.eu). Note that the zip files are placed alongside their corresponding crate directories.
+With `--zip-dir=DIR_PATH`, the tool will zip each crate (i.e., the workflow repository directory with the `ro-crate-metadata.json` files in it) in the format required by [WorkflowHub](https://workflowhub.eu), and place the archive under `DIR_PATH`.
