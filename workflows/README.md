@@ -9,7 +9,7 @@ The structure is as follows:
 * workflow repository directories contain:
 
   * the `.ga` workflow file, e.g., `consensus-from-variation.ga`;
-  * a [Planemo](https://github.com/galaxyproject/planemo) test file, with the same name as the workflow file, but with a `-test.yml` extension, e.g., `consensus-from-variation-test.yml`;
+  * a [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html), with the same name as the workflow file, but with a `-test.yml` extension, e.g., `consensus-from-variation-test.yml`;
   * a `test-data` directory with the test data used by Planemo;
   * a [Dockstore](https://dockstore.org) [metadata file](https://docs.dockstore.org/en/develop/getting-started/github-apps/github-apps.html#workflow-yml-file) named `.dockstore.yml`;
   * a `README.md` and a `CHANGELOG.md` file.
