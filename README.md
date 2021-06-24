@@ -1,6 +1,7 @@
 # IWC - Intergalactic Workflow Commission
 
 [![Galaxy Workflow Linting and Tests](https://github.com/galaxyproject/iwc/actions/workflows/workflow_test.yml/badge.svg?branch=main)](https://github.com/galaxyproject/iwc/actions/workflows/workflow_test.yml/badge.svg?branch=main)
+[![Gitter](https://badges.gitter.im/galaxyproject/iwc.svg)](https://gitter.im/galaxyproject/iwc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## The IWC maintains high-quality Galaxy Workflows
 
