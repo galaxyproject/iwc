@@ -95,7 +95,12 @@ With a text editor of your choice make this change:
 At this point you can commit the new files and open a pull request.
 If you are encountering difficulties at any point don't hesitate to ask for help on [gitter](https://gitter.im/galaxyproject/iwc).
 
-## RO-Crate Metadata
+## Future Plans
+
+### RO-Crate Metadata
+
+A [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) will be auto-generated after merging a workflow.
+You do not need to manually create this file, but if you want to try this today, these are the instructions:
 
 This directory, along with the workflow category directories, contains a Python tool to generate [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) metadata files (`ro-crate-metadata.json`). It also contains a requirements file to install the tool's dependencies (mainly [ro-crate-py](https://github.com/ResearchObject/ro-crate-py)):
 
