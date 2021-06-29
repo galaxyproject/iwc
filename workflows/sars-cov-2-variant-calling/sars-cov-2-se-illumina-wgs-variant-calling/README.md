@@ -1,4 +1,4 @@
-COVID-19: variation analysis on WGS PE data
+COVID-19: variation analysis on WGS SE data
 -------------------------------------------
 
 This workflows performs single end read mapping with bowtie2 followed by
