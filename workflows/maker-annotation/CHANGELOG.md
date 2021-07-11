@@ -1,3 +1,3 @@
 0.1
 ---------
-- Initial version of MAKER: annotation of eukaryotic genomes workflow
+- Initial version of Annotation of eukaryotic genomes with MAKER workflow
