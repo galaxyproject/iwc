@@ -53,6 +53,8 @@ GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
 GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = ">=0.74.4"
+PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
+PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
 
 
 def get_wf_id(crate_dir):
@@ -64,11 +66,13 @@ def get_wf_id(crate_dir):
 
 def get_planemo_id(crate_dir, wf_id):
     tag, _ = os.path.splitext(wf_id)
-    planemo_id = f"{tag}-test.yml"
-    planemo_source = Path(crate_dir) / planemo_id
-    if not planemo_source.is_file():
-        raise RuntimeError(".yml Planemo file not found")
-    return planemo_id, planemo_source
+    for suffix in PLANEMO_TEST_SUFFIXES:
+        for ext in PLANEMO_TEST_EXTENSIONS:
+            planemo_id = f"{tag}{suffix}{ext}"
+            planemo_source = Path(crate_dir) / planemo_id
+            if planemo_source.is_file():
+                return planemo_id, planemo_source
+    raise RuntimeError(f"Planemo test file not found in {crate_dir}")
 
 
 def handle_creator(ga_json, crate, workflow):
