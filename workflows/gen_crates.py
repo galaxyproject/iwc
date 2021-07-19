@@ -45,6 +45,7 @@ from pathlib import Path
 # pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
+from rocrate.model.entity import Entity
 
 # Defaults
 OWNER = "galaxyproject"
@@ -82,12 +83,19 @@ def handle_creator(ga_json, crate, workflow):
         return
     ro_creators = []
     for c in gh_creators:
-        id_ = c.get("identifier")
+        is_person = c.get("class").lower() not in {"organisation", "organization"}
+        id_ = c.get("identifier") if is_person else c.get("url")
         name = c.get("name")
         if not id_ and not name:
             continue
-        properties = {'name': name} if name else None
-        ro_creators.append(Person(crate, identifier=id_, properties=properties))
+        properties = {"name": name} if name else {}
+        if is_person:
+            creator = Person(crate, identifier=id_, properties=properties)
+        else:
+            # no explicit Organization in ro-crate-py model yet
+            properties["@type"] = "Organization"
+            creator = Entity(crate, identifier=id_, properties=properties)
+        ro_creators.append(creator)
     if ro_creators:
         crate.add(*ro_creators)
         workflow["creator"] = ro_creators
