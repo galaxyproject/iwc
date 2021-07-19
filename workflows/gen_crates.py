@@ -45,6 +45,7 @@ from pathlib import Path
 # pip install 'rocrate==0.4.0'
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
+from rocrate.model.entity import Entity
 
 # Defaults
 OWNER = "galaxyproject"
@@ -53,6 +54,8 @@ GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
 GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = ">=0.74.4"
+PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
+PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
 
 
 def get_wf_id(crate_dir):
@@ -64,11 +67,13 @@ def get_wf_id(crate_dir):
 
 def get_planemo_id(crate_dir, wf_id):
     tag, _ = os.path.splitext(wf_id)
-    planemo_id = f"{tag}-test.yml"
-    planemo_source = Path(crate_dir) / planemo_id
-    if not planemo_source.is_file():
-        raise RuntimeError(".yml Planemo file not found")
-    return planemo_id, planemo_source
+    for suffix in PLANEMO_TEST_SUFFIXES:
+        for ext in PLANEMO_TEST_EXTENSIONS:
+            planemo_id = f"{tag}{suffix}{ext}"
+            planemo_source = Path(crate_dir) / planemo_id
+            if planemo_source.is_file():
+                return planemo_id, planemo_source
+    raise RuntimeError(f"Planemo test file not found in {crate_dir}")
 
 
 def handle_creator(ga_json, crate, workflow):
@@ -78,12 +83,19 @@ def handle_creator(ga_json, crate, workflow):
         return
     ro_creators = []
     for c in gh_creators:
-        id_ = c.get("identifier")
+        is_person = c.get("class").lower() not in {"organisation", "organization"}
+        id_ = c.get("identifier") if is_person else c.get("url")
         name = c.get("name")
         if not id_ and not name:
             continue
-        properties = {'name': name} if name else None
-        ro_creators.append(Person(crate, identifier=id_, properties=properties))
+        properties = {"name": name} if name else {}
+        if is_person:
+            creator = Person(crate, identifier=id_, properties=properties)
+        else:
+            # no explicit Organization in ro-crate-py model yet
+            properties["@type"] = "Organization"
+            creator = Entity(crate, identifier=id_, properties=properties)
+        ro_creators.append(creator)
     if ro_creators:
         crate.add(*ro_creators)
         workflow["creator"] = ro_creators
