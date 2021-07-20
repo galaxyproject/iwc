@@ -102,17 +102,22 @@ If you are encountering difficulties at any point don't hesitate to ask for help
 A [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) will be auto-generated after merging a workflow.
 You do not need to manually create this file, but if you want to try this today, these are the instructions:
 
-This directory, along with the workflow category directories, contains a Python tool to generate [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) metadata files (`ro-crate-metadata.json`). It also contains a requirements file to install the tool's dependencies (mainly [ro-crate-py](https://github.com/ResearchObject/ro-crate-py)):
+This directory contains a Python tool to generate a Workflow Testing RO-Crate metadata file (`ro-crate-metadata.json`) in each workflow repository dir, along with a requirements file to install the tool's dependencies:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-python gen_crates.py sars-cov-2-variant-calling
+python gen_crates.py
 ```
 
-The tool expects to find the workflow file and Planemo test file as described above. The `README.md` file is not expected, but it's included in the crate (i.e., listed among the metadata) if found.
+Workflow repository dirs are searched for using the same logic and definition
+of repository as the `planemo ci_find_repos` command (any directory with a
+`.shed.yml` or `.dockstore.yml file`). The tool expects to find the workflow
+file and Planemo test file as described above. The `README.md` file is not
+expected, but it's included in the crate (i.e., listed among the metadata) if
+found.
 
 The following metadata is not expected, but included in the crate if found in the workflow file:
 
@@ -127,3 +132,5 @@ The following metadata is not expected, but included in the crate if found in th
 ```
 
 With `--zip-dir=DIR_PATH`, the tool will zip each crate (i.e., the workflow repository directory with the `ro-crate-metadata.json` files in it) in the format required by [WorkflowHub](https://workflowhub.eu), and place the archive under `DIR_PATH`.
+
+Run `python gen_crates.py --help` for more information on the available options.

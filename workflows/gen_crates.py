@@ -21,19 +21,16 @@
 """\
 Generate RO-Crate metadata for workflow repositories.
 
-Assumes a two-tier directory structure where:
+Workflow repositories are searched for starting from the specified root
+directories (the default is to search below the current directory). Uses the
+same searching logic and definition of repository as the ci_find_repos Planemo
+command (any directory with a .shed.yml or .dockstore.yml file).
 
-- the top-level directory represents a workflow category, e.g.,
-  `sars-cov-2-variant-calling`;
-- level 2 directories represent individual workflow repositories, e.g.,
-  `sars-cov-2-consensus-from-variation`.
+Workflow repositories are expected to contain:
 
-Level 2 directories are expected to contain:
-
-- the `.ga` workflow file, e.g., `consensus-from-variation.ga`;
-- a [Planemo](https://github.com/galaxyproject/planemo) test file with the
-  same name as the workflow file, but with a `-test.yml` extension, e.g.,
-  `consensus-from-variation-test.yml`;
+- the .ga workflow file, e.g., "consensus-from-variation.ga";
+- a Planemo test file with the same name as the workflow file, but with a
+  "-test.yml" extension, e.g., "consensus-from-variation-test.yml".
 """
 
 import argparse
@@ -42,7 +39,10 @@ import os
 import shutil
 from pathlib import Path
 
-# pip install 'rocrate==0.4.0'
+import planemo
+from planemo.context import PlanemoContext
+from planemo.shed import find_raw_repositories
+from planemo.ci import filter_paths
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
 from rocrate.model.entity import Entity
@@ -53,7 +53,7 @@ REPO = "iwc"
 GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
 GH_API_URL = "https://api.github.com"
-PLANEMO_VERSION = ">=0.74.4"
+PLANEMO_VERSION = f">={planemo.__version__}"
 PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
 PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
 
@@ -101,8 +101,7 @@ def handle_creator(ga_json, crate, workflow):
         workflow["creator"] = ro_creators
 
 
-def make_crate(repo_dir_entry, target_owner, resource, planemo_version):
-    crate_dir = repo_dir_entry.path
+def make_crate(crate_dir, target_owner, resource, planemo_version):
     wf_id = get_wf_id(crate_dir)
     planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
     crate = ROCrate(gen_preview=False)
@@ -112,12 +111,12 @@ def make_crate(repo_dir_entry, target_owner, resource, planemo_version):
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
     handle_creator(code, crate, workflow)
-    workflow["name"] = code.get("name", repo_dir_entry.name)
+    workflow["name"] = code.get("name", crate_dir.name)
     try:
         workflow["version"] = code["release"]
     except KeyError:
         pass
-    wf_url = f"https://github.com/{target_owner}/{repo_dir_entry.name}"
+    wf_url = f"https://github.com/{target_owner}/{crate_dir.name}"
     workflow["url"] = crate.root_dataset["isBasedOn"] = wf_url
     try:
         crate.root_dataset["license"] = code["license"]
@@ -135,25 +134,34 @@ def make_crate(repo_dir_entry, target_owner, resource, planemo_version):
     crate.metadata.write(crate_dir)
 
 
+def find_repos(paths, exclude=()):
+    """\
+    Find all workflow directories below each path in ``paths``.
+
+    Same as ``planemo ci_find_repos``.
+    """
+    ctx = PlanemoContext()
+    kwargs = dict(recursive=True, fail_fast=True, chunk_count=1, chunk=0, exclude=exclude)
+    raw_repos = [_.path for _ in find_raw_repositories(ctx, paths, **kwargs)]
+    return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
+
+
 def main(args):
     if args.zip_dir:
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
-    for root in args.root:
-        for entry in os.scandir(root):
-            if not entry.is_dir():
-                continue
-            print(f"processing {entry.path}")
-            if args.no_overwrite and (Path(entry.path) / "ro-crate-metadata.json").is_file():
-                print("  crate exists, not overwriting")
-            else:
-                make_crate(entry, args.target_owner, resource, args.planemo_version)
-            if args.zip_dir:
-                # if args.no_overwrite, zip existing crates
-                path = zip_dir / f"{entry.name}.crate"
-                archive = shutil.make_archive(path, "zip", entry.path)
-                print(f"  archived as {archive}")
+    for repo in find_repos(args.root, exclude=args.exclude):
+        print(f"processing {repo}")
+        if args.no_overwrite and (repo / "ro-crate-metadata.json").is_file():
+            print("  crate exists, not overwriting")
+        else:
+            make_crate(repo, args.target_owner, resource, args.planemo_version)
+        if args.zip_dir:
+            # if args.no_overwrite, zip existing crates
+            path = zip_dir / f"{repo.name}.crate"
+            archive = shutil.make_archive(path, "zip", repo)
+            print(f"  archived as {archive}")
 
 
 if __name__ == "__main__":
@@ -162,6 +170,8 @@ if __name__ == "__main__":
     )
     parser.add_argument("root", metavar="ROOT_DIR", help="top-level directory",
                         nargs="*", default=[os.getcwd()])
+    parser.add_argument("--exclude", metavar="PATH", nargs="*", default=(),
+                        help="paths to exclude while searching for workflow repos")
     parser.add_argument("--owner", metavar="STRING", default=OWNER,
                         help="owner of the github workflow that runs the tests")
     parser.add_argument("--repo", metavar="STRING", default=REPO,
