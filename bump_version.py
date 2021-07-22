@@ -60,7 +60,7 @@ from planemo.context import PlanemoContext
 from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
 
-
+DATE_FMT = "%Y-%m-%d"
 NEW_LOG_ENTRY = string.Template("""\
 ## [${version}] ${date}
 
@@ -76,10 +76,10 @@ def get_wf_id(repo_dir):
     return ids[0]
 
 
-def update_changelog(changelog, md, version, msg):
+def update_changelog(changelog, md, version, msg, date=datetime.date.today()):
     with open(changelog, "rt") as f:
         tree = md.parse(f.read())
-    date = datetime.date.today().strftime("%Y-%m-%d")
+    date = date.strftime(DATE_FMT)
     entry = NEW_LOG_ENTRY.substitute(version=version, date=date, msg=msg)
     entry_tree = marko.block.Document(entry)
     for ins_pos, elem in enumerate(tree.children):
@@ -122,12 +122,16 @@ def find_repos(paths, exclude=()):
 def main(args):
     if not args.msg:
         args.msg = f"Version {args.version}"
+    if args.date:
+        args.date = datetime.datetime.strptime(args.date, DATE_FMT)
+    else:
+        args.date = datetime.date.today()
     md = marko.Markdown(renderer=MarkdownRenderer)
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
         wf_id = get_wf_id(repo)
         update_workflow(repo / wf_id, args.version)
-        update_changelog(repo / "CHANGELOG.md", md, args.version, args.msg)
+        update_changelog(repo / "CHANGELOG.md", md, args.version, args.msg, date=args.date)
 
 
 if __name__ == "__main__":
@@ -141,4 +145,5 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--version", metavar="STRING", default="0.1",
                         help="new workflow version")
     parser.add_argument("-m", "--msg", metavar="STRING", help="log message")
+    parser.add_argument("-d", "--date", metavar="STRING", help="log date as YYYY-MM-DD")
     main(parser.parse_args())
