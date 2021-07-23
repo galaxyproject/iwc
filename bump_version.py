@@ -61,8 +61,11 @@ from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
 
 DATE_FMT = "%Y-%m-%d"
+ENTRY_TYPES = "Added", "Changed", "Fixed"
 NEW_LOG_ENTRY = string.Template("""\
 ## [${version}] ${date}
+
+### ${entry_type}
 
 ${msg}
 
@@ -76,11 +79,13 @@ def get_wf_id(repo_dir):
     return ids[0]
 
 
-def update_changelog(changelog, md, version, msg, date=datetime.date.today()):
+def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
+                     entry_type="Changed"):
     with open(changelog, "rt") as f:
         tree = md.parse(f.read())
     date = date.strftime(DATE_FMT)
-    entry = NEW_LOG_ENTRY.substitute(version=version, date=date, msg=msg)
+    entry = NEW_LOG_ENTRY.substitute(version=version, date=date, msg=msg,
+                                     entry_type=entry_type)
     entry_tree = marko.block.Document(entry)
     for ins_pos, elem in enumerate(tree.children):
         if isinstance(elem, marko.block.Heading) and elem.level == 2:
@@ -131,7 +136,8 @@ def main(args):
         print(f"processing {repo}")
         wf_id = get_wf_id(repo)
         update_workflow(repo / wf_id, args.version)
-        update_changelog(repo / "CHANGELOG.md", md, args.version, args.msg, date=args.date)
+        update_changelog(repo / "CHANGELOG.md", md, args.version, args.msg, date=args.date,
+                         entry_type=args.entry_type)
 
 
 if __name__ == "__main__":
@@ -146,4 +152,6 @@ if __name__ == "__main__":
                         help="new workflow version")
     parser.add_argument("-m", "--msg", metavar="STRING", help="log message")
     parser.add_argument("-d", "--date", metavar="STRING", help="log date as YYYY-MM-DD")
+    parser.add_argument("-t", "--entry-type", metavar="|".join(ENTRY_TYPES),
+                        choices=ENTRY_TYPES, default="Changed", help="log entry type")
     main(parser.parse_args())
