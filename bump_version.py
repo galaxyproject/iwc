@@ -86,6 +86,23 @@ BUMP_CHOICES = list(Bump.__members__)  # includes aliases
 BUMP_METAVAR = "|".join(_.name for _ in Bump)  # does not include aliases
 
 
+class Renderer(MarkdownRenderer):
+    """\
+    A Markdown renderer that indents all lines in a paragraph.
+    """
+    def render_paragraph(self, element):
+        new_line = False
+        rendered = []
+        for child in element.children:
+            prefix = self._second_prefix if new_line else ""
+            rendered.append(prefix + self.render(child))
+            new_line = isinstance(child, marko.inline.LineBreak)
+        children = "".join(rendered)
+        line = self._prefix + children + "\n"
+        self._prefix = self._second_prefix
+        return line
+
+
 def get_new_release(rel, bump=Bump.MICRO):
     if len(rel) == 1 and bump is Bump.MINOR or len(rel) == 2 and bump is Bump.MICRO:
         return rel + (1,)
@@ -177,7 +194,7 @@ def main(args):
     else:
         args.date = datetime.date.today()
     args.bump = Bump[args.bump]
-    md = marko.Markdown(renderer=MarkdownRenderer)
+    md = marko.Markdown(renderer=Renderer)
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
         wf_id = get_wf_id(repo)
