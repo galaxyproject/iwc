@@ -52,10 +52,12 @@ import json
 import os
 import re
 import string
+from enum import Enum
 from pathlib import Path
 
 import marko
 from marko.md_renderer import MarkdownRenderer
+from packaging.version import parse as vparse, Version, LegacyVersion
 from planemo.context import PlanemoContext
 from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
@@ -70,6 +72,46 @@ NEW_LOG_ENTRY = string.Template("""\
 ${msg}
 
 """)
+
+
+class Bump(Enum):
+    MAJOR = "major"
+    MINOR = "minor"
+    MICRO = "micro"  # PEP 440
+    PATCH = "micro"  # Semantic Versioning
+
+
+# Allow "PATCH" alias, but leave it out of the help text to avoid confusion
+BUMP_CHOICES = list(Bump.__members__)  # includes aliases
+BUMP_METAVAR = "|".join(_.name for _ in Bump)  # does not include aliases
+
+
+def get_new_release(rel, bump=Bump.MICRO):
+    if len(rel) == 1 and bump is Bump.MINOR or len(rel) == 2 and bump is Bump.MICRO:
+        return rel + (1,)
+    if len(rel) == 1 and bump is Bump.MICRO:
+        return rel + (0, 1)
+    return tuple(r + 1 if bump is b else r for r, b in zip(rel, Bump))
+
+
+def vbump(version, bump=Bump.MICRO):
+    if not isinstance(version, (Version, LegacyVersion)):
+        version = vparse(version)
+    new_release = get_new_release(version.release, bump)
+    # same as packaging.version.Version.__str__, but release is the new one
+    parts = []
+    if version.epoch != 0:
+        parts.append(f"{version.epoch}!")
+    parts.append(".".join(str(x) for x in new_release))
+    if version.pre is not None:
+        parts.append("".join(str(x) for x in version.pre))
+    if version.post is not None:
+        parts.append(f".post{version.post}")
+    if version.dev is not None:
+        parts.append(f".dev{version.dev}")
+    if version.local is not None:
+        parts.append(f"+{version.local}")
+    return "".join(parts)
 
 
 def get_wf_id(repo_dir):
@@ -97,7 +139,7 @@ def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
         f.write(md.render(tree))
 
 
-def update_workflow(workflow, version):
+def update_workflow(workflow, version=None, bump=None):
     with open(workflow, "rt") as f:
         txt = f.read()
     code = json.loads(txt)
@@ -105,11 +147,16 @@ def update_workflow(workflow, version):
         old_version = code["release"]
     except KeyError:
         raise RuntimeError(f'{workflow} does not have a "release" metadata entry')
+    if not version:
+        if not old_version:
+            raise RuntimeError(f'{workflow}: "release" metadata entry is empty')
+        version = vbump(old_version, bump=bump)
     # no json tools for the update (we'd get a huge diff due to whitespace change)
     pattern = fr'"release":\s*"{old_version}"'
     repl = f'"release": "{version}"'
     with open(workflow, "wt") as f:
         f.write(re.sub(pattern, repl, txt, 1))
+    return version
 
 
 def find_repos(paths, exclude=()):
@@ -125,18 +172,18 @@ def find_repos(paths, exclude=()):
 
 
 def main(args):
-    if not args.msg:
-        args.msg = f"Version {args.version}"
     if args.date:
         args.date = datetime.datetime.strptime(args.date, DATE_FMT)
     else:
         args.date = datetime.date.today()
+    args.bump = Bump[args.bump]
     md = marko.Markdown(renderer=MarkdownRenderer)
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
         wf_id = get_wf_id(repo)
-        update_workflow(repo / wf_id, args.version)
-        update_changelog(repo / "CHANGELOG.md", md, args.version, args.msg, date=args.date,
+        version = update_workflow(repo / wf_id, version=args.version, bump=args.bump)
+        msg = args.msg or f"Update for version {version}."
+        update_changelog(repo / "CHANGELOG.md", md, version, msg, date=args.date,
                          entry_type=args.entry_type)
 
 
@@ -148,10 +195,12 @@ if __name__ == "__main__":
                         nargs="*", default=[os.getcwd()])
     parser.add_argument("--exclude", metavar="PATH", nargs="*", default=(),
                         help="paths to exclude while searching for workflow repos")
-    parser.add_argument("-v", "--version", metavar="STRING", default="0.1",
-                        help="new workflow version")
+    parser.add_argument("-v", "--version", metavar="STRING",
+                        help="set new workflow version to this value (ignores '-b')")
     parser.add_argument("-m", "--msg", metavar="STRING", help="log message")
     parser.add_argument("-d", "--date", metavar="STRING", help="log date as YYYY-MM-DD")
     parser.add_argument("-t", "--entry-type", metavar="|".join(ENTRY_TYPES),
                         choices=ENTRY_TYPES, default="Changed", help="log entry type")
+    parser.add_argument("-b", "--bump", metavar=BUMP_METAVAR, choices=BUMP_CHOICES,
+                        default="MICRO", help="version part to bump")
     main(parser.parse_args())
