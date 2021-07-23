@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] 2021-07-23
+
+### Added
+
+Added RO-Crate metadata file. No functional changes.
+
 ## [0.2] - 2021-04-30
 ### Changed
 - Lower the default for consensus variant allele frequency threshold to 0.7
@@ -23,7 +29,6 @@
 - Generally, each consensus sequence is now guaranteed to capture all consensus
   variants of its samples as stated in the README, independent of it residing
   in low-coverage regions or not.
-
 
 ## [0.1]
 

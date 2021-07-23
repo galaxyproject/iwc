@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] 2021-07-23
+
+### Added
+
+Added RO-Crate metadata file. No functional changes.
+
 ## [0.2]
 
 - Apply the strand-bias filter only after variant annotation with snpEff. By

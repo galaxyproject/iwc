@@ -1,11 +1,16 @@
 # Changelog
 
+## [0.4.1] 2021-07-23
+
+### Added
+
+Added RO-Crate metadata file. No functional changes.
+
 ## [0.4] - 2021-06-16
 
 ### Changed
 
 - Upgrade multiqc to 1.9+galaxy1
-
 
 ## [0.3] - 2021-05-19
 
