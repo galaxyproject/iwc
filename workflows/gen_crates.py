@@ -37,9 +37,11 @@ import argparse
 import json
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
 import planemo
+import requests
 from planemo.context import PlanemoContext
 from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
@@ -56,6 +58,8 @@ GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = f">={planemo.__version__}"
 PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
 PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
+HUB_URL = "https://workflowhub.eu"
+HUB_API_KEY = os.getenv("HUB_API_KEY")
 
 
 def get_wf_id(crate_dir):
@@ -146,7 +150,52 @@ def find_repos(paths, exclude=()):
     return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
 
 
+def upload_crate(crate_archive, proj_id, hub_url=HUB_URL):
+    # TODO: create new version if workflow exists
+    if not HUB_API_KEY:
+        raise RuntimeError("No API key set")
+    headers = {"authorization": f"Token {HUB_API_KEY}"}
+    with open(crate_archive, "rb") as f:
+        payload = {
+            "ro_crate": (Path(crate_archive).name, f),
+            "workflow[project_ids][]": (None, proj_id)
+        }
+        r = requests.post(hub_url + "/workflows", headers=headers, payload=payload)
+    r.raise_for_status()
+    # update access policy
+    wf_id = r.json()["data"]["id"]
+    headers.update({
+        "Content-type": "application/vnd.api+json",
+        "Accept": "application/vnd.api+json",
+        "Accept-Charset": "ISO-8859-1",
+    })
+    payload = {
+        "data": {
+            "id": wf_id,
+            "type": "workflows",
+            "attributes": {
+                "policy": {
+                    "access": "download",
+                    "permissions": [
+                        {
+                            "resource": {"id": proj_id, "type": "projects"},
+                            "access": "edit"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+    r = requests.patch(hub_url + f"/workflows/{wf_id}", headers=headers, json=payload)
+    r.raise_for_status()
+    return r.json()
+
+
 def main(args):
+    junk = []
+    if args.upload and not args.zip_dir:
+        args.zip_dir = tempfile.mkdtemp(prefix="iwc_")
+        junk.append(args.zip_dir)
     if args.zip_dir:
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
@@ -162,6 +211,12 @@ def main(args):
             path = zip_dir / f"{repo.name}.crate"
             archive = shutil.make_archive(path, "zip", repo)
             print(f"  archived as {archive}")
+            if args.upload:
+                proj_id = "33"  # FIXME
+                resp = upload_crate(archive, proj_id, hub_url=args.hub_url)
+                print(f"  uploaded (id = {resp['data']['id']})")
+    for d in junk:
+        shutil.rmtree(d)
 
 
 if __name__ == "__main__":
@@ -186,4 +241,7 @@ if __name__ == "__main__":
                         help="create Workflow RO-Crate zip archives in this directory")
     parser.add_argument("--no-overwrite", action="store_true",
                         help="do not overwrite existing crates")
+    parser.add_argument("--upload", action="store_true", help="upload crates to WorkflowHub")
+    parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
+                        help="WorkflowHub URL for crate upload")
     main(parser.parse_args())
