@@ -42,14 +42,18 @@ from pathlib import Path
 
 import planemo
 import requests
+import yaml
 from planemo.context import PlanemoContext
 from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
 from rocrate.model.entity import Entity
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
-# Defaults
 OWNER = "galaxyproject"
 REPO = "iwc"
 GH_WORKFLOW = "workflow_test.yml"
@@ -60,6 +64,8 @@ PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
 PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
 HUB_URL = "https://workflowhub.eu"
 HUB_API_KEY = os.getenv("HUB_API_KEY")
+HUB_CFG_NAME = ".workflowhub.yml"
+HUB_CFG_VERSION = "0.1"
 
 
 def get_wf_id(crate_dir):
@@ -150,19 +156,23 @@ def find_repos(paths, exclude=()):
     return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
 
 
-def upload_crate(crate_archive, proj_id, hub_url=HUB_URL):
-    # TODO: create new version if workflow exists
+def upload_crate(crate_archive, proj_id, hub_url=HUB_URL, wf_id=None):
     if not HUB_API_KEY:
-        raise RuntimeError("No API key set")
+        raise RuntimeError("API key not found. Set the HUB_API_KEY environment variable")
+    endpoint = f"{hub_url}/workflows"
+    if wf_id:
+        endpoint = f"{endpoint}/{wf_id}/create_version"
     headers = {"authorization": f"Token {HUB_API_KEY}"}
     with open(crate_archive, "rb") as f:
         payload = {
             "ro_crate": (Path(crate_archive).name, f),
             "workflow[project_ids][]": (None, proj_id)
         }
-        r = requests.post(hub_url + "/workflows", headers=headers, payload=payload)
+        r = requests.post(endpoint, headers=headers, files=payload)
     r.raise_for_status()
-    # update access policy
+    if wf_id:
+        return r.json()
+    # new workflow - update access policy
     wf_id = r.json()["data"]["id"]
     headers.update({
         "Content-type": "application/vnd.api+json",
@@ -191,6 +201,26 @@ def upload_crate(crate_archive, proj_id, hub_url=HUB_URL):
     return r.json()
 
 
+def get_proj_and_wf(repo_dir, hub_url=HUB_URL):
+    cfg_path = Path(repo_dir) / HUB_CFG_NAME
+    if not cfg_path.is_file():
+        raise RuntimeError(f"{cfg_path} not found")
+    with open(cfg_path, "rt") as f:
+        cfg = yaml.load(f, Loader=Loader)
+    assert str(cfg["version"]) == HUB_CFG_VERSION
+    sel = [_ for _ in cfg["registries"] if _["url"].rstrip("/") == hub_url.rstrip("/")]
+    if not sel:
+        raise RuntimeError(f"no entry for {hub_url} in {cfg_path}")
+    entry = sel[0]
+    return entry.get("project"), entry.get("workflow")
+
+
+def get_hub_link(hub_api_wf_json):
+    attrs = hub_api_wf_json["data"]["attributes"]
+    vmap = {_["version"]: _["url"] for _ in attrs["versions"]}
+    return vmap[attrs["latest_version"]]
+
+
 def main(args):
     junk = []
     if args.upload and not args.zip_dir:
@@ -199,6 +229,7 @@ def main(args):
     if args.zip_dir:
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
+    args.hub_url = args.hub_url.rstrip("/")
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
@@ -212,9 +243,13 @@ def main(args):
             archive = shutil.make_archive(path, "zip", repo)
             print(f"  archived as {archive}")
             if args.upload:
-                proj_id = "33"  # FIXME
-                resp = upload_crate(archive, proj_id, hub_url=args.hub_url)
-                print(f"  uploaded (id = {resp['data']['id']})")
+                proj_id, wf_id = get_proj_and_wf(repo, hub_url=args.hub_url)
+                if args.hub_team_id:
+                    proj_id = args.hub_team_id
+                if proj_id is None:
+                    raise RuntimeError(f"no WorkflowHub team specified for {args.hub_url}")
+                resp = upload_crate(archive, proj_id, hub_url=args.hub_url, wf_id=wf_id)
+                print(f"  uploaded as {get_hub_link(resp)}")
     for d in junk:
         shutil.rmtree(d)
 
@@ -244,4 +279,6 @@ if __name__ == "__main__":
     parser.add_argument("--upload", action="store_true", help="upload crates to WorkflowHub")
     parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
                         help="WorkflowHub URL for crate upload")
+    parser.add_argument("--hub-team-id", metavar="STRING",
+                        help="WorkflowHub team id (default: get from .workflowhub.yml)")
     main(parser.parse_args())
