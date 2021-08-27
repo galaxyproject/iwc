@@ -74,7 +74,98 @@ HUB_API_HTTP_HEADERS = {
 DOCKSTORE_CFG_NAME = ".dockstore.yml"
 DOCKSTORE_CFG_VERSION = "1.2"
 
-_WF_CACHE = {}
+
+class HubClient:
+
+    def __init__(self, base_url=HUB_URL, api_key=HUB_API_KEY):
+        if not api_key:
+            raise RuntimeError("No API key set. Please set the HUB_API_KEY environment variable")
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({"authorization": f"Token {api_key}"})
+        self._proj_map = {}
+        self._wf_maps = {}
+
+    def resolve_proj(self, proj_name):
+        try:
+            return self._proj_map[proj_name]
+        except KeyError:
+            r = self.session.get(f"{self.base_url}/projects", headers=HUB_API_HTTP_HEADERS)
+            r.raise_for_status()
+            sel = [_["id"] for _ in r.json()['data'] if _["attributes"]["title"] == proj_name]
+            if not sel:
+                raise RuntimeError(f'"{proj_name}" project not found on {self.base_url}')
+            assert len(sel) == 1
+            proj_id = sel[0]
+            self._proj_map[proj_name] = proj_id
+            return proj_id
+
+    def resolve_wf(self, proj_id, wf_name):
+        try:
+            m = self._wf_maps[proj_id]
+        except KeyError:
+            m = {}
+            r = self.session.get(f"{self.base_url}/projects/{proj_id}", headers=HUB_API_HTTP_HEADERS)
+            r.raise_for_status()
+            wf_ids = [_["id"] for _ in r.json()["data"]["relationships"]["workflows"]["data"]]
+            for wf_id in wf_ids:
+                r = self.session.get(f"{self.base_url}/workflows/{wf_id}", headers=HUB_API_HTTP_HEADERS)
+                r.raise_for_status()
+                wf = r.json()["data"]
+                m[wf["attributes"]["title"]] = wf["id"]
+            self._wf_maps[proj_id] = m
+        return m.get(wf_name)
+
+    def upload_crate(self, crate, proj_id, wf_id=None):
+        endpoint = f"{self.base_url}/workflows"
+        if wf_id:
+            endpoint = f"{endpoint}/{wf_id}/create_version"
+        with open(crate, "rb") as f:
+            payload = {
+                "ro_crate": (Path(crate).name, f),
+                "workflow[project_ids][]": (None, proj_id)
+            }
+            r = self.session.post(endpoint, files=payload)
+        r.raise_for_status()
+        return r
+
+    def update_wf_name(self, wf_id, wf_name):
+        payload = {
+            "data": {
+                "id": wf_id,
+                "type": "workflows",
+                "attributes": {
+                    "title": wf_name
+                }
+            }
+        }
+        r = self.session.patch(f"{self.base_url}/workflows/{wf_id}", json=payload,
+                               headers=HUB_API_HTTP_HEADERS)
+        r.raise_for_status()
+        return r
+
+    def update_wf_access(self, wf_id, proj_id):
+        payload = {
+            "data": {
+                "id": wf_id,
+                "type": "workflows",
+                "attributes": {
+                    "policy": {
+                        "access": "download",
+                        "permissions": [
+                            {
+                                "resource": {"id": proj_id, "type": "projects"},
+                                "access": "edit"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        r = self.session.patch(f"{self.base_url}/workflows/{wf_id}", json=payload,
+                               headers=HUB_API_HTTP_HEADERS)
+        r.raise_for_status()
+        return r
 
 
 def get_wf_id(crate_dir):
@@ -177,61 +268,6 @@ def find_repos(paths, exclude=()):
     return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
 
 
-def upload_crate(crate_archive, proj_id, hub_url=HUB_URL, wf_id=None, wf_name=None):
-    if not HUB_API_KEY:
-        raise RuntimeError("API key not found. Set the HUB_API_KEY environment variable")
-    endpoint = f"{hub_url}/workflows"
-    if wf_id:
-        endpoint = f"{endpoint}/{wf_id}/create_version"
-    headers = {"authorization": f"Token {HUB_API_KEY}"}
-    with open(crate_archive, "rb") as f:
-        payload = {
-            "ro_crate": (Path(crate_archive).name, f),
-            "workflow[project_ids][]": (None, proj_id)
-        }
-        r = requests.post(endpoint, headers=headers, files=payload)
-    r.raise_for_status()
-    # update name
-    headers.update(HUB_API_HTTP_HEADERS)
-    id_ = r.json()["data"]["id"]
-    if wf_name and wf_name != r.json()["data"]["attributes"]["title"]:
-        payload = {
-            "data": {
-                "id": id_,
-                "type": "workflows",
-                "attributes": {
-                    "title": wf_name
-                }
-            }
-        }
-        r = requests.patch(f"{hub_url}/workflows/{id_}", headers=headers, json=payload)
-        r.raise_for_status()
-    if wf_id:
-        return r.json()
-    # new workflow - update access policy
-    wf_id = r.json()["data"]["id"]
-    payload = {
-        "data": {
-            "id": wf_id,
-            "type": "workflows",
-            "attributes": {
-                "policy": {
-                    "access": "download",
-                    "permissions": [
-                        {
-                            "resource": {"id": proj_id, "type": "projects"},
-                            "access": "edit"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-    r = requests.patch(hub_url + f"/workflows/{wf_id}", headers=headers, json=payload)
-    r.raise_for_status()
-    return r.json()
-
-
 def get_proj_and_wf(repo_dir, hub_url=HUB_URL):
     cfg_path = Path(repo_dir) / HUB_CFG_NAME
     if not cfg_path.is_file():
@@ -244,38 +280,6 @@ def get_proj_and_wf(repo_dir, hub_url=HUB_URL):
         raise RuntimeError(f"no entry for {hub_url} in {cfg_path}")
     entry = sel[0]
     return entry.get("project"), entry.get("workflow")
-
-
-def resolve_wf(proj_id, workflow_name, hub_url=HUB_URL):
-    try:
-        m = _WF_CACHE[(hub_url, proj_id)]
-    except KeyError:
-        m = {}
-        r = requests.get(f"{hub_url}/projects/{proj_id}", headers=HUB_API_HTTP_HEADERS)
-        r.raise_for_status()
-        proj = r.json()["data"]
-        iwc_wf_ids = [_["id"] for _ in proj["relationships"]["workflows"]["data"]]
-        for wf_id in iwc_wf_ids:
-            r = requests.get(f"{hub_url}/workflows/{wf_id}", headers=HUB_API_HTTP_HEADERS)
-            r.raise_for_status()
-            wf = r.json()["data"]
-            m[wf["attributes"]["title"]] = wf["id"]
-            _WF_CACHE[(hub_url, proj_id)] = m
-    return m.get(workflow_name)
-
-
-def resolve_proj_and_wf(project_name, workflow_name, hub_url=HUB_URL):
-    # TODO: cache projects
-    r = requests.get(f"{hub_url}/projects", headers=HUB_API_HTTP_HEADERS)
-    r.raise_for_status()
-    projects = r.json()['data']
-    sel = [_["id"] for _ in projects if _["attributes"]["title"] == project_name]
-    if not sel:
-        raise RuntimeError(f"{project_name} not found on {hub_url}")
-    assert len(sel) == 1
-    proj_id = sel[0]
-    wf_id = resolve_wf(proj_id, workflow_name, hub_url=hub_url)
-    return proj_id, wf_id
 
 
 def get_hub_link(hub_api_wf_json):
@@ -293,6 +297,8 @@ def main(args):
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
     args.hub_url = args.hub_url.rstrip("/")
+    if args.upload:
+        client = HubClient(base_url=args.hub_url)
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
@@ -311,9 +317,16 @@ def main(args):
                     proj_name = args.hub_team
                 if proj_name is None:
                     raise RuntimeError(f"no WorkflowHub team specified for {args.hub_url}")
-                proj_id, wf_id = resolve_proj_and_wf(proj_name, wf_name, hub_url=args.hub_url)
-                resp = upload_crate(archive, proj_id, hub_url=args.hub_url, wf_id=wf_id, wf_name=wf_name)
-                print(f"  uploaded as {get_hub_link(resp)}")
+                proj_id = client.resolve_proj(proj_name)
+                wf_id = client.resolve_wf(proj_id, wf_name)
+                new_workflow = not wf_id
+                r = client.upload_crate(archive, proj_id, wf_id=wf_id)
+                wf_id = r.json()["data"]["id"]
+                if new_workflow:
+                    r = client.update_wf_access(wf_id, proj_id)
+                if wf_name and wf_name != r.json()["data"]["attributes"]["title"]:
+                    client.update_wf_name(wf_id, wf_name)
+                print(f"  uploaded as {get_hub_link(r.json())}")
     for d in junk:
         shutil.rmtree(d)
 
@@ -344,5 +357,5 @@ if __name__ == "__main__":
     parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
                         help="WorkflowHub URL for crate upload")
     parser.add_argument("--hub-team", metavar="STRING",
-                        help="WorkflowHub team (default: get from .workflowhub.yml)")
+                        help="WorkflowHub team for crate upload (default: get from .workflowhub.yml)")
     main(parser.parse_args())
