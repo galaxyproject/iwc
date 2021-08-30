@@ -83,7 +83,8 @@ class HubClient:
         self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update({"authorization": f"Token {api_key}"})
-        self._proj_map = {}
+        self._wf_id_to_name = {_["id"]: _["attributes"]["title"] for _ in self.get("/workflows")}
+        self._proj_map = {_["attributes"]["title"]: _["id"] for _ in self.get("/projects")}
         self._wf_maps = {}
 
     def request(self, method, endpoint, payload=None):
@@ -113,30 +114,15 @@ class HubClient:
         try:
             return self._proj_map[proj_name]
         except KeyError:
-            data = self.get("/projects")
-            sel = [_["id"] for _ in data if _["attributes"]["title"] == proj_name]
-            if not sel:
-                raise RuntimeError(f'"{proj_name}" project not found on {self.base_url}')
-            assert len(sel) == 1
-            proj_id = sel[0]
-            self._proj_map[proj_name] = proj_id
-            return proj_id
+            raise RuntimeError(f'"{proj_name}" project not found on {self.base_url}')
 
     def resolve_wf(self, proj_id, wf_name):
         try:
             m = self._wf_maps[proj_id]
         except KeyError:
-            m = {}
             data = self.get(f"/projects/{proj_id}")
             wf_ids = [_["id"] for _ in data["relationships"]["workflows"]["data"]]
-            for wf_id in wf_ids:
-                try:
-                    data = self.get(f"/workflows/{wf_id}")
-                except requests.HTTPError as e:
-                    if e.response.status_code in {403, 500}:
-                        continue
-                m[data["attributes"]["title"]] = data["id"]
-            self._wf_maps[proj_id] = m
+            self._wf_maps[proj_id] = m = {self._wf_id_to_name[_]: _ for _ in wf_ids}
         return m.get(wf_name)
 
     def upload_crate(self, crate, proj_id, wf_id=None):
