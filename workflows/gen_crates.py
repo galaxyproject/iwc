@@ -316,10 +316,10 @@ def main(args):
             print(f"  archived as {archive}")
             if args.upload:
                 proj_name, wf_name = get_proj_and_wf(repo, hub_url=args.hub_url)
-                if args.hub_team:
-                    proj_name = args.hub_team
+                if args.hub_project:
+                    proj_name = args.hub_project
                 if proj_name is None:
-                    raise RuntimeError(f"no WorkflowHub team specified for {args.hub_url}")
+                    raise RuntimeError(f"no WorkflowHub project specified for {args.hub_url}")
                 proj_id = client.resolve_proj(proj_name)
                 wf_id = client.resolve_wf(proj_id, wf_name)
                 new_workflow = not wf_id
@@ -359,6 +359,6 @@ if __name__ == "__main__":
     parser.add_argument("--upload", action="store_true", help="upload crates to WorkflowHub")
     parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
                         help="WorkflowHub URL for crate upload")
-    parser.add_argument("--hub-team", metavar="STRING",
-                        help="WorkflowHub team for crate upload (default: get from .workflowhub.yml)")
+    parser.add_argument("--hub-project", metavar="STRING",
+                        help="WorkflowHub project for crate upload (default: get from .workflowhub.yml)")
     main(parser.parse_args())
