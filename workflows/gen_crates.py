@@ -86,13 +86,35 @@ class HubClient:
         self._proj_map = {}
         self._wf_maps = {}
 
+    def request(self, method, endpoint, payload=None):
+        kwargs = {"headers": HUB_API_HTTP_HEADERS}
+        if payload:
+            kwargs["json"] = payload
+        r = self.session.request(method, self.base_url + endpoint, **kwargs)
+        r.raise_for_status()
+        return r.json()["data"]
+
+    def get(self, endpoint, payload=None):
+        return self.request("GET", endpoint, payload=payload)
+
+    def post(self, endpoint, payload=None):
+        return self.request("POST", endpoint, payload=payload)
+
+    def put(self, endpoint, payload=None):
+        return self.request("PUT", endpoint, payload=payload)
+
+    def patch(self, endpoint, payload=None):
+        return self.request("PATCH", endpoint, payload=payload)
+
+    def delete(self, endpoint, payload=None):
+        return self.request("DELETE", endpoint, payload=payload)
+
     def resolve_proj(self, proj_name):
         try:
             return self._proj_map[proj_name]
         except KeyError:
-            r = self.session.get(f"{self.base_url}/projects", headers=HUB_API_HTTP_HEADERS)
-            r.raise_for_status()
-            sel = [_["id"] for _ in r.json()['data'] if _["attributes"]["title"] == proj_name]
+            data = self.get("/projects")
+            sel = [_["id"] for _ in data if _["attributes"]["title"] == proj_name]
             if not sel:
                 raise RuntimeError(f'"{proj_name}" project not found on {self.base_url}')
             assert len(sel) == 1
@@ -105,14 +127,15 @@ class HubClient:
             m = self._wf_maps[proj_id]
         except KeyError:
             m = {}
-            r = self.session.get(f"{self.base_url}/projects/{proj_id}", headers=HUB_API_HTTP_HEADERS)
-            r.raise_for_status()
-            wf_ids = [_["id"] for _ in r.json()["data"]["relationships"]["workflows"]["data"]]
+            data = self.get(f"/projects/{proj_id}")
+            wf_ids = [_["id"] for _ in data["relationships"]["workflows"]["data"]]
             for wf_id in wf_ids:
-                r = self.session.get(f"{self.base_url}/workflows/{wf_id}", headers=HUB_API_HTTP_HEADERS)
-                r.raise_for_status()
-                wf = r.json()["data"]
-                m[wf["attributes"]["title"]] = wf["id"]
+                try:
+                    data = self.get(f"/workflows/{wf_id}")
+                except requests.HTTPError as e:
+                    if e.response.status_code in {403, 500}:
+                        continue
+                m[data["attributes"]["title"]] = data["id"]
             self._wf_maps[proj_id] = m
         return m.get(wf_name)
 
@@ -127,7 +150,7 @@ class HubClient:
             }
             r = self.session.post(endpoint, files=payload)
         r.raise_for_status()
-        return r
+        return r.json()["data"]
 
     def update_wf_name(self, wf_id, wf_name):
         payload = {
@@ -139,10 +162,7 @@ class HubClient:
                 }
             }
         }
-        r = self.session.patch(f"{self.base_url}/workflows/{wf_id}", json=payload,
-                               headers=HUB_API_HTTP_HEADERS)
-        r.raise_for_status()
-        return r
+        return self.patch(f"/workflows/{wf_id}", payload=payload)
 
     def update_wf_access(self, wf_id, proj_id):
         payload = {
@@ -162,10 +182,7 @@ class HubClient:
                 }
             }
         }
-        r = self.session.patch(f"{self.base_url}/workflows/{wf_id}", json=payload,
-                               headers=HUB_API_HTTP_HEADERS)
-        r.raise_for_status()
-        return r
+        return self.patch(f"/workflows/{wf_id}", payload=payload)
 
 
 def get_wf_id(crate_dir):
@@ -282,8 +299,8 @@ def get_proj_and_wf(repo_dir, hub_url=HUB_URL):
     return entry.get("project"), entry.get("workflow")
 
 
-def get_hub_link(hub_api_wf_json):
-    attrs = hub_api_wf_json["data"]["attributes"]
+def get_hub_link(hub_api_wf):
+    attrs = hub_api_wf["attributes"]
     vmap = {_["version"]: _["url"] for _ in attrs["versions"]}
     return vmap[attrs["latest_version"]]
 
@@ -320,13 +337,13 @@ def main(args):
                 proj_id = client.resolve_proj(proj_name)
                 wf_id = client.resolve_wf(proj_id, wf_name)
                 new_workflow = not wf_id
-                r = client.upload_crate(archive, proj_id, wf_id=wf_id)
-                wf_id = r.json()["data"]["id"]
+                data = client.upload_crate(archive, proj_id, wf_id=wf_id)
+                wf_id = data["id"]
                 if new_workflow:
-                    r = client.update_wf_access(wf_id, proj_id)
-                if wf_name and wf_name != r.json()["data"]["attributes"]["title"]:
+                    data = client.update_wf_access(wf_id, proj_id)
+                if wf_name and wf_name != data["attributes"]["title"]:
                     client.update_wf_name(wf_id, wf_name)
-                print(f"  uploaded as {get_hub_link(r.json())}")
+                print(f"  uploaded as {get_hub_link(data)}")
     for d in junk:
         shutil.rmtree(d)
 
