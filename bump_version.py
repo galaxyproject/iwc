@@ -31,18 +31,20 @@ Workflow repositories are expected to contain:
 - the .ga workflow file (e.g., "consensus-from-variation.ga"), which is
   expected to list its version in the "release" metadata field
 - a CHANGELOG.md file with atx-style Markdown headers (the ones with the
-  leading hash marks), with the convention that:
-  - the top-level header is "# Changelog"
-  - level 2 headers start with ## <VERSION>
+  leading hash marks), formatted according to https://keepachangelog.com
+  (but not necessarily following semantic versioning).
 
 Example:
 
 # Changelog
 
+## Unreleased
+### Fixed
+- This
+- That
+
 ## [0.4] - 2021-06-16
-
 ### Changed
-
 - Upgrade multiqc to 1.9+galaxy1
 """
 
