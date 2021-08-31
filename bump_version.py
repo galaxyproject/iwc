@@ -64,13 +64,13 @@ from planemo.ci import filter_paths
 
 DATE_FMT = "%Y-%m-%d"
 ENTRY_TYPES = "Added", "Changed", "Fixed"
-NEW_LOG_ENTRY = string.Template("""\
+NEW_LOG_ENTRY_HEAD = string.Template("""\
 ## [${version}] ${date}
+""")
+NEW_LOG_ENTRY_BODY = string.Template("""\
 
 ### ${entry_type}
-
-${msg}
-
+- ${msg}
 """)
 
 
@@ -143,8 +143,9 @@ def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
     with open(changelog, "rt") as f:
         tree = md.parse(f.read())
     date = date.strftime(DATE_FMT)
-    entry = NEW_LOG_ENTRY.substitute(version=version, date=date, msg=msg,
-                                     entry_type=entry_type)
+    entry = NEW_LOG_ENTRY_HEAD.substitute(version=version, date=date)
+    if msg:
+        entry += NEW_LOG_ENTRY_BODY.substitute(entry_type=entry_type, msg=msg)
     for ins_pos, elem in enumerate(tree.children):
         if isinstance(elem, marko.block.Heading) and elem.level == 2:
             if elem.children[0].children.strip(" []").lower() == "unreleased":
@@ -156,6 +157,7 @@ def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
     else:
         ins_pos = len(tree.children)
     entry_tree = marko.block.Document(entry)
+    entry_tree.children.extend(marko.block.Document("\n").children)
     tree.children[ins_pos:ins_pos] = entry_tree.children
     with open(changelog, "wt") as f:
         f.write(md.render(tree))
@@ -204,7 +206,7 @@ def main(args):
         print(f"processing {repo}")
         wf_id = get_wf_id(repo)
         version = update_workflow(repo / wf_id, version=args.version, bump=args.bump)
-        msg = args.msg or f"Update for version {version}."
+        msg = f"Update for version {version}." if args.msg is None else args.msg
         update_changelog(repo / "CHANGELOG.md", md, version, msg, date=args.date,
                          entry_type=args.entry_type)
 
