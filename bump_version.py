@@ -145,12 +145,17 @@ def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
     date = date.strftime(DATE_FMT)
     entry = NEW_LOG_ENTRY.substitute(version=version, date=date, msg=msg,
                                      entry_type=entry_type)
-    entry_tree = marko.block.Document(entry)
     for ins_pos, elem in enumerate(tree.children):
         if isinstance(elem, marko.block.Heading) and elem.level == 2:
+            if elem.children[0].children.strip(" []").lower() == "unreleased":
+                # Insert after the "Unreleased" heading but before its contents
+                # Any unreleased changes become part of the new version
+                ins_pos += 1
+                entry = "\n" + entry
             break
     else:
         ins_pos = len(tree.children)
+    entry_tree = marko.block.Document(entry)
     tree.children[ins_pos:ins_pos] = entry_tree.children
     with open(changelog, "wt") as f:
         f.write(md.render(tree))
