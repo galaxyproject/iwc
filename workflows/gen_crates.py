@@ -37,17 +37,23 @@ import argparse
 import json
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
 import planemo
+import requests
+import yaml
 from planemo.context import PlanemoContext
 from planemo.shed import find_raw_repositories
 from planemo.ci import filter_paths
 from rocrate.rocrate import ROCrate
 from rocrate.model.person import Person
 from rocrate.model.entity import Entity
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
-# Defaults
 OWNER = "galaxyproject"
 REPO = "iwc"
 GH_WORKFLOW = "workflow_test.yml"
@@ -56,6 +62,113 @@ GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = f">={planemo.__version__}"
 PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
 PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
+HUB_URL = "https://workflowhub.eu"
+HUB_API_KEY = os.getenv("HUB_API_KEY")
+HUB_CFG_NAME = ".workflowhub.yml"
+HUB_CFG_VERSION = "0.1"
+HUB_API_HTTP_HEADERS = {
+    "Content-type": "application/vnd.api+json",
+    "Accept": "application/vnd.api+json",
+    "Accept-Charset": "ISO-8859-1",
+}
+DOCKSTORE_CFG_NAME = ".dockstore.yml"
+DOCKSTORE_CFG_VERSION = "1.2"
+
+
+class HubClient:
+
+    def __init__(self, base_url=HUB_URL, api_key=HUB_API_KEY):
+        if not api_key:
+            raise RuntimeError("No API key set. Please set the HUB_API_KEY environment variable")
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({"authorization": f"Token {api_key}"})
+        self._wf_id_to_name = {_["id"]: _["attributes"]["title"] for _ in self.get("/workflows")}
+        self._proj_map = {_["attributes"]["title"]: _["id"] for _ in self.get("/projects")}
+        self._wf_maps = {}
+
+    def request(self, method, endpoint, payload=None):
+        kwargs = {"headers": HUB_API_HTTP_HEADERS}
+        if payload:
+            kwargs["json"] = payload
+        r = self.session.request(method, self.base_url + endpoint, **kwargs)
+        r.raise_for_status()
+        return r.json()["data"]
+
+    def get(self, endpoint, payload=None):
+        return self.request("GET", endpoint, payload=payload)
+
+    def post(self, endpoint, payload=None):
+        return self.request("POST", endpoint, payload=payload)
+
+    def put(self, endpoint, payload=None):
+        return self.request("PUT", endpoint, payload=payload)
+
+    def patch(self, endpoint, payload=None):
+        return self.request("PATCH", endpoint, payload=payload)
+
+    def delete(self, endpoint, payload=None):
+        return self.request("DELETE", endpoint, payload=payload)
+
+    def resolve_proj(self, proj_name):
+        try:
+            return self._proj_map[proj_name]
+        except KeyError:
+            raise RuntimeError(f'"{proj_name}" project not found on {self.base_url}')
+
+    def resolve_wf(self, proj_id, wf_name):
+        try:
+            m = self._wf_maps[proj_id]
+        except KeyError:
+            data = self.get(f"/projects/{proj_id}")
+            wf_ids = [_["id"] for _ in data["relationships"]["workflows"]["data"]]
+            self._wf_maps[proj_id] = m = {self._wf_id_to_name[_]: _ for _ in wf_ids}
+        return m.get(wf_name)
+
+    def upload_crate(self, crate, proj_id, wf_id=None):
+        endpoint = f"{self.base_url}/workflows"
+        if wf_id:
+            endpoint = f"{endpoint}/{wf_id}/create_version"
+        with open(crate, "rb") as f:
+            payload = {
+                "ro_crate": (Path(crate).name, f),
+                "workflow[project_ids][]": (None, proj_id)
+            }
+            r = self.session.post(endpoint, files=payload)
+        r.raise_for_status()
+        return r.json()["data"]
+
+    def update_wf_name(self, wf_id, wf_name):
+        payload = {
+            "data": {
+                "id": wf_id,
+                "type": "workflows",
+                "attributes": {
+                    "title": wf_name
+                }
+            }
+        }
+        return self.patch(f"/workflows/{wf_id}", payload=payload)
+
+    def update_wf_access(self, wf_id, proj_id):
+        payload = {
+            "data": {
+                "id": wf_id,
+                "type": "workflows",
+                "attributes": {
+                    "policy": {
+                        "access": "download",
+                        "permissions": [
+                            {
+                                "resource": {"id": proj_id, "type": "projects"},
+                                "access": "edit"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        return self.patch(f"/workflows/{wf_id}", payload=payload)
 
 
 def get_wf_id(crate_dir):
@@ -101,6 +214,18 @@ def handle_creator(ga_json, crate, workflow):
         workflow["creator"] = ro_creators
 
 
+def get_workflow_name(repo_dir):
+    repo_dir = Path(repo_dir)
+    cfg_path = repo_dir / DOCKSTORE_CFG_NAME
+    if not cfg_path.is_file():
+        raise RuntimeError(f"{cfg_path} not found")
+    with open(cfg_path, "rt") as f:
+        cfg = yaml.load(f, Loader=Loader)
+    assert str(cfg["version"]) == DOCKSTORE_CFG_VERSION
+    wf_entry = cfg["workflows"][0]  # assuming first wf is the main wf
+    return f"{repo_dir.name}/{wf_entry['name']}"
+
+
 def make_crate(crate_dir, target_owner, resource, planemo_version):
     wf_id = get_wf_id(crate_dir)
     planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
@@ -111,7 +236,7 @@ def make_crate(crate_dir, target_owner, resource, planemo_version):
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
     handle_creator(code, crate, workflow)
-    workflow["name"] = code.get("name", crate_dir.name)
+    workflow["name"] = get_workflow_name(crate_dir)
     try:
         workflow["version"] = code["release"]
     except KeyError:
@@ -146,10 +271,37 @@ def find_repos(paths, exclude=()):
     return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
 
 
+def get_proj_and_wf(repo_dir, hub_url=HUB_URL):
+    cfg_path = Path(repo_dir) / HUB_CFG_NAME
+    if not cfg_path.is_file():
+        raise RuntimeError(f"{cfg_path} not found")
+    with open(cfg_path, "rt") as f:
+        cfg = yaml.load(f, Loader=Loader)
+    assert str(cfg["version"]) == HUB_CFG_VERSION
+    sel = [_ for _ in cfg["registries"] if _["url"].rstrip("/") == hub_url.rstrip("/")]
+    if not sel:
+        raise RuntimeError(f"no entry for {hub_url} in {cfg_path}")
+    entry = sel[0]
+    return entry.get("project"), entry.get("workflow")
+
+
+def get_hub_link(hub_api_wf):
+    attrs = hub_api_wf["attributes"]
+    vmap = {_["version"]: _["url"] for _ in attrs["versions"]}
+    return vmap[attrs["latest_version"]]
+
+
 def main(args):
+    junk = []
+    if args.upload and not args.zip_dir:
+        args.zip_dir = tempfile.mkdtemp(prefix="iwc_")
+        junk.append(args.zip_dir)
     if args.zip_dir:
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
+    args.hub_url = args.hub_url.rstrip("/")
+    if args.upload:
+        client = HubClient(base_url=args.hub_url)
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
@@ -162,6 +314,24 @@ def main(args):
             path = zip_dir / f"{repo.name}.crate"
             archive = shutil.make_archive(path, "zip", repo)
             print(f"  archived as {archive}")
+            if args.upload:
+                proj_name, wf_name = get_proj_and_wf(repo, hub_url=args.hub_url)
+                if args.hub_project:
+                    proj_name = args.hub_project
+                if proj_name is None:
+                    raise RuntimeError(f"no WorkflowHub project specified for {args.hub_url}")
+                proj_id = client.resolve_proj(proj_name)
+                wf_id = client.resolve_wf(proj_id, wf_name)
+                new_workflow = not wf_id
+                data = client.upload_crate(archive, proj_id, wf_id=wf_id)
+                wf_id = data["id"]
+                if new_workflow:
+                    data = client.update_wf_access(wf_id, proj_id)
+                if wf_name and wf_name != data["attributes"]["title"]:
+                    client.update_wf_name(wf_id, wf_name)
+                print(f"  uploaded as {get_hub_link(data)}")
+    for d in junk:
+        shutil.rmtree(d)
 
 
 if __name__ == "__main__":
@@ -186,4 +356,9 @@ if __name__ == "__main__":
                         help="create Workflow RO-Crate zip archives in this directory")
     parser.add_argument("--no-overwrite", action="store_true",
                         help="do not overwrite existing crates")
+    parser.add_argument("--upload", action="store_true", help="upload crates to WorkflowHub")
+    parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
+                        help="WorkflowHub URL for crate upload")
+    parser.add_argument("--hub-project", metavar="STRING",
+                        help="WorkflowHub project for crate upload (default: get from .workflowhub.yml)")
     main(parser.parse_args())
