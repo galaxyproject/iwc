@@ -19,7 +19,7 @@ statistics are calculated:
     very small error probabilities.
 
   This tool update also means that key INFO fields (DP, DP4, AF) are
-  now based on calculations carried out by medaka tools variant instead of by
+  now based on calculations carried out by medaka tools annotate instead of by
   custom code using samtools mpileup. This has the following consequences:
 
   * the tool can now emit variant calls at complex sites with > 1 lengths of
