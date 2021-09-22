@@ -37,10 +37,7 @@ This version also adds some of the changes around trimming of primer sequences,
 which have been introduced into version 0.3 of the PE Illumina worflow for
 amplicon data before:
 
-- Update of ivar trim to version 1.3.1 and use of the new -f option of the
-  tool to drop reads that extend beyond amplicon boundaries inferred from the
-  primer scheme. A separate amplicon info dataset is no longer required as
-  input to the workflow.
+- Update ivar trim to version 1.3.1
 
 - Run ivar trim as the last mapped reads processing step before variant
   calling, i.e., after left-alignment of indels
