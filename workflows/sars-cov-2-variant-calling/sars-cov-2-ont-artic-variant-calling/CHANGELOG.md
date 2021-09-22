@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2021-09-17
+## [0.3] 2021-09-22
 
 ### Changed
 
@@ -25,8 +25,8 @@ statistics are calculated:
   * the tool can now emit variant calls at complex sites with > 1 lengths of
     both the REF and the ALT allele, which were previously dropped
 
-  * the workflow became more complex to account for shortcomings of medaka
-    tools annotate - the variant call statistics of regular variants and of
+  * the workflow became more complex; to account for shortcomings of medaka
+    tools annotate, the variant call statistics of regular variants and of
     primer binding site variants have to be determined in separate runs of the
     tool
 
@@ -39,7 +39,8 @@ amplicon data before:
 
 - Update of ivar trim to version 1.3.1 and use of the new -f option of the
   tool to drop reads that extend beyond amplicon boundaries inferred from the
-  primer scheme.
+  primer scheme. A separate amplicon info dataset is no longer required as
+  input to the workflow.
 
 - Run ivar trim as the last mapped reads processing step before variant
   calling, i.e., after left-alignment of indels
