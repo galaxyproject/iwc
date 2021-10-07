@@ -1,16 +1,23 @@
-name: Galaxy Workflow Tests for push and PR
-on: [push, pull_request]
+name: Weekly global Workflow Linting and Tests
+on:
+  schedule:
+    # Run at midnight every monday
+    - cron: '0 0 * * 1'
+  repository_dispatch:
+    types: [run-all-workflow-tests-command]
 env:
   GALAXY_FORK: galaxyproject
-  GALAXY_BRANCH: master
-  GITHUB_USER: iwc-workflows-bot
-  MAX_CHUNKS: 4
+  GALAXY_BRANCH: release_21.09
+  MAX_CHUNKS: 40
 jobs:
   setup:
     name: Setup cache and determine changed repositories
+    if: github.repository_owner == 'galaxyproject'
     runs-on: ubuntu-latest
     outputs:
       galaxy-head-sha: ${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
+      fork: ${{ steps.get-fork-branch.outputs.fork }}
+      branch: ${{ steps.get-fork-branch.outputs.branch }}
       repository-list: ${{ steps.discover.outputs.repository-list }}
       chunk-count: ${{ steps.discover.outputs.chunk-count }}
       chunk-list: ${{ steps.discover.outputs.chunk-list }}
@@ -18,18 +25,24 @@ jobs:
       matrix:
         python-version: ['3.7']
     steps:
-    - name: Print github context properties
+    - name: Add reaction
+      if: ${{ github.event.client_payload.slash_command.command == 'run-all-workflow-tests' }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.PAT }}
+        repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+        comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+        reaction-type: hooray
+    - name: Set galaxy fork and branch
+      id: get-fork-branch
       run: |
-        echo 'event: ${{ github.event_name }}'
-        echo 'sha: ${{ github.sha }}'
-        echo 'ref: ${{ github.ref }}'
-        echo 'head_ref: ${{ github.head_ref }}'
-        echo 'base_ref: ${{ github.base_ref }}'
-        echo 'event.before: ${{ github.event.before }}'
-        echo 'event.after: ${{ github.event.after }}'
+        TMP="${{ github.event.client_payload.slash_command.args.named.fork }}"
+        echo "::set-output name=fork::${TMP:-$GALAXY_FORK}"
+        TMP="${{ github.event.client_payload.slash_command.args.named.branch }}"
+        echo "::set-output name=branch::${TMP:-$GALAXY_BRANCH}"
     - name: Determine latest commit in the Galaxy repo
       id: get-galaxy-sha
-      run: echo "::set-output name=galaxy-head-sha::$(git ls-remote https://github.com/${{ env.GALAXY_FORK }}/galaxy refs/heads/${{ env.GALAXY_BRANCH }} | cut -f1)"
+      run: echo "::set-output name=galaxy-head-sha::$(git ls-remote https://github.com/${{ steps.get-fork-branch.outputs.fork }}/galaxy refs/heads/${{ steps.get-fork-branch.outputs.branch }} | cut -f1)"
     - uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
@@ -39,31 +52,30 @@ jobs:
       with:
         path: ~/.cache/pip
         key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
-    - name: Cache .planemo
-      uses: actions/cache@v2
-      id: cache-planemo
-      with:
-        path: ~/.planemo
-        key: planemo_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
     # Install the `wheel` package so that when installing other packages which
     # are not available as wheels, pip will build a wheel for them, which can be cached.
     - name: Install wheel
       run: pip install wheel
     - uses: actions/checkout@v2
       with:
-        fetch-depth: 0
+        fetch-depth: 1
     - name: Fake a Planemo run to update cache and determine commit range, repositories, and chunks
       uses: galaxyproject/planemo-ci-action@v1
       id: discover
       with:
         workflows: true
         create-cache: ${{ steps.cache-pip.outputs.cache-hit != 'true' || steps.cache-planemo.outputs.cache-hit != 'true' }}
-        galaxy-fork: ${{ env.GALAXY_FORK }}
-        galaxy-branch: ${{ env.GALAXY_BRANCH }}
+        galaxy-fork: ${{ steps.get-fork-branch.outputs.fork }}
+        galaxy-branch: ${{ steps.get-fork-branch.outputs.branch }}
         max-chunks: ${{ env.MAX_CHUNKS }}
         python-version: ${{ matrix.python-version }}
+    - name: Show repository list
+      run: echo '${{ steps.discover.outputs.repository-list }}'
+    - name: Show chunks
+      run: |
+        echo 'Using ${{ steps.discover.outputs.chunk-count }} chunks (${{ steps.discover.outputs.chunk-list }})'
 
-  # Planemo lint the changed repositories
+  # Planemo lint the workflows
   lint:
     name: Lint workflows
     needs: setup
@@ -96,9 +108,10 @@ jobs:
 
   test:
     name: Test workflows
+    # This job runs on Linux
     runs-on: ubuntu-latest
     needs: setup
-    if: needs.setup.outputs.repository-list != ''
+    if: ${{ needs.setup.outputs.repository-list != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -114,6 +127,8 @@ jobs:
         ports:
           - 5432:5432
     steps:
+    # checkout the repository
+    # and use it as the current working directory
     - uses: actions/checkout@v2
       with:
         fetch-depth: 1
@@ -134,8 +149,8 @@ jobs:
         workflows: true
         setup-cvmfs: true
         repository-list: ${{ needs.setup.outputs.repository-list }}
-        galaxy-fork: ${{ env.GALAXY_FORK }}
-        galaxy-branch: ${{ env.GALAXY_BRANCH }}
+        galaxy-fork: ${{ needs.setup.outputs.fork }}
+        galaxy-branch: ${{ needs.setup.outputs.branch }}
         chunk: ${{ matrix.chunk }}
         chunk-count: ${{ needs.setup.outputs.chunk-count }}
     - uses: actions/upload-artifact@v2
@@ -143,13 +158,18 @@ jobs:
         name: 'Workflow test output ${{ matrix.chunk }}'
         path: upload
 
+  # - combine the results of the test chunks (which will never fail due
+  #   to `|| true`) and create a global test report as json and html which
+  #   is provided as artifact
+  # - check if any test actually failed (by lookup in the combined json)
+  #   and fail this step if this is the case
   combine_outputs:
-    # same as tool step
     name: Combine chunked test results
     needs: [setup, test]
     strategy:
       matrix:
         python-version: ['3.7']
+    # This job runs on Linux
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v2
@@ -163,62 +183,39 @@ jobs:
       id: cache-pip
       with:
         path: ~/.cache/pip
-        key: pip_cache_py_${{ matrix.python-version }}_gxy_{{ needs.setup.outputs.galaxy-head-sha }}
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy-head-sha }}
     - name: Combine outputs
       uses: galaxyproject/planemo-ci-action@v1
       id: combine
       with:
         mode: combine
         html-report: true
-    - uses: actions/upload-artifact@v2.0.1
+    - uses: actions/upload-artifact@v2
       with:
-        name: 'All tool test results'
+        name: 'All workflow test results'
         path: upload
+    - name: Create URL to the run output
+      if: ${{ github.event.client_payload.slash_command.command == 'run-all-workflow-tests' }}
+      id: vars
+      run: echo "::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+    - name: Create comment
+      if: ${{ github.event.client_payload.slash_command.command == 'run-all-workflow-tests' }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.PAT }}
+        repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+        issue-number: ${{ github.event.client_payload.github.payload.issue.number }}
+        body: |
+          Summary:
+
+          ${{ steps.combine.outputs.statistics }}
+
+          [Find all workflow test results here][1]
+
+          [1]: ${{ steps.vars.outputs.run-url }}
     - name: Check outputs
       uses: galaxyproject/planemo-ci-action@v1
       id: check
       with:
         mode: check
-
-  # deploy workflows to organization
-  deploy:
-    name: Deploy
-    needs: [setup,test,combine_outputs]
-    strategy:
-      matrix:
-        python-version: ['3.7']
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.repository_owner == 'galaxyproject'
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache .cache/pip
-      uses: actions/cache@v2
-      id: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: pip_cache_py_${{ matrix.python-version }}_gxy_{{ needs.setup.outputs.galaxy-head-sha }}
-    - name: Install requirements for gen_crates.py
-      run: pip install -r workflows/requirements.txt
-    - name: Generate RO-Crate metadata for workflow repositories
-      run: python workflows/gen_crates.py workflows
-    - name: Set git user
-      run: |
-        git config --global user.email "$GITHUB_USER@galaxyproject.org"
-        git config --global user.name "$GITHUB_USER"
-        git config --global init.defaultBranch main
-    - uses: fusion-engineering/setup-git-credentials@v2
-      with:
-        credentials: 'https://${{ env.GITHUB_USER }}:${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}@github.com/'
-    - name: Update or create repositories in github namespace
-      uses: galaxyproject/planemo-ci-action@main
-      with:
-         mode: deploy
-         repository-list: ${{ needs.setup.outputs.repository-list }}
-         workflows: true
-         workflow-namespace: iwc-workflows
-         github-token: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
