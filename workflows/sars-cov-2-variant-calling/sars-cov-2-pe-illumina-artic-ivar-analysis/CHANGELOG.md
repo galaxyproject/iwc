@@ -2,6 +2,8 @@
 
 ## [0.2] - 2021-10-13
 
+### Changed
+
 - Upgrade pangolin to 3.1.14 
   - this is a bugfix release that addresses problems with commas in sequence IDs
 - Upgrade nextclade to 1.4.1
