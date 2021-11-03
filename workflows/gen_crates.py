@@ -73,13 +73,16 @@ HUB_API_HTTP_HEADERS = {
 }
 DOCKSTORE_CFG_NAME = ".dockstore.yml"
 DOCKSTORE_CFG_VERSION = "1.2"
+LM_URL = "https://api.lifemonitor.eu"
+LM_API_KEY = os.getenv("LM_API_KEY")
 
 
 class HubClient:
 
     def __init__(self, base_url=HUB_URL, api_key=HUB_API_KEY):
         if not api_key:
-            raise RuntimeError("No API key set. Please set the HUB_API_KEY environment variable")
+            raise RuntimeError("No API key set for WorkflowHub. "
+                               "Please set the HUB_API_KEY environment variable")
         self.base_url = base_url
         self.session = requests.Session()
         self.session.headers.update({"authorization": f"Token {api_key}"})
@@ -291,16 +294,54 @@ def get_hub_link(hub_api_wf):
     return vmap[attrs["latest_version"]]
 
 
+def upload_to_lm(hub_client, proj_name, wf_name, lm_url=LM_URL):
+    if not LM_API_KEY:
+        raise RuntimeError("No API key set for LifeMonitor. "
+                           "Please set the LM_API_KEY environment variable")
+    proj_id = hub_client.resolve_proj(proj_name)
+    wf_id = hub_client.resolve_wf(proj_id, wf_name)
+    print(f"  WorkflowHub id: {wf_id}")
+    if wf_id is None:
+        raise RuntimeError(f"'{wf_name}' not found in '{proj_name}' on {hub_client.base_url}")
+    s = requests.session()
+    s.headers.update({'ApiKey': LM_API_KEY})
+    # get registry uuid
+    response = s.get(f"{lm_url}/registries")
+    response.raise_for_status()
+    registries = response.json()
+    sel = [_ for _ in registries["items"]
+           if _["uri"].rstrip("/") == hub_client.base_url.rstrip("/")]
+    try:
+        hub_uuid = sel[0]["uuid"]
+    except IndexError:
+        raise RuntimeError(f"{hub_client.base_url} not known to {lm_url}")
+    # submit workflow to LifeMonitor
+    wf = hub_client.get(f"/workflows/{wf_id}")
+    payload = {
+        "identifier": wf_id,
+        "name": wf_name,
+        "version": str(wf["attributes"]["latest_version"]),
+        "public": True,
+    }
+    response = s.post(f"{lm_url}/registries/{hub_uuid}/workflows", json=payload)
+    if response.status_code == 409:
+        print("  workflow already exists in LifeMonitor")
+    else:
+        response.raise_for_status()
+        print(f"  uploaded to LifeMonitor as {response.json()['uuid']}")
+    return response
+
+
 def main(args):
     junk = []
-    if args.upload and not args.zip_dir:
+    if args.upload_to_hub and not args.zip_dir:
         args.zip_dir = tempfile.mkdtemp(prefix="iwc_")
         junk.append(args.zip_dir)
     if args.zip_dir:
         zip_dir = Path(args.zip_dir)
         zip_dir.mkdir(parents=True, exist_ok=True)
     args.hub_url = args.hub_url.rstrip("/")
-    if args.upload:
+    if args.upload_to_hub or args.upload_to_lm:
         client = HubClient(base_url=args.hub_url)
     resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for repo in find_repos(args.root, exclude=args.exclude):
@@ -314,7 +355,7 @@ def main(args):
             path = zip_dir / f"{repo.name}.crate"
             archive = shutil.make_archive(path, "zip", repo)
             print(f"  archived as {archive}")
-            if args.upload:
+            if args.upload_to_hub:
                 proj_name, wf_name = get_proj_and_wf(repo, hub_url=args.hub_url)
                 if args.hub_project:
                     proj_name = args.hub_project
@@ -329,7 +370,14 @@ def main(args):
                     data = client.update_wf_access(wf_id, proj_id)
                 if wf_name and wf_name != data["attributes"]["title"]:
                     client.update_wf_name(wf_id, wf_name)
-                print(f"  uploaded as {get_hub_link(data)}")
+                print(f"  uploaded to WorkflowHub as {get_hub_link(data)}")
+        if args.upload_to_lm:
+            proj_name, wf_name = get_proj_and_wf(repo, hub_url=args.hub_url)
+            if args.hub_project:
+                proj_name = args.hub_project
+            if proj_name is None or wf_name is None:
+                raise RuntimeError(f"Can't get project and workflow name for {repo}")
+            upload_to_lm(client, proj_name, wf_name, lm_url=args.lm_url)
     for d in junk:
         shutil.rmtree(d)
 
@@ -356,9 +404,12 @@ if __name__ == "__main__":
                         help="create Workflow RO-Crate zip archives in this directory")
     parser.add_argument("--no-overwrite", action="store_true",
                         help="do not overwrite existing crates")
-    parser.add_argument("--upload", action="store_true", help="upload crates to WorkflowHub")
+    parser.add_argument("--upload-to-hub", action="store_true", help="upload crates to WorkflowHub")
     parser.add_argument("--hub-url", metavar="STRING", default=HUB_URL,
                         help="WorkflowHub URL for crate upload")
     parser.add_argument("--hub-project", metavar="STRING",
                         help="WorkflowHub project for crate upload (default: get from .workflowhub.yml)")
+    parser.add_argument("--upload-to-lm", action="store_true", help="upload workflows to LifeMonitor")
+    parser.add_argument("--lm-url", metavar="STRING", default=LM_URL,
+                        help="LifeMonitor submission URL")
     main(parser.parse_args())
