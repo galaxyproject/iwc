@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.1] 2021-11-04
+
+### Added
+- Added .workflowhub.yml
+
 ## [0.2] - 2021-10-13
 
 ### Changed
