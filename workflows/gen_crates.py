@@ -239,7 +239,7 @@ def make_crate(crate_dir, target_owner, resource, planemo_version):
     workflow = crate.add_workflow(wf_source, wf_id, main=True,
                                   lang="galaxy", gen_cwl=False)
     handle_creator(code, crate, workflow)
-    workflow["name"] = get_workflow_name(crate_dir)
+    workflow["name"] = crate.root_dataset["name"] = get_workflow_name(crate_dir)
     try:
         workflow["version"] = code["release"]
     except KeyError:
