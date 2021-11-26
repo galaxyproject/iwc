@@ -51,6 +51,6 @@ Before a PR will be accepted, meaningful review for correctness and quality will
 * Continuous integration tests must pass: 
     * The tests must pass (`planemo test my_workflow.ga`)
     * The workflows must pass linting by planemo (`planemo lint my_workflow.ga`)
-* If there's a relevant paper for the workflow, it should be cited in a the READMe file.
+* If there's a relevant paper for the workflow, it should be cited in a the README file.
 * The workflow must be licensed to allow use by anyone. The OSI maintains a [list of appropriate](https://opensource.org/licenses/alphabetical) licenses
 * At least one approving review by an IWC member
