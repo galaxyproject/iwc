@@ -8,6 +8,9 @@ performed by the workflow; the user is responsible for checking the ensemble the
 The input protein (PDB) and ligand (SDF) files provided are parameterized by
 the 'Protein-ligand complex parameterization' subworkflow.
 
+Note that the workflow uses a MDP file for configuring the TMD simulations; this
+is packaged alongside the workflow as `tmd.mdp`.
+
 ## Citations
 * Steffen Wolf and Gerhard Stock (2018), Targeted Molecular Dynamics Calculations of Free Energy Profiles Using a Nonequilibrium Friction Correction, J. Chem. Theory Comput. doi:10.1021/acs.jctc.8b00835
 * Steffen Wolf, Benjamin Lickert, Simon Bray and Gerhard Stock (2020), Multisecond ligand dissociation dynamics from atomistic simulations, Nat. Commun. doi:10.1038/s41467-020-16655-1
