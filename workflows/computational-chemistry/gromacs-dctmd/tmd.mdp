@@ -1,52 +1,56 @@
+; Note that the following parameters can be specified by the user as workflow parameters:
+; pull-group1-pbcatom, pull_coord1_rate, nsteps, dt
+
 ; Run parameters
 integrator              = md        ; leap-frog integrator
-                    ; Output control
-                    nstxout            = 2000    ; save coordinates every 10.0 ps
-                    nstvout            = 2000    ; save velocities every 10.0 ps
-                    nstenergy          = 2000    ; save energies every 10.0 ps
-                    nstlog            = 2000    ; update log file every 10.0 ps
-                    nstxout-compressed  = 2000      ; save compressed coordinates every 10.0 ps
-                                                    ; nstxout-compressed replaces nstxtcout
-                    compressed-x-grps   = System    ; group(s) to write to the compressed trajectory file
-                    ; Bond parameters
-                    continuation          = yes    ; Restarting after NPT 
-                    constraint_algorithm    = lincs      ; holonomic constraints 
-                    constraints              = none  ; all bonds (even heavy atom-H bonds) constrained
-                    lincs_iter              = 1        ; accuracy of LINCS
-                    lincs_order              = 4        ; also related to accuracy
-                    ; Neighborsearching
-                    cutoff-scheme   = Verlet
-                    ns_type        = grid    ; search neighboring grid cells
-                    nstlist        = 10      ; 20 fs, largely irrelevant with Verlet scheme
-                    rcoulomb      = 1.0    ; Short-range electrostatic cut-off
-                    rlist       = 1.0 ; Cut-off distance for the short-range neighbor list.
-                    rvdw        = 1.0    ; Short-range Van der Waals cut-off
-                    ; Electrostatics
-                    coulombtype      = PME    ; method for electrostatics calculations e.g. PME
-                    pme_order      = 4        ; cubic interpolation
-                    fourierspacing  = 0.16    ; grid spacing for FFT
-                    ; Temperature coupling is on
-                    tcoupl    = V-rescale              ; modified Berendsen thermostat
-                    tc-grps    = Protein Non-Protein  ; two coupling groups - more accurate
-                    tau_t    = 0.1    0.1          ; time constant, in ps
-                    ref_t    = 300 300           ; reference temperature, one for each group, in K
-                    ; Periodic boundary conditions
-                    pbc    = xyz    ; 3-D PBC
-                    ; Dispersion correction
-                    DispCorr  = EnerPres  ; account for cut-off vdW scheme
-                    ; Velocity generation
-                    gen_vel    = no    ; Velocity generation is off
-                    pcoupl    = no     ; no pressure coupling in NVT
+; Output control
+nstxout            = 2000    ; save coordinates every 10.0 ps
+nstvout            = 2000    ; save velocities every 10.0 ps
+nstenergy          = 2000    ; save energies every 10.0 ps
+nstlog            = 2000    ; update log file every 10.0 ps
+nstxout-compressed  = 2000      ; save compressed coordinates every 10.0 ps
+                                ; nstxout-compressed replaces nstxtcout
+compressed-x-grps   = System    ; group(s) to write to the compressed trajectory file
+; Bond parameters
+continuation          = yes    ; Restarting after NPT 
+constraint_algorithm    = lincs      ; holonomic constraints 
+constraints              = none  ; all bonds (even heavy atom-H bonds) constrained
+lincs_iter              = 1        ; accuracy of LINCS
+lincs_order              = 4        ; also related to accuracy
+; Neighborsearching
+cutoff-scheme   = Verlet
+ns_type        = grid    ; search neighboring grid cells
+nstlist        = 10      ; 20 fs, largely irrelevant with Verlet scheme
+rcoulomb      = 1.0    ; Short-range electrostatic cut-off
+rlist       = 1.0 ; Cut-off distance for the short-range neighbor list.
+rvdw        = 1.0    ; Short-range Van der Waals cut-off
+; Electrostatics
+coulombtype      = PME    ; method for electrostatics calculations e.g. PME
+pme_order      = 4        ; cubic interpolation
+fourierspacing  = 0.16    ; grid spacing for FFT
+; Temperature coupling is on
+tcoupl    = V-rescale              ; modified Berendsen thermostat
+tc-grps    = Protein Non-Protein  ; two coupling groups - more accurate
+tau_t    = 0.1    0.1          ; time constant, in ps
+ref_t    = 300 300           ; reference temperature, one for each group, in K
+; Periodic boundary conditions
+pbc    = xyz    ; 3-D PBC
+; Dispersion correction
+DispCorr  = EnerPres  ; account for cut-off vdW scheme
+; Velocity generation
+gen_vel    = no    ; Velocity generation is off
+pcoupl    = no     ; no pressure coupling in NVT
 
 ; Pull code
 pull                    = yes
-pull_nstfout		= 1
+pull_nstfout		    = 1
 pull_ncoords            = 1         ; only one reaction coordinate
 pull_ngroups            = 2         ; two groups defining one reaction coordinate
 pull_coord1_type        = constraint
 pull_coord1_geometry    = distance  ; simple distance increase
-pull_coord1_dim         = Y Y Y     ; pull along z
+pull_coord1_dim         = Y Y Y     ; pull along all axes
 pull_coord1_groups      = 1 2       ; groups 1 (Chain A) and 2 (Chain B) define the reaction coordinate
 pull_coord1_start       = yes       ; define initial COM distance > 0
 pull_group1_name        = pullgrp
-pull_group2_name        = UNL_&_!H*
+pull_group2_name        = UNL_&_!H* ; UNL default name from acpype
+
