@@ -1,6 +1,6 @@
 # Fragment-based virtual screening with docking and pose scoring
 
-Dock a compound library against a target protein with rDock and validate the
+Dock a compound library against a target protein with rDock, and validate the
 poses generated against a reference fragment using SuCOS to compare the feature
 overlap. Poses are filtered by a user-specified SuCOS threshold.
 
