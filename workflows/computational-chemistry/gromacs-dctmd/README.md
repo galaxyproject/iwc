@@ -1,7 +1,7 @@
 # GROMACS dcTMD free energy calculation
 
 Perform an ensemble of targeted MD simulations of a user-specified size using
-the GROMACS PULL code, and calculate dcTMD free energy and friction profiles
+the GROMACS PULL code and calculate dcTMD free energy and friction profiles
 for the resulting dissocation pathway. Note that pathway separation is not
 performed by the workflow; the user is responsible for checking the ensemble themselves.
 
