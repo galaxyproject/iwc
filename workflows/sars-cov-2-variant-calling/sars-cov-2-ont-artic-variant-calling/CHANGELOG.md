@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1] 2021-12-13
+
+### Added
+- Added GitHub Actions workflow. No functional changes.
+
 ## [0.3] 2021-09-22
 
 ### Changed
@@ -24,12 +29,10 @@ statistics are calculated:
 
   * the tool can now emit variant calls at complex sites with > 1 lengths of
     both the REF and the ALT allele, which were previously dropped
-
   * the workflow became more complex; to account for shortcomings of medaka
     tools annotate, the variant call statistics of regular variants and of
     primer binding site variants have to be determined in separate runs of the
     tool
-
   * All key INFO fields (DP, DP4, AF) will change slightly in this version of
     the workflow
 
@@ -38,7 +41,6 @@ which have been introduced into version 0.3 of the PE Illumina worflow for
 amplicon data before:
 
 - Update ivar trim to version 1.3.1
-
 - Run ivar trim as the last mapped reads processing step before variant
   calling, i.e., after left-alignment of indels
 
@@ -47,7 +49,6 @@ and:
 - Rename the output of the ivar trim step to "Fully processed reads for
   variant calling (primer-trimmed, realigned reads)" like the corresponding
   output of the PE Illumina workflow
-
 - Fix a typo in the allowed input formats for the collection of sequenced
   reads, which caused fastqsanger.gz data to undergo an implicit and
   unnecessary decompression step.
