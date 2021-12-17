@@ -1,0 +1,94 @@
+name: Setup
+on:
+  workflow_call:
+    inputs:
+      python-version-list:
+        description: 'stringified JSON array of Python versions'
+        default: "[\"3.7\"]"
+        required: false
+        type: string
+      galaxy-fork:
+        description: 'Galaxy fork to use'
+        default: ''
+        required: false
+        type: string
+      galaxy-branch:
+        description: 'Galaxy branch to use'
+        default: ''
+        required: false
+        type: string
+      max-chunks:
+        description: 'maximum number of chunks to use'
+        default: 0
+        required: false
+        type: number
+    outputs:
+      galaxy-head-sha:
+        description: 'hash of the latest commit in the Galaxy repo'
+        value: ${{ jobs.setup.outputs.galaxy-head-sha }}
+      repository-list:
+        description: 'list of repositories'
+        value: ${{ jobs.setup.outputs.repository-list }}
+      chunk-count:
+        description: 'number of chunks'
+        value: ${{ jobs.setup.outputs.chunk-count }}
+      chunk-list:
+        description: 'list of chunks'
+        value: ${{ jobs.setup.outputs.chunk-list }}
+jobs:
+  setup:
+    name: Setup cache and determine changed repositories
+    runs-on: ubuntu-latest
+    outputs:
+      galaxy-head-sha: ${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
+      repository-list: ${{ steps.discover.outputs.repository-list }}
+      chunk-count: ${{ steps.discover.outputs.chunk-count }}
+      chunk-list: ${{ steps.discover.outputs.chunk-list }}
+    strategy:
+      matrix:
+        python-version: ${{ fromJson(inputs.python-version-list) }}
+    steps:
+    - name: Print github context properties
+      run: |
+        echo 'event: ${{ github.event_name }}'
+        echo 'sha: ${{ github.sha }}'
+        echo 'ref: ${{ github.ref }}'
+        echo 'head_ref: ${{ github.head_ref }}'
+        echo 'base_ref: ${{ github.base_ref }}'
+        echo 'event.before: ${{ github.event.before }}'
+        echo 'event.after: ${{ github.event.after }}'
+    - name: Determine latest commit in the Galaxy repo
+      id: get-galaxy-sha
+      run: echo "::set-output name=galaxy-head-sha::$(git ls-remote https://github.com/${{ inputs.galaxy-fork }}/galaxy refs/heads/${{ inputs.galaxy-branch }} | cut -f1)"
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v2
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
+    - name: Cache .planemo
+      uses: actions/cache@v2
+      id: cache-planemo
+      with:
+        path: ~/.planemo
+        key: planemo_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
+    # Install the `wheel` package so that when installing other packages which
+    # are not available as wheels, pip will build a wheel for them, which can be cached.
+    - name: Install wheel
+      run: pip install wheel
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Fake a Planemo run to update cache and determine commit range, repositories, and chunks
+      uses: galaxyproject/planemo-ci-action@v1
+      id: discover
+      with:
+        workflows: true
+        create-cache: ${{ steps.cache-pip.outputs.cache-hit != 'true' || steps.cache-planemo.outputs.cache-hit != 'true' }}
+        galaxy-fork: ${{ inputs.galaxy-fork }}
+        galaxy-branch: ${{ inputs.galaxy-branch }}
+        max-chunks: ${{ inputs.max-chunks }}
+        python-version: ${{ matrix.python-version }}
