@@ -54,8 +54,8 @@ try:
 except ImportError:
     from yaml import Loader
 
-OWNER = "galaxyproject"
-REPO = "iwc"
+THIS_DIR = Path(__file__).absolute().parent
+
 GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
 GH_API_URL = "https://api.github.com"
@@ -75,6 +75,7 @@ DOCKSTORE_CFG_NAME = ".dockstore.yml"
 DOCKSTORE_CFG_VERSION = "1.2"
 LM_URL = "https://api.lifemonitor.eu"
 LM_API_KEY = os.getenv("LM_API_KEY")
+CI_WORKFLOW = THIS_DIR / "wftest.yml"
 
 
 class HubClient:
@@ -229,7 +230,7 @@ def get_workflow_name(repo_dir):
     return f"{repo_dir.name}/{wf_entry['name']}"
 
 
-def make_crate(crate_dir, target_owner, resource, planemo_version):
+def make_crate(crate_dir, target_owner, planemo_version):
     wf_id = get_wf_id(crate_dir)
     planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
     crate = ROCrate(gen_preview=False)
@@ -254,6 +255,7 @@ def make_crate(crate_dir, target_owner, resource, planemo_version):
     if readme_source.is_file():
         crate.add_file(readme_source, "README.md")
     suite = crate.add_test_suite(identifier="#test1")
+    resource = f"repos/{target_owner}/{crate_dir.name}/actions/workflows/{CI_WORKFLOW.name}"
     crate.add_test_instance(suite, GH_API_URL, resource=resource,
                             service="github", identifier="test1_1")
     crate.add_test_definition(suite, source=planemo_source,
@@ -343,13 +345,15 @@ def main(args):
     args.hub_url = args.hub_url.rstrip("/")
     if args.upload_to_hub or args.upload_to_lm:
         client = HubClient(base_url=args.hub_url)
-    resource = f"repos/{args.owner}/{args.repo}/actions/workflows/{args.workflow}"
     for repo in find_repos(args.root, exclude=args.exclude):
         print(f"processing {repo}")
         if args.no_overwrite and (repo / "ro-crate-metadata.json").is_file():
             print("  crate exists, not overwriting")
         else:
-            make_crate(repo, args.target_owner, resource, args.planemo_version)
+            target_ci_workflow = repo / ".github" / "workflows" / CI_WORKFLOW.name
+            target_ci_workflow.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(CI_WORKFLOW, target_ci_workflow)
+            make_crate(repo, args.target_owner, args.planemo_version)
         if args.zip_dir:
             # if args.no_overwrite, zip existing crates
             path = zip_dir / f"{repo.name}.crate"
@@ -390,10 +394,6 @@ if __name__ == "__main__":
                         nargs="*", default=[os.getcwd()])
     parser.add_argument("--exclude", metavar="PATH", nargs="*", default=(),
                         help="paths to exclude while searching for workflow repos")
-    parser.add_argument("--owner", metavar="STRING", default=OWNER,
-                        help="owner of the github workflow that runs the tests")
-    parser.add_argument("--repo", metavar="STRING", default=REPO,
-                        help="repository that contains the github workflow")
     parser.add_argument("--workflow", metavar="STRING", default=GH_WORKFLOW,
                         help="github workflow file name (basename)")
     parser.add_argument("--target-owner", metavar="STRING", default=TARGET_OWNER,
