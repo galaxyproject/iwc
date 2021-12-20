@@ -11,5 +11,3 @@ see https://www.informaticsmatters.com/blog/2018/11/23/cavities-and-frankenstein
 Compounds are split into collections and then recombined to allow the workflow
 to be run in a highly parallelized fashion. To specify the level of
 parallelization, use the 'Collection size' parameter.
-
-Mod to trigger test
