@@ -4,20 +4,21 @@ on:
     - cron: '0 3 * * *'
   workflow_dispatch:
 jobs:
+  setup:
+    name: Setup cache
+    uses: galaxyproject/iwc/.github/workflows/setup.yml@main
+    with:
+      python-version-list: "[\"3.7\"]"
+      galaxy-fork: galaxyproject
+      galaxy-branch: master
   test:
     name: Test workflow
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: '3.7'
-    - name: install Planemo
-      run: |
-        pip install --upgrade pip
-        pip install planemo
-    - name: run planemo test
-      run: |
-        planemo test --biocontainers .
+    needs: setup
+    uses: galaxyproject/iwc/.github/workflows/test_workflows.yml@main
+    with:
+      galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
+      python-version-list: "[\"3.7\"]"
+      galaxy-fork: galaxyproject
+      galaxy-branch: master
+      repository-list: '.'
+      check-outputs: true
