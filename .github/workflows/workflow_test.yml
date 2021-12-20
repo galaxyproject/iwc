@@ -1,67 +1,18 @@
+# workflow level env vars cannot be used at the job level
+# https://github.community/t/how-to-set-and-access-a-workflow-variable/17335/15
 name: Galaxy Workflow Tests for push and PR
 on: [push, pull_request]
 env:
-  GALAXY_FORK: galaxyproject
-  GALAXY_BRANCH: master
   GITHUB_USER: iwc-workflows-bot
-  MAX_CHUNKS: 4
 jobs:
   setup:
     name: Setup cache and determine changed repositories
-    runs-on: ubuntu-latest
-    outputs:
-      galaxy-head-sha: ${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
-      repository-list: ${{ steps.discover.outputs.repository-list }}
-      chunk-count: ${{ steps.discover.outputs.chunk-count }}
-      chunk-list: ${{ steps.discover.outputs.chunk-list }}
-    strategy:
-      matrix:
-        python-version: ['3.7']
-    steps:
-    - name: Print github context properties
-      run: |
-        echo 'event: ${{ github.event_name }}'
-        echo 'sha: ${{ github.sha }}'
-        echo 'ref: ${{ github.ref }}'
-        echo 'head_ref: ${{ github.head_ref }}'
-        echo 'base_ref: ${{ github.base_ref }}'
-        echo 'event.before: ${{ github.event.before }}'
-        echo 'event.after: ${{ github.event.after }}'
-    - name: Determine latest commit in the Galaxy repo
-      id: get-galaxy-sha
-      run: echo "::set-output name=galaxy-head-sha::$(git ls-remote https://github.com/${{ env.GALAXY_FORK }}/galaxy refs/heads/${{ env.GALAXY_BRANCH }} | cut -f1)"
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache .cache/pip
-      uses: actions/cache@v2
-      id: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
-    - name: Cache .planemo
-      uses: actions/cache@v2
-      id: cache-planemo
-      with:
-        path: ~/.planemo
-        key: planemo_cache_py_${{ matrix.python-version }}_gxy_${{ steps.get-galaxy-sha.outputs.galaxy-head-sha }}
-    # Install the `wheel` package so that when installing other packages which
-    # are not available as wheels, pip will build a wheel for them, which can be cached.
-    - name: Install wheel
-      run: pip install wheel
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Fake a Planemo run to update cache and determine commit range, repositories, and chunks
-      uses: galaxyproject/planemo-ci-action@v1
-      id: discover
-      with:
-        workflows: true
-        create-cache: ${{ steps.cache-pip.outputs.cache-hit != 'true' || steps.cache-planemo.outputs.cache-hit != 'true' }}
-        galaxy-fork: ${{ env.GALAXY_FORK }}
-        galaxy-branch: ${{ env.GALAXY_BRANCH }}
-        max-chunks: ${{ env.MAX_CHUNKS }}
-        python-version: ${{ matrix.python-version }}
+    uses: galaxyproject/iwc/.github/workflows/setup.yml@main
+    with:
+      python-version-list: "[\"3.7\"]"
+      galaxy-fork: galaxyproject
+      galaxy-branch: master
+      max-chunks: 4
 
   # Planemo lint the changed repositories
   lint:
@@ -96,52 +47,18 @@ jobs:
 
   test:
     name: Test workflows
-    runs-on: ubuntu-latest
     needs: setup
     if: needs.setup.outputs.repository-list != ''
-    strategy:
-      fail-fast: false
-      matrix:
-        chunk: ${{ fromJson(needs.setup.outputs.chunk-list) }}
-        python-version: ['3.7']
-    services:
-      postgres:
-        image: postgres:11
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache .cache/pip
-      uses: actions/cache@v2
-      id: cache-pip
-      with:
-        path: ~/.cache/pip
-        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy-head-sha }}
-    - name: Planemo test workflows
-      uses: galaxyproject/planemo-ci-action@v1
-      id: test-workflows
-      with:
-        mode: test
-        workflows: true
-        setup-cvmfs: true
-        repository-list: ${{ needs.setup.outputs.repository-list }}
-        galaxy-fork: ${{ env.GALAXY_FORK }}
-        galaxy-branch: ${{ env.GALAXY_BRANCH }}
-        chunk: ${{ matrix.chunk }}
-        chunk-count: ${{ needs.setup.outputs.chunk-count }}
-    - uses: actions/upload-artifact@v2
-      with:
-        name: 'Workflow test output ${{ matrix.chunk }}'
-        path: upload
+    uses: galaxyproject/iwc/.github/workflows/test_workflows.yml@main
+    with:
+      galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
+      chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
+      chunk-list: ${{ needs.setup.outputs.chunk-list }}
+      python-version-list: "[\"3.7\"]"
+      repository-list: ${{ needs.setup.outputs.repository-list }}
+      galaxy-fork: galaxyproject
+      galaxy-branch: master
+      check-outputs: false
 
   combine_outputs:
     # same as tool step
