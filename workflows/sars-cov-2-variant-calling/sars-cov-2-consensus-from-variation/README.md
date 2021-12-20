@@ -26,3 +26,4 @@ sequence of their sample.
 Genomic positions with a coverage (calculated from the read alignments input)
 below another user-defined threshold will be hard-masked, too, unless they are
 consensus variant sites.
+
