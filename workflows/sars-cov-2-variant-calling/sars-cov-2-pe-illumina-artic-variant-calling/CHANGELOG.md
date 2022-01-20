@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.5] 2022-01-20
+
+### Changed
+
+- Fix calculation of called variant allele-frequencies.
+
+  https://github.com/CSB5/lofreq/issues/80 means that lofreq-calculated AF
+  values are lower bounds of true AFs when bases are excluded from calling
+  based on base quality. The extent of AF underestimation depends on the
+  fraction of bases with sub-threshold (30 for this workflow) base qualities.
+  This version avoids the issue by running lofreq call twice: once with
+  --min-bq 30 for obtaining variant calls, once with --min-bq 1 to obtain
+  correctly calculated call stats for the variants. Calls and their stats are
+  then merged using bcftools annotate.
+
+- Simplify amplicon bias correction.
+
+  After removal of biased amplicons, variants are recalled with --min-bq 1 to
+  obtain updated call stats. These are then used to update the original list of
+  variants using bcftools annotate, which simultaneously adds the AmpliconBias
+  flag to variants that could not be recalled.
+
+- Upgrade the Galaxy wrapper versions of ivar trim and ivar removereads.
+
+  This makes it easy for users to calculate primer amplicon info from suitable
+  primer scheme bed files instead of passing the info as a separate file.
+  This workflow sticks to the previous behavior to avoid new requirements on
+  primer names.
+
+### Added
+
+- Add a step to filter out failed datasets before flattening the Qualimap BamQC
+  data for use by MultiQC.
+
+  Qualimap BamQC fails on empty BAM input and trying to flatten the resulting
+  collection containing failed datasets would cause the invocation of the
+  workflow to fail.
+
 ## [0.4.2] 2021-12-13
 
 ### Added
