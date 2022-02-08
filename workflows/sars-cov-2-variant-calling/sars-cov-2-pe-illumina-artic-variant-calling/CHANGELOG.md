@@ -18,7 +18,7 @@
   line description of the AF field to be explicit about the meaning of lofreq's
   AF value.
 
-## Changed
+### Changed
 
 - Increase/deactivate the default upper AF threshold for biased amplicon detection
 
