@@ -30,7 +30,7 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
     galaxy_wfs = gi.workflows.get_workflows()
     # a hack: we use a dataset which is tagged with the TRS ids of all already published workflows.
     # before installing new workflows, we check if the TRS id is in this list and if not we install.
-    # when https://github.com/galaxyproject/galaxy/pull/13541 is available on all servers the workflows
+    # when https://github.com/galaxyproject/galaxy/pull/13376 is available on all servers the workflows
     # will be annotated directly with the TRS ids and we can remove this.
     tagged_dataset = gi.datasets.get_datasets(limit=1, order="create_time-asc")[0]
     newly_installed_wf_trs_ids = []
@@ -60,7 +60,10 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
                         workflow_id=imported_wf["id"],
                         name=imported_wf["name"].rstrip(
                             " (imported from uploaded file)"
-                        ),
+                        )
+                        + " (release "  # include release in the name otherwise the user can't find it
+                        + versioned_dockstore_wf["id"].split(":")[-1]
+                        + ")",
                         published=True,
                     )
                     newly_installed_wf_trs_ids.append(
