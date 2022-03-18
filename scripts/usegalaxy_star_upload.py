@@ -38,6 +38,8 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
 
     for dockstore_wf in dockstore_wfs:
         for versioned_dockstore_wf in dockstore_wf["versions"]:
+            if versioned_dockstore_wf["id"].split(":")[-1] == "main":
+                continue  # no point installing non-release versions
             if versioned_dockstore_wf["id"].lstrip("#") not in tagged_dataset["tags"]:
                 logging.info(f"Starting installation of {versioned_dockstore_wf['id']}")
                 # workflow missing - let's install it
