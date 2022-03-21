@@ -25,6 +25,13 @@ Click on "Workflows", "Import" and click on the "search form" link.
 
 When importing a workflow form workflowhub.eu you currently need to search for `organization:"IWC Workflows"`.
 
+## Accessing IWC workflows via usegalaxy.* servers
+
+All IWC workflows are automatically installed onto usegalaxy.* servers (i.e. [Galaxy Main](https://usegalaxy.org), [Galaxy Europe](https://usegalaxy.eu), [Galaxy Australia](https://usegalaxy.org.au)). They can be accessed via the following lists of published workflows:
+* https://usegalaxy.org/workflows/list_published
+* https://usegalaxy.eu/workflows/list_published
+* https://usegalaxy.org.au/workflows/list_published
+
 ## Contributing a Workflow
 
 Anyone can contribute a Galaxy Workflow. Please check out the [Adding workflow guidelines](workflows/README.md#adding-workflows).
