@@ -8,7 +8,7 @@ Comparing annotation workflows and deciding which one is the best is an open que
 
 As a possible approach to assess whether changes in the workflow contribute to its improvement, one possibility is to use the [ParseVal](https://usegalaxy.eu/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/aegean_parseval/aegean_parseval/0.16.0) tool, in order to compare the obtained result with a standard annotation.
 
-If you only want to know is an annotation looks reasonable based on the current test data, you can just count the genes in the output GFF, and/or compare the total length of genes.
+If you only want to know if an annotation looks reasonable based on the current test data, you can just count the genes in the output GFF, and/or compare the total length of genes.
 
 ### Licencing
 
