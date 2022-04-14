@@ -79,17 +79,15 @@ To run a workflow:
 #### VGP-Hifiasm (assembly using long reads)
 
 ##### :dna: :arrow_right: :computer: Inputs
-
 - HiFi reads (as a collection)
 - Meryl database (from **Meryl Database Creation** workflow)
 
 ##### :computer: :arrow_right: :dna: Outputs
-
 - Primary assembly (as .gfa and as .fasta) [c1]
 - Alternate assembly (as .gfa and as .fasta) [c2]
 - HiFi reads with reads containing adapter sequence removed (as a collection) [trimmed]
 
-Quality control (QC):
+:bar_chart: Quality control (QC):
 - BUSCO for primary assembly [c1]
 - QUAST for primary and alternate assembly [c1, c2]
 - Merqury files (as collections) for primary and alternate assembly [c]
@@ -100,7 +98,6 @@ Quality control (QC):
 #### VGP-Purge-assembly (purge dups)
 
 ##### :dna: :arrow_right: :computer: Inputs
-
 - Primary assembly [c1]
 - Alternate assembly [c2]
 - Genomescope model parameters (from **Meryl Database Creation** workflow) [genomescope_params]
@@ -108,7 +105,6 @@ Quality control (QC):
 - *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
 
 ##### :computer: :arrow_right: :dna: Outputs
-
 - Purged primary assembly [p1]
     - the sequences which were purged from the primary [seq_purged_p1]
 - Purged alternate assembly [p2]
@@ -122,7 +118,7 @@ Quality control (QC):
     - calcuts cutoff [calcuts_cutoffs]
     - purge_dups regions (as .bed) [purgeoverlap_bed]
 
-QC:
+:bar_chart: QC:
 - BUSCO for purged primary assembly [p1]
 - QUAST for purged primary and purged alternate assembly [p1, p2]
 - Merqury files (as collections) for purged primary and alternate assembly [p]
@@ -133,7 +129,6 @@ QC:
 #### Scaffolding with Bionano optical maps
 
 ##### :dna: :arrow_right: :computer: Inputs
-
 - Purged primary assembly [p1]
 - Bionano optical map (.cmap file)
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
@@ -141,7 +136,6 @@ QC:
     - can be used if one has previously run bionano scaffolding to obtain a conflicts file
 
 ##### :computer: :arrow_right: :dna: Outputs
-
 - Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
 - Bionano hybrid scaffolds [scaffolded_s1]
 - Contigs that didn't get scaffolded [non_scaffolded_s1]
@@ -149,15 +143,26 @@ QC:
 - Conflicts [s1_conflicts]
 - AGP file [s1_agp]
 
-
+:bar_chart: QC:
+- QUAST [s1]
 
 #### Scaffolding with HiC
 
+##### :dna: :arrow_right: :computer: Inputs
+- Scaffolded assembly from **Bionano workflow** [s1]
+    - OR if you do not have bionano data: purged primary assembly from **purge_dups workflow** [p1]
+- HiC forward reads (R1)
+    - NOTE: if you have multiple .fastq.gz files of R1 reads, then you must concatenate them into one .fastq.gz
+- HiC reverse reads (R2)
+    - NOTE: if you have multiple .fastq.gz files of R2 reads, then you must concatenate them into one .fastq.gz. The reads must be in the same order as the concatenated R1 reads!
+- Restriction enzyme sequences (typically `re_bases.txt` in GenomeArk)
+- Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
+- **(OPTIONAL)** Sequence graph (as .gfa)
 
+##### :computer: :arrow_right: :dna: Outputs
+- Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
 
-##### Inputs
-
-##### Outputs
-
+:bar_chart: QC:
+- QUAST [s1]
 
 #### Export Workflows
