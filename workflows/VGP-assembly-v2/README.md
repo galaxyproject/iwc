@@ -97,8 +97,7 @@ Quality control (QC):
 
 #### :dna: VGP-Purge-assembly (purge dups)
 
-
-##### Inputs
+##### :arrow_right: :computer: Inputs
 
 - Primary assembly [c1]
 - Alternate assembly [c2]
@@ -106,8 +105,7 @@ Quality control (QC):
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
 - *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
 
-
-##### Outputs
+##### :computer: :arrow_right: Outputs
 
 - Purged primary assembly [p1]
     - the sequences which were purged from the primary [seq_purged_p1]
