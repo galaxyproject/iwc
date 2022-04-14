@@ -95,7 +95,7 @@ Quality control (QC):
     - stats (completeness)
     - QV stats
 
-#### VGP-Purge-assembly (purge dups)
+#### :dna: VGP-Purge-assembly (purge dups)
 
 
 ##### Inputs
