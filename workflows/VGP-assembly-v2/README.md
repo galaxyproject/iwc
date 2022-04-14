@@ -115,22 +115,40 @@ Quality control (QC):
     - the sequences which were purged from the alternate [seq_purged_p2]
 - Purge_dups intermediates (for primary and alternate)
     - coverage [depths]
-    - PBCSTAT base coverage  [calcuts_basecov)]
+    - PBCSTAT base coverage  [calcuts_basecov]
     - PBCSTAT base coverage (as .wig) [calcuts_basecov_wig]
     - histogram plot [calcuts_hist]
     - calcuts log [calcuts_log]
     - calcuts cutoff [calcuts_cutoffs]
     - purge_dups regions (as .bed) [purgeoverlap_bed]
 
-#### Scaffolding with Bionano optical mapping
+QC:
+- BUSCO for purged primary assembly [p1]
+- QUAST for purged primary and purged alternate assembly [p1, p2]
+- Merqury files (as collections) for purged primary and alternate assembly [p]
+    - plots
+    - completeness stats
+    - QV stats
 
-##### Inputs
+#### Scaffolding with Bionano optical maps
 
-- 
+##### :dna: :arrow_right: :computer: Inputs
 
-##### Inputs
+- Purged primary assembly [p1]
+- Bionano optical map (.cmap file)
+- Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
+- **(OPTIONAL)** Conflict resolution file
+    - can be used if one has previously run bionano scaffolding to obtain a conflicts file
 
-##### Outputs
+##### :computer: :arrow_right: :dna: Outputs
+
+- Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
+- Bionano hybrid scaffolds [scaffolded_s1]
+- Contigs that didn't get scaffolded [non_scaffolded_s1]
+- Hybrid scaffold report [s1_report]
+- Conflicts [s1_conflicts]
+- AGP file [s1_agp]
+
 
 
 #### Scaffolding with HiC
