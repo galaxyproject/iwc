@@ -1,6 +1,6 @@
 # Vertebrate Genome Project in Galaxy
 
-### The vertebrate Genome Project
+### The Vertebrate Genome Project
 
 
 ## Usage
@@ -61,7 +61,7 @@ To run a workflow:
 
 
 
-#### Quality control and parameter estimation.
+#### VGP-Meryldb-creation (quality control and parameter estimation)
 
 
 ##### Inputs
@@ -74,22 +74,51 @@ To run a workflow:
 - Meryl database of kmer counts
 - GenomeScope plots (linear, log, transformed linear, transformed log), summary, model parameters
 
-#### Phased assembly with Pacbio long reads
-
+#### VGP-Hifiasm (assembly using long reads)
 
 ##### Inputs
 
 - HiFi reads (as a collection)
-- Meryl database (from **Quality control and parameter estimation** workflow)
+- Meryl database (from **Meryl Database Creation** workflow)
 
 ##### Outputs
 
-- Primary assembly 
-- Alternate assembly
+- Primary assembly (as .gfa and as .fasta) [c1]
+- Alternate assembly (as .gfa and as .fasta) [c2]
+- HiFi reads with reads containing adapter sequence removed (as a collection) [trimmed]
 
+Quality control (QC):
+- BUSCO for primary assembly [c1]
+- QUAST for primary and alternate assembly [c1, c2]
+- Merqury files (as collections) for primary and alternate assembly [c]
+    - plots (spectra-cn, spectra-asm, assembly01 spectra-cn, assembly02 spectra-cn)
+    - stats (completeness)
+    - QV stats
+
+#### VGP-Purge-assembly (purge dups)
+
+
+##### Inputs
+
+- Primary assembly [c1]
+- Alternate assembly [c2]
+- Genomescope model parameters (from **Meryl Database Creation** workflow) [genomescope_params]
+- Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
+- *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
+
+
+##### Outputs
+
+- Purged primary assembly [p1]
+    - the sequences which were purged from the primary [seq_purged_p1]
+- Purged alternate assembly [p2]
+    - the sequences which were purged from the alternate [seq_purged_p2]
 
 #### Scaffolding with Bionano optical mapping
 
+##### Inputs
+
+- 
 
 ##### Inputs
 
