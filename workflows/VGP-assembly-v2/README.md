@@ -160,9 +160,17 @@ To run a workflow:
 - **(OPTIONAL)** Sequence graph (as .gfa)
 
 ##### :computer: :arrow_right: Outputs
-- Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
+- HiC scaffolded assembly [s2]
+    - this is the final primary assembly
+- AGP file [s2]
 
 :bar_chart: QC:
-- QUAST [s1]
+- QUAST [s2]
+- BUSCO [s2]
+- PretextMap for pre-HiC-scaffolding assembly [s1]
+- PretextMap for post-HiC-scaffolding assembly [s2]
+- PretextSnapshot for pre- & post-HiC-scaffolding assembly [s1, s2]
+- Merged alignments for pre- & post-HiC-scaffolding assembly [merged_alignments]
+- Sorted & merged alignments for pre- & post-HiC-scaffolding assembly [sorted_merged_alignments]
 
 #### Export Workflows
