@@ -1,7 +1,8 @@
 # Vertebrate Genome Project in Galaxy
 
-### The Vertebrate Genome Project
+### The Vertebrate Genome Project (VGP)
 
+This repository hosts the Galaxy workflows for the Vertebrate Genome Project's assembly pipeline. Each workflow's *.ga* file can be found in the folder with the corresponding name. For more information about the pipeline in general and the software/technologies used by the VGP for assembly, please see this [full-length GTN training tutorial](https://training.galaxyproject.org/training-material//topics/assembly/tutorials/vgp_genome_assembly/tutorial.html). For a shorter, workflow-focused tutorial, please see this [shortened GTN training tutorial](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/vgp_workflow_training/tutorial.html). 
 
 ## Usage
 
@@ -64,24 +65,25 @@ To run a workflow:
 #### VGP-Meryldb-creation (quality control and parameter estimation)
 
 
-##### Inputs
+##### :dna: :arrow_right: :computer: Inputs
 
 - HiFi reads (as a collection)
 
 > Note : Learn about collections with the [Using dataset collections](https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/collections/tutorial.html) tutorial.
-##### Outputs
+
+##### :computer: :arrow_right: :dna: Outputs
 
 - Meryl database of kmer counts
 - GenomeScope plots (linear, log, transformed linear, transformed log), summary, model parameters
 
 #### VGP-Hifiasm (assembly using long reads)
 
-##### Inputs
+##### :dna: :arrow_right: :computer: Inputs
 
 - HiFi reads (as a collection)
 - Meryl database (from **Meryl Database Creation** workflow)
 
-##### Outputs
+##### :computer: :arrow_right: :dna: Outputs
 
 - Primary assembly (as .gfa and as .fasta) [c1]
 - Alternate assembly (as .gfa and as .fasta) [c2]
@@ -95,9 +97,9 @@ Quality control (QC):
     - stats (completeness)
     - QV stats
 
-#### :dna: VGP-Purge-assembly (purge dups)
+#### VGP-Purge-assembly (purge dups)
 
-##### :arrow_right: :computer: Inputs
+##### :dna: :arrow_right: :computer: Inputs
 
 - Primary assembly [c1]
 - Alternate assembly [c2]
@@ -105,12 +107,20 @@ Quality control (QC):
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
 - *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
 
-##### :computer: :arrow_right: Outputs
+##### :computer: :arrow_right: :dna: Outputs
 
 - Purged primary assembly [p1]
     - the sequences which were purged from the primary [seq_purged_p1]
 - Purged alternate assembly [p2]
     - the sequences which were purged from the alternate [seq_purged_p2]
+- Purge_dups intermediates (for primary and alternate)
+    - coverage [depths]
+    - PBCSTAT base coverage  [calcuts_basecov)]
+    - PBCSTAT base coverage (as .wig) [calcuts_basecov_wig]
+    - histogram plot [calcuts_hist]
+    - calcuts log [calcuts_log]
+    - calcuts cutoff [calcuts_cutoffs]
+    - purge_dups regions (as .bed) [purgeoverlap_bed]
 
 #### Scaffolding with Bionano optical mapping
 
