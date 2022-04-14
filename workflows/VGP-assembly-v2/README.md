@@ -66,20 +66,26 @@ To run a workflow:
 
 ##### Inputs
 
-- A collection of Hifi reads
+- HiFi reads (as a collection)
 
 > Note : Learn about collections with the [Using dataset collections](https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/collections/tutorial.html) tutorial.
 ##### Outputs
 
-- A Meryl Database of kmer counts
--
+- Meryl database of kmer counts
+- GenomeScope plots (linear, log, transformed linear, transformed log), summary, model parameters
 
 #### Phased assembly with Pacbio long reads
 
 
 ##### Inputs
 
+- HiFi reads (as a collection)
+- Meryl database (from **Quality control and parameter estimation** workflow)
+
 ##### Outputs
+
+- Primary assembly 
+- Alternate assembly
 
 
 #### Scaffolding with Bionano optical mapping
