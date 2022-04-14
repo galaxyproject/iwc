@@ -62,8 +62,9 @@ To run a workflow:
 
 
 
-#### VGP-Meryldb-creation (quality control and parameter estimation)
+### Pseudohaplotype assembly (primary/alternate) assembly with hifiasm and purge_dups
 
+#### VGP-Meryldb-creation (quality control and parameter estimation)
 
 ##### :arrow_right: :computer: Inputs
 
