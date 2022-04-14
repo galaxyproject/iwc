@@ -65,24 +65,24 @@ To run a workflow:
 #### VGP-Meryldb-creation (quality control and parameter estimation)
 
 
-##### :dna: :arrow_right: :computer: Inputs
+##### :arrow_right: :computer: Inputs
 
 - HiFi reads (as a collection)
 
 > Note : Learn about collections with the [Using dataset collections](https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/collections/tutorial.html) tutorial.
 
-##### :computer: :arrow_right: :dna: Outputs
+##### :computer: :arrow_right: Outputs
 
 - Meryl database of kmer counts
 - GenomeScope plots (linear, log, transformed linear, transformed log), summary, model parameters
 
 #### VGP-Hifiasm (assembly using long reads)
 
-##### :dna: :arrow_right: :computer: Inputs
+##### :arrow_right: :computer: Inputs
 - HiFi reads (as a collection)
 - Meryl database (from **Meryl Database Creation** workflow)
 
-##### :computer: :arrow_right: :dna: Outputs
+##### :computer: :arrow_right: Outputs
 - Primary assembly (as .gfa and as .fasta) [c1]
 - Alternate assembly (as .gfa and as .fasta) [c2]
 - HiFi reads with reads containing adapter sequence removed (as a collection) [trimmed]
@@ -97,14 +97,14 @@ To run a workflow:
 
 #### VGP-Purge-assembly (purge dups)
 
-##### :dna: :arrow_right: :computer: Inputs
+##### :arrow_right: :computer: Inputs
 - Primary assembly [c1]
 - Alternate assembly [c2]
 - Genomescope model parameters (from **Meryl Database Creation** workflow) [genomescope_params]
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
 - *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
 
-##### :computer: :arrow_right: :dna: Outputs
+##### :computer: :arrow_right: Outputs
 - Purged primary assembly [p1]
     - the sequences which were purged from the primary [seq_purged_p1]
 - Purged alternate assembly [p2]
@@ -128,14 +128,14 @@ To run a workflow:
 
 #### Scaffolding with Bionano optical maps
 
-##### :dna: :arrow_right: :computer: Inputs
+##### :arrow_right: :computer: Inputs
 - Purged primary assembly [p1]
 - Bionano optical map (.cmap file)
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
 - **(OPTIONAL)** Conflict resolution file
     - can be used if one has previously run bionano scaffolding to obtain a conflicts file
 
-##### :computer: :arrow_right: :dna: Outputs
+##### :computer: :arrow_right: Outputs
 - Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
 - Bionano hybrid scaffolds [scaffolded_s1]
 - Contigs that didn't get scaffolded [non_scaffolded_s1]
@@ -148,7 +148,7 @@ To run a workflow:
 
 #### Scaffolding with HiC
 
-##### :dna: :arrow_right: :computer: Inputs
+##### :arrow_right: :computer: Inputs
 - Scaffolded assembly from **Bionano workflow** [s1]
     - OR if you do not have bionano data: purged primary assembly from **purge_dups workflow** [p1]
 - HiC forward reads (R1)
@@ -159,7 +159,7 @@ To run a workflow:
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
 - **(OPTIONAL)** Sequence graph (as .gfa)
 
-##### :computer: :arrow_right: :dna: Outputs
+##### :computer: :arrow_right: Outputs
 - Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
 
 :bar_chart: QC:
