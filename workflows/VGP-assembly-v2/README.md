@@ -42,13 +42,13 @@ The VGP pipeline is composed of :
     4. Scafolding using Bionano optical mapping (optional)
     5. Scafolding using HiC data
 -   Two secondary workflows to correct the assembly purging by using custom cutoffs
-   - Custom Purging of duplications and overlap from the primary assembly
-   - Custom Purging of duplications and overlap from the alternate assembly
+    - Custom Purging of duplications and overlap from the primary assembly
+    - Custom Purging of duplications and overlap from the alternate assembly
 -   Four export workflows to AWS VGP repository
-   - Phased assembly export
-   - Purged assembly export
-   - Bionano scaffolding export
-   - HiC Scafolding export
+    - Phased assembly export
+    - Purged assembly export
+    - Bionano scaffolding export
+    - HiC Scafolding export
 
 > Note: For more details about the workflows steps by steps, which parameters to use, and how to understand the results, read our
 [VGP assembly pipeline tutorial](https://training.galaxyproject.org/training-material//topics/assembly/tutorials/vgp_genome_assembly/tutorial.html)
@@ -259,4 +259,30 @@ To sum up the differences:
 
 ## Export Workflows
 
-to-do!
+Galaxy features a robouts export tool that allows users to export datasets and collections to remote hosts. The VGP uses this tool to export assemblies (including intermediate files) to the GenomeArk AWS bucket. The export tool can be used on a small scale for a few files, but for our purposes we have export workflows that expedite the process and name all the files according to the pre-established scheme on GenomeArk.
+
+> Note: in order to export directly to the VGP's GenomeArk AWS bucket, you must be added as a member of the VGP user group by a usegalaxy admin.
+
+**Necessary metadata**: each exported assembly requires some basic information to be used to name the files and place them appropriately within GenomeArk.
+- species_full_name: the species' full name with an underscore between the genus and species, *e.g.*, `Taeniopygia_guttata`
+- species_id: the species' VGP ID, *e.g.*, `bTaeGut2`
+- version: the version of the final assembly, usually a date represented as year/month/day with no slashes, *e.g.*, an assembly finished on April 15, 2022 would be `20220415`
+- **note**: some of these fields appear *twice* in the export workflow, so take care not to miss one!
+
+The export workflows are structured as a series of prompts where the user selects the desired output from a dropdown box. The user can also drag items directly from the right-hand History panel directly to the prompt, if so desired. Outputs have been tagged appropriately throughout the workflows in order to help the user choose which output corresponds to which export prompt. (Stay tuned for a future update that would have the export workflows autofill according to tags!)
+
+As an example, the **Hifiasm export** workflow is where the GenomeScope plots are exported. In the below image, one can see that input prompt **8. Genomescope transformed Log plot** corresponds to the transformed log plot from GenomeScope, which is tagged as `genomescope_tr_log` in the history. The tag is clearly visible in the drop down box; additionally, one can type in the drop down menu to search the outputs.
+
+![Example of export workflow field requesting the transformed log plot from GenomeScope. Dropdown menu shows tags on GenomeScope items, including the desired genomescope_tr_log tag.](img/export_example_genomescope.png)
+
+Once all fields have been filled out appropriately, the user must select a destination to export to -- this is the Directory URI field. 
+
+Make sure you do not change the option "Don't sanitize values". 
+
+![Directory URI prompt.](img/export_example_destination_1.png)
+
+For the VGP's GenomeArk bucket, this destination is **"GenomeArk Test Instance" > "species"**. Once on the list of species, just hit `Select this folder`. Do *not* click on any of the individual species subfolders.
+
+![Export to GenomeArk instructions.](img/export_example_destination_2.png)
+
+**NOTE**: if an export workflow contains collections, then you may need to specify the export destination more than once. Take care not to miss one!
