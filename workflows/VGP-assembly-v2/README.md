@@ -72,7 +72,7 @@ To run a workflow:
 
 - HiFi reads (as a collection)
 
-> Note : Learn about collections with the [Using dataset collections](https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/collections/tutorial.html) tutorial.
+> Note: Learn about collections with the [Using dataset collections](https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/collections/tutorial.html) tutorial.
 
 :computer: :arrow_right: **Outputs**
 
@@ -101,7 +101,6 @@ To run a workflow:
 ### VGP-Purge-assembly (purge dups)
 
 :arrow_right: :computer: **Inputs**
-
 - Primary assembly [c1]
 - Alternate assembly [c2]
 - Genomescope model parameters (from **Meryl Database Creation** workflow) [genomescope_params]
@@ -109,7 +108,6 @@ To run a workflow:
 - *trimmed* HiFi reads (from **Hifiasm** workflow) (as a collection) [trimmed]
 
 :computer: :arrow_right: **Outputs**
-
 - Purged primary assembly [p1]
     - the sequences which were purged from the primary [seq_purged_p1]
 - Purged alternate assembly [p2]
@@ -134,7 +132,6 @@ To run a workflow:
 ### Scaffolding with Bionano optical maps
 
 :arrow_right: :computer: **Inputs**
-
 - Purged primary assembly [p1]
 - Bionano optical map (.cmap file)
 - Estimated genome size (from **Hifiasm** workflow) [estimated_genome_size]
@@ -142,7 +139,6 @@ To run a workflow:
     - can be used if one has previously run bionano scaffolding to obtain a conflicts file
 
 :computer: :arrow_right: **Outputs**
-
 - Complete s1 assembly: bionano hybrid scaffolds + contigs that didn't get scaffolded [complete_s1]
 - Bionano hybrid scaffolds [scaffolded_s1]
 - Contigs that didn't get scaffolded [non_scaffolded_s1]
@@ -156,7 +152,6 @@ To run a workflow:
 ### Scaffolding with HiC
 
 :arrow_right: :computer: **Inputs**
-
 - Scaffolded assembly from **Bionano workflow** [s1]
     - OR if you do not have bionano data: purged primary assembly from **purge_dups workflow** [p1]
 - HiC forward reads (R1)
@@ -168,7 +163,6 @@ To run a workflow:
 - **(OPTIONAL)** Sequence graph (as .gfa)
 
 :computer: :arrow_right: **Outputs**
-
 - HiC scaffolded assembly [s2]
     - this is the final primary assembly
 - AGP file [s2]
@@ -192,17 +186,25 @@ To sum up the differences:
 - Bionano & HiC-scaffolding: same workflows, but run once on hap1, and once on hap2
 
 ### Hifiasm HiC assembly
-
 :arrow_right: :computer: **Inputs**
-
-- inputs
+- Meryl database (from **Meryl Database Creation** workflow)
+- HiC forward reads (R1)
+    - NOTE: if you have multiple .fastq.gz files of R1 reads, then you must concatenate them into one .fastq.gz
+- HiC reverse reads (R2)
+    - NOTE: if you have multiple .fastq.gz files of R2 reads, then you must concatenate them into one .fastq.gz. The reads must be in the same order as the concatenated R1 reads!
+- HiFi reads (as a collection)
 
 :computer: :arrow_right: **Outputs**
-
-- outputs
+- Hap1 assembly (as .gfa and .fasta) [hap1]
+- Hap2 assembly (as .gfa and .fasta) [hap2]
 
 :bar_chart: **Quality Control**
-- qc
+- BUSCO for purged primary assembly [hap1, hap2]
+- QUAST for purged primary and purged alternate assembly [hap1, hap2]
+- Merqury files (as collections) for purged primary and alternate assembly [hic_phased]
+    - plots
+    - completeness stats
+    - QV stats
 
 ## Trio-based assembly (mat/pat) in hifiasm using long reads and parental data
 
@@ -213,6 +215,32 @@ To sum up the differences:
 - Hifiasm: use the **Hifiasm trio** workflow instead!
 - Bionano & HiC-scaffolding: same workflows, but run once on hap1, and once on hap2
 
+### MerylDB trio
+:arrow_right: :computer: **Inputs**
+- Parent 1 data as a collection of paired reads
+> Note: see 
+- Parent 2 data as a collection of paired reads
+
+### Hifiasm trio assembly
+:arrow_right: :computer: **Inputs**
+- Meryl database (from **Meryl Database Creation** workflow)
+- HiC forward reads (R1)
+    - NOTE: if you have multiple .fastq.gz files of R1 reads, then you must concatenate them into one .fastq.gz
+- HiC reverse reads (R2)
+    - NOTE: if you have multiple .fastq.gz files of R2 reads, then you must concatenate them into one .fastq.gz. The reads must be in the same order as the concatenated R1 reads!
+- HiFi reads (as a collection)
+
+:computer: :arrow_right: **Outputs**
+- Hap1 assembly (as .gfa and .fasta) [hap1]
+- Hap2 assembly (as .gfa and .fasta) [hap2]
+
+:bar_chart: **Quality Control**
+- BUSCO for purged primary assembly [hap1, hap2]
+- QUAST for purged primary and purged alternate assembly [hap1, hap2]
+- Merqury files (as collections) for purged primary and alternate assembly [hic_phased]
+    - plots
+    - completeness stats
+    - QV stats
 
 ## Export Workflows
 
