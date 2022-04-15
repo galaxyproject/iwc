@@ -76,7 +76,9 @@ To run a workflow:
 
 :computer: :arrow_right: **Outputs**
 
-- Meryl database of kmer counts
+- Meryl database of k-mer counts
+
+:bar_chart: **Quality Control**
 - GenomeScope plots (linear, log, transformed linear, transformed log), summary, model parameters
 
 ### VGP-Hifiasm (assembly using long reads)
@@ -199,48 +201,61 @@ To sum up the differences:
 - Hap2 assembly (as .gfa and .fasta) [hap2]
 
 :bar_chart: **Quality Control**
-- BUSCO for purged primary assembly [hap1, hap2]
-- QUAST for purged primary and purged alternate assembly [hap1, hap2]
-- Merqury files (as collections) for purged primary and alternate assembly [hic_phased]
+- BUSCO for each assembly separately [hap1, hap2]
+- QUAST for each assembly separately [hap1, hap2]
+- Merqury files (as collections) for hap1 and hap2 assemblies [hic_phased]
     - plots
     - completeness stats
     - QV stats
 
 ## Trio-based assembly (mat/pat) in hifiasm using long reads and parental data
 
-This approach uses hifiasm in trio mode in order to phase the data into maternal and paternal haplotypes, based on parental reads (usually Illumina short reads). This requires the usage of a different hifiasm workflow, as well as a different MerylDB workflow, which generates additional quality control and necessary files for the parental data. As with HiC-phased assembly, the bionano & HiC-scaffolding workflows will be the same, but ran once per haplotype.
+This approach uses hifiasm in trio mode in order to phase the data into maternal and paternal haplotypes, based on parental reads (usually Illumina short reads). This requires the usage of a different hifiasm workflow, as well as an additional different MerylDB workflow, which generates additional quality control and necessary files for the parental data. As with HiC-phased assembly, the bionano & HiC-scaffolding workflows will be the same, but ran once per haplotype.
 
 To sum up the differences: 
-- Meryl DB: use the **MerylDB trio** workflow instead!
+- Meryl DB: use the **MerylDB trio** workflow for the parents, and the **Meryldb creation** workflow for the child!
 - Hifiasm: use the **Hifiasm trio** workflow instead!
 - Bionano & HiC-scaffolding: same workflows, but run once on hap1, and once on hap2
 
 ### MerylDB trio
 :arrow_right: :computer: **Inputs**
 - Parent 1 data as a collection of paired reads
-> Note: see 
+> Note: please see [this tutorial](https://usegalaxy.fr/training-material/faqs/galaxy/collections_build_list_paired.html) for more information on special paired read collections
 - Parent 2 data as a collection of paired reads
+
+:computer: :arrow_left: **Outputs**
+- Parent 1 MerylDB
+- Parent 2 MerylDB
+- Parent 1 interlaced reads (collection)
+- Parent 2 interlaced reads (collection)
+
+:bar_chart: **Quality Control**
+- Parent 1 GenomeScope
+- Parent 2 GenomeScope
 
 ### Hifiasm trio assembly
 :arrow_right: :computer: **Inputs**
-- Meryl database (from **Meryl Database Creation** workflow)
-- HiC forward reads (R1)
-    - NOTE: if you have multiple .fastq.gz files of R1 reads, then you must concatenate them into one .fastq.gz
-- HiC reverse reads (R2)
-    - NOTE: if you have multiple .fastq.gz files of R2 reads, then you must concatenate them into one .fastq.gz. The reads must be in the same order as the concatenated R1 reads!
-- HiFi reads (as a collection)
+- Meryl database for child (from **Meryl Database Creation** workflow)
+- Meryl database for Parent 1 (from **MerylDB trio** workflow)
+- Meryl database for Parent 2 (from **MerylDB trio** workflow)
+- HiFi reads for child (as a collection)
+- Parent 1 interlaced reads (collection)
+- Parent 2 interlaced reads (collection)
 
 :computer: :arrow_right: **Outputs**
 - Hap1 assembly (as .gfa and .fasta) [hap1]
 - Hap2 assembly (as .gfa and .fasta) [hap2]
 
 :bar_chart: **Quality Control**
-- BUSCO for purged primary assembly [hap1, hap2]
-- QUAST for purged primary and purged alternate assembly [hap1, hap2]
-- Merqury files (as collections) for purged primary and alternate assembly [hic_phased]
+- BUSCO for each assembly separately [hap1, hap2]
+- QUAST for each assembly separately [hap1, hap2]
+- Merqury files (as collections) for hap1 and hap2 assemblies
     - plots
     - completeness stats
     - QV stats
+    - BED files
+    - WIG files
+    - size files
 
 ## Export Workflows
 
