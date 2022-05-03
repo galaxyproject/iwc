@@ -259,7 +259,7 @@ To sum up the differences:
 
 ## Export Workflows
 
-Galaxy features a robouts export tool that allows users to export datasets and collections to remote hosts. The VGP uses this tool to export assemblies (including intermediate files) to the GenomeArk AWS bucket. The export tool can be used on a small scale for a few files, but for our purposes we have export workflows that expedite the process and name all the files according to the pre-established scheme on GenomeArk.
+Galaxy features a robust export tool that allows users to export datasets and collections to remote hosts. The VGP uses this tool to export assemblies (including intermediate files) to the GenomeArk AWS bucket. The export tool can be used on a small scale for a few files, but for our purposes we have export workflows that expedite the process and name all the files according to the pre-established scheme on GenomeArk.
 
 > Note: in order to export directly to the VGP's GenomeArk AWS bucket, you must be added as a member of the VGP user group by a usegalaxy admin.
 
