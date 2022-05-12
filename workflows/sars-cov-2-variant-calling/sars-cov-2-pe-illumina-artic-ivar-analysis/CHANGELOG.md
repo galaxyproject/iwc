@@ -15,6 +15,8 @@
 - Upgrade fastp to 0.23.2
   - Improved performances
   - https://github.com/OpenGene/fastp/releases
+- Upgrade Ivar suite tools
+  - https://github.com/andersen-lab/ivar/releases
 
 ## [0.2.2] 2021-12-13
 
