@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3] 2022-05-12
+
+### Changed
+
+- Upgrade pangolin to 4.0.5
+  - Analysis engine switched to UShER, that is more accurate but slower than the previous default PangoLEARN engine
+  - https://github.com/cov-lineages/pangolin/releases
+- Upgrade Nextclade to 1.11.0
+  - https://github.com/nextstrain/nextclade/releases
+- Upgrade MultiQC to 1.11.0
+  - Modules updates (notably fastp)
+  - https://github.com/ewels/MultiQC/releases
+- Upgrade fastp to 0.23.2
+  - Improved performances
+  - https://github.com/OpenGene/fastp/releases
+
 ## [0.2.2] 2021-12-13
 
 ### Added
