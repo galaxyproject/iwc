@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.3] 2022-05-25
+
+### Changed
+- Changed creator ORCID to absolute URI
+
 ## [0.2.2] 2021-12-13
 
 ### Added
