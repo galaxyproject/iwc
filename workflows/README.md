@@ -16,7 +16,13 @@ The structure is as follows:
 
 ## Adding workflows
 
-Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. You can then download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
+Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
+
+![Add Creator GIF](../static/add-creator.gif)
+
+If you add an _organization_ as Creator, you should include a "URL" field pointing to the organization's web site, e.g., https://github.com/galaxyproject/iwc.
+
+You can then download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
 You can then generate a template planemo test file. Here we generate a test file for the workflow parallel-accession-download.ga.
 
