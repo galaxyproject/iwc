@@ -16,7 +16,13 @@ The structure is as follows:
 
 ## Adding workflows
 
-Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. You can then download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
+Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
+
+![Add Creator GIF](../static/add-creator.gif)
+
+If you add an _organization_ as Creator, you should include a "URL" field pointing to the organization's web site, e.g., https://github.com/galaxyproject/iwc.
+
+You can then download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
 You can then generate a template planemo test file. Here we generate a test file for the workflow parallel-accession-download.ga.
 
@@ -95,42 +101,10 @@ With a text editor of your choice make this change:
 At this point you can commit the new files and open a pull request.
 If you are encountering difficulties at any point don't hesitate to ask for help on [gitter](https://gitter.im/galaxyproject/iwc).
 
-## Future Plans
+## RO-Crate Metadata
 
-### RO-Crate Metadata
+[RO-Crate](https://doi.org/10.3233/DS-210053) is a format for packaging research artifacts along with their metadata in a machine readable manner. The base RO-Crate specification is complemented by a set of _profiles_ tailored to more specific domains: in particular, [Workflow RO-Crate](https://about.workflowhub.eu/Workflow-RO-Crate/) can be used to package computational workflows, and [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) further describes how to add metadata related to workflow testing.
 
-A [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) will be auto-generated after merging a workflow.
-You do not need to manually create this file, but if you want to try this today, these are the instructions:
+Workflow Testing RO-Crate metadata is automatically generated and added to the workflow repository after a PR is merged, before the repository is deployed to [iwc-workflows](https://github.com/iwc-workflows). RO-Crate metadata is based on [Schema.org](https://schema.org/) annotations in [JSON-LD](https://json-ld.org/) ([example](https://github.com/iwc-workflows/parallel-accession-download/blob/7971b6dc0ee246262a1898e7c7016143ff63007c/ro-crate-metadata.json)). The Workflow Testing RO-Crate representation of the repository ensures its compatibility with the [WorkflowHub](https://workflowhub.eu) registry and the [LifeMonitor](https://www.lifemonitor.eu) workflow health monitoring service.
 
-This directory contains a Python tool to generate a Workflow Testing RO-Crate metadata file (`ro-crate-metadata.json`) in each workflow repository dir, along with a requirements file to install the tool's dependencies:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-python gen_crates.py
-```
-
-Workflow repository dirs are searched for using the same logic and definition
-of repository as the `planemo ci_find_repos` command (any directory with a
-`.shed.yml` or `.dockstore.yml file`). The tool expects to find the workflow
-file and Planemo test file as described above. The `README.md` file is not
-expected, but it's included in the crate (i.e., listed among the metadata) if
-found.
-
-The following metadata is not expected, but included in the crate if found in the workflow file:
-
-* `"license"`: a string like `"MIT"`
-* `"release"`: a string like `"0.2"`
-* `"creator"`: a list of objects like:
-
-```json
-[{"class": "Person",
-  "identifier": "https://orcid.org/0000-0002-1825-0097",
-  "name": "Josiah Carberry"}]
-```
-
-With `--zip-dir=DIR_PATH`, the tool will zip each crate (i.e., the workflow repository directory with the `ro-crate-metadata.json` files in it) in the format required by [WorkflowHub](https://workflowhub.eu), and place the archive under `DIR_PATH`.
-
-Run `python gen_crates.py --help` for more information on the available options.
+To ensure that the RO-Crate metadata generation succeeds, make sure you apply the best practices described in the [section on adding workflows](#adding-workflows). In particular, the conversion tool expects to find the workflow file and the Planemo test file; a `README.md` file is not expected, but it will be included if found. The workflow file should specify a `license`, a `release` and one or more `creator`s among its metadata.
