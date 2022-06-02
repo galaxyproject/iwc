@@ -13,7 +13,7 @@ The Collaboration between the [VGP](https://vertebrategenomesproject.org/) lead 
 
 ### Inputs
 
--   Collection of Hifi long reads in fastq Format.
+-   Collection of Hifi long reads in fastq Format
 
 ### Outputs
 
@@ -23,3 +23,6 @@ The Collaboration between the [VGP](https://vertebrategenomesproject.org/) lead 
     -   Log plot
     -   Transformed linear plot
     -   Transformed log plot
+    -   Summary
+    -   Model
+    -   Model parameteres
