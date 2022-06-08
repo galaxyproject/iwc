@@ -37,7 +37,7 @@ Execute the workflow on your Galaxy server using the smallest input data you can
 Create a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
 
-Find the the invocation id in the workflow invocation menu, then run
+Find the invocation id in the workflow invocation menu, then run
 
 ```
 planemo workflow_test_init --from_invocation your_invocation_id_here --galaxy_url https://usegalaxy.eu/ --galaxy_user_key your_api_key_here
@@ -45,7 +45,8 @@ planemo workflow_test_init --from_invocation your_invocation_id_here --galaxy_ur
 
 This will place the workflow and workflow test files in your current working directory.
 You may still want to remove test files and edit the test comparisons so that tests
-will pass reliably.
+will pass reliably. For example, you could consider using assertions to test the
+outputs, rather than comparing the entire output file with test data.
 
 
 #### Manually write test for workflow
