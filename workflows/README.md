@@ -16,13 +16,42 @@ The structure is as follows:
 
 ## Adding workflows
 
+
+### Ensure workflows follow best-practices
+
 Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
 
 ![Add Creator GIF](../static/add-creator.gif)
 
 If you add an _organization_ as Creator, you should include a "URL" field pointing to the organization's web site, e.g., https://github.com/galaxyproject/iwc.
 
-You can then download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
+
+### Generate tests
+
+You can either write test cases by hand, or use a workflow invocation to generate a test case:
+
+
+#### Generate test from a workflow invocation
+
+Execute the workflow on your Galaxy server using the smallest input data you can generate.
+Create a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
+Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
+
+Find the invocation id in the workflow invocation menu, then run
+
+```
+planemo workflow_test_init --from_invocation your_invocation_id_here --galaxy_url https://usegalaxy.eu/ --galaxy_user_key your_api_key_here
+```
+
+This will place the workflow and workflow test files in your current working directory.
+You may still want to remove test files and edit the test comparisons so that tests
+will pass reliably. For example, you could consider using assertions to test the
+outputs, rather than comparing the entire output file with test data.
+
+
+#### Manually write test for workflow
+
+Download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
 You can then generate a template planemo test file. Here we generate a test file for the workflow parallel-accession-download.ga.
 
@@ -63,6 +92,8 @@ For this example workflow the final parallel-accession-download-tests.yml might 
           compare: contains
 ```
 
+#### Lint your workflow
+
 Note that we've removed the "Paired End Reads" output, since the accession we test is a single end accession.
 We can now run `planemo workflow_lint` to make sure the workflow and its test are syntactically correct:
 
@@ -71,6 +102,8 @@ $ planemo workflow_lint parallel-accession-download.ga
 Applying linter tests... CHECK
 .. CHECK: Tests appear structurally correct for parallel-accession-download.ga
 ```
+
+#### Add required metadata
 
 We now need to generate a `.dockstore.yml` file that contains metadata needed for [Dockstore](https://dockstore.org/organizations/iwc).
 `planemo dockstore_init` operates on a directory of workflows. If your current working directory contains the workflow(s) run
