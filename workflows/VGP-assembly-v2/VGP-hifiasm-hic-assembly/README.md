@@ -13,7 +13,7 @@ The collaboration between the [VGP](https://vertebrategenomesproject.org/) has l
 
 ### Inputs
 
--   PacBio HiFi long reads
+-   PacBio HiFi long reads (as a collection)
 -   HiC forward (R1) reads
     -   NOTE: if you have multiple lanes of forward reads, you must concatenate them into one file    
 -   HiC reverses (R2) reads
