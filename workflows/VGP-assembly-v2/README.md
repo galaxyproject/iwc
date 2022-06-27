@@ -2,7 +2,7 @@
 
 ### The Vertebrate Genome Project (VGP)
 
-This repository hosts the Galaxy workflows for the Vertebrate Genome Project's assembly pipeline. Each workflow's *.ga* file can be found in the folder with the corresponding name. For more information about the pipeline in general and the software/technologies used by the VGP for assembly, please see this [full-length GTN training tutorial](https://training.galaxyproject.org/training-material//topics/assembly/tutorials/vgp_genome_assembly/tutorial.html). For a shorter, workflow-focused tutorial, please see this [shortened GTN training tutorial](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/vgp_workflow_training/tutorial.html). 
+This repository hosts the Galaxy workflows for the Vertebrate Genome Project's assembly pipeline. Each workflow's *.ga* file can be found in the folder with the corresponding name. For more information about the pipeline in general and the software/technologies used by the VGP for assembly, please see this [full-length GTN training tutorial](https://training.galaxyproject.org/training-material//topics/assembly/tutorials/vgp_genome_assembly/tutorial.html). For a shorter, workflow-focused tutorial, please see this [shortened GTN training tutorial](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/vgp_workflow_training/tutorial.html).
 
 ## Usage
 
@@ -64,7 +64,7 @@ To run a workflow:
 
 ## Pseudohaplotype assembly (primary/alternate) assembly with hifiasm and purge_dups
 
-***NOTE:*** see section after this for hifiasm instructions if you are doing **phased assembly in hifiasm using HiC reads (hap1/hap2), or phased assembly in hifiasm using parental reads (trio assembly)!** 
+***NOTE:*** see section after this for hifiasm instructions if you are doing **phased assembly in hifiasm using HiC reads (hap1/hap2), or phased assembly in hifiasm using parental reads (trio assembly)!**
 
 ### VGP-Meryldb-creation (quality control and parameter estimation)
 
@@ -212,7 +212,7 @@ To sum up the differences:
 
 This approach uses hifiasm in trio mode in order to phase the data into maternal and paternal haplotypes, based on parental reads (usually Illumina short reads). This requires the usage of a different hifiasm workflow, as well as an additional different MerylDB workflow, which generates additional quality control and necessary files for the parental data. As with HiC-phased assembly, the bionano & HiC-scaffolding workflows will be the same, but ran once per haplotype.
 
-To sum up the differences: 
+To sum up the differences:
 - Meryl DB: use the **MerylDB trio** workflow for the parents, and the **Meryldb creation** workflow for the child!
 - Hifiasm: use the **Hifiasm trio** workflow instead!
 - Bionano & HiC-scaffolding: same workflows, but run once on hap1, and once on hap2
@@ -275,9 +275,9 @@ As an example, the **Hifiasm export** workflow is where the GenomeScope plots ar
 
 ![Example of export workflow field requesting the transformed log plot from GenomeScope. Dropdown menu shows tags on GenomeScope items, including the desired genomescope_tr_log tag.](img/export_example_genomescope.png)
 
-Once all fields have been filled out appropriately, the user must select a destination to export to -- this is the Directory URI field. 
+Once all fields have been filled out appropriately, the user must select a destination to export to -- this is the Directory URI field.
 
-Make sure you do not change the option "Don't sanitize values". 
+Make sure you do not change the option "Don't sanitize values".
 
 ![Directory URI prompt.](img/export_example_destination_1.png)
 

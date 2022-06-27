@@ -1,0 +1,26 @@
+name: usegalaxy.* installation
+
+on:
+  schedule:
+    # Run at midnight every Thursday
+    - cron: '0 0 * * 4'
+
+jobs:
+  workflow-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache downloads
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pip
+          key: py-cache
+      - name: Run a multi-line script
+        env:
+          IWC_API_KEY_USEGALAXY_EU: ${{ secrets.IWC_API_KEY_USEGALAXY_EU }}
+          IWC_API_KEY_USEGALAXY_ORG: ${{ secrets.IWC_API_KEY_USEGALAXY_ORG }}
+          IWC_API_KEY_USEGALAXY_ORG_AU: ${{ secrets.IWC_API_KEY_USEGALAXY_ORG_AU }}
+        run: |
+          pip install bioblend
+          python scripts/usegalaxy_star_upload.py
