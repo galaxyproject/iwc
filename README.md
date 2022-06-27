@@ -21,9 +21,16 @@ Additionally the IWC will collect further best practices, tips and tricks, FAQs 
 
 To import IWC workflows into your Galaxy instance use the TRS workflow search in the Galaxy interface.
 Click on "Workflows", "Import" and click on the "search form" link.
+Select a TRS server from the drop-down menu and enter `organization:iwc` (for workflowhub.eu) or `organization:iwc-workflows` (for Dockstore) in the text box.
+
 ![Workflow Import GIF](static/iwc-import.gif)
 
-When importing a workflow form workflowhub.eu you currently need to search for `organization:"IWC Workflows"`.
+## Accessing IWC workflows via usegalaxy.* servers
+
+All IWC workflows are automatically installed onto usegalaxy.* servers (i.e. [Galaxy Main](https://usegalaxy.org), [Galaxy Europe](https://usegalaxy.eu), [Galaxy Australia](https://usegalaxy.org.au)). They can be accessed via the following lists of published workflows:
+* https://usegalaxy.org/workflows/list_published
+* https://usegalaxy.eu/workflows/list_published
+* https://usegalaxy.org.au/workflows/list_published
 
 ## Contributing a Workflow
 

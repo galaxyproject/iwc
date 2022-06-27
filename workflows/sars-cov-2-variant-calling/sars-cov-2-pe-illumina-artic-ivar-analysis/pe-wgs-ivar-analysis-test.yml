@@ -1,0 +1,41 @@
+- doc: Test workflow execution using paired end illumina ARTIC accession
+  job:
+    Reference FASTA:
+      class: File
+      location: 'https://zenodo.org/record/4944064/files/MN908947_3_Wuhan-Hu-1.fasta'
+      filetype: fasta
+    Primer BED:
+      class: File
+      location: 'https://zenodo.org/record/4944064/files/SARS-CoV-2-ARTICv3.bed'
+      filetype: bed
+    Paired read collection for samples:
+      class: Collection
+      collection_type: 'list:paired'
+      elements:
+        - class: Collection
+          type: paired
+          identifier: ERR4970105
+          elements:
+          - identifier: forward
+            class: File
+            location: "https://zenodo.org/record/4944064/files/ERR4970105_1.fastq.gz"
+            filetype: fastqsanger.gz
+          - identifier: reverse
+            class: File
+            location: "https://zenodo.org/record/4944064/files/ERR4970105_2.fastq.gz"
+            filetype: fastqsanger.gz
+  outputs:
+    all_samples_nextclade:
+      asserts:
+        has_text:
+          text: '20B	0'
+        has_text_matching:
+          expression: "seqName\tclade\tqc.overallScore\tqc.overallStatus\ttotalSubstitutions\ttotalDeletions\ttotalInsertions\ttotalFrameShifts\ttotalAminoacidSubstitutions\ttotalAminoacidDeletions\ttotalMissing\ttotalNonACGTNs\ttotalPcrPrimerChanges\tsubstitutions\tdeletions\tinsertions\tframeShifts\taaSubstitutions\taaDeletions\tmissing\tnonACGTNs\tpcrPrimerChanges\talignmentScore\talignmentStart\talignmentEnd\tqc.missingData.missingDataThreshold\tqc.missingData.score\tqc.missingData.status\tqc.missingData.totalMissing\tqc.mixedSites.mixedSitesThreshold\tqc.mixedSites.score\tqc.mixedSites.status\tqc.mixedSites.totalMixedSites\tqc.privateMutations.cutoff\tqc.privateMutations.excess\tqc.privateMutations.score\tqc.privateMutations.status\tqc.privateMutations.total\tqc.snpClusters.clusteredSNPs\tqc.snpClusters.score\tqc.snpClusters.status\tqc.snpClusters.totalSNPs\tqc.frameShifts.frameShifts\tqc.frameShifts.totalFrameShifts\tqc.frameShifts.frameShiftsIgnored\tqc.frameShifts.totalFrameShiftsIgnored\tqc.frameShifts.score\tqc.frameShifts.status\tqc.stopCodons.stopCodons\tqc.stopCodons.totalStopCodons\tqc.stopCodons.score\tqc.stopCodons.status\terrors"
+    all_samples_pangolin:
+      asserts:
+        has_text_matching:
+          expression: "taxon\tlineage\tconflict\tambiguity_score\tscorpio_call\tscorpio_support\tscorpio_conflict\tversion\tpangolin_version\tpangoLEARN_version\tpango_version\tstatus\tnote"
+    combined_multifasta:
+      asserts:
+        has_line:
+          line: ">ERR4970105"
