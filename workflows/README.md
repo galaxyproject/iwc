@@ -33,11 +33,15 @@ You can either write test cases by hand, or use a workflow invocation to generat
 
 #### Generate test from a workflow invocation
 
-Execute the workflow on your Galaxy server using the smallest input data you can generate.
 Create a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
 
-Find the invocation id in the workflow invocation menu, then run
+Execute the workflow on your Galaxy server using the smallest input data you can generate.
+Go to the workflow invocations page (User > Workflow Invocations), open the most recent item and find the invocation id:
+
+![Workflow Invocations GUI](../static/wf-invocations.png)
+
+You will also need your Galaxy API key. To copy it, or generate it if you don't have one yet, go to User > Preferences > Manage API Key. Then run:
 
 ```
 planemo workflow_test_init --from_invocation your_invocation_id_here --galaxy_url https://usegalaxy.eu/ --galaxy_user_key your_api_key_here
