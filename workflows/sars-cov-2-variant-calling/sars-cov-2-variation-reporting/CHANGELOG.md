@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3] 2022-08-04
+
+### Changed
+
+- Upgraded to new, more flexible version of column_maker tool.
+
+  This change allows a simplification of the workflow, which now uses two
+  steps less for producing identical results.
+
+- Upgraded datamash to its latest tool wrapper version.
+
+  No functional consequences are expected.
+
 ## [0.2] 2022-02-11
 
 ### Changed
