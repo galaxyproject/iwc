@@ -19,7 +19,7 @@ The structure is as follows:
 
 ### Ensure workflows follow best-practices
 
-Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
+Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. In particular, in order to make the workflow usable, **make sure you specify a license**. Another important field is "Creator", which allows to give proper credit to the author(s). The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
 
 ![Add Creator GIF](../static/add-creator.gif)
 
