@@ -1,0 +1,103 @@
+- doc: Test outline for ChIPseqOrChipMentationPairEnd_fromCollection-(imported-from-uploaded-file)
+  job:
+    fastq.gz:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: wt_H3K4me3_.fastq
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read1.fastq.gz
+          filetype: fastqsanger
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read2.fastq.gz
+          filetype: fastqsanger
+  outputs:
+    MultiQC webpage:
+      element_tests:
+         wt_H3K4me3_.fastq:
+           asserts:
+             - has_text: 
+               text: "wt_H3K4me3__fastq"
+             - has_text: 
+               text: "<a href="#cutadapt_filtered_reads" class="nav-l2">Filtered Reads</a>"
+             - has_text: 
+               text: "<a href="#bowtie2" class="nav-l1">Bowtie 2 / HiSAT2</a>"
+    filtered BAM:
+       element_tests:
+         wt_H3K4me3_.fastq:
+           asserts:
+              - has_size:
+                  value: 5M
+                  delta: 200
+    MACS2 summits:
+      element_tests:
+        wt_H3K4me3_.fastq:
+          has_n_lines: 12
+    MACS2 peaks:
+      element_tests:
+        wt_H3K4me3_.fastq:
+          asserts:
+            - has_text: 
+              text: "# effective genome size = 1.87e+09"
+            - has_text: 
+              text: "# fragment size is determined as 201 bps"
+            - has_text: 
+              text: "# fragments after filtering in treatment: 42407"
+    MACS2 narrowPeak:
+      element_tests:
+        wt_H3K4me3_.fastq:
+          has_n_lines: 
+            n: 12
+    MACS2 report:
+      element_tests:
+        wt_H3K4me3_.fastq:
+          asserts:
+            - has_text: 
+              text: "# effective genome size = 1.87e+09"
+            - has_text: 
+              text: "# fragment size is determined as 201 bps"
+            - has_text: 
+              text: "# fragments after filtering in treatment: 42407"
+    coverage from MACS2:
+      element_tests:
+        wt_H3K4me3_.fastq:
+           asserts:
+              - has_size:
+                  value: 526K
+                  delta: 100
+    'MultiQC on input dataset(s): Stats':
+      element_tests:
+        bowtie2:
+           asserts:
+             - has_text: 
+               text: "50000\t47427\t1492\t42333\t3602"
+        cutadapt:
+           asserts:
+              - has_text: 
+                text: "4.0\t50000\t6\t13\t50000\t4729079"
+        general_stats:
+           asserts:
+              - has_text: 
+                text: "201.0\t0.0\t12\t98.35"
+        macs:
+           asserts:
+              - has_text:
+                text: "12\t201.0\t42407.0\t42407.0\t1.0"
+        sources:
+          has_n_lines: 
+            n: 2
+    mapping stats:
+      element_tests:
+        wt_H3K4me3_.fastq:
+            asserts:
+              - has_text: 
+                text: "1492 (3.15%) aligned concordantly 0 times"
+              - has_text: 
+                text: "42333 (89.26%) aligned concordantly exactly 1 time"
+              - has_text: 
+                text: "3602 (7.59%) aligned concordantly >1 times"
