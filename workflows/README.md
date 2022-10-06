@@ -16,6 +16,13 @@ The structure is as follows:
 
 ## Adding workflows
 
+### Updating tools
+
+It is recommended to check and update tools with Planemo before import :
+```bash
+planemo autoupdate my_workflow.ga
+```
+Then test the updated workflow from inside usegalaxy.* server. Using GTN dataset material is a good start !
 
 ### Ensure workflows follow best-practices
 
