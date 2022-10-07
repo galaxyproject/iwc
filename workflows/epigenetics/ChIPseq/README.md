@@ -13,3 +13,8 @@
 
 ### Warning
 - The coverage output is not normalized.
+- The filtered bam still has PCR duplicates which are removed by macs2.
+
+## Contribution
+@lldelisle wrote the workflow
+@nagoue updated the tools, made it work in usegalaxy.org, fixed the best practices and wrote the tests.
