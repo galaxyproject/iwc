@@ -1,9 +1,17 @@
-# CUT&RUN Workflow
+# CUT&RUN (and CUT&TAG) Workflow
 
-## Inputs
+## Inputs dataset
+
 - The workflow needs a single input which is a list of dataset pairs of fastqsanger.
 
+## Inputs values
+
+- adapters sequences: this depends on the library preparation. Usually CUT&RUN is Truseq and CUT&TAG is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera
+- reference_genome: this field will be adapted to the genomes available for bowtie2
+- effective_genome_size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
+
 ## Processing
+
 - The workflow will remove illumina adapters and low quality bases and filter out any read smaller than 15bp
 - The filtered reads are mapped with bowtie2 allowing dovetail and fragment length up to 1kb
 - The BAM is filtered to keep only MAPQ30 and concordant pairs
@@ -14,4 +22,5 @@
 - A multiQC is run to have an overview of the QC
 
 ### Warning
+
 - The coverage output is not normalized.
