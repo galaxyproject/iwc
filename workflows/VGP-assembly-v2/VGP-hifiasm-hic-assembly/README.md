@@ -10,7 +10,6 @@ The collaboration between the [VGP](https://vertebrategenomesproject.org/) has l
 -   Scaffolding with Bionano optical map data (optional)
 -   Scaffolding with HiC data
 
-
 ### Inputs
 
 -   PacBio HiFi long reads (as a collection)
