@@ -30,4 +30,4 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 ### Warning
 
 - The coverage output is not normalized.
-- We are aware that the fact that a common reference file is used for bowtie2 and bedtools slopbed reduces the number of reference possible. Talk to your administrator if this brakes your research.
+- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding len file for use in bedtools slopbed.
