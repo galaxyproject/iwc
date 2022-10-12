@@ -40,3 +40,9 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
   - If you have an unstranded library, stranded coverages are useless
   - If you have a reverse stranded library, use the label outside of the parenthesis: `positive (negative) strand coverage` is the positive strand coverage.
   - If you have a forward stranded library, use the label inside the parenthesis: `positive (negative) strand coverage` is the negative strand coverage.
+
+## Contribution
+
+@lldelisle wrote the workflow and the tests.
+
+@nagoue updated the tools, made it work in usegalaxy.org, fixed some best practices.
