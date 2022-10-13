@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2022-08-04
+## [0.3] 2022-10-13
 
 ### Changed
 
@@ -8,6 +8,9 @@
 
   This change allows a simplification of the workflow, which now uses two
   steps less for producing identical results.
+
+- Upgraded to latest version of tp_find_and_replace tool, which can handle
+  multiple substitutions per tool run. Saves another step in the workflow.
 
 - Upgraded datamash to its latest tool wrapper version.
 
