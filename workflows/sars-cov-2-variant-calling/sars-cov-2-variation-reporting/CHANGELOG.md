@@ -14,7 +14,12 @@
 
 - Upgraded datamash to its latest tool wrapper version.
 
-  No functional consequences are expected.
+These changes should not have any effects on results except this one:
+
+- the AFcaller column of the "Combined Variant Report by Sample" could
+  previously contain values in scientific notation for very low allele
+  frequencies (< 0.001). In the new version all values in the column will be
+  reported consistently in regular floating point format.
 
 ## [0.2] 2022-02-11
 
