@@ -18,11 +18,7 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 - forward adapter sequence: this depends on the library preparation. Usually classical RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter.
 - reference_genome: this field will be adapted to the genomes available for STAR
-- awk command to get read counts: STAR will output 3 values for counts depending on the strandness of the library. If you already know in advance the library strandness you can use this to extract only the value corresponding to your library:
-
-  - ``NR>4{print $1"\t"$4}`` for reverse stranded library
-  - ``NR>4{print $1"\t"$3}`` for forward stranded library
-  - ``NR>4{print $1"\t"$2}`` for unstranded library
+- strandness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will help you to get from STAR only the counts corresponding to your library preparation. This is also used for the stranded coverage.
 
 ## Processing
 
@@ -38,8 +34,8 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 - The coverage stranded output depends on the strandness of the library:
   - If you have an unstranded library, stranded coverages are useless
-  - If you have a reverse stranded library, use the label outside of the parenthesis: `positive (negative) strand coverage` is the positive strand coverage.
-  - If you have a forward stranded library, use the label inside the parenthesis: `positive (negative) strand coverage` is the negative strand coverage.
+  - If you have a forward stranded library, the label matches the orientation of reads.
+  - If you have a reverse stranded library, `positive strand coverage` should correspond to genes on the forward strand and uses the reads mapped on the reverse strand. `negative strand coverage` should correspond to genes on the reverse strand and uses the reads mapped on the forward strand.
 
 ## Contribution
 
