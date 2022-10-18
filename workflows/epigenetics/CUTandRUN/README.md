@@ -6,7 +6,7 @@
 
 ## Inputs values
 
-- adapters sequences: this depends on the library preparation. Usually CUT&RUN is Truseq and CUT&TAG is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera
+- adapter sequences: this depends on the library preparation. Usually CUT&RUN is Truseq and CUT&TAG is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera
 - reference_genome: this field will be adapted to the genomes available for bowtie2
 - effective_genome_size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
 
