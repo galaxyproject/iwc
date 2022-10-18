@@ -1,0 +1,100 @@
+- doc: Test outline for ChIPseq_SR
+  job:
+    SR fastq input:
+      class: Collection
+      collection_type: list
+      elements:
+      - identifier: wt_H3K4me3
+        class: File
+        location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read1.fastq.gz
+        filetype: fastqsanger
+    adapter_forward: 'GATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+    reference_genome: 'mm10'
+    effective_genome_size: 1870000000
+  outputs:
+    MultiQC webpage:
+      asserts:
+        - that: "has_text"
+          text: "wt_H3K4me3"
+        - that: "has_text"
+          text: <a href="#cutadapt_filtered_reads" class="nav-l2">Filtered Reads</a>
+        - that: "has_text"
+          text: <a href="#bowtie2" class="nav-l1">Bowtie 2 / HiSAT2</a>
+    'MultiQC on input dataset(s): Stats':
+      element_tests:
+        bowtie2:
+          asserts:
+            has_text: 
+              text: "49251\t49251\t805"
+        cutadapt:
+          asserts:
+            has_text: 
+              text: "4.0\t50000\t587\t749\t49251"
+        general_stats:
+          asserts:
+            has_text: 
+              text: "200.0\t0.0\t4\t98.37\t4.612745098039215"
+        macs:
+          asserts:
+            has_text:
+              text: "4\t49.0\t44078.0\t44038.0\t1.0\t0.0\t200.0"
+        sources:
+          asserts:
+            has_n_lines: 
+              n: 3
+    filtered BAM:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_size:
+              value: 2547967
+              delta: 200000
+    MACS2 summits:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines:
+              n: 4
+    MACS2 peaks:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            - that: "has_text"
+              text: "# effective genome size = 1.87e+09"
+            - that: "has_text"
+              text: "# d = 200"
+            - that: "has_text"
+              text: "# tags after filtering in treatment: 44038"
+    MACS2 narrowPeak:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines: 
+              n: 4
+    MACS2 report:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            - that: "has_text"
+              text: "# effective genome size = 1.87e+09"
+            - that: "has_text"
+              text: "# d = 200"
+            - that: "has_text"
+              text: "# tags after filtering in treatment: 44038"
+    coverage from MACS2:
+      element_tests:
+        wt_H3K4me3:
+           asserts:
+              has_size:
+                value: 527913
+                delta: 50000
+    mapping stats:
+      element_tests:
+        wt_H3K4me3:
+            asserts:
+            - that: "has_text"
+              text: "49251 reads; of these:"
+            - that: "has_text"
+              text: "43525 (88.37%) aligned exactly 1 time"
+            - that: "has_text"
+              text: "98.37% overall alignment rate"
