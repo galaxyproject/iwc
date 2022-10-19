@@ -32,7 +32,7 @@ It is recommended to check and update tools with Planemo before import :
 planemo autoupdate <workflow.ga>
 ```
 
-Then, it is recommanded to upload this updated workflow inside usegalaxy.org server as some updates may break connections (and some tools may not have the last update).
+Then, it is recommended to upload this updated workflow to the usegalaxy.org server as some updates may break connections (and some tools may not yet be installed on usegalaxy.org).
 
 ### Ensure workflows follow best-practices
 
