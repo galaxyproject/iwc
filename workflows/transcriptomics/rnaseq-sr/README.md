@@ -4,10 +4,9 @@
 
 - The workflow needs a list of dataset of fastqsanger.
 - As well as a gtf file with genes
-- And a gtf file with regions to exclude from normalization in Cufflinks.
+- Optional, but recommended: a gtf file with regions to exclude from normalization in Cufflinks.
 
-  - You can either put an empty file of datatype gtf
-  - Or provide a gtf with usually chrM, for example for mm10:
+  - For instance a gtf that masks chrM for the mm10 genome:
 
 ```
 chrM	chrM_gene	exon	0	16299	.	+	.	gene_id "chrM_gene_plus"; transcript_id "chrM_tx_plus"; exon_id "chrM_ex_plus";
