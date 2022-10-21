@@ -17,7 +17,7 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 - forward adapter sequence: this depends on the library preparation. Usually classical RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter.
 - reference_genome: this field will be adapted to the genomes available for STAR
-- strandness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will help you to get from STAR only the counts corresponding to your library preparation. This is also used for the stranded coverage.
+- strandness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will help you to get from STAR only the counts corresponding to your library preparation. This is also used for the stranded coverage and for FPKM computation with cufflinks.
 
 ## Processing
 
