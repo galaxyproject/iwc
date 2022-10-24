@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.4] 2022-10-21
+
+### Fixed
+- Restored original functionality that was dropped accidentally in release 0.2:
+
+  when there are zero consensus variants to be integrated into the reference
+  genome (input VCF with no variants), bcftools consensus 1.10 would silently
+  skip processing of that sequence *including the incorpartion of masking
+  regions* into the final consensus genome. As a result, a genome covered by
+  few or no reads at all would have its consensus sequence reported as
+  all-reference instead of all Ns.
+  The initial release of the workflow worked around this problem by
+  pre-masking the reference before passing it to bcftools consensus, but the
+  corresponding step was dropped as seemingly redundant in release 0.2.
+
+  With v1.14, the edge case behavior with zero variants in the input VCF has
+  been fixed as a bug in bcftools consensus
+  (https://github.com/samtools/bcftools/issues/1592)
+  so the workflow fix in this release consists of a simple update to bcftools
+  consensus 1.15.1.
+
+### Changed
+- Upgraded to new, more flexible version of column_maker tool.
+
+  This change allows a simplification of the workflow, which now uses five
+  steps less for producing identical results.
+
+- Updated bcftools consensus to v1.15.1.
+
 ## [0.3] 2022-02-02
 
 ### Fixed
