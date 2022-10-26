@@ -16,16 +16,17 @@ This can also be used for Hi-ChIP experiments, in that case the last output is i
 - Interactions to consider to calculate weights in normalization step: this is a parameter for the last correction step (ICE).
 
 For the region capture workflow:
+
 - chromosome, start and end positions of the capture region
 
 ## Processing
 
 - Reads are processed with HiCUP which comprises these steps:
-    - Truncation of reads for the religation motif
-    - Mapping of mates independently with bowtie2
-    - Pairing the mates when both mates are uniquely mapped or MAPQ30
-    - Filtering the pairs for undigested, self-ligated...
-    - Removing duplicates
+  - Truncation of reads for the religation motif
+  - Mapping of mates independently with bowtie2
+  - Pairing the mates when both mates are uniquely mapped or MAPQ30
+  - Filtering the pairs for undigested, self-ligated...
+  - Removing duplicates
 - The output BAM file is converted to juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the 5' end.
 - The pairs are filtered for MAPQ if specified.
 - For the region capture Hi-C workflow the pairs are filtered for both mates in the captured region.
