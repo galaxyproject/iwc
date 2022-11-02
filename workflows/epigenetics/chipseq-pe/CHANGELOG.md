@@ -4,7 +4,6 @@
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.0+galaxy1`
-- `toolshed.g2.bx.psu.edu/repos/devteam/samtool_filter2/samtool_filter2/1.8+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtool_filter2/samtool_filter2/1.8`
 
 ## 2022-10-20
 ChIPseq_PE has been renamed chipseq-pe (still version 0.1)
