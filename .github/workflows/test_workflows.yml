@@ -1,0 +1,96 @@
+name: Test Galaxy workflows
+on:
+  workflow_call:
+    inputs:
+      galaxy-head-sha:
+        description: 'hash of the latest commit in the Galaxy repo'
+        required: true
+        type: string
+      chunk-count:
+        description: 'number of tests to run in parallel'
+        default: 1
+        required: false
+        type: number
+      chunk-list:
+        description: 'stringified JSON array of chunk IDs'
+        default: "[0]"
+        required: false
+        type: string
+      python-version-list:
+        description: 'stringified JSON array of Python versions'
+        default: "[\"3.7\"]"
+        required: false
+        type: string
+      repository-list:
+        description: 'list of repositories to test'
+        default: ''
+        required: false
+        type: string
+      galaxy-fork:
+        description: 'Galaxy fork to use'
+        default: ''
+        required: false
+        type: string
+      galaxy-branch:
+        description: 'Galaxy branch to use'
+        default: ''
+        required: false
+        type: string
+      check-outputs:
+        description: 'if true, check if any workflow test failed'
+        default: false
+        required: false
+        type: boolean
+jobs:
+  test:
+    name: Test workflows
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJson(inputs.chunk-list) }}
+        python-version: ${{ fromJson(inputs.python-version-list) }}
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v3
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ inputs.galaxy-head-sha }}
+    - name: Planemo test workflows
+      uses: galaxyproject/planemo-ci-action@v1
+      id: test-workflows
+      with:
+        mode: test
+        workflows: true
+        setup-cvmfs: true
+        repository-list: ${{ inputs.repository-list }}
+        galaxy-fork: ${{ inputs.galaxy-fork }}
+        galaxy-branch: ${{ inputs.galaxy-branch }}
+        chunk: ${{ matrix.chunk }}
+        chunk-count: ${{ inputs.chunk-count }}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: 'Workflow test output ${{ matrix.chunk }}'
+        path: upload
+    - name: Check outputs
+      if: inputs.check-outputs
+      uses: galaxyproject/planemo-ci-action@v1
+      id: check
+      with:
+        mode: check

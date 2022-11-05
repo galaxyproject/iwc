@@ -1,0 +1,141 @@
+# workflow level env vars cannot be used at the job level
+# https://github.community/t/how-to-set-and-access-a-workflow-variable/17335/15
+name: Galaxy Workflow Tests for push and PR
+on: [push, pull_request]
+env:
+  GITHUB_USER: iwc-workflows-bot
+jobs:
+  setup:
+    name: Setup cache and determine changed repositories
+    uses: ./.github/workflows/setup.yml
+    with:
+      python-version-list: "[\"3.7\"]"
+      galaxy-fork: galaxyproject
+      galaxy-branch: release_22.05
+      max-chunks: 4
+
+  # Planemo lint the changed repositories
+  lint:
+    name: Lint workflows
+    needs: setup
+    if: needs.setup.outputs.repository-list != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7']
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v3
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ needs.setup.outputs.galaxy-head-sha }}
+    - name: Install wheel
+      run: pip install wheel
+    - name: Planemo lint workflows
+      uses: galaxyproject/planemo-ci-action@v1
+      with:
+        mode: lint
+        workflows: true
+        repository-list: "${{ needs.setup.outputs.repository-list }}"
+
+  test:
+    name: Test workflows
+    needs: setup
+    if: needs.setup.outputs.repository-list != ''
+    uses: ./.github/workflows/test_workflows.yml
+    with:
+      galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
+      chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
+      chunk-list: ${{ needs.setup.outputs.chunk-list }}
+      python-version-list: "[\"3.7\"]"
+      repository-list: ${{ needs.setup.outputs.repository-list }}
+      galaxy-fork: galaxyproject
+      galaxy-branch: master
+      check-outputs: false
+
+  combine_outputs:
+    # same as tool step
+    name: Combine chunked test results
+    needs: [setup, test]
+    strategy:
+      matrix:
+        python-version: ['3.7']
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v3
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_{{ needs.setup.outputs.galaxy-head-sha }}
+    - name: Combine outputs
+      uses: galaxyproject/planemo-ci-action@v1
+      id: combine
+      with:
+        mode: combine
+        html-report: true
+    - uses: actions/upload-artifact@v2.0.1
+      with:
+        name: 'All tool test results'
+        path: upload
+    - name: Check outputs
+      uses: galaxyproject/planemo-ci-action@v1
+      id: check
+      with:
+        mode: check
+
+  # deploy workflows to organization
+  deploy:
+    name: Deploy
+    needs: [setup,test,combine_outputs]
+    strategy:
+      matrix:
+        python-version: ['3.7']
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.repository_owner == 'galaxyproject'
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache .cache/pip
+      uses: actions/cache@v3
+      id: cache-pip
+      with:
+        path: ~/.cache/pip
+        key: pip_cache_py_${{ matrix.python-version }}_gxy_{{ needs.setup.outputs.galaxy-head-sha }}
+    - name: Install requirements for gen_crates.py
+      run: pip install -r workflows/requirements.txt
+    - name: Generate RO-Crate metadata for workflow repositories
+      run: python workflows/gen_crates.py workflows
+    - name: Set git user
+      run: |
+        git config --global user.email "$GITHUB_USER@galaxyproject.org"
+        git config --global user.name "$GITHUB_USER"
+        git config --global init.defaultBranch main
+    - uses: fusion-engineering/setup-git-credentials@v2
+      with:
+        credentials: 'https://${{ env.GITHUB_USER }}:${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}@github.com/'
+    - name: Update or create repositories in github namespace
+      uses: galaxyproject/planemo-ci-action@v1
+      with:
+         mode: deploy
+         repository-list: ${{ needs.setup.outputs.repository-list }}
+         workflows: true
+         workflow-namespace: iwc-workflows
+         github-token: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
