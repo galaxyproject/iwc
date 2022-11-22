@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3] 2022-10-13
+
+### Changed
+
+- Upgraded to new, more flexible version of column_maker tool.
+
+  This change allows a simplification of the workflow, which now uses two
+  steps less for producing identical results.
+
+- Upgraded to latest version of tp_find_and_replace tool, which can handle
+  multiple substitutions per tool run. Saves another step in the workflow.
+
+- Upgraded datamash to its latest tool wrapper version.
+
+These changes should not have any effects on results except this one:
+
+- the AFcaller column of the "Combined Variant Report by Sample" could
+  previously contain values in scientific notation for very low allele
+  frequencies (< 0.001). In the new version all values in the column will be
+  reported consistently in regular floating point format.
+
 ## [0.2] 2022-02-11
 
 ### Changed

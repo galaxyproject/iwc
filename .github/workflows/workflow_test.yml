@@ -7,11 +7,11 @@ env:
 jobs:
   setup:
     name: Setup cache and determine changed repositories
-    uses: galaxyproject/iwc/.github/workflows/setup.yml@main
+    uses: ./.github/workflows/setup.yml
     with:
       python-version-list: "[\"3.7\"]"
       galaxy-fork: galaxyproject
-      galaxy-branch: release_22.01
+      galaxy-branch: release_22.05
       max-chunks: 4
 
   # Planemo lint the changed repositories
@@ -24,14 +24,14 @@ jobs:
       matrix:
         python-version: ['3.7']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache .cache/pip
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache-pip
       with:
         path: ~/.cache/pip
@@ -49,7 +49,7 @@ jobs:
     name: Test workflows
     needs: setup
     if: needs.setup.outputs.repository-list != ''
-    uses: galaxyproject/iwc/.github/workflows/test_workflows.yml@main
+    uses: ./.github/workflows/test_workflows.yml
     with:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
       chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
@@ -69,14 +69,14 @@ jobs:
         python-version: ['3.7']
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         path: artifacts
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache .cache/pip
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache-pip
       with:
         path: ~/.cache/pip
@@ -87,7 +87,7 @@ jobs:
       with:
         mode: combine
         html-report: true
-    - uses: actions/upload-artifact@v2.0.1
+    - uses: actions/upload-artifact@v3
       with:
         name: 'All tool test results'
         path: upload
@@ -107,14 +107,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.repository_owner == 'galaxyproject'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache .cache/pip
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       id: cache-pip
       with:
         path: ~/.cache/pip
@@ -132,7 +132,7 @@ jobs:
       with:
         credentials: 'https://${{ env.GITHUB_USER }}:${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}@github.com/'
     - name: Update or create repositories in github namespace
-      uses: galaxyproject/planemo-ci-action@main
+      uses: galaxyproject/planemo-ci-action@v1
       with:
          mode: deploy
          repository-list: ${{ needs.setup.outputs.repository-list }}
