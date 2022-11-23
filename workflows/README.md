@@ -2,6 +2,8 @@
 
 This directory contains all IWC workflows.
 
+## Structure of the directory
+
 The structure is as follows:
 
 * top-level directories represent categories, e.g., `sars-cov-2-variant-calling`;
@@ -16,6 +18,21 @@ The structure is as follows:
 
 ## Adding workflows
 
+Here are some guidelines to help new contributors to add their workflows.
+
+Everything starts from a workflow that you need to download locally.
+
+Currently the CI is using CVMFS for tools and for references, this is why all tests described below are against usegalaxy.org.
+
+### Optional: Updating tools
+
+It is recommended to check and update tools with Planemo before import :
+
+```bash
+planemo autoupdate <workflow.ga>
+```
+
+Then, it is recommended to upload this updated workflow to the usegalaxy.org server as some updates may break connections (and some tools may not yet be installed on usegalaxy.org).
 
 ### Ensure workflows follow best-practices
 
@@ -30,6 +47,9 @@ If you add an _organization_ as Creator, you should include a "URL" field pointi
 
 You can either write test cases by hand, or use a workflow invocation to generate a test case:
 
+#### Find input datasets
+
+If your analysis is covered by the GTN, using GTN dataset material is a good start!
 
 #### Generate test from a workflow invocation
 
@@ -44,7 +64,7 @@ Go to the workflow invocations page (User > Workflow Invocations), open the most
 You will also need your Galaxy API key. To copy it, or generate it if you don't have one yet, go to User > Preferences > Manage API Key. Then run:
 
 ```
-planemo workflow_test_init --from_invocation your_invocation_id_here --galaxy_url https://usegalaxy.eu/ --galaxy_user_key your_api_key_here
+planemo workflow_test_init --from_invocation <your_invocation_id> --galaxy_url https://usegalaxy.org/ --galaxy_user_key <your_api_key>
 ```
 
 This will place the workflow and workflow test files in your current working directory.
@@ -105,6 +125,14 @@ We can now run `planemo workflow_lint` to make sure the workflow and its test ar
 $ planemo workflow_lint parallel-accession-download.ga
 Applying linter tests... CHECK
 .. CHECK: Tests appear structurally correct for parallel-accession-download.ga
+```
+
+#### Test your workflow against usegalaxy.org
+
+Before running the CI, it might be interesting to run your tests against usegalaxy.org using planemo:
+
+```bash
+planemo test --galaxy_url https://usegalaxy.org/ --galaxy_user_key <your_api_key> <workflow.ga>
 ```
 
 #### Add required metadata

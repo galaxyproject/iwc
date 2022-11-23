@@ -1,0 +1,118 @@
+- doc: Test outline for ATACseq
+  job:
+    PE fastq input:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: SRR891268_chr22_enriched
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/record/3862793/files/SRR891268_chr22_enriched_R1.fastq.gz
+          filetype: fastqsanger
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/record/3862793/files/SRR891268_chr22_enriched_R2.fastq.gz
+          filetype: fastqsanger
+    reference_genome: hg19
+    effective_genome_size: '2700000000'
+  outputs:
+    mapping stats:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            - that: "has_text"
+              text: "30410 (10.82%) aligned concordantly 0 times"
+            - that: "has_text"
+              text: "138163 (49.17%) aligned concordantly exactly 1 time"
+            - that: "has_text"
+              text: "112391 (40.00%) aligned concordantly >1 times"
+    MarkDuplicates metrics:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_text: 
+              text: "0.02"
+    BAM filtered rmDup:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_size:
+              value: 14134105
+              delta: 1000000
+    histogram of fragment length:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_size:
+              value: 47718
+              delta: 4000
+    MACS2 narrowPeak:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_n_lines: 
+              n: 255
+    MACS2 report:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            - that: "has_text"
+              text: "# tag size is determined as 47 bps"
+            - that: "has_text"
+              text: "# total tags in treatment: 239626"
+    Coverage from MACS2 (bigwig):
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_size:
+              value: 2594908
+              delta: 200000
+    1kb around summits:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_n_lines: 
+              n: 240
+    Nb of reads in summits +-500bp:
+      element_tests:
+        SRR891268_chr22_enriched:
+          asserts:
+            has_line: 
+              line: "10107"
+    'MultiQC on input dataset(s): Stats':
+      element_tests:
+        bowtie2:
+          asserts:
+            has_line: 
+              line: "SRR891268_chr22_enriched\t280964\t280964\t30410\t138163\t112391\t13319\t6127\t6515\t21540\t98.91\t10770.0\t3063.5\t3257.5"
+        cutadapt:
+          asserts:
+            has_line: 
+              line: "SRR891268_chr22_enriched_2	4.0	285247	41011	40415	4283	280964	28524700	480633	27163516	4.771948521807416"
+        general_stats:
+          asserts:
+            has_text: 
+              text: "SRR891268_chr22_enriched	200.0	255	0.028469	98.91"
+        macs:
+          asserts:
+            has_line: 
+              line: "SRR891268_chr22_enriched	255	47.0	239626.0	200.0"
+        picard_dups:
+          asserts:
+            has_line: 
+              line: "SRR891268_chr22_enriched	Unknown Library	0.0	119813.0	0.0	0.0	0.0	3411.0	5.0	0.028469	2067029.0"
+        sources:
+          asserts:
+            has_n_lines: 
+              n: 4
+    MultiQC webpage:
+          asserts:
+            - that: "has_text"
+              text: "<a href=\"#cutadapt_filtered_reads\" class=\"nav-l2\">Filtered Reads</a>"
+            - that: "has_text"
+              text: "<td>% Aligned</td>"
+            - that: "has_text"
+              text: "<td>% BP Trimmed</td>"
