@@ -1,4 +1,10 @@
 # Changelog
+
+## [0.2] 2022-12-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0+galaxy2`
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
