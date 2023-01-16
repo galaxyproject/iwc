@@ -4,7 +4,6 @@
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/bamtools_filter/bamFilter/2.5.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bamtools_filter/bamFilter/2.5.2+galaxy1`
-- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicatesWithMateCigar/2.18.2.2`
 
 ## [0.3] 2022-12-17
 
