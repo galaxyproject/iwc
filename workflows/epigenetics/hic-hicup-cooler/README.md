@@ -1,12 +1,12 @@
 # Hi-C (hic_fastq_to_cool_hicup_cooler) and region capture Hi-C (chic_fastq_to_cool_hicup_cooler) Workflows
 
-This can also be used for Hi-ChIP experiments, in that case the last output is ignored and the matrix to use is `matrix with raw values`.
+This can also be used for Hi-ChIP experiments, in that case the output with `matrix with iced values` is ignored and the matrix to use is `matrix with raw values`.
 
-## Inputs dataset
+## Input datasets
 
 - The workflow needs a list of dataset pairs of fastqsanger.
 
-## Inputs values
+## Input values
 
 - genome name: suggested from the bowtie2 indices, it is used to map and build the list of bins.
 - restriction enzyme: Restriction enzyme used e.g. A^GATCT,BglII. The '^' is used to express where the enzyme cuts.
@@ -31,7 +31,7 @@ For the Hi-C workflow:
   - Pairing the mates when both mates are uniquely mapped or MAPQ30
   - Filtering the pairs for undigested, self-ligated...
   - Removing duplicates
-- The output BAM file is converted to juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the 5' end.
+- The output BAM file is converted to medium juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the 5' end.
 - The pairs are filtered for MAPQ if specified.
 - For the region capture Hi-C workflow the pairs are filtered for both mates in the captured region.
 - The filtered pairs are sorted and indexed with cooler_csort.
