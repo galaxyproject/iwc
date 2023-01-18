@@ -60,8 +60,6 @@ GH_WORKFLOW = "workflow_test.yml"
 TARGET_OWNER = "iwc-workflows"
 GH_API_URL = "https://api.github.com"
 PLANEMO_VERSION = f">={planemo.__version__}"
-PLANEMO_TEST_SUFFIXES = ["-tests", "_tests", "-test", "_test"]
-PLANEMO_TEST_EXTENSIONS = [".yml", ".yaml", ".json"]
 HUB_URL = "https://workflowhub.eu"
 HUB_API_KEY = os.getenv("HUB_API_KEY")
 HUB_CFG_NAME = ".workflowhub.yml"
@@ -175,24 +173,6 @@ class HubClient:
         return self.patch(f"/workflows/{wf_id}", payload=payload)
 
 
-def get_wf_id(crate_dir):
-    ids = [_.name for _ in os.scandir(crate_dir) if _.name.endswith(".ga")]
-    if not ids:
-        raise RuntimeError(".ga workflow file not found")
-    return ids[0]
-
-
-def get_planemo_id(crate_dir, wf_id):
-    tag, _ = os.path.splitext(wf_id)
-    for suffix in PLANEMO_TEST_SUFFIXES:
-        for ext in PLANEMO_TEST_EXTENSIONS:
-            planemo_id = f"{tag}{suffix}{ext}"
-            planemo_source = Path(crate_dir) / planemo_id
-            if planemo_source.is_file():
-                return planemo_id, planemo_source
-    raise RuntimeError(f"Planemo test file not found in {crate_dir}")
-
-
 def handle_creator(ga_json, crate, workflow):
     try:
         gh_creators = ga_json["creator"]
@@ -218,29 +198,29 @@ def handle_creator(ga_json, crate, workflow):
         workflow["creator"] = ro_creators
 
 
-def get_workflow_name(repo_dir):
-    repo_dir = Path(repo_dir)
+def get_wf_records(repo_dir):
     cfg_path = repo_dir / DOCKSTORE_CFG_NAME
     if not cfg_path.is_file():
         raise RuntimeError(f"{cfg_path} not found")
     with open(cfg_path, "rt") as f:
         cfg = yaml.load(f, Loader=Loader)
     assert str(cfg["version"]) == DOCKSTORE_CFG_VERSION
-    wf_entry = cfg["workflows"][0]  # assuming first wf is the main wf
-    return f"{repo_dir.name}/{wf_entry['name']}"
+    return cfg["workflows"]
 
 
-def make_crate(crate_dir, target_owner, planemo_version):
-    wf_id = get_wf_id(crate_dir)
-    planemo_id, planemo_source = get_planemo_id(crate_dir, wf_id)
-    crate = ROCrate(gen_preview=False)
-    wf_source = Path(crate_dir) / wf_id
+def add_workflow(crate_dir, crate, wf_record, target_owner, planemo_version, main=False):
+    wf_id = wf_record["primaryDescriptorPath"].lstrip("/")
+    wf_source = crate_dir / wf_id
+    if not wf_source.is_file():
+        return
     with open(wf_source) as f:
         code = json.load(f)
-    workflow = crate.add_workflow(wf_source, wf_id, main=True,
+    workflow = crate.add_workflow(wf_source, wf_id, main=main,
                                   lang="galaxy", gen_cwl=False)
     handle_creator(code, crate, workflow)
-    workflow["name"] = crate.root_dataset["name"] = get_workflow_name(crate_dir)
+    workflow["name"] = wf_name = f"{crate_dir.name}/{wf_record['name']}"
+    if main:
+        crate.root_dataset["name"] = wf_name
     try:
         workflow["version"] = code["release"]
     except KeyError:
@@ -251,16 +231,31 @@ def make_crate(crate_dir, target_owner, planemo_version):
         crate.root_dataset["license"] = code["license"]
     except KeyError:
         pass
-    readme_source = Path(crate_dir) / "README.md"
+    readme_source = crate_dir / "README.md"
     if readme_source.is_file():
         crate.add_file(readme_source, "README.md")
-    suite = crate.add_test_suite(identifier="#test1")
-    resource = f"repos/{target_owner}/{crate_dir.name}/actions/workflows/{CI_WORKFLOW.name}"
-    crate.add_test_instance(suite, GH_API_URL, resource=resource,
-                            service="github", identifier="test1_1")
-    crate.add_test_definition(suite, source=planemo_source,
-                              dest_path=planemo_id, engine="planemo",
-                              engine_version=planemo_version)
+    for i, planemo_id in enumerate(wf_record.get("testParameterFiles", [])):
+        planemo_id = planemo_id.lstrip("/")
+        planemo_source = Path(crate_dir) / planemo_id
+        if not planemo_source.is_file():
+            continue
+        suite_id = f"#test_{wf_record['name']}_{i+1}"
+        instance_id = f"{suite_id}_1"
+        suite = crate.add_test_suite(identifier=suite_id, main_entity=workflow)
+        resource = f"repos/{target_owner}/{crate_dir.name}/actions/workflows/{CI_WORKFLOW.name}"
+        crate.add_test_instance(suite, GH_API_URL, resource=resource,
+                                service="github", identifier=instance_id)
+        crate.add_test_definition(suite, source=planemo_source,
+                                  dest_path=planemo_id, engine="planemo",
+                                  engine_version=planemo_version)
+
+
+def make_crate(crate_dir, target_owner, planemo_version):
+    crate = ROCrate(gen_preview=False)
+    wf_records = get_wf_records(crate_dir)
+    for i, r in enumerate(wf_records):
+        main = i == 0
+        add_workflow(crate_dir, crate, r, target_owner, planemo_version, main=main)
     crate.metadata.write(crate_dir)
 
 
