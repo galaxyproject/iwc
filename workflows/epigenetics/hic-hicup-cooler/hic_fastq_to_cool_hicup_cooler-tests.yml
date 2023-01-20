@@ -1,0 +1,85 @@
+- doc: Test outline for Hi-C_fastqToCool_hicup_cooler
+  job:
+    PE fastq input:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: test_dataset
+        elements:
+        - class: File
+          identifier: forward
+          location: https://github.com/bgruening/galaxytools/raw/master/tools/hicup/test-data/dataset1.fastq
+          filetype: fastqsanger
+        - class: File
+          identifier: reverse
+          location: https://github.com/bgruening/galaxytools/raw/master/tools/hicup/test-data/dataset2.fastq
+          filetype: fastqsanger
+    genome name: hg19
+    Restriction enzyme: A^AGCTT,HindIII
+    No fill-in: 'false'
+    minimum MAPQ: 30
+    Bin size in bp: 1000000
+    Interactions to consider to calculate weights in normalization step: --cis-only
+    region for matrix plotting: chr2:175,689,620-178,604,461
+  outputs:
+    HiCUP report (html):
+      element_tests:
+        test_dataset:
+          asserts:
+            has_size:
+              value: 4602173
+              delta: 4000000
+    HiCUP report (txt):
+      element_tests:
+        test_dataset:
+          asserts:
+            has_text:
+              text: "\t99742\t99742\t92512\t92628\t7230\t7114\t22.45\t22.63\t2658\t2476\t73431\t72142\t17767\t18475\t5886\t6649\t57671\t57671\t39966\t1652\t17997\t20317\t17705\t481\t2432\t13452\t1340\t0\t0\t39962\t1652\t17996\t20314\t57.82\t69.30\t99.99\t50.83\t40.07"
+    valid pairs in juicebox format:
+      element_tests:
+        test_dataset:
+          asserts:
+            - that: "has_line"
+              line: "1	1	chr10	100016423	0	1	chr10	101499220	1	42	42"
+            - that: "has_line"
+              line: "2	1	chr10	100088974	0	1	chr10	122241330	1	38	42"
+            - that: "has_line"
+              line: "3	0	chr10	100130383	0	1	chr10	50863577	1	0	42"
+    valid pairs in juicebox format MAPQ filtered:
+      element_tests:
+        test_dataset:
+          asserts:
+            - that: "has_line"
+              line: "1	1	chr10	100016423	0	1	chr10	101499220	1	42	42"
+            - that: "has_line"
+              line: "2	1	chr10	100088974	0	1	chr10	122241330	1	38	42"
+            - that: "not_has_text"
+              text: "3	0	chr10	100130383	0	1	chr10	50863577	1	0	42"
+    valid pairs filtered and sorted:
+      element_tests:
+        test_dataset:
+          asserts:
+            has_size:
+              value: 523343
+              delta: 50000
+    matrix with raw values:
+      element_tests:
+        test_dataset:
+          asserts:
+            has_size:
+              value: 117588
+              delta: 10000
+    matrix with iced values:
+      element_tests:
+        test_dataset:
+          asserts:
+            has_size:
+              value: 123613
+              delta: 10000
+    plot with pyGenomeTracks:
+      class: File
+      file: test-data/plot_hic.png
+      compare: sim_size
+      delta: 1500
