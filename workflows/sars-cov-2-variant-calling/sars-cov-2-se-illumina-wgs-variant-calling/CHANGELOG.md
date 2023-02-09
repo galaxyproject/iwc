@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.4] 2023-02-09
+
+### Fixed
+- Update .dockstore.yml author metadata
+
 ## [0.1.3] 2021-12-13
 
 ### Added

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.2] 2023-02-09
+
+### Fixed
+- Update .dockstore.yml author metadata
+
 ## [0.3.1] 2021-12-13
 
 ### Added
@@ -14,19 +19,19 @@ statistics are calculated:
 
 - Switch to medaka_variant version 1.3.2+galaxy1 for extracting variants from
   medaka consensus data.
-
+  
   This new version of the tool is more robust against input data peculiarities
   at the VCF annotation stage:
-
+  
   * it doesn't fail on empty BAM input
   * it doesn't crash on variant calls of unusually high quality that previously
     resulted in math domain errors when trying to calculate PHRED scores from
     very small error probabilities.
-
+  
   This tool update also means that key INFO fields (DP, DP4, AF) are
   now based on calculations carried out by medaka tools annotate instead of by
   custom code using samtools mpileup. This has the following consequences:
-
+  
   * the tool can now emit variant calls at complex sites with > 1 lengths of
     both the REF and the ALT allele, which were previously dropped
   * the workflow became more complex; to account for shortcomings of medaka
@@ -57,7 +62,7 @@ and:
 
 - Add a step to filter out failed datasets before flattening the Qualimap BamQC
   data for use by MultiQC.
-
+  
   Qualimap BamQC fails on empty BAM input and trying to flatten the resulting
   collection containing failed datasets would cause the invocation of the
   workflow to fail.

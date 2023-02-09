@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.1] 2023-02-09
+
+### Fixed
+- Update .dockstore.yml author metadata
+
 ## [0.5] - 2022-02-08
 
 ### Fixed
@@ -7,12 +12,12 @@
 - Base selection of variants that should trigger amplicon removal on unbiased
   AF values recalculated from DP4 and DP fields instead of on AF values
   provided by lofreq call.
-
+  
   https://github.com/CSB5/lofreq/issues/80 means that lofreq-calculated AF
   values are lower bounds of true AFs when bases are excluded from calling
   based on base quality. The extent of AF underestimation depends on the
   fraction of bases with sub-threshold (30 for this workflow) base qualities.
-
+  
   By recalculating AFs as (DP4[2] + DP4[3]) / DP we are avoiding this issue.
   From this version on we also add a proper description to the header INFO
   line description of the AF field to be explicit about the meaning of lofreq's
@@ -21,11 +26,11 @@
 ### Changed
 
 - Increase/deactivate the default upper AF threshold for biased amplicon detection
-
+  
   By increasing the default AF threshold to 1.0 amplicon removal now gets
   triggered by default for all primer binding site mutations with unbiased
   (see AF discussion above) AF > 0.1.
-
+  
   This change is intended to allow removal of amplicons resulting from even
   trace amounts of contamination when the intended target of the amplicon
   primers drops out because of mutations severely impacting primer binding.
@@ -36,10 +41,9 @@
   The exact consequences of this change need to be evaluated, but users can
   restore the previous behavior by reducing the upper AF threshold back to 0.9,
   which will reduce the extent of attempted amplicon removals substantially.
-
 - Make the amplicon bias correction more robust and better interoperable with
   the [Reporting workflow](https://github.com/iwc-workflows/sars-cov-2-variation-reporting).
-
+  
   First and second (after amplicon removal) round of variant calling are now
   carried out with identical lofreq parameter settings.
   bcftools annotate is then used to carry over the bias-corrected call stats to
@@ -54,9 +58,8 @@
   initially filter-passing variant gets filtered out after correction.
   The AmpliconBias INFO flag is used to mark all such variants, for which
   amplicon bias correction was skipped to rescue the call.
-
 - Upgrade the Galaxy wrapper versions of ivar trim and ivar removereads.
-
+  
   This makes it easy for users to calculate primer amplicon info from suitable
   primer scheme bed files instead of passing the info as a separate file.
   This workflow sticks to the previous behavior to avoid new requirements on
@@ -66,11 +69,11 @@
   provide better performance for compressed input data, but also has a moderate
   effect on trimming results.
 - Upgrade other tools to their latest versions or wrapper versions:
-
+  
   - bwa_mem to wrapper version 0.7.17.2
   - lofreq_call to wrapper version 2.1.5+galaxy1
   - multiqc to version 1.11
-
+  
   None of these are expected to change the variant output produced by the
   workflow.
 
@@ -78,7 +81,7 @@
 
 - Add a step to filter out failed datasets before flattening the Qualimap BamQC
   data for use by MultiQC.
-
+  
   Qualimap BamQC fails on empty BAM input and trying to flatten the resulting
   collection containing failed datasets would cause the invocation of the
   workflow to fail.
