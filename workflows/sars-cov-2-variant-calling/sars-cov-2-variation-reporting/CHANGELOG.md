@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] 2023-04-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.1.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0`
+
 ## [0.3] 2022-10-13
 
 ### Changed
