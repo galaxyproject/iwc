@@ -1,6 +1,6 @@
-# Microbiome Analysis workflows for Nanopore datasets
+# Microbiome Analysis workflows for Nanopore datasets - collection version
 
-The following workflows can be used directly for any nanopore metagenomics data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique.
+The following workflows can be used directly for any nanopore metagenomics data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique. The collection version takes a collection of all samples instead of taking sample by sample
 
 ## Pre-Processing
 
@@ -10,11 +10,11 @@ Generally, we are not interested in the host sequences, rather only those origin
 
 ### Input datasets
 
-- Sequenced Nanopore reads of the sample to be analized in a `fastq or fastq.gz` formate
+- Collection of sequenced Nanopore reads of all samples to be analized in a `fastq or fastq.gz` formate
 
 ### Output datasets
 
-- Pre-Processed Sequenced reads ready for the coming analysis with the following workflows in a `fastq or fastq.gz` formate
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate
 
 ## Taxonomy Profiling
 
