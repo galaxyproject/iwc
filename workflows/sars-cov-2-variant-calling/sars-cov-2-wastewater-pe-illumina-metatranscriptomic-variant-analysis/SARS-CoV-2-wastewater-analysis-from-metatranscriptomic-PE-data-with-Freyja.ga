@@ -1,1 +1,249 @@
-{"a_galaxy_workflow": "true", "annotation": "A workflow for SARS-CoV-2 lineage analysis from metatranscriptomic paired-end sequencing data of wastewater samples", "creator": [{"class": "Person", "identifier": "0000-0002-0507-4602", "name": "Polina Polunina"}, {"class": "Person", "identifier": "0000-0001-9852-1987", "name": "B\u00e9r\u00e9nice Batut"}, {"class": "Person", "identifier": "0000-0002-9464-6640", "name": "Wolfgang Maier"}], "format-version": "0.1", "license": "MIT", "release": "0.1", "name": "SARS-CoV-2 wastewater analysis from metatranscriptomic PE data with Freyja", "steps": {"0": {"annotation": "VCF file containing SARS-CoV-2 variant calls", "content_id": null, "errors": null, "id": 0, "input_connections": {}, "inputs": [{"description": "VCF file containing SARS-CoV-2 variant calls", "name": "VCF"}], "label": "VCF", "name": "Input dataset collection", "outputs": [], "position": {"left": 9.070616327710695, "top": 0.0}, "tool_id": null, "tool_state": "{\"optional\": false, \"format\": [\"vcf\"], \"tag\": null, \"collection_type\": \"list\"}", "tool_version": null, "type": "data_collection_input", "uuid": "e238ae19-ffec-4866-9f87-12e009e33a70", "when": null, "workflow_outputs": []}, "1": {"annotation": "Fully processed reads for variant calling (primer-trimmed, realigned reads with added indelquals)", "content_id": null, "errors": null, "id": 1, "input_connections": {}, "inputs": [{"description": "Fully processed reads for variant calling (primer-trimmed, realigned reads with added indelquals)", "name": "BAM collection of aligned and preprocessed reads"}], "label": "BAM collection of aligned and preprocessed reads", "name": "Input dataset collection", "outputs": [], "position": {"left": 0.0, "top": 211.69386238131904}, "tool_id": null, "tool_state": "{\"optional\": false, \"format\": [\"bam\"], \"tag\": null, \"collection_type\": \"list\"}", "tool_version": null, "type": "data_collection_input", "uuid": "50bc82c8-1f24-4ea8-9424-0dba3997486b", "when": null, "workflow_outputs": []}, "2": {"annotation": "", "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_depth/samtools_depth/1.15.1+galaxy0", "errors": null, "id": 2, "input_connections": {"input_bams": {"id": 1, "output_name": "output"}}, "inputs": [], "label": null, "name": "Samtools depth", "outputs": [{"name": "output", "type": "tabular"}], "position": {"left": 287.27972602431237, "top": 221.79029799294983}, "post_job_actions": {}, "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_depth/samtools_depth/1.15.1+galaxy0", "tool_shed_repository": {"changeset_revision": "56faa6a57e50", "name": "samtools_depth", "owner": "iuc", "tool_shed": "toolshed.g2.bx.psu.edu"}, "tool_state": "{\"additional_options\": {\"required_flags\": null, \"skipped_flags\": [\"4\", \"256\", \"512\", \"1024\"], \"deletions\": false, \"single_read\": false}, \"all\": \"\", \"basequality\": null, \"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"input_bams\": {\"__class__\": \"ConnectedValue\"}, \"mapquality\": null, \"maxdepth\": null, \"minlength\": null, \"output_options\": {\"header\": false}, \"__page__\": null, \"__rerun_remap_job_id__\": null}", "tool_version": "1.15.1+galaxy0", "type": "tool", "uuid": "0b131381-529a-42ac-86b9-9600dcf97369", "when": null, "workflow_outputs": [{"label": "Samtools depth on input dataset(s)", "output_name": "output", "uuid": "a3b20caa-afac-493f-bcf9-12da08420f6a"}]}, "3": {"annotation": "", "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_demix/freyja_demix/1.3.8+galaxy0", "errors": null, "id": 3, "input_connections": {"depth_file": {"id": 2, "output_name": "output"}, "variants_in": {"id": 0, "output_name": "output"}}, "inputs": [{"description": "runtime parameter for tool Freyja: Demix", "name": "meta"}], "label": null, "name": "Freyja: Demix", "outputs": [{"name": "abundances", "type": "tabular"}], "position": {"left": 581.3385902655966, "top": 162.18296907426918}, "post_job_actions": {}, "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_demix/freyja_demix/1.3.8+galaxy0", "tool_shed_repository": {"changeset_revision": "fc6252e78d5b", "name": "freyja_demix", "owner": "iuc", "tool_shed": "toolshed.g2.bx.psu.edu"}, "tool_state": "{\"confirmedonly\": false, \"depth_cutoff\": \"10\", \"depth_file\": {\"__class__\": \"ConnectedValue\"}, \"eps\": null, \"meta\": {\"__class__\": \"RuntimeValue\"}, \"sample_name\": {\"source\": \"auto\", \"__current_case__\": 0}, \"usher_update_option\": {\"choice\": \"repo\", \"__current_case__\": 0}, \"variants_in\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}", "tool_version": "1.3.8+galaxy0", "type": "tool", "uuid": "d0eb7bbd-723b-4603-b265-8237586c9876", "when": null, "workflow_outputs": [{"label": "Freyja: Demix on input dataset(s): Lineages abundances summary", "output_name": "abundances", "uuid": "0b7c42c5-b50d-4364-9416-73b0cb454f71"}]}, "4": {"annotation": "", "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_aggregate_plot/freyja_aggregate_plot/1.3.8+galaxy0", "errors": null, "id": 4, "input_connections": {"need_aggregation|demix_file": {"id": 3, "output_name": "abundances"}}, "inputs": [], "label": null, "name": "Freyja: Aggregate and visualize", "outputs": [{"name": "aggregated", "type": "tabular"}, {"name": "abundances_plot", "type": "pdf"}], "position": {"left": 883.0260902655966, "top": 150.99546907426918}, "post_job_actions": {}, "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_aggregate_plot/freyja_aggregate_plot/1.3.8+galaxy0", "tool_shed_repository": {"changeset_revision": "0ceb9fb0f4ce", "name": "freyja_aggregate_plot", "owner": "iuc", "tool_shed": "toolshed.g2.bx.psu.edu"}, "tool_state": "{\"need_aggregation\": {\"choice\": \"yes\", \"__current_case__\": 0, \"demix_file\": {\"__class__\": \"ConnectedValue\"}}, \"plot_format\": {\"choice\": \"plot\", \"__current_case__\": 0, \"need_metadata\": {\"choice\": \"no\", \"__current_case__\": 1}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}", "tool_version": "1.3.8+galaxy0", "type": "tool", "uuid": "6200f471-112d-4f50-ae4d-82f97b40bd7b", "when": null, "workflow_outputs": [{"label": "Freyja: Aggregate and visualize on input dataset(s): Aggregated data", "output_name": "aggregated", "uuid": "cef4e8aa-8734-4d0e-b45f-e5335657dac3"}, {"label": "Freyja: Aggregate and visualize on input dataset(s): Lineages abundances plot", "output_name": "abundances_plot", "uuid": "9ad140f6-95b8-4fb3-8aab-7f1984646b22"}]}}, "tags": [], "uuid": "404d3755-aae2-459f-a73d-df4909f97047", "version": 6}
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "A workflow for SARS-CoV-2 lineage analysis from metatranscriptomic paired-end sequencing data of wastewater samples",
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "0000-0002-0507-4602",
+            "name": "Polina Polunina"
+        },
+        {
+            "class": "Person",
+            "identifier": "0000-0001-9852-1987",
+            "name": "B\u00e9r\u00e9nice Batut"
+        },
+        {
+            "class": "Person",
+            "identifier": "0000-0002-9464-6640",
+            "name": "Wolfgang Maier"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "SARS-CoV-2 wastewater analysis from metatranscriptomic PE data with Freyja",
+    "steps": {
+        "0": {
+            "annotation": "VCF file containing SARS-CoV-2 variant calls",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "VCF file containing SARS-CoV-2 variant calls",
+                    "name": "VCF"
+                }
+            ],
+            "label": "VCF",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 9.070616327710695,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"vcf\"], \"tag\": null, \"collection_type\": \"list\"}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "e238ae19-ffec-4866-9f87-12e009e33a70",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Fully processed reads for variant calling (primer-trimmed, realigned reads with added indelquals)",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Fully processed reads for variant calling (primer-trimmed, realigned reads with added indelquals)",
+                    "name": "BAM collection of aligned and preprocessed reads"
+                }
+            ],
+            "label": "BAM collection of aligned and preprocessed reads",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 211.69386238131904
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"bam\"], \"tag\": null, \"collection_type\": \"list\"}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "50bc82c8-1f24-4ea8-9424-0dba3997486b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_depth/samtools_depth/1.15.1+galaxy0",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "input_bams": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Samtools depth",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 287.27972602431237,
+                "top": 221.79029799294983
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_depth/samtools_depth/1.15.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "56faa6a57e50",
+                "name": "samtools_depth",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"additional_options\": {\"required_flags\": null, \"skipped_flags\": [\"4\", \"256\", \"512\", \"1024\"], \"deletions\": false, \"single_read\": false}, \"all\": \"\", \"basequality\": null, \"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"input_bams\": {\"__class__\": \"ConnectedValue\"}, \"mapquality\": null, \"maxdepth\": null, \"minlength\": null, \"output_options\": {\"header\": false}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.15.1+galaxy0",
+            "type": "tool",
+            "uuid": "0b131381-529a-42ac-86b9-9600dcf97369",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Samtools depth on input dataset(s)",
+                    "output_name": "output",
+                    "uuid": "a3b20caa-afac-493f-bcf9-12da08420f6a"
+                }
+            ]
+        },
+        "3": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_demix/freyja_demix/1.4.4+galaxy0",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "depth_file": {
+                    "id": 2,
+                    "output_name": "output"
+                },
+                "variants_in": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Freyja: Demix",
+                    "name": "depth_file"
+                },
+                {
+                    "description": "runtime parameter for tool Freyja: Demix",
+                    "name": "meta"
+                },
+                {
+                    "description": "runtime parameter for tool Freyja: Demix",
+                    "name": "variants_in"
+                }
+            ],
+            "label": null,
+            "name": "Freyja: Demix",
+            "outputs": [
+                {
+                    "name": "abundances",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 581.3280944824219,
+                "top": 162.1744613647461
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_demix/freyja_demix/1.4.4+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "c0a0e79d7196",
+                "name": "freyja_demix",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"confirmedonly\": false, \"depth_cutoff\": \"10\", \"depth_file\": {\"__class__\": \"RuntimeValue\"}, \"eps\": null, \"meta\": {\"__class__\": \"RuntimeValue\"}, \"sample_name\": {\"source\": \"auto\", \"__current_case__\": 0}, \"usher_update_option\": {\"choice\": \"repo\", \"__current_case__\": 0}, \"variants_in\": {\"__class__\": \"RuntimeValue\"}, \"wgisaid\": false, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.4.4+galaxy0",
+            "type": "tool",
+            "uuid": "d0eb7bbd-723b-4603-b265-8237586c9876",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Freyja: Demix on input dataset(s): Lineages abundances summary",
+                    "output_name": "abundances",
+                    "uuid": "0b7c42c5-b50d-4364-9416-73b0cb454f71"
+                }
+            ]
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_aggregate_plot/freyja_aggregate_plot/1.4.4+galaxy0",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "need_aggregation|demix_file": {
+                    "id": 3,
+                    "output_name": "abundances"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Freyja: Aggregate and visualize",
+                    "name": "need_aggregation"
+                }
+            ],
+            "label": null,
+            "name": "Freyja: Aggregate and visualize",
+            "outputs": [
+                {
+                    "name": "aggregated",
+                    "type": "tabular"
+                },
+                {
+                    "name": "abundances_plot",
+                    "type": "pdf"
+                }
+            ],
+            "position": {
+                "left": 883.0260902655966,
+                "top": 150.99546907426918
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/freyja_aggregate_plot/freyja_aggregate_plot/1.4.4+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "1f89eeba299a",
+                "name": "freyja_aggregate_plot",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"need_aggregation\": {\"choice\": \"yes\", \"__current_case__\": 0, \"demix_file\": {\"__class__\": \"RuntimeValue\"}}, \"plot_format\": {\"choice\": \"plot\", \"__current_case__\": 0, \"need_metadata\": {\"choice\": \"no\", \"__current_case__\": 1}, \"lineages\": true, \"mincov\": \"60.0\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.4.4+galaxy0",
+            "type": "tool",
+            "uuid": "6200f471-112d-4f50-ae4d-82f97b40bd7b",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Freyja: Aggregate and visualize on input dataset(s): Aggregated data",
+                    "output_name": "aggregated",
+                    "uuid": "cef4e8aa-8734-4d0e-b45f-e5335657dac3"
+                },
+                {
+                    "label": "Freyja: Aggregate and visualize on input dataset(s): Lineages abundances plot",
+                    "output_name": "abundances_plot",
+                    "uuid": "9ad140f6-95b8-4fb3-8aab-7f1984646b22"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "e101fb52-2b53-4f76-a338-4afcbe613928",
+    "version": 2
+}
