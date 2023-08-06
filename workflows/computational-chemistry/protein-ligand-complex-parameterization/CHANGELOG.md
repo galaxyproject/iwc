@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.4] 2022-10-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/chemteam/gmx_setup/gmx_setup/2021.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/chemteam/gmx_setup/gmx_setup/2022+galaxy0`
+
 ## [0.1.3] 2022-05-25
 
 ### Changed
