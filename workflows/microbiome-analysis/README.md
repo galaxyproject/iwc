@@ -2,7 +2,7 @@
 
 The following workflows can be used directly for any nanopore metagenomics data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique. 
 
-To learn more about all workflows and try them with real datasets, please check our tutorial on the Galaxy Training Network (GTN)[https://training.galaxyproject.org/training-material/topics/metagenomics/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html]
+To learn more about all workflows and try them with real datasets, please check our tutorial on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/metagenomics/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
 ## Pre-Processing
 
