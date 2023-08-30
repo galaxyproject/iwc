@@ -5,6 +5,9 @@
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0`
 
+### Manual update
+- New parameter to get normalized profile
+
 ## [0.3] 2022-12-17
 
 ### Automatic update
