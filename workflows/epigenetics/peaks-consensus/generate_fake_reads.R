@@ -73,6 +73,9 @@ write.table(frag[, c("chr", "start2", "end2", "name", "score", "minus")],
 # for sample in 1 2; do for i in 1 2; do bedtools getfasta -nameOnly -s -fi ~/igv/genomes/seq/mm10.fa -bed sample${sample}_R${i}.bed | seqtk seq -F 'A' - > sample${sample}_R${i}.fastq; done; done
 # Then in galaxy bowtie2 on mm10
 
+# For ATAC/CUT&RUN
+# Just BAM to BED (even if it is not really a good way to do it)
+
 ## ChIP-seq SR
 set.seed(1)
 peak.width <- 100
