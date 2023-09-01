@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] 2023-09-01 Bug fix
+
+Fix dockstore (workflows are the same)
+
 ## [0.2] 2023-02-17
 
 ### Automatic update
