@@ -1,4 +1,4 @@
-# Peaks consensus Workflow
+# Consensus peaks Workflow
 
 The goal of this workflow is to get a list of confident peaks with summits from two replicates.
 
