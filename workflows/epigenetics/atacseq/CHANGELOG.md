@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6] 2023-09-05
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicatesWithMateCigar/2.18.2.3`
+
 ## [0.5] 2023-03-17
 
 ### Automatic update
