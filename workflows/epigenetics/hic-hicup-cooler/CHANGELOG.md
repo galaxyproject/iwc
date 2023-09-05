@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.2] 2023-09-05
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.8+galaxy2`
+
 ## [0.2.1] 2023-09-01 Bug fix
 
 Fix dockstore (workflows are the same)
