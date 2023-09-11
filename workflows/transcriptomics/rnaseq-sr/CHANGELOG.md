@@ -3,7 +3,12 @@
 ## [0.5] 2023-03-17
 
 ### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.8a+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.10b+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.8a+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.10b+galaxy4`
+
+### Manual update
+- Use STAR to compute normalized strand splitted coverage
+- Propose StringTie to compute FPKM etc...
+- Put cufflinks step optional
 
 ## [0.4] 2023-01-16
 
