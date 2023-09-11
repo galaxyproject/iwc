@@ -1,9 +1,10 @@
 # Changelog
 
-## [0.2.2] 2023-09-05
+## [0.3] 2023-09-08
 
-### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.8+galaxy2`
+### Update tools
+- all cooler tools were updated from 0.8.11 to 0.9.2
+- pyGenomeTracks was updated from 3.7 to 3.8
 
 ## [0.2.1] 2023-09-01 Bug fix
 
