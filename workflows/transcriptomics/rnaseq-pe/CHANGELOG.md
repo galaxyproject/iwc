@@ -1,5 +1,9 @@
 # Changelog
 
+
+## [0.4.1] 2023-09-14
+- add author in dockstore file
+
 ## [0.4] 2023-01-16
 
 ### Automatic update
