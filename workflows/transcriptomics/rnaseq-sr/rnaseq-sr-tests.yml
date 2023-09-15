@@ -14,6 +14,8 @@
     forward_adapter: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
     reference_genome: dm6
     strandness: unstranded
+    cufflinks_FPKM: true
+    stringtie_FPKM: true
   outputs:
     output_log:
       element_tests:
@@ -24,7 +26,7 @@
             - that: "has_text"
               text: "Uniquely mapped reads number |\t871202"
             - that: "has_text"
-              text: "Number of reads mapped to multiple loci |\t91809"
+              text: "Number of reads mapped to multiple loci |\t91808"
     mapped-reads:
       element_tests:
         GSM461177:
@@ -37,7 +39,7 @@
         cutadapt:
           asserts:
             has_text:
-              text: "GSM461177\t4.0\t1057657\t25033\t6191\t1051466\t39133309\t1439589\t37547108\t4.053327051898423"
+              text: "GSM461177\t4.4\t1057657\t25033\t6191\t1051466\t39133309\t1439589\t37547108\t4.053327051898423"
         general_stats:
           asserts:
             has_text:
@@ -48,8 +50,8 @@
               n: 4
         star:
           asserts:
-            has_text:
-              text: "GSM461177\t1051466.0\t35.0\t871202.0\t82.86\t35.4\t51184.0\t50995.0\t50810.0\t343.0\t12.0\t19.0\t0.48\t0.0\t1.48\t0.0\t1.36\t91809.0\t8.73\t34515.0\t3.28\t0.0\t4.76\t0.37\t0\t50050\t3890"
+            has_text_matching:
+              expression: "GSM461177\t1051466.0\t35.0\t871202.0\t82.86\t35.4\t51184.0\t50995.0\t50810.0\t343.0\t12.0\t19.0\t0.48\t0.0\t1.48\t0.0\t1.36\t9180[89].0\t8.73\t34515.0\t3.28\t0.0\t4.76\t0.37\t0\t5005[01]\t3890"
     MultiQC webpage:
       asserts:
         - that: "has_text"
@@ -72,33 +74,37 @@
           asserts:
             has_text:
               text: "FBgn0010247\t14"
-    transcripts_expression:
+    transcripts_expression_cufflinks:
       element_tests:
         GSM461177:
           asserts:
             has_text:
-              text: "FBtr0078104\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t1583\t0.626702\t18.291\t9.78604\t26.796\tOK"
-    genes_expression:
+              text: "FBtr0078104\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t1583\t0.626702\t18.291\t9.78605\t26.796\tOK"
+    genes_expression_cufflinks:
+      element_tests:
+        GSM461177:
+          asserts:
+            has_text_matching:
+              expression: "FBgn0031217\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t-\t-\t32.1016\t22.1771\t42.02[0-9]*\tOK"
+    genes_expression_stringtie:
       element_tests:
         GSM461177:
           asserts:
             has_text:
-              text: "FBgn0031217\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t-\t-\t32.1015\t22.1771\t42.0259\tOK"
+              text: "FBgn0031217\tCG11377\tchr2L\t+\t102380\t104142\t0.994315\t32.391769\t56.255165"
     both strands coverage:
       element_tests:
         GSM461177:
             has_size:
               value: 6075761
               delta: 600000
-    negative strand coverage:
+    stranded coverage:
       element_tests:
-        GSM461177:
+        GSM461177_reverse:
             has_size:
               value: 3103918
               delta: 300000
-    positive strand coverage:
-      element_tests:
-        GSM461177:
+        GSM461177_forward:
             has_size:
               value: 3103918
               delta: 300000
