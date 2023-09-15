@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3] 2023-09-08
+
+### Update tools
+- all cooler tools were updated from 0.8.11 to 0.9.3
+- pyGenomeTracks was updated from 3.7 to 3.8
+
 ## [0.2.1] 2023-09-01 Bug fix
 
 Fix dockstore (workflows are the same)
