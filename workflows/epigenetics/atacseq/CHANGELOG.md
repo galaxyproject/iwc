@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.5.1] 2023-09-22
+
+Fix bug in normalize profiles when used with multiple samples (in 0.5.0 it is averaging samples instead of normalizing each sample).
+
 ## [0.5] 2023-03-17
 
 ### Automatic update
