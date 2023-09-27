@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.2] 2023-09-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicatesWithMateCigar/2.18.2.3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0`
+
 ## [0.5.1] 2023-09-22
 
 Fix bug in normalize profiles when used with multiple samples (in 0.5.0 it is averaging samples instead of normalizing each sample).
