@@ -24,6 +24,3 @@ Generate phased assembly based on PacBio Hifi Reads using HiC data from the same
 5. QC: Assembly statistics for both assemblies
 6. QC: Nx plot for both assemblies
 7. QC: Size plot for both assemblie
-
-
-
