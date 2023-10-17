@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5] 2023-10-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/macs2/macs2_callpeak/2.2.7.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/macs2/macs2_callpeak/2.2.9.1+galaxy0`
+
 ## [0.4] 2023-03-17
 
 ### Automatic update
