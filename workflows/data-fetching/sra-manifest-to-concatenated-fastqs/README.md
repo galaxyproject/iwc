@@ -22,4 +22,5 @@ This workflow takes as input a SRA manifest from SRA Run Selector (or a tabular 
 
 ## Warning
 
-We assume that the sample name does not contains '___' as this is used to concatenate and then split SRA and sample name.
+- We assume that the sample name does not contains '___' as this is used to concatenate and then split SRA and sample name.
+- All characters which are not letters or digit or '_' will be converted to '-' in sample name.
