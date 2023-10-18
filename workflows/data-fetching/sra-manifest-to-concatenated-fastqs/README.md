@@ -1,10 +1,10 @@
 # SRA manifest to concatenated fastqs
 
-This workflow takes as input a SRA manifest from SRA Run Selector and generate a single fastq or pair of fastq per sample (present in the SRA manifest with a column of user's choice).
+This workflow takes as input a SRA manifest from SRA Run Selector (or a tabular with a header line) and generate a single fastq or pair of fastq per sample (present in the SRA manifest with a column of user's choice).
 
 ## Input dataset
 
-- The workflow needs a single input which is a tabular with one column with SRA number and one column with sample identifier.
+- The workflow needs a single input which is a tabular with one column with SRA number and one column with sample identifier. The tabular must have a header line.
 
 ## Input values
 
@@ -13,7 +13,7 @@ This workflow takes as input a SRA manifest from SRA Run Selector and generate a
 
 ## Processing
 
-- The workflow download fastqs with fasterqdump (one job per sample).
+- The workflow download fastqs with fasterqdump (one job per SRA).
 - The fastqs from the same sample are concatenated.
 
 ## Outputs
