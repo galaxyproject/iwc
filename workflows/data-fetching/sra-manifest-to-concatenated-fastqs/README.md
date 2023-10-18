@@ -19,3 +19,7 @@ This workflow takes as input a SRA manifest from SRA Run Selector (or a tabular 
 ## Outputs
 
 - There are 2 outputs, one with paired-end datasets, one with single-read datasets.
+
+## Warning
+
+We assume that the sample name does not contains '___' as this is used to concatenate and then split SRA and sample name.
