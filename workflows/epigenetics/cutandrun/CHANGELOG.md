@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6] 2023-10-19
+
+Fix the remove duplicate step!
+In all previous versions, due to an error, PCR duplicates were not removed.
+
 ## [0.5] 2023-10-17
 
 ### Automatic update
