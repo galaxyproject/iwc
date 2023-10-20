@@ -33,5 +33,5 @@ For the 2D:
 ## Processing
 
 - The workflow will generate paramater values from 1 to the maximum number of Gaussians to study.
-- baredSC_1d is run for each of these number of Gaussians
+- baredSC_1d or baredSC_2d is run for each of these number of Gaussians
 - All models are combined into a single result.
