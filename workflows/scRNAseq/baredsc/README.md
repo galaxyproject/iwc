@@ -1,10 +1,18 @@
 # BaredSC Workflows
 
-These workflows allow to run a baredSC analysis in a single click. It uses models from 1 to N Gaussians and combine them. It uses the logNorm scale, 100 bins for 1 dimension and 25 bins on each axis in 2 dimensions.
+These workflows allow to run a baredSC analysis from a table with counts in a single click. It uses models from 1 to N Gaussians and combine them. It uses the logNorm scale, 100 bins for 1 dimension and 25 bins on each axis in 2 dimensions.
 
 ## Inputs dataset
 
-- Both workflows need a tabular dataset where each row is a cell. The tabular needs to have a header line with column names. There must be at least two columns: 'nCount_RNA' and another one with the counts for the gene(s) of interest.
+- Both workflows need a tabular dataset where each row is a cell. The tabular needs to have a header line with column names. There must be at least two columns: 'nCount_RNA' and another one with the counts for the gene(s) of interest. A way to get such table in R from a Seurat object (`seurat.obj`) is:
+
+```r
+my.genes <- c("Hoxa13", "Hoxd13")
+df <- cbind(seurat.obj[[]], # This will give you all metadata including nCount_RNA
+            FetchData(seurat.obj, slot = "counts", vars = my.genes))
+
+write.table(df, "input_for_baredSC.txt", quote = F, sep = "\t", row.names = F)
+```
 
 ## Inputs values
 
