@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9] 2023-10-23
+
+Fix the normalization factor. It was coverage per reads and per reads in peaks instead of per million reads and per million reads in peaks.
+
 ## [0.8] 2023-10-19
 
 Fix the remove duplicate step!
