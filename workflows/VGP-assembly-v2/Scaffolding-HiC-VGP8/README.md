@@ -1,6 +1,11 @@
-# Scaffolding HiC
+# Scaffolding with HiC data
 
-Scaffolding using HiC data with YAHS
+This workflow perfoms scaffolding using HiC data with YAHS. It is designed to be run as part of one the VGP analysis trajectories. 
+Example of trajectory : 
+- VGP1 : Kmer profiling 
+- VGP4 : Genome assembly with HiC phasing
+- VGP6 : Purge duplicated haplotigs
+- VGP8 : Scaffolding with HiC
 
 ## Inputs
 
