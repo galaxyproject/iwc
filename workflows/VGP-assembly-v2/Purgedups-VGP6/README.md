@@ -1,7 +1,7 @@
-# Purgedups 
+# Purge Duplicate Contigs
 
 Purge contigs marked as duplicates by purge_dups (could be haplotypic duplication or overlap duplication)
-This workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging step (Workflow 3, 4, or 5)
+This workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5)
 
 ## Inputs
 
