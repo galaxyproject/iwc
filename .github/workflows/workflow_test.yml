@@ -11,7 +11,7 @@ jobs:
     with:
       python-version-list: "[\"3.7\"]"
       galaxy-fork: galaxyproject
-      galaxy-branch: release_22.05
+      galaxy-branch: release_23.1
       max-chunks: 4
 
   # Planemo lint the changed repositories
@@ -57,7 +57,7 @@ jobs:
       python-version-list: "[\"3.7\"]"
       repository-list: ${{ needs.setup.outputs.repository-list }}
       galaxy-fork: galaxyproject
-      galaxy-branch: master
+      galaxy-branch: release_23.1
       check-outputs: false
 
   combine_outputs:
@@ -139,3 +139,25 @@ jobs:
          workflows: true
          workflow-namespace: iwc-workflows
          github-token: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
+
+  deploy-report:
+    name: Report deploy status
+    needs: [deploy]
+    if: ${{ always() && needs.deploy.result != 'success' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
+    runs-on: ubuntu-latest
+    steps:
+    # report to the PR if deployment failed
+    - name: Get PR object
+      uses: 8BitJonny/gh-get-current-pr@2.2.0
+      id: getpr
+      with:
+        sha: ${{ github.event.after }}
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        token: ${{ secrets.PAT }}
+        issue-number: ${{ steps.getpr.outputs.number }}
+        body: |
+          Attention: deployment ${{ needs.deploy.result }}!
+
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
