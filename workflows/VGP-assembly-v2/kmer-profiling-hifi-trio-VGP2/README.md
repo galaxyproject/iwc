@@ -4,9 +4,9 @@ This workflow collects the metrics on the properties of the genome under conside
 
 ### Inputs
 
--   Collection of Hifi long reads in FASTQ format
--   Paternal short-read Illumina sequencing reads in FASTQ format
--   Maternal short-read Illumina sequencing reads in FASTQ format
+-   Collection of Hifi long reads [fastq] (Collection)
+-   Paternal short-read Illumina sequencing reads [fastq] (Collection)
+-   Maternal short-read Illumina sequencing reads [fastq] (Collection)
 
 ### Outputs
 
