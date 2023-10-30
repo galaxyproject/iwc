@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Interlacing step that was unneccessary
-- Need got paired list inputs for the Illumna parental reads. a Flat list is enough
+- Requirement for paired list inputs for the Illumina parental reads. A dataset collection list is sufficient now.
 - Unnecessary workflow intputs
 
 ## [0.1] - 2021-08-26
