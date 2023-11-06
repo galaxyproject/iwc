@@ -4,7 +4,9 @@ This workflow produces a Meryl database and Genomescope outputs that will be use
 
 ### Inputs
 
--   Collection of Hifi long reads in FASTQ format
+-   A collection of Hifi long reads in FASTQ format
+-   *k*-mer length
+-   Ploidy
 
 ### Outputs
 
@@ -17,3 +19,5 @@ This workflow produces a Meryl database and Genomescope outputs that will be use
     -   Summary
     -   Model
     -   Model parameteres
+
+ ![image](https://github.com/galaxyproject/iwc/assets/4291636/565238fc-f8a9-46ac-8b31-6276410fa436)
