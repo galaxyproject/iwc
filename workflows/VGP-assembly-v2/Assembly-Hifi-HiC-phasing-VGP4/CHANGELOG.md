@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2023-11-07
+
+- Added input filtering based on tags. Rearranged input ordering.
+
 ## [0.1] - 2023-09-27
 
 Creation of workflow for HiFi assembly with Hi-C phasing. 
