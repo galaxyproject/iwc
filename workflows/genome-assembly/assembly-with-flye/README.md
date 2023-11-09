@@ -11,7 +11,6 @@ fasta, fasta.gz, fastq, fastq.gz, fastqsanger.gz or fastqsanger
 
 - Assembles the reads with the tool Flye
 - Summarizes the statistics with the tool Fasta statistics
-- Plots the contig sizes with the tool Bar chart
 - Report with the tool Quast
 - Renders the assembly graph with the tool Bandage
 
@@ -32,4 +31,3 @@ For example:
 - Fasta statistics
 - Bandage image
 - Quast report
-- Bar chart
