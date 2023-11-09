@@ -3,7 +3,7 @@
 
 ## Inputs
 
-Sequencing reads in format:
+Raw sequencing reads from PacBio or Oxford Nanopore in format:
 fasta, fasta.gz, fastq, fastq.gz, fastqsanger.gz or fastqsanger
 
 
