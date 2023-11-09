@@ -33,8 +33,3 @@ For example:
 - Bandage image
 - Quast report
 - Bar chart
-
- 
-
-
-
