@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10] 2023-11-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicatesWithMateCigar/2.18.2.3`
+
 ## [0.9] 2023-10-23
 
 Fix the normalization factor. It was coverage per reads and per reads in peaks instead of per million reads and per million reads in peaks.
