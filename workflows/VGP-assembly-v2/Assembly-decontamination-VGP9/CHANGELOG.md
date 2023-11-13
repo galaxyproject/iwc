@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2] 2023-11-09
+## [0.1.1] 2023-11-09
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_dustmasker_wrapper/2.10.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_dustmasker_wrapper/2.14.1+galaxy0`
