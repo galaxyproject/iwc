@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] 2023-11-15
+
+### Added
+
+- more descriptive labels for inputs
+
 ## [0.1.4] 2023-11-08
 
 ### Automatic update
