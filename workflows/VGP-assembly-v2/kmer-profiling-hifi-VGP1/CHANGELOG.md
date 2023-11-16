@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] 2023-11-15
+
+### Added
+
+- more descriptive labels for inputs
+
 ## [0.1.3] 2023-11-09
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0+galaxy2`

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2] - 2023-11-15
+
+### Added
+
+- more descriptive labels for inputs
+
 ## [0.1.2] 2023-11-14
 
 ### Automatic update
@@ -17,3 +23,4 @@ Added tags for better visibility of outputs in the history, and exposure of the 
 ## [0.1] - 2023-09-27
 
 Creation of the workflow and tests
+
