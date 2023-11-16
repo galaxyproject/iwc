@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] 2023-11-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.0.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.0.8+galaxy0`
+
 ## [0.1.6] 2023-09-27
 
 ### Automatic update
