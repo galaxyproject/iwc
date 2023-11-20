@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] 2023-11-20
+
+- Fix author in dockstore
+
 ## [0.6] 2023-10-19
 
 Fix the remove duplicate step!
