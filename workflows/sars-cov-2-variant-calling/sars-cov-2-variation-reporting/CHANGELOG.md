@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.1] 2023-11-20
+
+- Fix author in dockstore
+
 ## [0.3] 2022-10-13
 
 ### Changed
