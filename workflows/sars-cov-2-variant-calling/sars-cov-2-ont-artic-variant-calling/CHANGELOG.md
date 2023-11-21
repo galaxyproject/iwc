@@ -3,6 +3,7 @@
 ## [0.3.2] 2023-11-20
 
 - Fix author in dockstore
+- Use ncbi link instead of googleapis for fastq
 
 ## [0.3.1] 2021-12-13
 
