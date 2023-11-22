@@ -1,6 +1,6 @@
 # Mass spectrometry: LC-MS preprocessing with XCMS 
 
-This workflow is composed with the XCMS tool R package [(Smith, C.A. 2006)](https://bioconductor.org/packages/release/bioc/html/xcms.html) able to extract, filter, align and fill gapand the possibility to annotate isotopes, adducts and fragments using the CAMERA R package [(Kuhl, C 2012)](https://bioconductor.org/packages/release/bioc/html/CAMERA.html).
+This workflow uses the XCMS tool R package [(Smith, C.A. 2006)](https://bioconductor.org/packages/release/bioc/html/xcms.html) to extract, filter, align and fill gaps, and uses the CAMERA R package [(Kuhl, C 2012)](https://bioconductor.org/packages/release/bioc/html/CAMERA.html) to annotate isotopes, adducts and fragments.
 
 🎓 For more information, it is explained in the [Galaxy Training Network tutorial: Mass spectrometry: LC-MS preprocessing with XCMS](https://training.galaxyproject.org/training-material/topics/metabolomics/tutorials/lcms-preprocessing/tutorial.html)
 
