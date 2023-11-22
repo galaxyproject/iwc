@@ -35,4 +35,3 @@ Mass-spectrometry data files gathered in a Galaxy Dataser Collection
 4. XCMS adjustRtime: retention time correction
 5. XCMS fillChromPeaks: integrating areas of missing peaks
 6. CAMERA.annotate: annotation
-
