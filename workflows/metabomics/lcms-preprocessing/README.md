@@ -17,7 +17,7 @@ A sample metadata file contains various information for each of your raw files:
 The content of your sample metadata file has to be filled by you, since it is not contained in your raw data. Note that you can either:
 - Upload an existing metadata file
 - Use a template to create one (because it can be painful to get the sample list without misspelling or omission)
-  - Generate a template with the xcms get a sampleMetadata file tool tool
+  - Generate a template with the `xcms get a sampleMetadata file` tool available in Galaxy
   - Fill it using your favorite table editor (Excel, LibreOffice)
   - Upload it within Galaxy
 
