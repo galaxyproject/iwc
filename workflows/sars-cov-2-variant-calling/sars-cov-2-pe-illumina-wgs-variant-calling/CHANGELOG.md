@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.4] 2023-11-20
+
+- Fix author in dockstore
+- Use zenodo link instead of googleapis for fastq
+
 ## [0.2.3] 2022-02-04
 
 ### Automatic update
