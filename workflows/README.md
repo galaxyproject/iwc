@@ -8,11 +8,12 @@ The structure is as follows:
 
 * top-level directories represent categories, e.g., `sars-cov-2-variant-calling`;
 * directories right under the top level represent individual workflow repositories, e.g., `sars-cov-2-consensus-from-variation` which will be deployed to https://github.com/iwc-workflows/sars-cov-2-consensus-from-variation;
+* please, only use lower case and `-` in directory names.
 * workflow repository directories contain:
 
   * the `.ga` workflow file, e.g., `consensus-from-variation.ga`;
-  * a [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html), with the same name as the workflow file, but with a `-test.yml` extension, e.g., `consensus-from-variation-test.yml`;
-  * a `test-data` directory with the test data used by Planemo;
+  * a [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html), with the same name as the workflow file, but with a `-tests.yml` extension, e.g., `consensus-from-variation-tests.yml`;
+  * a `test-data` directory with the test data used by Planemo (optional);
   * a [Dockstore](https://dockstore.org) [metadata file](https://docs.dockstore.org/en/develop/getting-started/github-apps/github-apps.html#workflow-yml-file) named `.dockstore.yml`;
   * a `README.md` and a `CHANGELOG.md` file.
 
@@ -20,23 +21,25 @@ The structure is as follows:
 
 Here are some guidelines to help new contributors to add their workflows.
 
-Everything starts from a workflow that you need to download locally.
-
-Currently the CI is using CVMFS for tools and for references, this is why all tests described below are against usegalaxy.org.
+Everything starts from a workflow that you have on a galaxy instance.
 
 ### Optional: Updating tools
 
-It is recommended to check and update tools with Planemo before import :
+It is recommended to check and update tools with Planemo before import.
 
-```bash
-planemo autoupdate <workflow.ga>
-```
+ - You can do it from the galaxy instance using "Workflow Options" "Upgrade Workflow":
 
-Then, it is recommended to upload this updated workflow to the usegalaxy.org server as some updates may break connections (and some tools may not yet be installed on usegalaxy.org).
+ ![Update galaxy workflow in galaxy](../static/update_workflow.png)
+ 
+ - Or by downloading the ga file and running planemo:
+
+  ```bash
+  planemo autoupdate <workflow.ga>
+  ```
 
 ### Ensure workflows follow best-practices
 
-Start by opening your workflow in the workflow editor, click on "Workflow Options", select "Best Practices" and apply the suggested improvements. In particular, in order to make the workflow usable, **make sure you specify a license**. Another important field is "Creator", which allows to give proper credit to the author(s). The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
+The best way is to check it into a galaxy instance: click on "Workflow Options", select "Best Practices" and apply the suggested improvements. In particular, in order to make the workflow usable, **make sure you specify a license**. Another important field is "Creator", which allows to give proper credit to the author(s). The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
 
 ![Add Creator GIF](../static/add-creator.gif)
 
@@ -45,16 +48,17 @@ If you add an _organization_ as Creator, you should include a "URL" field pointi
 
 ### Generate tests
 
-You can either write test cases by hand, or use a workflow invocation to generate a test case:
+This is usually the most difficult part and we encourage all new contributors to IWC to propose their workflows even if they did not managed to generate tests. However, the publication of these workflow will be speed up if tests are already present.
+To generate tests, you can either write test cases by hand, or use a workflow invocation to generate a test case (see below).
 
 #### Find input datasets
 
-If your analysis is covered by the GTN, using GTN dataset material is a good start!
+If your analysis is covered by the GTN, using GTN dataset material is a good start! If it is not, try to generate a toy dataset for example following [this](https://training.galaxyproject.org/training-material/topics/contributing/tutorials/create-new-tutorial/tutorial.html#get-a-toy-dataset) and then publish it to zenodo to have a permanent URL.
 
 #### Generate test from a workflow invocation
 
 Create a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
-Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
+Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows). Only use lower-case and `-` in names of categories and repositories.
 
 Execute the workflow on your Galaxy server using the smallest input data you can generate.
 Go to the workflow invocations page (User > Workflow Invocations), open the most recent item and find the invocation id:
@@ -64,26 +68,27 @@ Go to the workflow invocations page (User > Workflow Invocations), open the most
 You will also need your Galaxy API key. To copy it, or generate it if you don't have one yet, go to User > Preferences > Manage API Key. Then run:
 
 ```
-planemo workflow_test_init --from_invocation <your_invocation_id> --galaxy_url https://usegalaxy.org/ --galaxy_user_key <your_api_key>
+planemo workflow_test_init --from_invocation <your_invocation_id> --galaxy_url <your_prefered_galaxy_instance_url> --galaxy_user_key <your_api_key>
 ```
 
 This will place the workflow and workflow test files in your current working directory.
 You may still want to remove test files and edit the test comparisons so that tests
 will pass reliably. For example, you could consider using assertions to test the
 outputs, rather than comparing the entire output file with test data.
+Also, if some outputs are large, it is better to use assertions than storing the whole output file to the iwc repository.
 
 
 #### Manually write test for workflow
 
 Download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
-Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows).
-You can then generate a template planemo test file. Here we generate a test file for the workflow parallel-accession-download.ga.
+Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows). Only use lower-case and `-` in names of categories and repositories.
+You can then generate a template planemo test file with planemo:
 
 ```bash
-planemo workflow_test_init parallel-accession-download.ga
+planemo workflow_test_init <your_workflow_file.ga>
 ```
 
-This generates the file parallel-accession-download-tests.yml:
+If you run it on `parallel-accession-download.ga`, this generates the file parallel-accession-download-tests.yml:
 
 ```yaml
 - doc: Test outline for parallel-accession-download.ga
@@ -98,7 +103,7 @@ This generates the file parallel-accession-download-tests.yml:
       class: ''
 ```
 
-We now need to provide inputs and outputs. You can find details about the test format in the [planemo documentation](https://planemo.readthedocs.io/en/latest/test_format.html).
+We now need to provide inputs and outputs. You can find details about the test format in the [planemo documentation](https://planemo.readthedocs.io/en/latest/test_format.html). You can also check other test files into this repository to get examples.
 For this example workflow the final parallel-accession-download-tests.yml might look like this:
 
 ```yaml
@@ -127,13 +132,17 @@ Applying linter tests... CHECK
 .. CHECK: Tests appear structurally correct for parallel-accession-download.ga
 ```
 
-#### Test your workflow against usegalaxy.org
+#### Test your workflow against an instance which have all tools installed.
 
-Before running the CI, it might be interesting to run your tests against usegalaxy.org using planemo:
+Before running the CI, it might be interesting to run your tests against a galaxy instance using planemo so you can easily see what is failing and what are the differences between your expectations and the output you get:
 
 ```bash
-planemo test --galaxy_url https://usegalaxy.org/ --galaxy_user_key <your_api_key> <workflow.ga>
+planemo test --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow.ga>
 ```
+
+If your tests are not passing because you made an error into your test file you can modify your test file and use planemo to check that the test is valid against the same invocation.
+
+TODO @mvdbeek
 
 #### Add required metadata
 
