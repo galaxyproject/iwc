@@ -23,7 +23,7 @@ The content of your sample metadata file has to be filled by you, since it is no
 
 **Formats:** tab-separated values as tsv, tab, txt, ...
 
-### Chromatograms Dataset Collection
+### Mass-spectrometry Dataset Collection
 Mass-spectrometry data files gathered in a Galaxy Dataser Collection
 
 **Formats:** open format as mzXML, mzMl, mzData and netCDF
