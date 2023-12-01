@@ -142,7 +142,7 @@ planemo test --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_
 
 If your tests are not passing because you made an error into your test file you can modify your test file and use planemo to check that the test is valid against the same invocation.
 
-TODO @mvdbeek
+planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 
 #### Add required metadata
 
