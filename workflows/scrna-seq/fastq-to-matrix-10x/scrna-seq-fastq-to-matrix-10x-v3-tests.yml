@@ -1,0 +1,58 @@
+- doc: Test outline for scrna-seq-fastq-to-matrix-10x-v3.ga
+  job:
+    fastq PE collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: subsample
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/10229382/files/subSample_GEX_R1.fastq.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/10229382/files/subSample_GEX_R2.fastq.gz
+          filetype: fastqsanger.gz
+    reference genome: mm10full # To test on usegalaxy.eu
+    gtf:
+      class: File
+      location: https://zenodo.org/records/10079673/files/mm10_custom102_allGastruloids_min10_extended.gtf.gz
+      decompress: true
+      filetype: gtf
+    cellranger_barcodes_3M-february-2018.txt:
+      class: File
+      location: https://zenodo.org/record/3457880/files/3M-february-2018.txt.gz
+      decompress: true
+      filetype: tabular
+  outputs:
+    'MultiQC on input dataset(s): Webpage':
+      class: File
+      asserts:
+        - that: "has_text_matching"
+          expression: "<tbody><tr><th class=\"rowheader\" data-original-sn=\"subsample\">subsample</th><td class=\"data-coloured mqc-generalstats-star-uniquely_mapped_percent \"><div class=\"wrapper\"><span class=\"bar\" style=\"width:7[0-9].[0-9]%; background-color:#bbd9c6;\"></span><span class=\"val\">7[0-9].[0-9]%</span></div></td><td class=\"data-coloured mqc-generalstats-star-uniquely_mapped \"><div class=\"wrapper\"><span class=\"bar\" style=\"width:100.0%; background-color:#d1b3bc;\"></span><span class=\"val\">[0-9].[0-9]</span></div></td></tr></tbody>"
+    Seurat input for gene expression (filtered):
+      class: Collection
+      collection_type: list:list
+      elements:
+        class: Collection
+        collection_type: list
+        identifier: subsample
+        elements:
+        - class: File
+          identifier: matrix
+          asserts:
+            - has_line:
+              line: "55141 353 1026324"
+        - class: File
+          identifier: barcodes
+          asserts:
+            - has_line:
+              line: "AAACGAAAGCATGCAG"
+        - class: File
+          identifier: genes
+          asserts:
+            - has_line:
+              line: "ENSMUSG00000102693	4933401J01Rik"
