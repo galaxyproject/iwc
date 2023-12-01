@@ -144,6 +144,8 @@ If your tests are not passing because you made an error into your test file you 
 
 planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 
+Note: If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
+
 #### Add required metadata
 
 We now need to generate a `.dockstore.yml` file that contains metadata needed for [Dockstore](https://dockstore.org/organizations/iwc).
