@@ -2,7 +2,7 @@
 
 These workflows are inspired by the [training material](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-preprocessing-tenx/tutorial.html). Except that the output is in a 'bundle' format: three files (one matrix, one with genes, one with barcodes) which is similar to the cellranger output format.
 
-Both are designed for fastqs from 10X libraries v3. One is for regular 10X library (one library per sample), while the other one is for CellPlex 10X library which allows to multiplex samples using CMOs.
+Both are designed for fastqs from 10X libraries v3. One is for regular 10X library (one library per sample), while the other one is for CellPlex 10X library which allows to multiplex samples using CMOs (see [this blog article](https://www.10xgenomics.com/blog/answering-your-questions-about-sample-multiplexing-for-single-cell-gene-expression)).
 
 ## Input datasets
 
