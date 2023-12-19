@@ -46,3 +46,10 @@ For the CellPlex workflow:
     - CITE-Seq Count is used to asign reads and generate a matrix where 'genes' are the CMO and 'unmapped'.
     - Cellular barcodes are translated to match the cellular barcodes of Gene expression see [this article](https://kb.10xgenomics.com/hc/en-us/articles/360031133451-Why-is-there-a-discrepancy-in-the-3M-february-2018-txt-barcode-whitelist-).
     - Reorganize the output with UMI matrices to match the same structure as gene expression matrices.
+
+## Test data
+
+The test dataset has been produced to make it as small as possible in order to make the workflow pass on CI.
+
+- The CMO reads come from [zenodo](https://zenodo.org/records/10229382) and have been sampled to 0.1 with seqtk.
+- The GEX reads come from SRR13948489 but have been subsetted to the cells selected in the above zenodo.
