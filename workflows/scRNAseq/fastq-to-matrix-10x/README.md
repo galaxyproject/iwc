@@ -20,6 +20,7 @@ Both are designed for fastqs from 10X libraries v3. One is for regular 10X libra
 ## Input values
 
 - reference genome: this genome needs to be available for STAR
+- Barcode Size is same size of the Read: if the length of your R1 of GEX matches the size of cell barcode + UMI set to true. If your R1 contains trailling A, put false.
 - number of cells: If you make it too large no cell barcode correction will be performed to demultiplex CMOs.
 
 ## Processing
