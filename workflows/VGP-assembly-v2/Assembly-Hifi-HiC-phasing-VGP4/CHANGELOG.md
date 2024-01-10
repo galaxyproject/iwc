@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.7] 2023-11-20
+
+- Fix author in dockstore
+
+## [0.1.5] 2023-11-15
+
+### Added
+
+- more descriptive labels for inputs
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.4.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.5.0+galaxy0`
+
 ## [0.1.4] 2023-11-08
 
 ### Automatic update
