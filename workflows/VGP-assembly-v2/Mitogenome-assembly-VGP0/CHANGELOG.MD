@@ -3,4 +3,4 @@
 
 ## [0.1] - 2024-01-03
 
-- Creation of workflow for Mitochondrial DNA assebly with MitoHifi.
+- Creation of workflow for Mitochondrial DNA assembly with MitoHifi.
