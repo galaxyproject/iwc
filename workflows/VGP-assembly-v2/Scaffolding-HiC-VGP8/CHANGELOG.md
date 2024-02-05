@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2] 2024-02-05
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.1.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.1.9+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.3+galaxy2`
+
 ## [0.2.1] 2023-11-20
 
 - Fix author in dockstore
