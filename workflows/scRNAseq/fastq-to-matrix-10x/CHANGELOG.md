@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3] 2024-02-12
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.10b+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11a+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.10b+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11a+galaxy0`
+
 ## [0.2] 2024-02-05
 
 ### Tool updates
