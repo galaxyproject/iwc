@@ -2,6 +2,11 @@
 
 ## [0.2.2] 2024-02-05
 
+### Manual update
+
+- remove tag filtering
+- set "Show grid" of Pretext Snapshot to "yes"
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.1.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.1.9+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.3+galaxy2`
