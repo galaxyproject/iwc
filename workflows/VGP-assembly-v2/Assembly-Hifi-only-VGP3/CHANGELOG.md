@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.3] 2024-02-15
+
+- Add histogram outputs to merqury
+- remove Tag filtering
 
 ## [0.1.2] 2023-11-14
 
