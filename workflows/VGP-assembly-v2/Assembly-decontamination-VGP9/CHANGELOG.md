@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] 2024-02-26
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_dustmasker_wrapper/2.14.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_dustmasker_wrapper/2.14.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/2.14.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/ncbi_blast_plus/ncbi_blastn_wrapper/2.14.1+galaxy2`
+
 ## [0.1.3] 2023-11-20
 
 - Fix author in dockstore
