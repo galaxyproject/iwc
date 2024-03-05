@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3] 2022-11-22
+
+- update all tools:
+  - fastp from 0.20.1 to 0.23.2
+  - bwa_mem from 0.7.17.1 to 0.7.17.2
+  - samtools_stats from 2.0.2 to 2.0.4
+  - samtools_view from 1.9 to 1.15.1
+  - ivar_trim from 1.3.1 to 1.4.2
+  - ivar_variants from 1.3.1 to 1.4.2
+  - ivar_consensus from 1.3.1 to 1.4.2
+  - multiqc from 1.9 to 1.11
+  - pangolin from 3.1.14 to 4.3
+  - nextclade from 1.4.1 to 2.7.0
+
 ## [0.2.3] 2022-05-25
 
 ### Changed

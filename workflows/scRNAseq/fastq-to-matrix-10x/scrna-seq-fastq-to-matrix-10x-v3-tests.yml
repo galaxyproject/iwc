@@ -1,0 +1,55 @@
+- doc: Test outline for scrna-seq-fastq-to-matrix-10x-v3.ga
+  job:
+    fastq PE collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: subsample
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/10412836/files/GEX_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/10412836/files/GEX_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    reference genome: dm6
+    Barcode Size is same size of the Read: false
+    gtf:
+      class: File
+      location: https://zenodo.org/record/6457007/files/Drosophila_melanogaster.BDGP6.32.109_UCSC.gtf.gz
+      decompress: true
+      filetype: gtf
+    cellranger_barcodes_3M-february-2018.txt:
+      class: File
+      path: test-data/all_cell_barcodes_both_versions.txt
+      filetype: tabular
+  outputs:
+    'MultiQC on input dataset(s): Webpage':
+      class: File
+      asserts:
+        - that: "has_text_matching"
+          expression: ">subsample</th><td class=\"data-coloured mqc-generalstats-star-uniquely_mapped_percent \"><div class=\"wrapper\"><span class=\"bar\""
+        - that: "has_text_matching"
+          expression: "></span><span class=\"val\">3[0-9].[0-9]%</span></div></td><td class=\"data-coloured mqc-generalstats-star-uniquely_mapped \"><div class=\"wrapper\"><span class=\"bar\""
+    Seurat input for gene expression (filtered):
+      class: Collection
+      collection_type: list:list
+      element_tests:
+        subsample:
+          elements:
+            matrix:
+              asserts:
+                has_line:
+                  line: "23932 3 1171"
+            barcodes:
+              asserts:
+                has_line:
+                  line: "CACATGATCATAAGGA"
+            genes:
+              asserts:
+                has_line:
+                  line: "FBgn0250732	gfzf"
