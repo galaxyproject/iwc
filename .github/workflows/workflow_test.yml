@@ -9,9 +9,9 @@ jobs:
     name: Setup cache and determine changed repositories
     uses: ./.github/workflows/setup.yml
     with:
-      python-version-list: "[\"3.7\"]"
+      python-version-list: "[\"3.11\"]"
       galaxy-fork: galaxyproject
-      galaxy-branch: release_22.05
+      galaxy-branch: release_23.2
       max-chunks: 4
 
   # Planemo lint the changed repositories
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7']
+        python-version: ['3.11']
     steps:
     - uses: actions/checkout@v3
       with:
@@ -54,10 +54,10 @@ jobs:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
       chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
       chunk-list: ${{ needs.setup.outputs.chunk-list }}
-      python-version-list: "[\"3.7\"]"
+      python-version-list: "[\"3.11\"]"
       repository-list: ${{ needs.setup.outputs.repository-list }}
       galaxy-fork: galaxyproject
-      galaxy-branch: master
+      galaxy-branch: release_23.2
       check-outputs: false
 
   combine_outputs:
@@ -66,7 +66,7 @@ jobs:
     needs: [setup, test]
     strategy:
       matrix:
-        python-version: ['3.7']
+        python-version: ['3.11']
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
@@ -87,6 +87,13 @@ jobs:
       with:
         mode: combine
         html-report: true
+        markdown-report: true
+    - run: cat upload/tool_test_output.md >> $GITHUB_STEP_SUMMARY
+    - name: Save PR number
+      run: echo ${{ github.event.number }} > ./upload/NR
+    - name: Debug PR number
+      run: |
+          cat ./upload/NR
     - uses: actions/upload-artifact@v3
       with:
         name: 'All tool test results'
@@ -103,7 +110,7 @@ jobs:
     needs: [setup,test,combine_outputs]
     strategy:
       matrix:
-        python-version: ['3.7']
+        python-version: ['3.11']
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.repository_owner == 'galaxyproject'
     steps:
@@ -139,3 +146,25 @@ jobs:
          workflows: true
          workflow-namespace: iwc-workflows
          github-token: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
+
+  deploy-report:
+    name: Report deploy status
+    needs: [deploy]
+    if: ${{ always() && needs.deploy.result != 'success' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
+    runs-on: ubuntu-latest
+    steps:
+    # report to the PR if deployment failed
+    - name: Get PR object
+      uses: 8BitJonny/gh-get-current-pr@2.2.0
+      id: getpr
+      with:
+        sha: ${{ github.event.after }}
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        token: ${{ secrets.PAT }}
+        issue-number: ${{ steps.getpr.outputs.number }}
+        body: |
+          Attention: deployment ${{ needs.deploy.result }}!
+
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
