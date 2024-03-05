@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.4] 2023-11-20
+
+- Fix author in dockstore
+- Fix input fastq URL for test
+- Update output test
+
 ## [0.1.3] 2021-12-13
 
 ### Added
