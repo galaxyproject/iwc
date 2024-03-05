@@ -29,6 +29,7 @@ For the 2D:
 - maximum value in logNorm for x-axis: The maximum value to explore in PDF in the x axis. This value should be large enough so the PDF is at 0 at this value.
 - maximum value in logNorm for y-axis: The maximum value to explore in PDF in the y axis. This value should be large enough so the PDF is at 0 at this value.
 - Maximum number of Gaussians to study: All models between models with 1 2D-Gaussians to models with this number of 2D-Gaussians will be combined.
+- compute p-value: Whether you want to get a p-value. As a consequence, less samples than available will be used for plots as p-value computation requires to have independent samples.
 
 ## Processing
 

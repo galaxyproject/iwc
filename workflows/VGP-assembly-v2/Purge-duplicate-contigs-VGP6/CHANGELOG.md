@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.4] 2024-02-15
+
+- Remove tag filtering
+- Add merqury histogram outputs
+
 ## [0.3.3] 2023-11-20
 
 - Fix author in dockstore
