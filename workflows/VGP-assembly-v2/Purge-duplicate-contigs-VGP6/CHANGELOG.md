@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5] 2024-03-04
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/0.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy0`
+
 ## [0.3.4] 2024-02-15
 
 - Remove tag filtering
