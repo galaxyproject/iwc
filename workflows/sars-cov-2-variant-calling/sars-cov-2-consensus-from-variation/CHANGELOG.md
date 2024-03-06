@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.2] 2024-03-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.29.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.30.0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy3`
+
 ## [0.4.1] 2023-11-20
 
 - Fix author in dockstore
