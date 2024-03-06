@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2] 2024-03-04
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0`
+
 ## [0.1.1] 2023-11-14
 
 ### Automatic update
