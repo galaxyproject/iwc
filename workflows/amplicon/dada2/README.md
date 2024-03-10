@@ -18,7 +18,7 @@ As a first step the input collection is sorted. This is important because the da
 a collection in sorted order. If the input collection would not be sorted then the mergePairs step
 samples would be mixed up.
 
-- `FilterAndTrim` Qualitycontrol by filtering and trimming reads
+- `FilterAndTrim` Quality control by filtering and trimming reads
 - `QualityProfile` is called before and after the FilterAndTrim step
 - `Unzip Collection` separates forward and reverse reads (the next steps are evaluated separately on forward and reverse reads)
 - `learnErrors` learn error rates
@@ -27,4 +27,13 @@ samples would be mixed up.
 - `makeSequenceTable` create the sequence table
 - `removeBimeraDenovo` remove chimeric sequencs
 - `assignTaxonomy` assign taxonomic information from a reference data base
+
+## TODO
+
+Some possibilities to extend/improve the workflow
+
+- output BIOM
+- use ASV1, ... in sequence table and taxonomy output, and output additional fasta
+- allow to use custom taxonmoy / make it optional
+
 
