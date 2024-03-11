@@ -7,6 +7,8 @@
 - fix cutadapt parameters broken by the automatic update
 - remove tag filtering
 - Add merqury histogram output
+- Add output for cutadapt
+- Output Gff files in Busco 
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.6+galaxy1`
