@@ -8,7 +8,7 @@
 
 - `Read length forward/reverse reads` length of the forward/reverse reads to which they should be truncated in the filter and trim step
 - `Pool samples` pooling may increase sensitivity
-- `Refernce database` that should be used for taxonomic assignment
+- `Reference database` that should be used for taxonomic assignment
 
 ## Processing
 
@@ -34,6 +34,4 @@ Some possibilities to extend/improve the workflow
 
 - output BIOM
 - use ASV1, ... in sequence table and taxonomy output, and output additional fasta
-- allow to use custom taxonmoy / make it optional
-
-
+- allow to use custom taxonomy / make it optional
