@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [0.1.4] 2024-03-11
+
+- Fix regex that was causing the headers to change. 
+
+
 ## [0.1.3] 2023-11-20
 
 - Fix author in dockstore
