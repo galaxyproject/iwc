@@ -1,9 +1,15 @@
 # Changelog
 
-## [0.10] 2023-11-10
+## [0.10] 2024-03-14
 
 ### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicatesWithMateCigar/2.18.2.3`
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.6+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0.5`
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/2.18.2.4` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/3.1.1.0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.15.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.15.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/1.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy0`
 
 ## [0.9] 2023-10-23
 
