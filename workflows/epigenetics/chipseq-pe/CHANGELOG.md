@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] 2024-03-14
+
+Fix bug introduced in 0.6: the second adapter sequence was not used.
+
 ## [0.6] 2024-02-05
 
 ### Automatic update
