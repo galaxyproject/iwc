@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4] 2024-03-22
+
+### Manual update
+
+- Add gff output to Busco
+- Add histogram output to Merqury
+- Label subworkflows
+
 ## [0.1.3] 2024-02-05
 
 ### Automatic update
