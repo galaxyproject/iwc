@@ -1,23 +1,7 @@
 # Changelog
 
 
-## [0.1.10] 2024-03-25
-
-### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.6+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.7+galaxy0`
-  
-
-## [0.1.9] 2024-03-10
-
-### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/1.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.3+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/1.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.3+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/0.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy0`
-
-
-## [0.1.8] 2024-02-05
+## [0.1.8] 2024-03-25
 
 ### Manual update
 
@@ -27,8 +11,14 @@
 - Add output for cutadapt
 - Output Gff files in Busco 
 
+
 ### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.6+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/1.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/1.1.2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/1.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/0.1.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.7+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.8+galaxy1`
 
 ## [0.1.7] 2023-11-20
