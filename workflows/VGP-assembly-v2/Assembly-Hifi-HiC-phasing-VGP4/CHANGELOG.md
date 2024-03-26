@@ -5,8 +5,7 @@
 
 ### Manual update
 
-- fix cutadapt parameters broken by the automatic update
-- remove tag filtering
+- Remove tag filtering
 - Add merqury histogram output
 - Add output for cutadapt
 - Output Gff files in Busco 
