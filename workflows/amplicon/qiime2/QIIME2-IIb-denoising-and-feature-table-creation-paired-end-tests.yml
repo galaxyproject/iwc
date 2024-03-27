@@ -2,20 +2,48 @@
   job:
     Metadata:
       class: File
-      path: test-data/Metadata.qiime2.tabular
-      filetype: qiime2.tabular
+      location: https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/data/020-tutorial-upstream/020-metadata/sample-metadata.tsv
+      filetype: tabular
     Input of demultiplexed sequences:
       class: File
-      path: test-data/Input of demultiplexed sequences.qza
+      path: test-data/QIIME2-Id-demultiplexed-data-paired-end.qza
       filetype: qza
-    Truncation of length (forward): '204'
-    Truncation of length (reverse): '205'
-    Trimming length (forward): '1'
-    Trimming length (reverse): '1'
+    Truncation of length (forward): 204
+    Truncation of length (reverse): 205
+    Trimming length (forward): 1
+    Trimming length (reverse): 1
   outputs:
     Denoising output table:
-      path: test-data/Denoising output table.qza
+      asserts:
+        - has_size:
+            min: 20k
+        - has_archive_member:
+            path: "^[^/]*/data/feature-table.biom"
+            n: 1
     Representative denoised sequences:
-      path: test-data/Representative denoised sequences.qza
+      asserts:
+        - has_size:
+            min: 20k
+        - has_archive_member:
+            path: "^[^/]*/metadata.yaml"
+            n: 1
+        - has_archive_member:
+            path: "^[^/]*/data/dna-sequences.fasta"
+            n: 1
+            asserts:
+              - has_text_matching:
+                  expression: ">.*"
+                  n: 203
     Denoising statistics:
-      path: test-data/Denoising statistics.qza
+      asserts:
+        - has_size:
+            min: 10k
+        - has_archive_member:
+            path: "^[^/]*/data/stats.tsv"
+            n: 1
+            asserts:
+              - has_n_columns:
+                  n: 9
+              # 2 header lines + 3 samples
+              - has_n_lines:
+                  n: 5
