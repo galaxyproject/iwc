@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3] 2024-04-01
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.3+galaxy1`
+
 ## [0.2.2] 2024-02-05
 
 ### Manual update
