@@ -6,7 +6,7 @@ Denoising (using `qiime2`'s `dada2` integration for paired / single end data.
 
 ## Inputs
 
-- Demultiplexed sequences a a qiime2 aertifact file (`qza`) containing the sequence information.
+- Demultiplexed sequences as a qiime2 aertifact file (`qza`) containing the sequence information.
 - Metadata table (`tabular`)
 - Truncation length
 - Trimming length (optional)
