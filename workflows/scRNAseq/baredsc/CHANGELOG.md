@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4] 2024-04-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.3+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_1d/baredsc_1d/1.1.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_1d/baredsc_1d/1.1.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_combine_1d/baredsc_combine_1d/1.1.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_combine_1d/baredsc_combine_1d/1.1.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.3+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_2d/baredsc_2d/1.1.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_2d/baredsc_2d/1.1.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_combine_2d/baredsc_combine_2d/1.1.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/baredsc_combine_2d/baredsc_combine_2d/1.1.3+galaxy0`
+
 ## [0.3] 2024-03-05
 
 ### Automatic update
