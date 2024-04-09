@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9] 2024-04-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy1`
+
 ## [0.8] 2024-03-25
 
 ### Automatic update
