@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12] 2024-04-16
+
+### Changed
+
+- Remove unnecessary param_value_from_file step and directly pass file with identifiers to fasterqdump
+
 ## [0.1.11] 2024-04-08
 
 ### Automatic update
