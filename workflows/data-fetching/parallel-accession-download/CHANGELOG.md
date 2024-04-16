@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.12] 2024-04-16
+
+### Skip param file generation
+
+- instead pass ID file directly
+
 ## [0.1.11] 2024-04-08
 
 ### Automatic update
