@@ -2,9 +2,9 @@
 
 ## [0.1.12] 2024-04-16
 
-### Skip param file generation
+### Changed
 
-- instead pass ID file directly
+- Remove unnecessary param_value_from_file step and directly pass file with identifiers to fasterqdump
 
 ## [0.1.11] 2024-04-08
 
