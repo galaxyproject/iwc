@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6] 2024-04-23
+
+- Aff Merqury histogram output
+- Aff Busco gff output
+- Hunhide Merqury QV output
+
 ## [0.5] 2024-04-22
 
 ### Automatic update
