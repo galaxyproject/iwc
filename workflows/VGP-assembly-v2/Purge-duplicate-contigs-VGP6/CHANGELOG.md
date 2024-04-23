@@ -1,5 +1,10 @@
 # Changelog
 
+
+## [0.3.8] 2024-04-23
+
+- Add Busco Gff output
+
 ## [0.3.7] 2024-04-22
 
 ### Automatic update
