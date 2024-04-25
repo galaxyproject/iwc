@@ -1,26 +1,26 @@
-# Microbiome Analysis workflows for Nanopore datasets - collection version
+# Microbiome Workflows
 
-The following workflows can be used directly for any nanopore metagenomics data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique. 
+The following workflows can be used directly for microbiome data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique. 
 
-To learn more about all workflows and try them with real datasets, please check our tutorial on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/metagenomics/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+To learn more about the following workflows and try them with real datasets, please check our tutorial on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/metagenomics/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
-## Pre-Processing
+## Nanopore _Preprocessing_
 
 Before starting any analysis, it is always a good idea to assess the quality of your input data and to discard poor quality base content by trimming and filtering reads.
 
 Generally, we are not interested in the host sequences, rather only those originating from the pathogen itself. It is important to get rid of all host sequences and to only retain sequences that might include a pathogen, both in order to speed up further steps and to avoid host sequences compromising the analysis.
 
-### Input datasets
+### Input Datasets
 
 - Collection of sequenced Nanopore reads of all samples to be analized in a `fastq or fastq.gz` formate
 
-### Output datasets
+### Output Datasets
 
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate
 
-- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample, these tables are needed for visualistion performed in **All samples analysis** workflow.
+- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample, these tables are needed for visualistion performed in **PathoGFAIR Samples Aggregation and Visualisation** workflow.
 
-## Taxonomy Profiling
+## _Taxonomy Profiling_ and Visualisation with Krona
 
 In this workflow, we identify the different organisms found in our samples by assigning taxonomy levels to the reads starting from the kingdom level down to the species level and visualise the result.
 
@@ -28,7 +28,7 @@ It’s important to check what might be the species of a possible pathogen to be
 
 For taxonomy profiling Kraken2 tool is used along with one of its standard databases available on Galaxy, you can freely choose between Kraken2 different databases based on your input datasets. For visualisation multiple tools can be used, Krona pie chart (as default in this workflow), Phinch interactive tool, Pavian, etc.
 
-## Gene based pathogenic identification
+## _Gene-based Pathogen Identification_
 
 With taxonomy profiling, we identified some bacterial species. But we want to be sure they are pathogenic, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organim:
 
@@ -43,15 +43,15 @@ In this workflow we:
 1. Perform genome assembly to get contigs, i.e. longer sequences, using metaflye (Kolmogorov et al. 2020) then assembly polishing using medaka consensus pipeline and visualizing the assembly graph using Bandage Image (Wick et al. 2015)
 2. Generate reports with AMR genes and VF using ABRicate
 
-As outputs, we get FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples in **All samples analysis** workflow.
+As outputs, we get FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples in **PathoGFAIR Samples Aggregation and Visualisation** workflow.
 
-## Allele based pathogenic identification
+## Nanopore _Allele-based Pathogen Identification_
 
 Another approach to identifying pathogens is to use an allelic approach by detecting SNPs, i.e. markers showing evolutionary histories of homogeneous strains. This process includes SNP calling, aimed at identifying novel pathogen strains and elucidating discrepancies compared to reference sequences, thereby facilitating the tracking of emerging variants. Within this workflow, both variants and SNPs are discerned, serving as crucial elements for subsequent pathogen identification and variant tracking purposes.
 
-## All samples analysis
+## Pathogen Detection: _PathoGFAIR Samples Aggregation and Visualisation_
 
-In this workflow, we will aggregate results and use the results from all other 4 workflows to help tracking pathogenes among samples and visualise all performed analysis by:
+In this workflow, we will aggregate results and use the results from 3 workflows (**_Preprocessing_**, **_Gene-based Pathogen Identification_** and **_Allele-based Pathogen Identification_**) to help tracking pathogenes among samples and visualise all performed analysis by:
 
 1. Drawing a presence-absence heatmap of the identified VF genes within all samples to visualize in which samples these genes can be found.
 2. Drawing a phylogenetic tree for each pathogenic genes detected, where we will relate the contigs of the samples together where this gene is found.
