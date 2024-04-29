@@ -2,7 +2,7 @@
 
 ## [0.1.4] 2024-04-22
 
-### Manual Updates
+### Added
 
 - Add Homozygous Read coverage parameter and calculation
 - Expose Lineage parameter
