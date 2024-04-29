@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] 2024-04-29
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.1.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0`
+
 ## [0.1.4] 2024-04-19
 
 ### Manual Updates
