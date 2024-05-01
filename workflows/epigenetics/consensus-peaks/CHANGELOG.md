@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0] 2024-05-01
+
+The workflow changed as it accepts now more than 2 replicates and has a new parameter to define what is the minimum number of replicates where the summit should be found.
+
 ## [0.7] 2024-04-15
 
 ### Automatic update
