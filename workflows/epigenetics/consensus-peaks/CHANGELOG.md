@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0] 2024-05-01
+
+### Changed
+The workflow changed as it accepts now more than 2 replicates and has a new parameter to define what is the minimum number of replicates where the summit should be found.
+The workflow for ATAC and CUT&RUN changed the input datatype as now a BAM is required instead of a BED.
+
 ## [0.7] 2024-04-15
 
 ### Automatic update
