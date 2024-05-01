@@ -4,7 +4,7 @@ The goal of this workflow is to get a list of confident peaks with summits from 
 
 ## Inputs dataset
 
-- The workflow needs a single input which is a list of datasets with n BAM (or BED) where PCR duplicates have been removed (the workflow also works for nested list if you have multiple conditions each with multiple replicates).
+- The workflow needs a single input which is a list of datasets with n BAM where PCR duplicates have been removed (the workflow also works for nested list if you have multiple conditions each with multiple replicates).
 
 ## Inputs values
 
@@ -21,10 +21,10 @@ Here is a generated example to highlight the strategy:
 
 - The workflow will:
   - first part:
-    - call peaks and compute normalized coverage on each BAM (or BED) individually
+    - call peaks and compute normalized coverage on each BAM individually
     - average normalized profiles
-    - compute the intersection between both peaks
+    - compute the intersection between all peaks and filter when at least x replicate overlaps
   - second part:
-    - subset both BAM (or BED) to get the same number of reads
-    - call peaks on both subsetted BAM combined
-  - finally, keep only peaks from the second part that have summits overlapping the intersection of the first part.
+    - subset all BAM to get the same number of reads
+    - call peaks on all subsetted BAM combined
+  - finally, keep only peaks from the second part that have summits overlapping the filtered intersection of the first part.
