@@ -15,6 +15,7 @@ The main steps are:
     - Virulence gene identification
 
 ## Tools used
+
 1. Quality control and trimming
     - fastp QC control and trimming
 2. Taxonomic assignation on trimmed data
@@ -37,13 +38,12 @@ The main steps are:
 
 The multiQC tool is used to aggregate all QC result into only 1 report.
 
-
-
-## inputs
+## Inputs
 
 1. Paired-end illumina rax reads in fastq(.gz) format.
 
 ## Outputs
+
 1. Quality control:
     - quality report
     - trimmed raw reads
