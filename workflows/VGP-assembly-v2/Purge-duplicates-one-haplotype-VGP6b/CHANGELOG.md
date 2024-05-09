@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6] 2024-04-23
+
+### Changed
+
+- Add Merqury histogram output
+- Add Busco gff output
+- Unhide Merqury QV output
+
 ## [0.5] 2024-04-22
 
 ### Automatic update
