@@ -8,6 +8,6 @@ To perform the mapping step before variant identification, we used the Minimap2 
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
 
 ## Output Datasets
-- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions, these tabular files are visualised in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow. 
+- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions. 
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)

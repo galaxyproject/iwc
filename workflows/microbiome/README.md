@@ -1,24 +1,24 @@
 # Microbiome Workflows
 
-The following workflows can be used directly for microbiome data analysis, pathogen detection and tracking purposes. The workflows can be also adapted to any other sequencing technique. 
+The following workflows can be used directly for microbiome data analysis, pathogen detection, and tracking purposes. The workflows can also be adapted to any other sequencing technique. 
 
-To learn more about the following workflows and try them with real datasets, please check our Microbiome tutorials on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/microbiome/)
+To learn more about the following workflows and try them with real datasets, please check out our Microbiome tutorials on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/microbiome/)
 
 ## Nanopore _Preprocessing_
 
-Before starting any analysis, it is always a good idea to assess the quality of your input data and to discard poor quality base content by trimming and filtering reads.
+Before starting any analysis, it is always a good idea to assess the quality of your input data and to discard poor-quality base content by trimming and filtering reads.
 
-Generally, we are not interested in the host sequences, rather only those originating from the pathogen itself. It is important to get rid of all host sequences and to only retain sequences that might include a pathogen, both in order to speed up further steps and to avoid host sequences compromising the analysis.
+Generally, we are not interested in the host sequences, but rather only those originating from the pathogen itself. It is important to get rid of all host sequences and to only retain sequences that might include a pathogen, both in order to speed up further steps and to avoid host sequences compromising the analysis.
 
 ### Input Datasets
 
-- Collection of sequenced Nanopore reads of all samples to be analized in a `fastq or fastq.gz` formate.
+- Collection of sequenced Nanopore reads of all samples to be analised in a `fastq or fastq.gz` formate.
 
 ### Output Datasets
 
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate.
 
-- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample, these tables are needed for visualistion performed in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow.
+- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
@@ -40,13 +40,13 @@ This workflow is available for trial through our [GTN tutorial](https://training
 
 ## _Gene-based Pathogen Identification_
 
-In this workflow, we determine whether the samples are pathogenic or not, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organim:
+In this workflow, we determine whether the samples are pathogenic or not, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organism.
 
-- Virulence Factor (VF): gene products, usually proteins, involved in pathogenicity. By identifiying them we can call a pathogen and its severity level
+- Virulence Factor (VF): gene products, usually proteins, involved in pathogenicity. By identifying them, we can call a pathogen and its severity level
 
 - Antimicrobial Resistance genes (AMR).
 
-    These type of genes have three fundamental mechanisms of antimicrobial resistance that are enzymatic degradation of antibacterial drugs, alteration of bacterial proteins that are antimicrobial targets, and changes in membrane permeability to antibiotics, which will lead to not altering the target site and spread throughput the pathogenic bacteria decreasing the overall fitness of the host.
+    These type of genes have three fundamental mechanisms of antimicrobial resistance that are enzymatic degradation of antibacterial drugs, alteration of bacterial proteins that are antimicrobial targets, and changes in membrane permeability to antibiotics, which will lead to not altering the target site and spread throughput the pathogenic bacteria decreasing the overall fitness of the host.
 
 In this workflow we:
 
@@ -57,7 +57,7 @@ In this workflow we:
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
 
 ### Output Datasets
-- FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow.
+- FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
@@ -71,7 +71,7 @@ To perform the mapping step before variant identification, we used the Minimap2 
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
 
 ### Output Datasets
-- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions, these tabular files are visualised in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow. 
+- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions. 
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
@@ -83,6 +83,6 @@ In this workflow, we will aggregate results and use the results from 3 workflows
 2. Drawing a phylogenetic tree for each pathogenic genes detected, where we will relate the contigs of the samples together where this gene is found.
 3. Plotting QC reads, host reads, mapping coverage and depth, and SNP analysis.
 
-With these types of visualisations we can have an overview of all samples and the genes, but also how samples are related to each other, which common pathogenic genes they share. Given the time of the sampling and the location one can easily identify using these graphs, where and when the contamination has occurred among the different samples.
+With these types of visualisations, we can have an overview of all samples and the genes, but also how samples are related to each other, which common pathogenic genes they share. Given the time of the sampling and the location one can easily identify using these graphs, where and when the contamination has occurred among the different samples.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)

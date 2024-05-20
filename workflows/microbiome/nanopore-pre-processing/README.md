@@ -12,6 +12,6 @@ Generally, we are not interested in the host sequences, rather only those origin
 
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate.
 
-- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample, these tables are needed for visualistion performed in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow.
+- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)

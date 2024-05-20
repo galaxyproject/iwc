@@ -17,6 +17,6 @@ In this workflow we:
 - Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
 
 ## Output Datasets
-- FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples in **_PathoGFAIR Samples Aggregation and Visualisation_** workflow.
+- FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
