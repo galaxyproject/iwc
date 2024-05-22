@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.4] 2024-05-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_bamtobed/2.30.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_bamtobed/2.31.1+galaxy0`
+
 ## [0.2.3] 2024-04-01
 
 ### Automatic update
