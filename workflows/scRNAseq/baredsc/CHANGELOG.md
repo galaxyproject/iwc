@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5] 2024-05-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2`
+
 ## [0.4] 2024-04-08
 
 ### Automatic update
