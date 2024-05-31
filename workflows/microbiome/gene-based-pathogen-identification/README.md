@@ -14,7 +14,7 @@ In this workflow we:
 2. Generate reports with AMR genes and VF using ABRicate
 
 ## Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
 
 ## Output Datasets
 - FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.

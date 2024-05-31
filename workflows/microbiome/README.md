@@ -31,7 +31,7 @@ It’s important to check what might be the species of a possible pathogen to be
 For taxonomy profiling Kraken2 tool is used along with one of its standard databases available on Galaxy, you can freely choose between Kraken2 different databases based on your input datasets. For visualisation multiple tools can be used, Krona pie chart (as default in this workflow), Phinch interactive tool, Pavian, etc.
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
 
 ### Output Datasets
 - Taxonomy profiling Tabular file, visualisation figures and interactive pie charts.
@@ -54,7 +54,7 @@ In this workflow we:
 2. Generate reports with AMR genes and VF using ABRicate
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
 
 ### Output Datasets
 - FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
@@ -68,7 +68,8 @@ This workflow identifies pathogens using an allelic approach, detecting Single N
 To perform the mapping step before variant identification, we used the Minimap2 tool, specifically designed for Nanopore reads. If you're working with Illumina data, you can substitute Minimap2 with Bowtie2.
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **_Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
+- A reference genome to the tested pathogen.
 
 ### Output Datasets
 - VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions. 
@@ -77,7 +78,7 @@ This workflow is available for trial through our [GTN tutorial](https://training
 
 ## Pathogen Detection: _PathoGFAIR Samples Aggregation and Visualisation_
 
-In this workflow, we will aggregate results and use the results from 3 workflows (**_Preprocessing_**, **_Gene-based Pathogen Identification_** and **_Allele-based Pathogen Identification_**) to help track pathogens among samples and visualise all performed analysis by:
+In this workflow, we will aggregate results and use the results from 3 workflows (**Nanopore _Preprocessing_**, **_Gene-based Pathogen Identification_** and **Nanopore _Allele-based Pathogen Identification_**) to help track pathogens among samples and visualise all performed analysis by:
 
 1. Drawing a presence-absence heatmap of the identified VF genes within all samples to visualise in which samples these genes can be found.
 2. Drawing a phylogenetic tree for each pathogenic genes detected, where we will relate the contigs of the samples together where this gene is found.
@@ -86,3 +87,16 @@ In this workflow, we will aggregate results and use the results from 3 workflows
 With these types of visualisations, we can have an overview of all samples and the genes, but also how samples are related to each other, which common pathogenic genes they share. Given the time of the sampling and the location one can easily identify using these graphs, where and when the contamination has occurred among the different samples.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+
+## PathoGFAIR
+
+This workflow groups 5 different workflows in 1: **Nanopore _Preprocessing_**, **_Taxonomy Profiling_ and Visualisation with Krona**, **_Gene-based Pathogen Identification_**, **Nanopore _Allele-based Pathogen Identification_** and **Pathogen Detection: _PathoGFAIR Samples Aggregation and Visualisation_**.
+
+### Input Datasets
+
+- Collection of sequenced Nanopore reads of all samples to be analised in a `fastq or fastq.gz` formate.
+- A reference genome to the tested pathogen.
+
+### Output Datasets
+
+All outputs of the previously mentioned workflows that forms PathoGFAIR.
