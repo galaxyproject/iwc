@@ -1,8 +1,8 @@
 # _Gene-based Pathogen Identification_
 
-In this workflow, we determine whether the samples are pathogenic or not, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organim:
+In this workflow, we determine whether the samples are pathogenic or not, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organism.
 
-- Virulence Factor (VF): gene products, usually proteins, involved in pathogenicity. By identifiying them we can call a pathogen and its severity level
+- Virulence Factor (VF): gene products, usually proteins, involved in pathogenicity. By identifying them, we can call a pathogen and its severity level
 
 - Antimicrobial Resistance genes (AMR).
 
@@ -14,9 +14,10 @@ In this workflow we:
 2. Generate reports with AMR genes and VF using ABRicate
 
 ## Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format, the output of **Nanopore _Preprocessing_** workflow.
 
 ## Output Datasets
 - FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+

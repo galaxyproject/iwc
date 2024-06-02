@@ -1,6 +1,6 @@
 # Microbiome Workflows
 
-The following workflows can be used directly for microbiome data analysis, pathogen detection, and tracking purposes. The workflows can also be adapted to any other sequencing technique. 
+The following workflows can be used directly for microbiome data analysis, pathogen detection, and tracking purposes. The workflows can also be adapted to any other sequencing technique.
 
 To learn more about the following workflows and try them with real datasets, please check out our Microbiome tutorials on the Galaxy Training Network [GTN](https://training.galaxyproject.org/training-material/topics/microbiome/)
 
@@ -12,11 +12,11 @@ Generally, we are not interested in the host sequences, but rather only those or
 
 ### Input Datasets
 
-- Collection of sequenced Nanopore reads of all samples to be analised in a `fastq or fastq.gz` formate.
+- Collection of sequenced Nanopore reads of all samples to be analysed in a `fastq or fastq.gz` format.
 
 ### Output Datasets
 
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format.
 
 - Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.
 
@@ -31,7 +31,7 @@ It’s important to check what might be the species of a possible pathogen to be
 For taxonomy profiling Kraken2 tool is used along with one of its standard databases available on Galaxy, you can freely choose between Kraken2 different databases based on your input datasets. For visualisation multiple tools can be used, Krona pie chart (as default in this workflow), Phinch interactive tool, Pavian, etc.
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format, the output of **Nanopore _Preprocessing_** workflow.
 
 ### Output Datasets
 - Taxonomy profiling Tabular file, visualisation figures and interactive pie charts.
@@ -46,7 +46,7 @@ In this workflow, we determine whether the samples are pathogenic or not, by loo
 
 - Antimicrobial Resistance genes (AMR).
 
-    These type of genes have three fundamental mechanisms of antimicrobial resistance that are enzymatic degradation of antibacterial drugs, alteration of bacterial proteins that are antimicrobial targets, and changes in membrane permeability to antibiotics, which will lead to not altering the target site and spread throughput the pathogenic bacteria decreasing the overall fitness of the host.
+    These type of genes have three fundamental mechanisms of antimicrobial resistance that are enzymatic degradation of antibacterial drugs, alteration of bacterial proteins that are antimicrobial targets, and changes in membrane permeability to antibiotics, which will lead to not altering the target site and spread throughput the pathogenic bacteria decreasing the overall fitness of the host.
 
 In this workflow we:
 
@@ -54,7 +54,7 @@ In this workflow we:
 2. Generate reports with AMR genes and VF using ABRicate
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format, the output of **Nanopore _Preprocessing_** workflow.
 
 ### Output Datasets
 - FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
@@ -68,11 +68,11 @@ This workflow identifies pathogens using an allelic approach, detecting Single N
 To perform the mapping step before variant identification, we used the Minimap2 tool, specifically designed for Nanopore reads. If you're working with Illumina data, you can substitute Minimap2 with Bowtie2.
 
 ### Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` formate, the output of **Nanopore _Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format, the output of **Nanopore _Preprocessing_** workflow.
 - A reference genome to the tested pathogen.
 
 ### Output Datasets
-- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calcualtions. 
+- VCF files indicating identified variants and SNPs, BAM files with mapping results, and Tabular files with mapping depth and coverage calculations.
 
 This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
 
