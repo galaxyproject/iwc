@@ -23,5 +23,5 @@ This workflow uses paired-end illumina fastq(.gz) files and executes the followi
     - Tabular report of identified species
     - Tabular file with assigned read to a taxonomic level
     - Krona chart to illustrate species diversity of the sample
-3. Aggregating outputs
+3. Aggregating outputs:
     - JSON file with information about the outputs of **fastp**, **Kraken2**, **Bracken**, **Recentrifuge** 
