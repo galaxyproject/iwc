@@ -1,6 +1,6 @@
-# Quality and Contamination control subworkflow for paired end data (v1.0)
+# Quality and Contamination control workflow for paired end data (v1.0)
 
-This subworkflow use paired-end illumina fastq(.gz) files and executes the following steps:
+This workflow uses paired-end illumina fastq(.gz) files and executes the following steps:
 1. Quality control and trimming
     - **fastp** QC control and trimming
 2. Taxonomic assignation on trimmed data
