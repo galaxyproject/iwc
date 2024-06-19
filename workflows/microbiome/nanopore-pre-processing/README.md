@@ -1,4 +1,4 @@
-# Nanopore _Preprocessing_
+# Nanopore Preprocessing
 
 Before starting any analysis, it is always a good idea to assess the quality of your input data and to discard poor-quality base content by trimming and filtering reads.
 
@@ -6,12 +6,12 @@ Generally, we are not interested in the host sequences, but rather only those or
 
 ## Input Datasets
 
-- Collection of sequenced Nanopore reads of all samples to be analysed in a `fastq or fastq.gz` format.
+- Collection of sequenced Nanopore reads of all samples to be analysed in a `fastqsanger` or `fastqsanger.gz` format.
 
 ## Output Datasets
 
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastqsanger` or `fastqsanger.gz` format.
 
 - Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.
 
-This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+This workflow is available to try via our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)

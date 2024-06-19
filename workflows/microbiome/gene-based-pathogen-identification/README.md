@@ -1,4 +1,4 @@
-# _Gene-based Pathogen Identification_
+# Gene-based Pathogen Identification
 
 In this workflow, we determine whether the samples are pathogenic or not, by looking for genes known to be linked to pathogenicity or to the pathogenecity character of the organism.
 
@@ -14,10 +14,9 @@ In this workflow we:
 2. Generate reports with AMR genes and VF using ABRicate
 
 ## Input Datasets
-- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastq or fastq.gz` format, the output of **Nanopore _Preprocessing_** workflow.
+- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastqsanger` or `fastqsanger.gz` format, the output of **Nanopore Preprocessing** workflow.
 
 ## Output Datasets
 - FASTA and Tabular files to track genes and visualise our pathogenic identification through out all samples.
 
-This workflow is available for trial through our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
-
+This workflow is available to try via our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
