@@ -14,4 +14,4 @@ Generally, we are not interested in the host sequences, but rather only those or
 
 - Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.
 
-This workflow is available to try via our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+If you're unsure how to use this workflows, or if you want to see it in action with test datasets, it is included in our detailed training material for foodborne pathogen detection and tracking. You can find step-by-step instructions and practical examples in the following [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)

@@ -12,4 +12,4 @@ For taxonomy profiling Kraken2 tool is used along with one of its standard datab
 ## Output Datasets
 - Taxonomy profiling Tabular file, visualisation figures and interactive pie charts.
 
-This workflow is available to try via our [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+If you're unsure how to use this workflows, or if you want to see it in action with test datasets, it is included in our detailed training material for foodborne pathogen detection and tracking. You can find step-by-step instructions and practical examples in the following [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
