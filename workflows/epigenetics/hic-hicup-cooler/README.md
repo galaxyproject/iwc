@@ -31,7 +31,7 @@ For the Hi-C workflow:
   - Pairing the mates when both mates are uniquely mapped or MAPQ30
   - Filtering the pairs for undigested, self-ligated...
   - Removing duplicates
-- The output BAM file is converted to medium juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the 5' end.
+- The output BAM file is converted to medium juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the middle of the fragment.
 - The pairs are filtered for MAPQ if specified.
 - For the region capture Hi-C workflow the pairs are filtered for both mates in the captured region.
 - The filtered pairs are sorted and indexed with cooler_csort.

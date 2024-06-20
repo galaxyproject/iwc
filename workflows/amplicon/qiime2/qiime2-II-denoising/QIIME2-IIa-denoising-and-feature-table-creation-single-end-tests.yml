@@ -1,0 +1,49 @@
+- doc: Test outline for QIIME2-IIa-denoising--and-feature-table-creation-single-end
+  job:
+    Metadata:
+      class: File
+      location: https://docs.qiime2.org/2021.11/data/tutorials/moving-pictures-usage/sample-metadata.tsv
+      filetype: tabular
+    Demultiplexed sequences:
+      class: File
+      location: https://docs.qiime2.org/2021.11/data/tutorials/moving-pictures-usage/demux.qza
+      filetype: qza
+    Truncation length: 120
+    Trimming length: 0
+  outputs:
+    Denoising output table:
+      asserts:
+        - has_size:
+            min: 20k
+        - has_archive_member:
+            path: "^[^/]*/data/feature-table.biom"
+            n: 1
+    Representative denoised sequences:
+      asserts:
+        - has_size:
+            min: 20k
+        - has_archive_member:
+            path: "^[^/]*/metadata.yaml"
+            n: 1
+        - has_archive_member:
+            path: "^[^/]*/data/dna-sequences.fasta"
+            n: 1
+            asserts:
+              - has_text_matching:
+                  expression: ">.*"
+                  n: 770
+    Denoising statistics:
+      asserts:
+        - has_size:
+            min: 0
+        - has_size:
+            min: 10k
+        - has_archive_member:
+            path: "^[^/]*/data/stats.tsv"
+            n: 1
+            asserts:
+              - has_n_columns:
+                  n: 7
+              # 2 header lines + 3 samples
+              - has_n_lines:
+                  n: 36
