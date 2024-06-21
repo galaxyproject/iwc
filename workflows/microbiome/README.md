@@ -26,5 +26,3 @@ To learn more about these workflows and to try them with real datasets, please v
 The workflows for **Nanopore Preprocessing**, **Taxonomy Profiling and Visualization with Krona**, **Gene-based Pathogen Identification**, **Allele-based Pathogen Identification**, and **Pathogen Detection: PathoGFAIR Samples Aggregation and Visualization** can all be tried out in a dedicated training material on GTN for foodborne pathogen detection and tracking:
 
 [GTN Tutorial for Foodborne Pathogen Detection and Tracking](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
-
-
