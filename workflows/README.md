@@ -211,7 +211,6 @@ The workflows submitted to iwc are updated automatically. We describe here where
       - If no PR was opened, a new PR is opened.
 
 ### FAQ
-- A workflow has not been updated while it has deprecated tools?
+- A workflow has not been updated while it has tools that have newer versions available?
   - Check the [autoupdate actions](https://github.com/planemo-autoupdate/autoupdate/actions). Maybe one workflow raise an error while updating and this prevents other workflows to be updated. Please report this to the matrix channel.
   - Check that there is no closed PR named 'Updating blabla from xx to xx' corresponding to your workflow. This would prevent any automatic update. If this is the case, leave a comment into this PR so IWC reopen it.
-  - If they are in a multiworkflow directory, this is a known bug and we are working on it. See [this PR](https://github.com/galaxyproject/planemo/pull/1452).
