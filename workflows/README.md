@@ -11,8 +11,8 @@ The structure is as follows:
 * please, only use lower case and `-` in directory names.
 * workflow repository directories contain:
 
-  * the `.ga` workflow file, e.g., `consensus-from-variation.ga`;
-  * a [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html), with the same name as the workflow file, but with a `-tests.yml` extension, e.g., `consensus-from-variation-tests.yml`;
+  * at least one `.ga` workflow file, e.g., `consensus-from-variation.ga`;
+  * as many [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html) as workflow files, with the same name as the workflow file, but with a `-tests.yml` extension, e.g., `consensus-from-variation-tests.yml`;
   * a `test-data` directory with the test data used by Planemo (optional);
   * a [Dockstore](https://dockstore.org) [metadata file](https://docs.dockstore.org/en/develop/getting-started/github-apps/github-apps.html#workflow-yml-file) named `.dockstore.yml`;
   * a `README.md` and a `CHANGELOG.md` file.
@@ -176,6 +176,13 @@ With a text editor of your choice make this change:
 
 At this point you can commit the new files and open a pull request.
 If you are encountering difficulties at any point don't hesitate to ask for help on [gitter](https://gitter.im/galaxyproject/iwc).
+
+### Multiple directories or multiple workflows into the same directory
+
+The submitter is free to choose what will match the best its case.
+When multiple workflows are in the same directory, the submitter must know that:
+- The CHANGELOG.md is common and all workflows must constantly have the same version.
+- Workflowhub does not support multiple 'main' workflows in the same directory. One of the workflow will be considred as main while other will be considered as subworkflows. However, this is not an issue for dockstore which will publish each workflow listed in the dockstore file as main.
 
 ## RO-Crate Metadata
 
