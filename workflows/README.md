@@ -182,7 +182,10 @@ If you are encountering difficulties at any point don't hesitate to ask for help
 The submitter is free to choose what will match the best its case.
 When multiple workflows are in the same directory, the submitter must know that:
 - The CHANGELOG.md is common and all workflows must constantly have the same version.
-- Workflowhub does not support multiple 'main' workflows in the same directory. One of the workflow will be considred as main while other will be considered as subworkflows. However, this is not an issue for dockstore which will publish each workflow listed in the dockstore file as main.
+- Workflowhub does not support multiple 'main' workflows in the same directory. One of the workflow will be considred as the main one while all others will be considered as subworkflows. However, this is not an issue for dockstore which will publish each workflow listed in the dockstore file as main.
+- ```
+
+Can we define which one will be the main one? Or is this more or less random / alphabetical?
 
 ## RO-Crate Metadata
 
