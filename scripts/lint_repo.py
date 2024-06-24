@@ -64,9 +64,17 @@ for workflow_entry in y['workflows']:
     for test_file in workflow_entry.get('testParameterFiles'):
         assert os.path.exists(f'.{test_file}'), \
             f"The test file {test_file} written in the .dockstore.yml does not exists."
+    # Check there is at least one author
     assert len(workflow_entry.get('authors')) > 0, \
         f"Workflow {workflow_name} should have at least one " \
         "'authors' in the .dockstore.yml."
+    # Check there is not mailto
+    for author in workflow_entry.get('authors'):
+        if 'email' in author:
+            if author['email'].startswith('mailto:'):
+                raise Exception("email field of the .dockstore.yml must not "
+                                "contain 'mailto:'")
+
 
 assert len(workflow_files) > 0, \
     "No workflow described in the .dockstore.yml"
