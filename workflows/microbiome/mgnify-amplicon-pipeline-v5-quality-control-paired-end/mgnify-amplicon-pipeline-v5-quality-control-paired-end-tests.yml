@@ -1,0 +1,51 @@
+- doc: Test outline for mgnify-amplicon-pipeline-v5-quality-control-paired-end.ga
+  job:
+    Paired-end reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: ERR2715528
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/ERR2715528/forward.fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/ERR2715528/reverse.fastqsanger.gz
+  outputs:
+    PE_QC_processed_FASTA:
+      element_tests:
+        ERR2715528:
+          path: test-data/processed_FASTA/ERR2715528.fasta
+          compare: diff
+          lines_diff: 0
+    PE_MultiQC_stats:
+      element_tests:
+        fastqc:
+          path: test-data/MultiQC_stats/fastqc.tabular
+          compare: diff
+          lines_diff: 0
+        general_stats:
+          path: test-data/MultiQC_stats/general_stats.tabular
+          compare: diff
+          lines_diff: 0
+        sources:
+          assert:
+            has_text:
+              text: "FastQC	all_sections	ERR2715528_ambiguity_filtering"
+    PE_MultiQC_report:
+      asserts:
+        - that: has_text
+          text: "ERR2715528_ambiguous_base_filtering"
+        - that: has_text
+          text: "ERR2715528_initial_reads"
+        - that: has_text
+          text: "ERR2715528_length_filtering"
+        - that: has_text
+          text: "ERR2715528_trimming"
+        - that: has_text
+          text: "92.2%"
+        - that: has_text
+          text: "51%"
