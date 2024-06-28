@@ -61,9 +61,16 @@ Create a new directory under one of the directories that represent categories. I
 Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows). Only use lower-case and `-` in names of categories and repositories.
 
 Execute the workflow on your Galaxy server using the smallest input data you can generate.
-Go to the workflow invocations page (User > Workflow Invocations), open the most recent item and find the invocation id:
+Go to the workflow invocations page:
+- Before 24.0: (User > Workflow Invocations)
+- In 24.0: (Data > Workflow Invocations)
+- Above 24.1: In the activity bar in Workflow Invocation.
+Open the most recent item and find the invocation id:
+In below 24.0, you can get it here:
 
 ![Workflow Invocations GUI](../static/wf-invocations.png)
+
+If you have the activity bar, you can find the workflow invocation id from the URL. For example, `https://usegalaxy.org/workflows/invocations/be5c48c113145dd5?from_panel=true` means that the workflow invocation id is `be5c48c113145dd5`.
 
 You will also need your Galaxy API key. To copy it, or generate it if you don't have one yet, go to User > Preferences > Manage API Key. Then run:
 
@@ -76,7 +83,7 @@ You may still want to remove test files and edit the test comparisons so that te
 will pass reliably. For example, you could consider using assertions to test the
 outputs, rather than comparing the entire output file with test data.
 Also, if some outputs are large, it is better to use assertions than storing the whole output file to the iwc repository.
-
+The description of assertion can be find in [the documentation](https://docs.galaxyproject.org/en/latest/dev/schema.html#tool-tests-test-output-assert-contents). Do not hesitate to look at different test files in the repo for examples.
 
 #### Manually write test for workflow
 
