@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7] 2024-06-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/artbio/concatenate_multiple_datasets/cat_multi_datasets/1.4.2` was updated to `toolshed.g2.bx.psu.edu/repos/artbio/concatenate_multiple_datasets/cat_multi_datasets/1.4.3`
+
 ## [0.6] 2024-06-10
 
 ### Automatic update
