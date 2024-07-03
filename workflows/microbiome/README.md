@@ -14,6 +14,8 @@ In this directory, you will find a collection of workflows designed for microbio
 
 - **Pathogen Detection: PathoGFAIR Samples Aggregation and Visualisation**
 
+- **PathoGFAIR** 
+
 ## Getting Started
 
 To learn more about these workflows and to try them with real datasets, please visit our Microbiome tutorials on the Galaxy Training Network (GTN):
