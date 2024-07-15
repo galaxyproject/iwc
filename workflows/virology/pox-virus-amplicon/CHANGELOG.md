@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3] 2024-06-28
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/2.2.2d+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/2.2.2c+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_consensus/ivar_consensus/1.4.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_consensus/ivar_consensus/1.4.3+galaxy0`
+
 ## [0.2] 2024-06-19
 
 ### Tool version updates
