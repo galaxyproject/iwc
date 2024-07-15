@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8] 2024-07-15
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.9+galaxy0`
+
 ## [0.7] 2024-06-25
 
 ### Automatic update (triggered manually)
