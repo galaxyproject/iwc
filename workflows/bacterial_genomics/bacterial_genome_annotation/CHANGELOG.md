@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2024-07-19
+
+- PlasmidFinder database correction in .ga
+
 ## [1.1.1] 2024-07-08
 
 ### Automatic update
