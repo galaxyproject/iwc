@@ -9,6 +9,7 @@
 ### Changed
 
 - Fix bug where the columns of the assembly statistics didn't join properly.
+- Rename some outputs for clarity
 
 ## [0.6] 2024-04-23
 
