@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2] 2024-07-12
+
+### Added 
+
+- Workflow report
+
+### Changed
+
+- Fix bug where the columns of the assembly statistics didn't join properly. 
+  
+
 ## [0.1.11] 2024-05-20
 
 ### Automatic update
