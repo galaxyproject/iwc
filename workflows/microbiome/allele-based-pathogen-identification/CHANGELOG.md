@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.2] 2024-08-05
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/clair3/clair3/0.1.12+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/clair3/clair3/1.0.8+galaxy0`
+
 ## [0.1.1] 2024-06-28
 
 ### Automatic update
