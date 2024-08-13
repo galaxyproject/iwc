@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2] 2024-08-12
+
+### Added
+
+- Workflow report
+
+### Changed 
+
+- Exposing the Busco lineage database parameter
+- Fixing a bug happening when merging of assembly statistics
+  
+
+
 ## [0.1.8] 2024-07-22
 
 ### Automatic update
