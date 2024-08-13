@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.4] 2024-08-13
+
+- Addition of workflow report
+
 ## [0.1.3] 2024-04-01
 
 ### Automatic update
