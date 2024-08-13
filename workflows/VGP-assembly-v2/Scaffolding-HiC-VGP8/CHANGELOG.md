@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.7] 2024-08-13
+
+- Expose Busco lineage database parameter
+
 ## [0.2.6] 2024-08-05
 
 ### Automatic update
