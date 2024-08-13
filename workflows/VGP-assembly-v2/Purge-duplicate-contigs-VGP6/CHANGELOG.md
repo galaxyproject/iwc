@@ -9,7 +9,7 @@
 ### Changed
 
 - Expose Busco lineage database parameter
-- Fix bug that was causing issues when merging the assembly statistics
+- Fix bug that was causing issues when merging the assembly statistics: The presence of the '#' character caused the tables to join incorrectly, and the numbers did not match the metrics
 
 ## [0.3.8] 2024-04-23
 
