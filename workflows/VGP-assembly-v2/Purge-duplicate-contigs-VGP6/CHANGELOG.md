@@ -4,7 +4,7 @@
 
 ### Added
 
-- Workflow reort
+- Workflow report
 
 ### Changed
 
