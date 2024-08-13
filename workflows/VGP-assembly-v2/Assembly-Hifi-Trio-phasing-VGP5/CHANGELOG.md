@@ -8,10 +8,8 @@
 
 ### Changed 
 
-- Exposing the Busco lineage database parameter
-- Fixing a bug happening when merging of assembly statistics
-  
-
+- Expose the Busco lineage database parameter
+- Fix a bug happening when merging assembly statistics
 
 ## [0.1.8] 2024-07-22
 
