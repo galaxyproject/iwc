@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4] 2024-08-13
+
+### Added
+
+- Workflow reort
+
+### Changed
+
+- Expose Busco lineage database parameter
+- Fix bug that was causing issues when merging the assembly statistics
 
 ## [0.3.8] 2024-04-23
 
