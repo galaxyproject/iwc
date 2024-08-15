@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] 2024-08-13
+
+- Expose Busco lineage database parameter
+
 ## [0.2] 2024-08-01
 
 ### Added
