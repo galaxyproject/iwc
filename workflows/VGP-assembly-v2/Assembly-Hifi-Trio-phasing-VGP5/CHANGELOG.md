@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2] 2024-08-12
+
+### Added
+
+- Workflow report
+
+### Changed 
+
+- Expose the Busco lineage database parameter
+- Fix a bug happening when merging assembly statistics : The presence of the '#' character caused the tables to join incorrectly, and the numbers did not match the metrics
+
 ## [0.1.8] 2024-07-22
 
 ### Automatic update
