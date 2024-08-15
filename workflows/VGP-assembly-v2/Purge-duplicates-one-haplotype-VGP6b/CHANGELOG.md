@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.1] 2024-08-13
+
+- Expose Busco parameters : 
+  - Lineage database 
+  - Lineage
+
 ## [0.7] 2024-07-24
 
 ### Added
