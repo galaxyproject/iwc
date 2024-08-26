@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3] 2024-08-26
+
+- Changed the regex to only change the sequences. The workflow is now more robust to different (non VGP) scaffold names.
+
 ## [0.2] 2024-08-15
 
 - Bug Fix: a missing regex caused the list of contaminants to empty out and the contaminants were not removed. 
