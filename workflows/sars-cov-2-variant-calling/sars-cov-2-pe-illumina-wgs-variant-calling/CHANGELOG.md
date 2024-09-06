@@ -35,4 +35,4 @@ Added RO-Crate metadata file. No functional changes.
 
 ## [0.1]
 
-- Initial version of COVID-19: variation analysis on WGS PE data workflow
+- Initial version of COVID-19: variation analysis on WGS Paired End data workflow

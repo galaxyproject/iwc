@@ -167,4 +167,4 @@ number of variants at primer binding sites:
 
 ## [0.1]
 
-- Initial version of COVID-19: variation analysis on ARTIC PE data workflow
+- Initial version of COVID-19: variation analysis on ARTIC Paired End data workflow

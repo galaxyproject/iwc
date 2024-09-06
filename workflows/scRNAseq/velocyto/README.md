@@ -1,6 +1,6 @@
 # Velocyto on 10X data
 
-These workflows simply run velocyto. There are 2 workflows because one can be easily run after the 'fastq-to-matrix-10x' workflows (Velocyto-on10X-from-bundled). The other can be easily run from uploaded datasets (Velocyto-on10X-filtered-barcodes).
+These workflows simply run velocyto. There are 2 workflows because one can be easily run after the 'fastq-to-matrix-10x' workflows (Velocyto for 10X bundled data). The other can be easily run from uploaded datasets (Velocyto for 10X filtered barcode data).
 
 ## Input datasets
 

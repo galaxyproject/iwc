@@ -1,4 +1,4 @@
-COVID-19: variation analysis on ARTIC PE data
+COVID-19: variation analysis on ARTIC Paired End data
 ---------------------------------------------
 
 The workflow for Illumina-sequenced ampliconic data builds on the RNASeq workflow

@@ -35,4 +35,4 @@ Fix reference to test file in .dockstore.yml
 
 ## [0.1]
 
-- Initial version of COVID-19: variation analysis on WGS SE data workflow
+- Initial version of COVID-19: variation analysis on WGS SE workflow
