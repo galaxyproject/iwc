@@ -7,4 +7,4 @@
 
 ## [0.1]
 
-- Initial version of Generic variation analysis on WGS PE data workflow
+- Initial version of Generic variation analysis on WGS Paired End data workflow

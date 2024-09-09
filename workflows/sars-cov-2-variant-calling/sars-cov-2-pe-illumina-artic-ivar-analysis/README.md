@@ -1,4 +1,4 @@
-# COVID-19 sequence analysis on Illumina Amplicon PE data
+# COVID-19 sequence analysis on Illumina Amplicon Paired End data
 
 This workflow implements an [iVar](https://github.com/andersen-lab/ivar) based analysis similar to
 the one in [ncov2019-artic-nf](https://github.com/connor-lab/ncov2019-artic-nf), [covid-19-signal](https://github.com/jaleezyy/covid-19-signal/) and the Thiagen [Titan workflow](https://github.com/theiagen/public_health_viral_genomics). These workflows (written in  Nextflow, Snakemake and WDL) are widely in use in [COG UK](https://www.cogconsortium.uk/), [CanCOGeN](https://www.genomecanada.ca/en/cancogen) and some US state public health laboratories.
