@@ -39,6 +39,11 @@ const links = [
         to: "/",
     },
 ];
+
+function launchUrl(workflow: Workflow) {
+    // https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=%23workflow/github.com/iwc-workflows/hic-hicup-cooler/hic-fastq-to-cool-hicup-cooler
+    return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}`;
+}
 </script>
 
 <template>
@@ -48,17 +53,24 @@ const links = [
             <div class="sticky top-4 h-16">
                 <UBreadcrumb :links="links" />
             </div>
-            <div class="mt-8">
-                <h2 class="font-bold mb-4">{{ workflow.definition.name }}</h2>
+            <div class="mt-6">
+                <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
                 <h3 class="text-xl font-semibold mb-2">Details:</h3>
                 <ul>
-                    <li><strong>UUID:</strong> {{ workflow.definition.uuid }}</li>
                     <li><strong>Author(s):</strong> {{ authors }}</li>
                     <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
-                    <li><strong>Created:</strong> {{ formatDate(workflow.definition.created) }}</li>
-                    <li><strong>Modified:</strong> {{ formatDate(workflow.definition.modified) }}</li>
+                    <li><strong>License:</strong> {{ workflow.definition.license }}</li>
+                    <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
                 </ul>
+                <UButton
+                    class="mt-4"
+                    :to="launchUrl(workflow)"
+                    target="_blank"
+                    icon="i-heroicons-rocket-launch"
+                    color="primary"
+                    variant="solid"
+                    label="Use this workflow" />
             </div>
         </div>
 
