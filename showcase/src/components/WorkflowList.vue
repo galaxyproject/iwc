@@ -1,9 +1,11 @@
 <template>
-  <h2>Workflows</h2>
   <div class="grid-container">
-    <div class="grid-item" v-for="workflow in workflows" :key="workflow.path">
-      <a :href="`/workflow/${workflow.path}`">{{ workflow.workflows[0].name }}</a>
-    </div>
+    <template v-for="repo in repositories" :key="repo.path">
+      <div v-for="workflow in repo.workflows" class="grid-item">
+        <a :href="`/workflow/${repo.path}`">{{ workflow.definition.name}}</a>
+        <p>{{ workflow.definition.annotation }}</p>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -13,16 +15,21 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
+.grid-item {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 </style>
 
 <script>
 export default {
   props: {
-    workflows: Array
+    repositories: Array
   },
   mounted() {
-    console.debug("hello");
-    console.debug(this.workflows);
+    console.debug("List loaded: ", this.repositories);
   }
 }
 </script>
