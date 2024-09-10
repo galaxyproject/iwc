@@ -1,0 +1,31 @@
+---
+import { Astro, getStaticPaths, getStaticProps } from 'astro';
+import WorkflowDetail from '../../components/WorkflowDetail.vue';
+import manifest from '../../data/workflow_manifest.json';
+
+// Define getStaticPaths to generate paths for each workflow
+export const getStaticPaths = async () => {
+  const paths = manifest.map((workflow) => {
+    // Extract the slug from the workflow path
+    const slug = workflow.path.replace('./workflows/', '');
+    return { params: { slug: slug } };
+  });
+
+  return paths;
+};
+
+// Define getStaticProps to fetch data for each page
+export const getStaticProps = async ({ params }) => {
+  const slugPath = params.slug.join('/');
+  const workflow = manifest.find((w) => w.path === `./workflows/${slugPath}`);
+  return { props: { workflow } };
+};
+
+// Get the slug from params
+const { props } = Astro;
+const { workflow } = props;
+---
+
+<Layout>
+  <WorkflowDetail :workflow="workflow" />
+</Layout>
