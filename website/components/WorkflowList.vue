@@ -69,6 +69,18 @@ function selectWorkflow(workflow: Workflow) {
                     <h2 class="text-xl font-bold mb-2">{{ workflow.definition.name }}</h2>
                 </template>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
+
+                <div v-if="workflow.definition.tags && workflow.definition.tags.length > 0" class="mb-4">
+                    <UBadge
+                        v-for="tag in workflow.definition.tags"
+                        :key="tag"
+                        class="mr-2 mb-2"
+                        color="primary"
+                        variant="soft">
+                        {{ tag }}
+                    </UBadge>
+                </div>
+
                 <UButton :to="`/workflow/${workflow.definition.uuid}`" class="text-primary-400"> Details</UButton>
             </UCard>
         </div>

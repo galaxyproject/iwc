@@ -36,6 +36,7 @@ interface WorkflowDefinition {
     release: string;
     steps: { [key: string]: Step };
     uuid: string;
+    tags: string[] | null;
 }
 
 // Define the interface for a creator
