@@ -1,21 +1,28 @@
 <template>
   <div class="grid grid-cols-3 gap-4">
-    <UCard v-for="workflow in workflows" :key="workflow.id" class="p-6 text-center">
+    <template v-for="collection in workflowCollections">
+    <UCard v-for="workflow in collection.workflows" :key="workflow.name" class="p-6 text-center">
       <template #header>
-        <h2 class="mb-4">{{ workflow.name }}</h2>
+        <h2 class="mb-4">{{ workflow.definition.name }}</h2>
       </template>
-      <p>{{ workflow.description }}</p>
-      <nuxt-link :to="`/workflow/${workflow.id}`">Go to workflow</nuxt-link>
+      <p>{{ workflow.definition.annotation}}</p>
+      <nuxt-link :to="`/workflow/${workflow.definition.uuid}`">Go to workflow</nuxt-link>
     </UCard>
+</template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { type Workflow, type WorkflowCollection } from '~/models/workflow';
 
 const props = defineProps({
-  workflows: Array
+  workflowCollections: {
+    type: Array as PropType<WorkflowCollection[]>,
+    required: true
+  }
 })
 </script>
+
 
 <style scoped>
 .grid {
