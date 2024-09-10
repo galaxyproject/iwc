@@ -13,6 +13,8 @@ export interface Workflow {
   testParameterFiles: string[];
   authors: Author[];
   definition: WorkflowDefinition;
+  readme: string;
+  changelog: string;
 }
 
 // Define the interface for an author
