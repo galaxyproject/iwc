@@ -58,19 +58,19 @@ const tools = computed(() => {
 
 const tabs = computed(() => [
     {
-        label: "README",
+        label: "About",
         content: workflow.value?.readme || "No README available.",
     },
     {
-        label: "CHANGELOG",
+        label: "Version History",
         content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
-        label: "TOOLS",
+        label: "Tools",
         tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
     },
     {
-        label: "PREVIEW",
+        label: "Preview",
         preview: true,
     },
 ]);
