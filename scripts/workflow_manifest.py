@@ -3,22 +3,35 @@ import json
 import yaml
 
 
-def find_dockstore_yml(directory):
-    dockstore_dirs = []
+def find_and_load_dockstore_yml(directory):
+    """
+    Find all .dockstore.yml files in the given directory and its subdirectories.
+    Read the contents of these files and add the path of the file to the content.
+    Return a list of all collected data.
+    """
+    workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:
-            workflow_details = {}
-            # read dockstore.yml and add to workflow_details
-            with open(os.path.join(root, ".dockstore.yml")) as f:
-                # read yaml file with pyyaml
-                workflow_details = yaml.safe_load(f)
-            # add path to workflow_details
-            workflow_details["path"] = root
-            dockstore_dirs.append(workflow_details)
-    return dockstore_dirs
+            try:
+                with open(os.path.join(root, ".dockstore.yml")) as f:
+                    workflow_details = yaml.safe_load(f)
+                workflow_details["path"] = root
+                workflow_data.append(workflow_details)
+            except Exception as e:
+                print(f"Error reading file {os.path.join(root, '.dockstore.yml')}: {e}")
+    return workflow_data
 
 
-dockstore_dirs = find_dockstore_yml("./workflows")
+def write_to_json(data, filename):
+    """
+    Write the given data into a JSON file with the given filename.
+    """
+    try:
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+    except Exception as e:
+        print(f"Error writing to file {filename}: {e}")
 
-with open("workflow_manifest.json", "w") as f:
-    json.dump(dockstore_dirs, f, indent=4)
+
+workflow_data = find_and_load_dockstore_yml("./workflows")
+write_to_json(workflow_data, "workflow_manifest.json")
