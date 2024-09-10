@@ -1,7 +1,7 @@
 <template>
-  <div class="flex">
+  <div class="flex h-screen">
     <!-- Left sidebar -->
-    <div class="w-1/4 p-4 border-r">
+    <div class="w-1/4 p-4 border-r overflow-y-auto">
       <input v-model="searchQuery" type="text" placeholder="Search workflows" class="w-full mb-4 p-2 border rounded">
       <ul>
         <li v-for="workflow in filteredWorkflows" :key="workflow.definition.uuid" 
@@ -18,10 +18,10 @@
              :id="`workflow-${workflow.definition.uuid}`"
              class="mb-4 p-6">
         <template #header>
-          <h2 class="mb-4">{{ workflow.definition.name }}</h2>
+          <h2 class="text-xl font-bold mb-2">{{ workflow.definition.name }}</h2>
         </template>
-        <p>{{ workflow.definition.annotation }}</p>
-        <nuxt-link :to="`/workflow/${workflow.definition.uuid}`" class="mt-4 inline-block">Go to workflow</nuxt-link>
+        <p class="mb-4">{{ workflow.definition.annotation }}</p>
+        <nuxt-link :to="`/workflow/${workflow.definition.uuid}`" class="text-blue-500 hover:underline">Go to workflow</nuxt-link>
       </UCard>
     </div>
   </div>
@@ -60,7 +60,7 @@ function scrollToWorkflow(workflow: Workflow) {
 </script>
 
 <style scoped>
-.overflow-y-auto {
-  max-height: calc(100vh - 2rem); /* Adjust this value as needed */
+.h-screen {
+  height: calc(100vh - 4rem); /* Adjust this value based on your header height */
 }
 </style>
