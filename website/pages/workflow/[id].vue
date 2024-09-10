@@ -42,7 +42,7 @@ const links = [
 
 function launchUrl(workflow: Workflow) {
     // https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=%23workflow/github.com/iwc-workflows/hic-hicup-cooler/hic-fastq-to-cool-hicup-cooler
-    return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}`;
+    return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}&trs_version=v${workflow.definition.release}&run_form=true`;
 }
 
 // const items = [{
