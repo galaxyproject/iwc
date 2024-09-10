@@ -2,8 +2,8 @@
     <header>
         <UContainer class="py-8">
             <div>
-                <NuxtLink to="/" class="text-xl font-semibold hover:text-primary-600 transition-colors">
-                    Galaxy Workflow Library
+                <NuxtLink to="/" class="text-xl font-semibold">
+                    Galaxy IWC - Workflow Library (todo: add a fancy banner)
                 </NuxtLink>
             </div>
         </UContainer>
