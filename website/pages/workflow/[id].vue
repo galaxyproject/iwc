@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { type Workflow, type WorkflowCollection } from "~/models/workflow";
 import { workflowCollections } from "~/models/workflow";
 import { marked } from "marked";
+import Author from "~/components/Author.vue";
 
 const route = useRoute();
 const workflow = ref<Workflow | null>(null);
@@ -86,7 +87,10 @@ const tabs = computed(() => [
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
                 <ul>
-                    <li><strong>Author(s):</strong> {{ authors }}</li>
+                    <li><strong>Author(s):</strong></li>
+                    <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
+                        <Author :author="author" />
+                    </li>
                     <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
                     <li><strong>License:</strong> {{ workflow.definition.license }}</li>
                     <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
