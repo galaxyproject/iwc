@@ -45,20 +45,6 @@ function launchUrl(workflow: Workflow) {
     return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}&trs_version=v${workflow.definition.release}&run_form=true`;
 }
 
-// const items = [{
-//   label: 'Readme',
-//   icon: 'i-heroicons-information-circle',
-//   content: (workflow.value.readme)
-// }, {
-//   label: 'Changelog',
-//   icon: 'i-heroicons-arrow-down-tray',
-//   content: parseMarkdown(workflow.value.changelog)
-// }, {
-//   label: 'Preview',
-//   icon: 'i-heroicons-eye-dropper',
-//   content: 'Finally, this is the content for Tab3'
-// }]
-
 const tabs = computed(() => [
     {
         label: "README",
