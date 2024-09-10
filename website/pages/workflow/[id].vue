@@ -24,7 +24,14 @@ const parseMarkdown = (content: string) => {
     return marked(content);
 };
 
-// TODO: Add a component for authors
+// TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
+const authors = computed(() => {
+    let authorLine = "";
+    if (workflow.value.authors) {
+        authorLine = workflow.value.authors.map((author) => author.name).join(", ");
+    }
+    return authorLine;
+});
 </script>
 
 <template>
@@ -33,7 +40,7 @@ const parseMarkdown = (content: string) => {
         <div class="w-1/4 p-4 overflow-y-auto">
             <p class="mb-4">{{ workflow.definition.annotation }}</p>
             <h2 class="text-xl font-semibold mb-2">Details</h2>
-            <p><strong>Authors:</strong> {{ workflow.authors.join(", ") }}</p>
+            <p><strong>Authors:</strong> {{ authors }}</p>
             <p><strong>Release:</strong> {{ workflow.definition.release }}</p>
         </div>
 
