@@ -8,30 +8,81 @@ def find_and_load_compliant_workflows(directory):
     Find all .dockstore.yml files in the given directory and its subdirectories.
     Read the contents of these files and add the path of the file to the content.
     Return a list of all collected data.
+
     """
     workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:
             try:
-                with open(os.path.join(root, ".dockstore.yml")) as f:
+                dockstore_path = os.path.join(root, ".dockstore.yml")
+                with open(dockstore_path) as f:
                     workflow_details = yaml.safe_load(f)
                 workflow_details["path"] = root
                 workflow_data.append(workflow_details)
+
+                # Now inspect the details which are something like this:
+                # version: 1.2
+                # workflows:
+                # - name: Velocyto-on10X-from-bundled
+                #   subclass: Galaxy
+                #   publish: true
+                #   primaryDescriptorPath: /Velocyto-on10X-from-bundled.ga
+                #   testParameterFiles:
+                #   - /Velocyto-on10X-from-bundled-tests.yml
+                #   authors:
+                #   - name: Lucille Delisle
+                #     orcid: 0000-0002-1964-4960
+                # - name: Velocyto-on10X-filtered-barcodes
+                #   subclass: Galaxy
+                #   publish: true
+                #   primaryDescriptorPath: /Velocyto-on10X-filtered-barcodes.ga
+                #   testParameterFiles:
+                #   - /Velocyto-on10X-filtered-barcodes-tests.yml
+                #   authors:
+                #   - name: Lucille Delisle
+                #     orcid: 0000-0002-1964-4960
+
+                for workflow in workflow_details["workflows"]:
+                    # For each listed workflow, load the primaryDescriptorPath
+                    # file, which is the actual galaxy workflow.
+                    # strip leading slash from primaryDescriptorPath if present -- these are relative.
+                    workflow_path = os.path.join(
+                        root, workflow["primaryDescriptorPath"].lstrip("/")
+                    )
+                    try:
+                        with open(workflow_path) as f:
+                            workflow["definition"] = json.load(f)
+                    except Exception as e:
+                        print(
+                            f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
+                        )
+
+                    # also try to load a README.md file for each workflow
+                    try:
+                        with open(os.path.join(root, "README.md")) as f:
+                            workflow["readme"] = f.read()
+                    # catch FileNotFound
+                    except FileNotFoundError:
+                        print(f"No README.md at {os.path.join(root, 'README.md')}")
+                    except Exception as e:
+                        print(
+                            f"Error reading file {os.path.join(root, 'README.md')}: {e}"
+                        )
+
+                    # also try to load a CHANGELOG.md file for each workflow
+                    try:
+                        with open(os.path.join(root, "CHANGELOG.md")) as f:
+                            workflow["changelog"] = f.read()
+                    except FileNotFoundError:
+                        print(f"No CHANGELOG.md at {os.path.join(root, 'CHANGELOG.md')}")
+                    except Exception as e:
+                        print(
+                            f"Error reading file {os.path.join(root, 'CHANGELOG.md')}: {e}"
+                        )
+
             except Exception as e:
                 print(f"Error reading file {os.path.join(root, '.dockstore.yml')}: {e}")
-    return workflow_data
 
-
-def find_readmes(workflow_data):
-    """
-    Find and read README files for each workflow in the given workflow data.
-    """
-    for workflow in workflow_data:
-        try:
-            with open(os.path.join(workflow["path"], "README.md")) as f:
-                workflow["readme"] = f.read()
-        except Exception as e:
-            print(f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}")
     return workflow_data
 
 
@@ -46,7 +97,6 @@ def write_to_json(data, filename):
         print(f"Error writing to file {filename}: {e}")
 
 
-workflow_data = find_and_load_dockstore_yml("./workflows")
-workflow_data = find_readmes(workflow_data)
-
-write_to_json(workflow_data, "workflow_manifest.json")
+if __name__ == "__main__":
+    workflow_data = find_and_load_compliant_workflows("./workflows")
+    write_to_json(workflow_data, "workflow_manifest.json")
