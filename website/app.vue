@@ -1,5 +1,6 @@
 <template>
   <div>
+    <NuxtLoadingIndicator />
     <header>
       <UContainer class="py-4">
         <div class="flex justify-between items-center">
