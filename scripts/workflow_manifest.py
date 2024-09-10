@@ -3,7 +3,7 @@ import json
 import yaml
 
 
-def find_and_load_dockstore_yml(directory):
+def find_and_load_compliant_workflows(directory):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
     Read the contents of these files and add the path of the file to the content.
@@ -31,9 +31,7 @@ def find_readmes(workflow_data):
             with open(os.path.join(workflow["path"], "README.md")) as f:
                 workflow["readme"] = f.read()
         except Exception as e:
-            print(
-                f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}"
-            )
+            print(f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}")
     return workflow_data
 
 
