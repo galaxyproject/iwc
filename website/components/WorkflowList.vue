@@ -45,7 +45,7 @@ function selectWorkflow(workflow: Workflow) {
                     placeholder="Search workflows"
                     class="w-full mb-4 p-2 border rounded" />
             </div>
-            <ul class="mt-8">
+            <ul class="mt-6">
                 <li
                     v-for="workflow in filteredWorkflows"
                     :key="workflow.definition.uuid"
@@ -69,7 +69,7 @@ function selectWorkflow(workflow: Workflow) {
                     <h2 class="text-xl font-bold mb-2">{{ workflow.definition.name }}</h2>
                 </template>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
-                <ULink :to="`/workflow/${workflow.definition.uuid}`" class="text-primary-400"> Go to workflow </ULink>
+                <UButton :to="`/workflow/${workflow.definition.uuid}`" class="text-primary-400"> Details</UButton>
             </UCard>
         </div>
     </div>
