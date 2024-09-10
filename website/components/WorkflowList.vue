@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <!-- Left sidebar -->
-    <div class="w-1/4 p-4 border-r overflow-y-auto">
+    <div class="w-1/4 p-4 overflow-y-auto">
       <input v-model="searchQuery" type="text" placeholder="Search workflows" class="w-full mb-4 p-2 border rounded">
       <ul>
         <li v-for="workflow in filteredWorkflows" :key="workflow.definition.uuid" 
