@@ -56,7 +56,6 @@ function launchUrl(workflow: Workflow) {
             <div class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
-                <h3 class="text-xl font-semibold mb-2">Details:</h3>
                 <ul>
                     <li><strong>Author(s):</strong> {{ authors }}</li>
                     <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
