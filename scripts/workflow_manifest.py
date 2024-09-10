@@ -80,7 +80,7 @@ def find_and_load_compliant_workflows(directory):
                             f"Error reading file {os.path.join(root, 'CHANGELOG.md')}: {e}"
                         )
                     dirname = os.path.dirname(workflow_path).split("/")[-1]
-                    workflow["trs_id"] = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
+                    workflow["trsID"] = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
 
             except Exception as e:
                 print(f"Error reading file {os.path.join(root, '.dockstore.yml')}: {e}")
