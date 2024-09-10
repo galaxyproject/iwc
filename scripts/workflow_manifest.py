@@ -22,6 +22,19 @@ def find_and_load_dockstore_yml(directory):
     return workflow_data
 
 
+def find_readmes(workflow_data):
+    """
+    Find and read README files for each workflow in the given workflow data.
+    """
+    for workflow in workflow_data:
+        try:
+            with open(os.path.join(workflow["path"], "README.md")) as f:
+                workflow["readme"] = f.read()
+        except Exception as e:
+            print(f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}")
+    return workflow_data
+
+
 def write_to_json(data, filename):
     """
     Write the given data into a JSON file with the given filename.
@@ -34,4 +47,7 @@ def write_to_json(data, filename):
 
 
 workflow_data = find_and_load_dockstore_yml("./workflows")
+print(workflow_data)
+workflow_data = find_readmes(workflow_data)
+
 write_to_json(workflow_data, "workflow_manifest.json")
