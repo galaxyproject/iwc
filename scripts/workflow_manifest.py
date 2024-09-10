@@ -31,7 +31,9 @@ def find_readmes(workflow_data):
             with open(os.path.join(workflow["path"], "README.md")) as f:
                 workflow["readme"] = f.read()
         except Exception as e:
-            print(f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}")
+            print(
+                f"Error reading file {os.path.join(workflow['path'], 'README.md')}: {e}"
+            )
     return workflow_data
 
 
@@ -47,7 +49,6 @@ def write_to_json(data, filename):
 
 
 workflow_data = find_and_load_dockstore_yml("./workflows")
-print(workflow_data)
 workflow_data = find_readmes(workflow_data)
 
 write_to_json(workflow_data, "workflow_manifest.json")

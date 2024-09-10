@@ -22,7 +22,8 @@
                 ]
             }
         ],
-        "path": "./workflows/data-fetching/parallel-accession-download"
+        "path": "./workflows/data-fetching/parallel-accession-download",
+        "readme": "# Parallel Accession Download\n\nDownloads fastq files for sequencing run accessions provided in a text file\nusing fasterq-dump. Creates one job per listed run accession, and is therefore\nmuch faster and more robust to errors when many accessions need to be\ndownloaded.\n"
     },
     {
         "version": 1.2,
@@ -51,7 +52,8 @@
                 ]
             }
         ],
-        "path": "./workflows/data-fetching/sra-manifest-to-concatenated-fastqs"
+        "path": "./workflows/data-fetching/sra-manifest-to-concatenated-fastqs",
+        "readme": "# SRA manifest to concatenated fastqs\n\nThis workflow takes as input a SRA manifest from SRA Run Selector (or a tabular with a header line), downloads all sequencing run data from the SRA and arranges it into per-sample fastq or pairs of fastq datasets.\n\nIt will work out the relationship between runs and samples from the user-indicated run and sample columns in the input and will concatenate sequencing run data as needed to obtain per-sample datasets.\n\n## Input dataset\n\n- The workflow needs a single tabular input dataset, which is supposed to list SRA run identifiers in one column and sample names in another, and which needs to have a header line.\n- SRA manifests obtained via the SRA Run Selector and turned into tabular format represent valid input.\n\n## Input values\n\n- Column number with SRA run ID\n\n  For manifests obtained through the SRA Run Selector this is column 1\n\n- Column number with sample names\n\n  The number of the column that should be used to assign sequencing runs to samples\n  The names in the column will also serve as the labels of datasets in the output collection.\n  For manifests obtained through the SRA Run Selector suitable columns might be number 6 (BioSample), 16 (Experiment) or 36 (Sample Name).\n\n## Processing\n\n- The workflow downloads sequencing run data in fastq format with fasterqdump (one job per SRA run ID).\n- Run data gets concatenated if it comes from the same sample.\n\n## Outputs\n\n- There are 2 outputs, one with paired-end datasets, one with single-read datasets.\n\n## Limitations\n\n- Special characters in sample names (anything that is not an English alphabet character, digit, underscore, dash, space, dot or comma (`[a-zA-Z0-9_\\- \\.,]`) will be converted to dashes (`-`).\n"
     },
     {
         "version": 1.2,
@@ -72,7 +74,8 @@
                 ]
             }
         ],
-        "path": "./workflows/transcriptomics/rnaseq-sr"
+        "path": "./workflows/transcriptomics/rnaseq-sr",
+        "readme": "# RNA-seq single-read Workflow\n\n## Inputs dataset\n\n- The workflow needs a list of datasets of fastqsanger.\n- As well as a gtf file with genes\n- Optional, but recommended: a gtf file with regions to exclude from normalization in Cufflinks.\n\n  - For instance a gtf that masks chrM for the mm10 genome:\n\n```\nchrM\tchrM_gene\texon\t0\t16299\t.\t+\t.\tgene_id \"chrM_gene_plus\"; transcript_id \"chrM_tx_plus\"; exon_id \"chrM_ex_plus\";\nchrM\tchrM_gene\texon\t0\t16299\t.\t-\t.\tgene_id \"chrM_gene_minus\"; transcript_id \"chrM_tx_minus\"; exon_id \"chrM_ex_minus\";\n```\n\n## Inputs values\n\n- forward adapter sequence: this depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.\n- reference_genome: this field will be adapted to the genomes available for STAR\n- strandedness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.\n- cufflinks_FPKM: Whether you want to get FPKM with Cufflinks (pretty long)\n- stringtie_FPKM: Whether you want to get FPKM/TPM etc... with Stringtie.\n\n## Processing\n\n- The workflow will remove adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with STAR with ENCODE parameters (for long RNA-seq but I use it for short also). STAR is also used to count reads per gene and generate strand-specific normalized coverage (on uniquely mapped reads).\n- A multiQC is run to have an overview of the QC. This can also be used to get the strandedness.\n- FPKM values for genes and transcripts are computed with cufflinks using correction for multi-mapped reads (this step is optionnal).\n- FPKM/TPM values for genes are computed with StringTie (this step is optional).\n- The BAM is filtered to keep only uniquely mapped reads (tag NH:i:1).\n- Unstranded coverage is computed with bedtools and normalized to the number of million uniquely mapped reads.\n- The three coverage files are converted to bigwig.\n\n### Warning\n\n- The coverage stranded output depends on the strandedness of the library:\n  - If you have an unstranded library, stranded coverages are useless\n  - If you have a forward stranded library, the label matches the orientation of reads.\n  - If you have a reverse stranded library, `forward` should correspond to genes on the forward strand and uses the reads mapped on the reverse strand. `reverse` should correspond to genes on the reverse strand and uses the reads mapped on the forward strand.\n\n## Contribution\n\n@lldelisle wrote the workflow and the tests.\n\n@nagoue updated the tools, made it work in usegalaxy.org, fixed some best practices.\n"
     },
     {
         "version": 1.2,
@@ -93,7 +96,8 @@
                 ]
             }
         ],
-        "path": "./workflows/transcriptomics/rnaseq-pe"
+        "path": "./workflows/transcriptomics/rnaseq-pe",
+        "readme": "# RNA-seq paired-end Workflow\n\n## Inputs dataset\n\n- The workflow needs a list of dataset pairs of fastqsanger.\n- As well as a gtf file with genes\n- Optional, but recommended: a gtf file with regions to exclude from normalization in Cufflinks.\n\n  - For instance a gtf that masks chrM for the mm10 genome:\n\n```\nchrM\tchrM_gene\texon\t0\t16299\t.\t+\t.\tgene_id \"chrM_gene_plus\"; transcript_id \"chrM_tx_plus\"; exon_id \"chrM_ex_plus\";\nchrM\tchrM_gene\texon\t0\t16299\t.\t-\t.\tgene_id \"chrM_gene_minus\"; transcript_id \"chrM_tx_minus\"; exon_id \"chrM_ex_minus\";\n```\n\n## Inputs values\n\n- adapter sequences: this depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.\n- reference_genome: this field will be adapted to the genomes available for STAR\n- strandedness: For stranded RNA, reverse means that the first read in a pair is complementary to the coding sequence, forward means that the first read in a pair is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.\n- cufflinks_FPKM: Whether you want to get FPKM with Cufflinks (pretty long)\n- stringtie_FPKM: Whether you want to get FPKM/TPM etc... with StringTie.\n\n## Processing\n\n- The workflow will remove adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with STAR with ENCODE parameters (for long RNA-seq but I use it for short also). STAR is also used to count reads per gene and generate strand-specific normalized coverage (on uniquely mapped reads).\n- A multiQC is run to have an overview of the QC. This can also be used to get the strandedness.\n- FPKM values for genes and transcripts are computed with cufflinks using correction for multi-mapped reads (this step is optionnal).\n- FPKM/TPM values for genes are computed with StringTie.\n- The BAM is filtered to keep only uniquely mapped reads (tag NH:i:1).\n- Unstranded coverage is computed with bedtools and normalized to the number of million uniquely mapped reads.\n- The three coverage files are converted to bigwig.\n\n### Warning\n\n- The coverage stranded output depends on the strandedness of the library:\n  - If you have an unstranded library, stranded coverages are useless\n  - If you have a forward stranded library, the label matches the orientation of the first read in pairs.\n  - If you have a reverse stranded library, the label matches the orientation of the second read in pairs.\n"
     },
     {
         "version": 1.2,
@@ -114,7 +118,8 @@
                 ]
             }
         ],
-        "path": "./workflows/genome-assembly/polish-with-long-reads"
+        "path": "./workflows/genome-assembly/polish-with-long-reads",
+        "readme": "# Assembly polishing with Racon workflow\n\n## Inputs\n\n- Sequencing reads in format: fastq, fastq.gz, fastqsanger.gz or fastqsanger\n- Genome assembly to be polished, in fasta format\n\n## What does the workflow do\n\n- After long reads have been assembled into a genome (contigs), this can be polished with the same long reads. \n- This workflow uses the tool minimap2 to map the long reads back to the assembly, and then uses Racon to make polishes. \n- This is repeated a further 3 times. \n\nIn more detail:\n\n- minimap2 : long reads are mapped to assembly => overlaps.paf.\n- overaps, long reads, assembly => Racon => polished assembly 1\n- using polished assembly 1 as input; repeat minimap2 + racon => polished assembly 2\n- using polished assembly 2 as input, repeat minimap2 + racon => polished assembly 3\n- using polished assembly 3 as input, repeat minimap2 + racon => polished assembly 4\n\n## Settings\n\n- Run as-is or change parameters at runtime.\n- For the input at \"minimap settings for long reads\", enter (map-pb) for PacBio reads, (map-hifi) for PacBio HiFi reads, or (map-ont) for Oxford Nanopore reads.\n\n## Outputs\n\nThere is one output: the polished assembly in fasta format. \n\n"
     },
     {
         "version": 1.2,
@@ -135,7 +140,8 @@
                 ]
             }
         ],
-        "path": "./workflows/genome-assembly/assembly-with-flye"
+        "path": "./workflows/genome-assembly/assembly-with-flye",
+        "readme": "# Genome assembly with Flye workflow\n\n\n## Why use this workflow?\n\n- This is a fairly simple workflow that assembles a genome from long sequencing reads.\n- It takes in sequencing reads from PacBio (Hifi or non-Hifi), or Oxford Nanopore.\n- If you have PacBio Hifi reads, you may prefer to use a workflow with the assembly tool Hifiasm, such as the those in the suite of VGP workflows. \n\n## Inputs\n\nRaw sequencing reads from PacBio or Oxford Nanopore in format:\nfasta, fasta.gz, fastq, fastq.gz, fastqsanger.gz or fastqsanger\n\n## What does the workflow do\n\n- Assembles the reads with the tool Flye\n- Summarizes the statistics with the tool Fasta statistics\n- Report with the tool Quast\n- Renders the assembly graph with the tool Bandage\n\n## Settings\n\nRun as-is or change parameters at runtime\n\nFor example:\n- change the Flye option of \"mode\" to the correct sequencing type\n- change the Quast option for \"Type of organism\" to correct taxon\n \n## Outputs\n\n- Flye assembly output - four files: fasta, gfa for bandage, graph_dot file, assembly info\n- Fasta statistics\n- Bandage image\n- Quast report\n"
     },
     {
         "version": 1.2,
@@ -156,7 +162,8 @@
                 ]
             }
         ],
-        "path": "./workflows/proteomics/openms-metaprosip"
+        "path": "./workflows/proteomics/openms-metaprosip",
+        "readme": "# MetaProSIP: automated inference of elemental fluxes in microbial communities\n\n## Inputs dataset\n\n- `Centroided LC-MS datasets` in mzML (MetaProSIP is mainly tested on data generated by orbitrap instruments)\n- `Fasta Database` in Fasta (aminoacid sequences)\n\n## Inputs values\n\n- `Precursor monoisotopic mass tolerance` (ppm): This value is passed to\n  - MSGFPlusAdapter parameter `Precursor monoisotopic mass tolerance` (-precursor_mass_tolerance)\n  - MetaProSIP parameter `Tolerance in ppm` (-mz_tolerance_ppm)\n- Fixed modifications\n- Variable modifications\n- Labeled element\n\n## Processing\n\n- DecoyDatabase: Add decoy sequences to the Fasta database (for FDR calculation)\n- FeatureFinderCentroided: identify eluting peptides that correspond to isotopologues with natural isotopic distributions \n- MSGFPlusAdapter: identify peptides through peptide fragment fingerprinting (database search)\n- FeatureFinderMultiplex: detect elution profiles of unlabeled peptides\n- PeptideIndexer: annotate protein association to identified peptides\n- FalseDiscoveryRate: Calculate FDR\n- IDMapper: map identified spectra to elution profiles\n- MetaProSIP: calculate the protein-SIP features, to perform functional grouping, and for protein inference\n"
     },
     {
         "version": 1.2,
@@ -177,7 +184,8 @@
                 ]
             }
         ],
-        "path": "./workflows/repeatmasking"
+        "path": "./workflows/repeatmasking",
+        "readme": "# RepeatMasking Workflow\n\nThis workflow uses RepeatModeler and RepeatMasker for genome analysis.\n\n- RepeatModeler is a software package for identifying and modeling de novo families of transposable elements (TEs). At the heart of RepeatModeler are three de novo repeat search programs (RECON, RepeatScout and LtrHarvest/Ltr_retriever) which use complementary computational methods to identify repeat element boundaries and family relationships from sequence data.\n\n- RepeatMasker is a program that analyzes DNA sequences for *interleaved repeats* and *low-complexity* DNA sequences. The result of the program is a detailed annotation of the repeats present in the query sequence, as well as a modified version of the query sequence in which all annotated repeats are present.\n\n## Input dataset for RepeatModeler\n- RepeatModeler requires a single input file, a genome in fasta format.\n\n\n## Outputs dataset for RepeatModeler\n- Two output files are generated:\n    - summary file (.tbl)\n    - fasta file containing alignments in order of appearance in the query sequence\n\n\n## Input dataset for RepeatMasker\n- ReapatMasker requires the fasta file generated by RepeatModeler\n\n## Outputs datasets for RepeatMasker\n- Five output files are generated:\n    - a fasta file\n    - .gff3 file\n    - a table summarizing the repeated content of the sequence analyzed\n    - a file with statistics related to the repeated content of the sequence analyzed\n    - a summary of the mutation sites found and the order of grouping\n    \n"
     },
     {
         "version": 1.2,
@@ -198,7 +206,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/cutandrun"
+        "path": "./workflows/epigenetics/cutandrun",
+        "readme": "# CUT&RUN (and CUT&TAG) Workflow\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of dataset pairs of fastqsanger.\n\n## Inputs values\n\n- adapter sequences: this depends on the library preparation. Usually CUT&RUN is Truseq and CUT&TAG is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera\n- reference_genome: this field will be adapted to the genomes available for bowtie2\n- effective_genome_size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)\n- normalize_profile: Whether you want to have a profile normalized as Signal to Million Reads.\n\n## Processing\n\n- The workflow will remove illumina adapters and low quality bases and filter out any read smaller than 15bp\n- The filtered reads are mapped with bowtie2 allowing dovetail and fragment length up to 1kb\n- The BAM is filtered to keep only MAPQ30 and concordant pairs\n- The PCR duplicates are removed with Picard (only from version 0.6)\n- The BAM is converted to BED to enable macs2 to take both pairs into account\n- The peaks are called with macs2 which at the same time generates a coverage file (normalized or not).\n- The coverage file is converted to bigwig\n- A multiQC is run to have an overview of the QC\n"
     },
     {
         "version": 1.2,
@@ -219,7 +228,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/chipseq-sr"
+        "path": "./workflows/epigenetics/chipseq-sr",
+        "readme": "# ChIP-seq single-read Workflow\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of fastqsanger files.\n\n## Inputs values\n\n- adapters sequence_forward: this depends on the library preparation. If you don't know, use FastQC to determine if it is Truseq or Nextera.\n- reference_genome: this field will be adapted to the genomes available for bowtie2.\n- effective_genome_size: this is used by MACS2 and may be entered manually (indications are provided for heavily used genomes).\n- normalize_profile: Whether you want to have a profile normalized as Signal to Million Reads.\n\n## Processing\n\n- The workflow will remove illumina adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with bowtie2 with default parameters.\n- The BAM is filtered to keep only MAPQ30.\n- The peaks are called with MACS2 with a fixed extension of 200bp which at the same time generates a coverage file (normalized or not).\n- The coverage is converted to bigwig.\n- A MultiQC is run to have an overview of the QC.\n\n### Warning\n\n- The filtered bam still has PCR duplicates which are removed by MACS2.\n"
     },
     {
         "version": 1.2,
@@ -285,7 +295,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/hic-hicup-cooler"
+        "path": "./workflows/epigenetics/hic-hicup-cooler",
+        "readme": "# Hi-C (hic_fastq_to_cool_hicup_cooler) and region capture Hi-C (chic_fastq_to_cool_hicup_cooler) Workflows\n\nThis can also be used for Hi-ChIP experiments, in that case the output with `matrix with iced values` is ignored and the matrix to use is `matrix with raw values`.\n\n## Input datasets\n\n- The workflow needs a list of dataset pairs of fastqsanger.\n\n## Input values\n\n- genome name: suggested from the bowtie2 indices, it is used to map and build the list of bins.\n- restriction enzyme: Restriction enzyme used e.g. A^GATCT,BglII. The '^' is used to express where the enzyme cuts.\n- No fill-in: If you used a biotin fill-in protocol, put this to false, else, put it to true.\n- minimum MAPQ: Filtering to apply to pairs you want to keep in your matrix, set it to 0 to not apply filtering (HiCUP already filter for uniquely mapped or MAPQ30).\n- Bin size in bp: Used to generate your first matrix but you will be able to rerun the subworkflow `hic_tabix_to_cool_cooler` to get other resolutions.\n- Interactions to consider to calculate weights in normalization step: this is a parameter for the last correction step (ICE).\n\nFor the region capture workflow:\n\n- chromosome, start and end positions of the capture region\n\nFor the Hi-C workflow:\n\n- region to use in pyGenomeTracks to check the matrices.\n\n## Processing\n\n- Reads are processed with HiCUP which comprises these steps:\n  - Truncation of reads for the religation motif\n  - Mapping of mates independently with bowtie2\n  - Pairing the mates when both mates are uniquely mapped or MAPQ30\n  - Filtering the pairs for undigested, self-ligated...\n  - Removing duplicates\n- The output BAM file is converted to medium juicer format: `<readname> <str1> <chr1> <pos1> <frag1> <str2> <chr2> <pos2> <frag2> <mapq1> <mapq2>` where str = strand (0 for forward, anything else for reverse) and pos is the middle of the fragment.\n- The pairs are filtered for MAPQ if specified.\n- For the region capture Hi-C workflow the pairs are filtered for both mates in the captured region.\n- The filtered pairs are sorted and indexed with cooler_csort.\n- The pairs are loaded into a matrix of the given resolution and balanced with cooler.\n- A final plot is made with pyGenomeTracks using the balanced matrices on the region provided or the capture region.\n\n## Subworkflows\n\nThere are 2 subworkflows: `hic_tabix_to_cool_cooler` and `hic_fastq_to_pairs_hicup.ga`.\n\n### hic_tabix_to_cool_cooler\n\nThis first subworkflow can be used to generate matrices to different resolutions using one of the output of the full workflow (`valid pairs filtered and sorted`).\n\nIf the dataset are still in galaxy (format: juicer_medium_tabix.gz), the workflow can be run directly.\n\nIf the dataset is not anymore in galaxy, you need to upload and specify the datatype as: juicer_medium_tabix.gz\n\n### hic_fastq_to_pairs_hicup\n\nThe second subworkflow has no real reason to be launched by itself except for QC tests.\n\nIf you want to run the first subworkflow from these results:\n\n- You first need to filter the pairs (`valid pairs in juicebox format MAPQ filtered`) for the capture region if relevent using the tool Filter1 (**Filter** data on any column using simple expressions) with the condition `(c3=='chr2' and c4<180000000 and c4>170000000) and (c7==\"chr2\" and c8<180000000 and c8>170000000)` if your capture region is chr2:170000000-180000000.\n- Then you need to run cooler_csort (**cooler csort with tabix** Sort and index a contact list.) with as input the `valid pairs in juicebox format MAPQ filtered` or the output of the previous step and for \"Format of your input file\" use \"Juicer Medium Format\".\n\nThe output of `cooler_csort` can be used as input of the first subworkflow.\n"
     },
     {
         "version": 1.2,
@@ -306,7 +317,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/average-bigwig-between-replicates"
+        "path": "./workflows/epigenetics/average-bigwig-between-replicates",
+        "readme": "# Average Bigwig between replicates\n\nThis workflow is very useful when you processed multiple samples in collections and you want to generate an average coverage per condition.\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of bigwigs (normalized). The identifiers of your bigwigs must be like:\n  - whatever_sample1_identificationOfReplicate1\n  - whatever_sample1_identificationOfReplicate2\n  - ...\n  - whatever_sample2_identificationOfReplicate1\n  - whatever_sample2_identificationOfReplicate2\n  - ...\n\n## Inputs values\n\n- bin_size: this is used when average of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs. I suggest 5bp for RNA-seq and 50bp for other applications.\n\n## Processing\n\n- The workflow will split identifiers between everything which is before the last underscore which will be the *sample* and everything which is after the last underscore which will be the *replicate identifier*. And restructure the collection as list:list:\n  - whatever_sample1:\n    - identificationOfReplicate1\n    - identificationOfReplicate2\n    - ...\n  - whatever_sample2:\n    - identificationOfReplicate1\n    - identificationOfReplicate2\n    - ---\n  - ...\n- Then it will average bigwigs into each inner list\n\n## Outputs\n\n- The output is a collection of bigwig datasets like:\n  - whatever_sample1\n  - whatever_sample2\n  - ...\n"
     },
     {
         "version": 1.2,
@@ -357,7 +369,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/consensus-peaks"
+        "path": "./workflows/epigenetics/consensus-peaks",
+        "readme": "# Consensus peaks Workflow\n\nThe goal of this workflow is to get a list of confident peaks with summits from n replicates.\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of datasets with n BAM where PCR duplicates have been removed (the workflow also works for nested list if you have multiple conditions each with multiple replicates).\n\n## Inputs values\n\n- Minimum number of overlap: Minimum number of replicates into which the final summit should be present.\n- effective_genome_size: this is used by MACS2 and may be entered manually (indications are provided for heavily used genomes).\n- bin_size: this is the bin sized used to compute the average of normalized profiles. Large values will allow to have a smaller output file but with less resolution while small values will increase computation time and size of the output file to produce a more resolutive bigwig.\n\n## Strategy summary\n\nHere is a generated example to highlight the strategy:\n![strategy](./strategy.png)\n\n## Processing\n\n- The workflow will:\n  - first part:\n    - call peaks and compute normalized coverage on each BAM individually\n    - average normalized profiles\n    - compute the intersection between all peaks and filter when at least x replicate overlaps\n  - second part:\n    - subset all BAM to get the same number of reads\n    - call peaks on all subsetted BAM combined\n  - finally, keep only peaks from the second part that have summits overlapping the filtered intersection of the first part.\n"
     },
     {
         "version": 1.2,
@@ -378,7 +391,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/atacseq"
+        "path": "./workflows/epigenetics/atacseq",
+        "readme": "# ATACseq Workflow\n\nThis workflow is highly concordant with the corresponding training material.\nYou can have more information about ATAC-seq analysis in the [slides](https://training.galaxyproject.org/training-material/topics/epigenetics/tutorials/atac-seq/slides.html) and the [tutorial](https://training.galaxyproject.org/training-material/topics/epigenetics/tutorials/atac-seq/tutorial.html).\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of dataset pairs of fastqsanger.\n\n## Inputs values\n\n- reference_genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (dbkeys table)\n- effective_genome_size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)\n- bin_size: this is used when normalization of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs.\n\n## Processing\n\n- The workflow will remove nextera adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with bowtie2 allowing dovetail and fragment length up to 1kb.\n- The BAM is filtered to keep only MAPQ30, concordant pairs and pairs outside of the mitochondria.\n- The PCR duplicates are removed with Picard (only from version 0.8).\n- The BAM is converted to BED to enable macs2 to take both pairs into account.\n- The peaks are called with macs2 which at the same time generates a coverage file.\n- The coverage file is converted to bigwig\n- The amount of reads 500bp from summits and the total number of reads are computed.\n- Two normalizations are computed:\n  - By million reads\n  - By million reads in peaks (500bp from summits)\n- Other QC are performed:\n  - A histogram with fragment length is computed.\n  - The evaluation of percentage of reads to chrM or MT is computed.\n- A multiQC is run to have an overview of the QC.\n\n### Warning\n\n- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding len file for use in bedtools slopbed.\n"
     },
     {
         "version": 1.2,
@@ -399,7 +413,8 @@
                 ]
             }
         ],
-        "path": "./workflows/epigenetics/chipseq-pe"
+        "path": "./workflows/epigenetics/chipseq-pe",
+        "readme": "# ChIP-seq paired-end Workflow\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of dataset pairs of fastqsanger.\n\n## Inputs values\n\n- adapters sequences: this depends on the library preparation. If you don't know, use FastQC to determine if it is Truseq or Nextera.\n- reference_genome: this field will be adapted to the genomes available for bowtie2.\n- effective_genome_size: this is used by MACS2 and may be entered manually (indications are provided for heavily used genomes).\n- normalize_profile: Whether you want to have a profile normalized as Signal to Million Fragments.\n\n## Processing\n\n- The workflow will remove illumina adapters and low quality bases and filter out any pair with mate smaller than 15bp.\n- The filtered reads are mapped with bowtie2 with default parameters.\n- The BAM is filtered to keep only MAPQ30 and concordant pairs.\n- The peaks are called with MACS2 which at the same time generates a coverage file (normalized or not).\n- The coverage is converted to bigwig.\n- A MultiQC is run to have an overview of the QC.\n\n### Warning\n\n- The filtered bam still has PCR duplicates which are removed by MACS2.\n\n## Contribution\n\n@lldelisle wrote the workflow.\n\n@nagoue updated the tools, made it work in usegalaxy.org, fixed the best practices and wrote the tests.\n"
     },
     {
         "version": 1.2,
@@ -423,7 +438,8 @@
                 ]
             }
         ],
-        "path": "./workflows/amplicon/dada2"
+        "path": "./workflows/amplicon/dada2",
+        "readme": "# Dada2: amplicon analysis for paired end data\n\n## Inputs dataset\n\n- `Paired input data` paired input collection in FASTQ format\n\n## Inputs values\n\n- `Read length forward/reverse reads` length of the forward/reverse reads to which they should be truncated in the filter and trim step\n- `Pool samples` pooling may increase sensitivity\n- `Reference database` that should be used for taxonomic assignment\n\n## Processing\n\nThe workflow follows the steps described in the [dada2 tutorial](https://benjjneb.github.io/dada2/tutorial.html).\n\nAs a first step the input collection is sorted. This is important because the dada2 step outputs\na collection in sorted order. If the input collection would not be sorted then the mergePairs step\nsamples would be mixed up.\n\n- `FilterAndTrim` Quality control by filtering and trimming reads\n- `QualityProfile` is called before and after the FilterAndTrim step\n- `Unzip Collection` separates forward and reverse reads (the next steps are evaluated separately on forward and reverse reads)\n- `learnErrors` learn error rates\n- `dada` filter noisy reads\n- `mergePairs` merge forward and reverse reads\n- `makeSequenceTable` create the sequence table\n- `removeBimeraDenovo` remove chimeric sequencs\n- `assignTaxonomy` assign taxonomic information from a reference data base\n\n## TODO\n\nSome possibilities to extend/improve the workflow\n\n- output BIOM\n- use ASV1, ... in sequence table and taxonomy output, and output additional fasta\n- allow to use custom taxonomy / make it optional\n"
     },
     {
         "version": 1.2,
@@ -505,7 +521,8 @@
                 ]
             }
         ],
-        "path": "./workflows/amplicon/qiime2/qiime2-I-import"
+        "path": "./workflows/amplicon/qiime2/qiime2-I-import",
+        "readme": "# QIIME2 import workflows\n\n\n## Available workflows\n\nImport of fastqsanger.gz data into QIIME artifact files.\n\nAvailable for:\n\n- paired / single end data\n- demultiplexed / multiplexed data (the former according to the EMP protocol)\n\nFor data that is multiplexed with another protocol the Galaxy cutadapt tool can be use.\n\n## Inputs\n\n- Single end or paired end reads in fastq format.\n- For demultiplexed data all datasets must be in a single (flat) collection\n  (also paired data).\n\n### Demultiplexed data\n\n- Demultiplexed data must follow the naming scheme `.+_.+_R[12]_001\\.fastq\\.gz`.\n  Any lane information (in the form of `L[0-9][0-9][0-9]_`) in the dataset names\n  is automatically removed.\n\n### Mulmultiplexed data\n\n- Multiplexed data in a single or two fastq.gz dataset(s)\n- Barcodes as fastq.gz file\n- Metadata (a table describing the samples) and a metadata parameter (the name of the column that contains the barcode sequences)\n- A boolean determining if there reverse complement of the barcode sequences shoul dbe used\n\n## Processing\n\nFor demultiplexed data\n\n1. Lane information is removed from the collection identifiers (using `Extract element identifiers`, `Regex Find And Replace` and `Relabel identifiers`)\n2. Import of sequence data using `qiime2 tools import` with `Casava One Eight Laneless Per Sample Directory Format`\n3. Prepare visualisation dataset with `qiime2 demux summarize`\n\nFor multiplexed data\n\n1. Import sequences and metadata with `qiime2 tools import` as `EMP Paired End Directory Format` and `Immutable Metadata Format`, resp.\n2. Demultiplex the sequences with `qiime2 demux emp-paired`/`paired` (using sequences and metadata information)\n3. Prepare visualisation dataset with `qiime2 demux summarize`\n\n\n## Outputs\n\n- Sequence data in `qza` format\n- A corresponding qiime visualization file in `qzv` format\n\n## TODOs\n\n- The import workflows for multiplexed data currently first convert the metadata into qza and require the user to enter a column as free text. If Galaxy allows for data-column workflow parameters this step can be removed."
     },
     {
         "version": 1.2,
@@ -549,7 +566,8 @@
                 ]
             }
         ],
-        "path": "./workflows/amplicon/qiime2/qiime2-II-denoising"
+        "path": "./workflows/amplicon/qiime2/qiime2-II-denoising",
+        "readme": "# QIIME2 workflows\n\n## Available workflows\n\nDenoising (using `qiime2`'s `dada2` integration for paired / single end data.\n\n## Inputs\n\n- Demultiplexed sequences as a qiime2 aertifact file (`qza`) containing the sequence information.\n- Metadata table (`tabular`)\n- Truncation length\n- Trimming length (optional)\n\nFor the paired end workflow the truncation and trimming length for the reverse reads can / has to be given.\n\n\n## Processing\n\n- Denoising with `qiime2 dada2 denoise-single`/`paired`\n- For each of the three outputs (see below) another tool is started to prepare a corresponding qzv file\n  - representative sequences `qiime2 feature-table tabulate-seqs `\n  - denoising statistics `qiime2 metadata tabulate`\n  - summary of the feature table\n\n## Outputs\n\n  - representative sequences \n  - denoising statistics \n  - summary of the feature table (how many sequences are lost in the corresponding steps)\n"
     },
     {
         "version": 1.2,
@@ -585,7 +603,8 @@
                 ]
             }
         ],
-        "path": "./workflows/scRNAseq/baredsc"
+        "path": "./workflows/scRNAseq/baredsc",
+        "readme": "# BaredSC Workflows\n\nThese workflows allow to run a baredSC analysis from a table with counts in a single click. It uses models from 1 to N Gaussians and combine them. It uses the logNorm scale, 100 bins for 1 dimension and 25 bins on each axis in 2 dimensions.\n\n## Inputs dataset\n\n- Both workflows need a tabular dataset where each row is a cell. The tabular needs to have a header line with column names. There must be at least two columns: 'nCount_RNA' and another one with the counts for the gene(s) of interest. A way to get such table in R from a Seurat object (`seurat.obj`) is:\n\n```r\nmy.genes <- c(\"Hoxa13\", \"Hoxd13\")\ndf <- cbind(seurat.obj[[]], # This will give you all metadata including nCount_RNA\n            FetchData(seurat.obj, slot = \"counts\", vars = my.genes))\n\nwrite.table(df, \"input_for_baredSC.txt\", quote = F, sep = \"\\t\", row.names = F)\n```\n\n## Inputs values\n\nFor the 1D:\n\n- Gene name: The name of the column with the counts of your gene of interest.\n- Maximum value in logNorm: The maximum value to explore in PDF. This value should be large enough so the PDF is at 0 at this value.\n- Maximum number of Gaussians to study: All models between models with 1 Gaussians to models with this number of Gaussians will be combined.\n\nFor the 2D:\n\n- Gene name for x axis: The name of the column with the counts of your gene in x axis.\n- Gene name for y axis: The name of the column with the counts of your gene in y axis.\n- maximum value in logNorm for x-axis: The maximum value to explore in PDF in the x axis. This value should be large enough so the PDF is at 0 at this value.\n- maximum value in logNorm for y-axis: The maximum value to explore in PDF in the y axis. This value should be large enough so the PDF is at 0 at this value.\n- Maximum number of Gaussians to study: All models between models with 1 2D-Gaussians to models with this number of 2D-Gaussians will be combined.\n- compute p-value: Whether you want to get a p-value. As a consequence, less samples than available will be used for plots as p-value computation requires to have independent samples.\n\n## Processing\n\n- The workflow will generate paramater values from 1 to the maximum number of Gaussians to study.\n- baredSC_1d or baredSC_2d is run for each of these number of Gaussians\n- All models are combined into a single result.\n"
     },
     {
         "version": 1.2,
@@ -653,7 +672,8 @@
                 ]
             }
         ],
-        "path": "./workflows/scRNAseq/fastq-to-matrix-10x"
+        "path": "./workflows/scRNAseq/fastq-to-matrix-10x",
+        "readme": "# Single-cell RNA-seq fastq to matrix for 10X data\n\nThese workflows are inspired by the [training material](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-preprocessing-tenx/tutorial.html). Except that the output is in a 'bundle' format: three files (one matrix, one with genes, one with barcodes) which is similar to the cellranger output format.\n\nBoth are designed for fastqs from 10X libraries v3. One is for regular 10X library (one library per sample), while the other one is for CellPlex 10X library which allows to multiplex samples using CMOs (see [this blog article](https://www.10xgenomics.com/blog/answering-your-questions-about-sample-multiplexing-for-single-cell-gene-expression)).\n\n## Input datasets\n\n- Specific for each experiment:\n    - For both workflows: you need a list of pairs of fastqs with gene expression.\n    - For CellPlex: you need in addition a list of pairs of fastqs with CMO.\n    - For CellPlex: you need a list of csv which describes samples and CMO used:\n        - first column is the sequence and second column is the name\n    /!\\ The order of samples need to be exactly the same between the collection of fastqs of CMO and the collection of csv.\n\n- Common for all experiments:\n    - Gene annotations: A gtf file with gene locations\n    - List of barcodes used by 10X. You can download it at https://zenodo.org/record/3457880/files/3M-february-2018.txt.gz\n\n## Input values\n\n- reference genome: this genome needs to be available for STAR\n- Barcode Size is same size of the Read: if the length of your R1 of GEX matches the size of cell barcode + UMI set to true. If your R1 contains trailling A, put false.\n- number of cells: If you make it too large no cell barcode correction will be performed to demultiplex CMOs.\n\n## Processing\n- Gene expression processing:\n    - Reads are aligned to the genome, asigned to genes, cell barcode and UMI with STAR Solo\n    - MultiQC report the mapping rate and the number of reads attributed to genes\n    - The output of STAR Solo is filtered with Droplet Utils to remove cellular barcodes which are probably empty.\n    - The output of Droplet Utils is reorganized to be:\n```\nMain Collection:\n    - Sample 1:\n        - matrix.mtx\n        - barcodes.tsv\n        - genes.tsv\n    - Sample 2:\n        - matrix.mtx\n        - barcodes.tsv\n        - genes.tsv\n...\n```\nFor the CellPlex workflow:\n- CMO processing:\n    - CITE-Seq Count is used to asign reads and generate a matrix where 'genes' are the CMO and 'unmapped'.\n    - Cellular barcodes are translated to match the cellular barcodes of Gene expression see [this article](https://kb.10xgenomics.com/hc/en-us/articles/360031133451-Why-is-there-a-discrepancy-in-the-3M-february-2018-txt-barcode-whitelist-).\n    - Reorganize the output with UMI matrices to match the same structure as gene expression matrices.\n\n## Test data\n\nThe test dataset has been produced to make it as small as possible in order to make the workflow pass on CI.\n\n- The CMO reads come from [zenodo](https://zenodo.org/records/10229382) and have been sampled to 0.1 with seqtk.\n- The GEX reads come from SRR13948489 but have been subsetted to the cells selected in the above zenodo.\n"
     },
     {
         "version": 1.2,
@@ -689,7 +709,8 @@
                 ]
             }
         ],
-        "path": "./workflows/scRNAseq/velocyto"
+        "path": "./workflows/scRNAseq/velocyto",
+        "readme": "# Velocyto on 10X data\n\nThese workflows simply run velocyto. There are 2 workflows because one can be easily run after the 'fastq-to-matrix-10x' workflows (Velocyto-on10X-from-bundled). The other can be easily run from uploaded datasets (Velocyto-on10X-filtered-barcodes).\n\n## Input datasets\n\n- BAM files with CB and UB: A collection of BAM. It accepts BAM from cellranger or STARsolo with the CB and UB tags (if you use the fastq-to-matrix-10x workflows these tags are automatically included).\n- filtered barcodes (only for Velocyto_on10X_filtered_barcodes workflow): A collection of filtered barcodes (this is what will be used by velocyto). 'Filtered' means that these barcodes have been identified as potential cells. It should not be the whole list of 3 million possible barcodes from cellranger.\n- filtered matrices in bundle (only for Velocyto_on10X_from_bundled workflow): A collection of filtered matrices as bundled (like the one which comes from the fastq-to-matrix-10x workflows): A collection with as many items as samples. For each sample, the item is a list with 3 datasets (barcodes, genes, matrix). The workflow will then extract the items which have the 'barcodes' identifier.\n- gtf file: A file with annotations where exons are and how they are grouped into genes.\n\n## Processing\n\n- If you provided matrices, the first step is to extract barcodes.\n- For both cases velocyto cli is run to get a loom file per sample with spliced and unspliced counts.\n"
     },
     {
         "version": 1.2,
@@ -711,7 +732,8 @@
                 ]
             }
         ],
-        "path": "./workflows/virology/pox-virus-amplicon"
+        "path": "./workflows/virology/pox-virus-amplicon",
+        "readme": "# Pox Virus Illumina Amplicon Workflow for half-genomes sequencing data\n\nThis workflow generates consensus sequences from Illumina PE-sequenced ARTIC data of pox virus samples.\n\nIt requires that all samples have been sequenced in two halves in two separate sequencing runs, and utilizes this property to resolve the inverted terminal repeat (ITR) sequences of pox virus genomes.\n\nThe workflow uses BWA-MEM for mapping the reads from each half-genome sequencing run to a correspondingly masked version of the reference genome, merges the resulting two read mappings, and uses iVar for primer trimming and consensus sequence generation.\n\nConceptually, this workflow builds on https://github.com/iwc-workflows/sars-cov-2-pe-illumina-artic-ivar-analysis and adds the logic for the split genome mapping and merging of the results."
     },
     {
         "version": 1.2,
@@ -732,7 +754,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Purge-duplicate-contigs-VGP6"
+        "path": "./workflows/VGP-assembly-v2/Purge-duplicate-contigs-VGP6",
+        "readme": "# Purge Duplicate Contigs\n\nPurge contigs marked as duplicates by purge_dups (could be haplotypic duplication or overlap duplication)\nThis workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5)\n\n## Inputs\n\n1. Hifi long reads - trimmed [fastq] (Generated by Cutadapt in the contigging workflow)\n2. Primary Assembly (hap1) [fasta] (Generated by the contigging workflow)\n3. Alternate Assembly (hap2) [fasta] (Generated by the contigging workflow)\n4. K-mer database [meryldb]  (Generated by the k-mer profiling workflow)\n5. Genomescope model parameters [txt] (Generated by the k-mer profiling workflow)\n6. Estimated Genome Size [txt]\n7. Name of first haplotype\n8. Name of second haplotype\n9. Lineage of you species for Busco Orthologs\n\n## Outputs\n\n1. Haplotype 1 purged assembly (Fasta and gfa)\n2. Haplotype 2 purged assembly (Fasta and gfa)\n3. QC: BUSCO report for both assemblies\n4. QC: Merqury report for both assemblies\n5. QC: Assembly statistics for both assemblies\n6. QC: Nx plot for both assemblies\n7. QC: Size plot for both assemblies\n"
     },
     {
         "version": 1.2,
@@ -756,7 +779,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Scaffolding-Bionano-VGP7"
+        "path": "./workflows/VGP-assembly-v2/Scaffolding-Bionano-VGP7",
+        "readme": "# Scaffolding with Bionano\n\nScaffolding using Bionano optical map data\n\n## Inputs\n\n1. Bionano data [cmap]\n2. Estimated genome size [txt]\n3. Phased assembly generated by Hifiasm [gfa1]\n\n## Outputs\n\n1. Scaffolds\n2. Non-scaffolded contigs\n3. QC: Assembly statistics\n4. QC: Nx plot\n5. QC: Size plot"
     },
     {
         "version": 1.2,
@@ -801,7 +825,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/kmer-profiling-hifi-VGP1"
+        "path": "./workflows/VGP-assembly-v2/kmer-profiling-hifi-VGP1",
+        "readme": "# VGP Workflow #1\n\nThis workflow produces a Meryl database and Genomescope outputs that will be used to determine parameters for following workflows, and assess the quality of genome assemblies. Specifically, it provides information about the genomic complexity, such as the genome size and levels of heterozygosity and repeat content, as well about the data quality.\n\n### Inputs\n\n-   A collection of Hifi long reads in FASTQ format\n-   *k*-mer length\n-   Ploidy\n\n### Outputs\n\n-   Meryl Database of kmer counts\n-   GenomeScope\n    -   Linear plot\n    -   Log plot\n    -   Transformed linear plot\n    -   Transformed log plot\n    -   Summary\n    -   Model\n    -   Model parameteres\n\n ![image](https://github.com/galaxyproject/iwc/assets/4291636/565238fc-f8a9-46ac-8b31-6276410fa436)\n"
     },
     {
         "version": 1.2,
@@ -825,7 +850,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Purge-duplicates-one-haplotype-VGP6b"
+        "path": "./workflows/VGP-assembly-v2/Purge-duplicates-one-haplotype-VGP6b",
+        "readme": "# Purge Duplicate Contigs\n\nPurge contigs marked as duplicates by purge_dups in a single haplotype(could be haplotypic duplication or overlap duplication)\nThis workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5)\n\n## Inputs\n\n1. Genomescope model parameters [txt] (Generated by the k-mer profiling workflow)\n1. Hifi long reads - trimmed [fastq] (Generated by Cutadapt in the contigging workflow)\n2. Assembly to purge (e.g. hap1) [fasta] (Generated by the contigging workflow)\n3. K-mer database [meryldb]  (Generated by the k-mer profiling workflow)\n4. Estimated Genome Size [txt]\n5. Assembly to leave alone (used for merqury statistics) (e.g. hap2) [fasta] (Generated by the contigging workflow)\n6. Name of un-altered assembly\n7. Name of purged assembly\n\n\n## Outputs\n\n1. Haplotype 1 purged assembly (Fasta and gfa)\n2. Haplotype 2 purged assembly (Fasta and gfa)\n3. QC: BUSCO report for both assemblies\n4. QC: Merqury report for both assemblies\n5. QC: Assembly statistics for both assemblies\n6. QC: Nx plot for both assemblies\n7. QC: Size plot for both assemblies"
     },
     {
         "version": 1.2,
@@ -873,7 +899,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Scaffolding-HiC-VGP8"
+        "path": "./workflows/VGP-assembly-v2/Scaffolding-HiC-VGP8",
+        "readme": "# Scaffolding with HiC data\n\nThis workflow perfoms scaffolding using HiC data with YAHS. It is designed to be run as part of one the VGP analysis trajectories. \nExample of trajectory : \n- VGP1 : Kmer profiling \n- VGP4 : Genome assembly with HiC phasing\n- VGP6 : Purge duplicated haplotigs\n- VGP8 : Scaffolding with HiC\n\n## Inputs\n\n1. Scaffolded assembly [fasta]\n2. Concatenated HiC forward reads [fastq]\n3. Concatenated HiC reverse reads [fastq]\n4. Restriction enzyme sequence [txt]\n5. Estimated genome size [txt]\n\n### Outputs\n\n1. Scaffolds in [fasta] and [gfa] format\n2. QC: Assembly statistics\n3. QC: Nx plot\n4. QC: Size plot\n5. QC: BUSCO report\n6. QC: Pretext Maps before and after scaffolding"
     },
     {
         "version": 1.2,
@@ -901,7 +928,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-HiC-phasing-VGP4"
+        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-HiC-phasing-VGP4",
+        "readme": "# Contiging Solo w/HiC:\n\nGenerate phased assembly based on PacBio Hifi Reads using HiC data from the same individual for phasing.\n\n## Inputs\n\n1. Hifi long reads [fastq]\n2. HiC forward reads (if multiple input files, concatenated in same order as reverse reads) [fastq]\n3. HiC reverse reads (if multiple input files, concatenated in same order as forward reads) [fastq]\n4. K-mer database [meryldb]\n5. Genome profile summary generated by Genomescope [txt]\n6. Name of first assembly\n7. Name of second assembly\n\n## Outputs\n\n1. Haplotype 1 assembly ([fasta] and [gfa])\n2. Haplotype 2 assembly ([fasta] and [gfa])\n3. QC: BUSCO report for both assemblies\n4. QC: Merqury report for both assemblies\n5. QC: Assembly statistics for both assemblies\n6. QC: Nx plot for both assemblies\n7. QC: Size plot for both assemblies"
     },
     {
         "version": 1.2,
@@ -925,7 +953,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/kmer-profiling-hifi-trio-VGP2"
+        "path": "./workflows/VGP-assembly-v2/kmer-profiling-hifi-trio-VGP2",
+        "readme": "# VGP Workflow #1\n\nThis workflow collects the metrics on the properties of the genome under consideration by analyzing the *k*-mer frequencies. It provides information about the genomic complexity, such as the genome size and levels of heterozygosity and repeat content, as well about the data quality. It uses reads from two parental genomes to partition long reads from the offspring into haplotype-specific *k*-mer databases.\n\n### Inputs\n\n-   Collection of Hifi long reads [fastq] (Collection)\n-   Paternal short-read Illumina sequencing reads [fastq] (Collection)\n-   Maternal short-read Illumina sequencing reads [fastq] (Collection)\n-   *k*-mer length\n-   Ploidy\n\n### Outputs\n\n-   Meryl databases of k-mer counts\n    - Child\n    - Paternal haplotype\n    - Maternal haplotype\n-   GenomeScope metrics for child and the two parental genomes (three GenomeScope profiles in total)\n    -   Linear plot\n    -   Log plot\n    -   Transformed linear plot\n    -   Transformed log plot\n    -   Summary\n    -   Model\n    -   Model parameteres\n \n    ![image](https://github.com/galaxyproject/iwc/assets/4291636/35282f8e-d021-44f6-8e03-7b58b32d6d00)\n"
     },
     {
         "version": 1.2,
@@ -949,7 +978,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-Trio-phasing-VGP5"
+        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-Trio-phasing-VGP5",
+        "readme": "# Assembly with Hifi reads and Trio Data\n\nGenerate phased assembly based on PacBio Hifi Reads using parental Illumina data for phasing\n\n## Inputs\n\n1. Hifi long reads [fastq]\n2. Concatenated Illumina reads : Paternal [fastq]\n3. Concatenated Illumina reads : Maternal [fastq]\n4. K-mer database [meryldb]\n5. Paternal hapmer database [meryldb]\n6. Maternal hapmer database [meryldb]\n7. Genome profile summary generated by Genomescope [txt]\n8. Genome model parameters generated by Genomescope [tabular]\n9. Homozygous read coverage (Estimated from the Genomescope model if not provided)\n10. Lineage of the species being assembled\n11. Bloom Filter\n12. Name of first haplotype\n13. Name of second haplotype\n\n## Outputs\n\n1. Haplotype 1 assembly\n2. Haplotype 2 assembly\n3. QC: BUSCO report for both assemblies\n4. Merqury report for both assemblies\n5. Assembly statistics for both assemblies\n6. Nx Plot for both assemblies\n7. Size plot for both assemblies\n\n\n"
     },
     {
         "version": 1.2,
@@ -973,7 +1003,8 @@
                 ]
             }
         ],
-        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-only-VGP3"
+        "path": "./workflows/VGP-assembly-v2/Assembly-Hifi-only-VGP3",
+        "readme": "## Contiging Solo w/HiC:\n\nGenerate phased assembly based on PacBio Hifi Reads using HiC data from the same individual for phasing.\n\n\n### Inputs\n\n\n1. Hifi long reads [fastq]\n2. HiC forward reads (if multiple input files, concatenated in same order as reverse reads) [fastq]\n3. HiC reverse reads (if multiple input files, concatenated in same order as forward reads) [fastq]\n4. K-mer database [meryldb]\n5. Genome profile summary generated by Genomescope [txt]\n6. Name of first assembly\n7. Name of second assembly\n\n\n### Outputs\n\n1. Haplotype 1 assembly\n2. Haplotype 2 assembly\n3. QC: BUSCO report for both assemblies\n4. QC: Merqury report for both assemblies\n5. QC: Assembly statistics for both assemblies\n6. QC: Nx plot for both assemblies\n7. QC: Size plot for both assemblie\n"
     },
     {
         "version": 1.2,
@@ -995,7 +1026,8 @@
                 ]
             }
         ],
-        "path": "./workflows/imaging/fluorescence-nuclei-segmentation-and-counting"
+        "path": "./workflows/imaging/fluorescence-nuclei-segmentation-and-counting",
+        "readme": "# Segmentation and counting of cell nuclei in fluorescence microscopy images\n\nThis workflow performs segmentation and counting of cell nuclei using fluorescence microscopy images. The segmentation step is performed using Otsu thresholding (Otsu, 1979). The workflow is based on the tutorial: https://training.galaxyproject.org/training-material/topics/imaging/tutorials/imaging-introduction/tutorial.html\n\n![](test-data/overlay_image.png)\n\n## Inputs\n\n**`input_image`:** The fluorescence microscopy images to be segmented. Must be the single image channel, which contains the cell nuclei.\n\n## Outputs\n\n**`overlay_image`:** An overlay of the original image and the outlines of the segmentated objects, each also annotated with a unique number.\n\n**`objects_count`:** Table with a single column `objects` and a single row (the actual number of objects).\n\n**`label_image`:** The segmentation result (label map, which contains a unique label for each segmented object).\n"
     },
     {
         "version": 1.2,
@@ -1017,7 +1049,8 @@
                 ]
             }
         ],
-        "path": "./workflows/metabomics/gcms-metams"
+        "path": "./workflows/metabomics/gcms-metams",
+        "readme": "# Mass spectrometry: GCMS with metaMS \n\nThis workflow uses the XCMS tool R package [(Smith, C.A. 2006)](https://bioconductor.org/packages/release/bioc/html/xcms.html) to extract, filter, align and fill gaps, and uses the CAMERA R package [(Kuhl, C 2012)](https://bioconductor.org/packages/release/bioc/html/CAMERA.html) to annotate isotopes, adducts and fragments.\n\nThis workflow is composed with the XCMS tool R package [(Smith, C.A. 2006)](https://bioconductor.org/packages/release/bioc/html/xcms.html) to extract and the metaMS R package [(Wehrens, R 2014)](https://bioconductor.org/packages/release/bioc/html/metaMS.html) for the field of untargeted metabolomics. \n\n\ud83c\udf93 For more information see the [Galaxy Training Network tutorial: Mass spectrometry: GC-MS analysis with metaMS package](https://training.galaxyproject.org/training-material/topics/metabolomics/tutorials/gcms/tutorial.html)\n\n## Inputs\n### sampleMetadata\nThe sampleMetadata tabular file corresponds to a table containing information about your samples\n\nA sample metadata file contains various information for each of your raw files:\n- Classes which will be used during the preprocessing steps\n- Analytical batches which will be useful for a batch correction step, along with sample types (pool/sample) and injection order\n- Different experimental conditions which can be used for statistics\n- Any information about samples that you want to keep, in a column format\n\nThe content of your sample metadata file has to be filled by you, since it is not contained in your raw data. Note that you can either:\n- Upload an existing metadata file\n- Use a template to create one (because it can be painful to get the sample list without misspelling or omission)\n  - Generate a template with the `xcms get a sampleMetadata file` tool available in Galaxy\n  - Fill it using your favorite table editor (Excel, LibreOffice)\n  - Upload it within Galaxy\n\n**Formats:** tab-separated values as tsv, tab, txt, ...\n\n### Mass-spectrometry Dataset Collection\nMass-spectrometry data files gathered in a Galaxy Dataser Collection\n\n**Formats:** open format as mzXML, mzMl, mzData and netCDF\n\n## Main steps\n1. MSnbase readMSData: read the mzXML and prepare for xcms\n2. XCMS findChromPeaks: peak picking\n3. metaMS.runGC: definition of pseudo-spectra\n"
     },
     {
         "version": 1.2,
@@ -1039,7 +1072,8 @@
                 ]
             }
         ],
-        "path": "./workflows/metabomics/lcms-preprocessing"
+        "path": "./workflows/metabomics/lcms-preprocessing",
+        "readme": "# Mass spectrometry: LC-MS preprocessing with XCMS \n\nThis workflow uses the XCMS tool R package [(Smith, C.A. 2006)](https://bioconductor.org/packages/release/bioc/html/xcms.html) to extract, filter, align and fill gaps, and uses the CAMERA R package [(Kuhl, C 2012)](https://bioconductor.org/packages/release/bioc/html/CAMERA.html) to annotate isotopes, adducts and fragments.\n\n\ud83c\udf93 For more information see the [Galaxy Training Network tutorial: Mass spectrometry: LC-MS preprocessing with XCMS](https://training.galaxyproject.org/training-material/topics/metabolomics/tutorials/lcms-preprocessing/tutorial.html)\n\n## Inputs\n### sampleMetadata\nThe sampleMetadata tabular file corresponds to a table containing information about your samples\n\nA sample metadata file contains various information for each of your raw files:\n- Classes which will be used during the preprocessing steps\n- Analytical batches which will be useful for a batch correction step, along with sample types (pool/sample) and injection order\n- Different experimental conditions which can be used for statistics\n- Any information about samples that you want to keep, in a column format\n\nThe content of your sample metadata file has to be filled by you, since it is not contained in your raw data. Note that you can either:\n- Upload an existing metadata file\n- Use a template to create one (because it can be painful to get the sample list without misspelling or omission)\n  - Generate a template with the `xcms get a sampleMetadata file` tool available in Galaxy\n  - Fill it using your favorite table editor (Excel, LibreOffice)\n  - Upload it within Galaxy\n\n**Formats:** tab-separated values as tsv, tab, txt, ...\n\n### Mass-spectrometry Dataset Collection\nMass-spectrometry data files gathered in a Galaxy Dataser Collection\n\n**Formats:** open format as mzXML, mzMl, mzData and netCDF\n\n## Main steps\n1. MSnbase readMSData: read the mzXML and prepare for xcms\n2. XCMS findChromPeaks: peak picking\n3. XCMS groupChromPeaks: determining shared ions across samples\n4. XCMS adjustRtime: retention time correction\n5. XCMS fillChromPeaks: integrating areas of missing peaks\n6. CAMERA.annotate: annotation\n"
     },
     {
         "version": 1.2,
@@ -1060,7 +1094,8 @@
                 ]
             }
         ],
-        "path": "./workflows/computational-chemistry/protein-ligand-complex-parameterization"
+        "path": "./workflows/computational-chemistry/protein-ligand-complex-parameterization",
+        "readme": "# Protein-ligand complex parameterization\n\nParameterizes an input protein (PDB) and ligand (SDF) file prior to molecular\ndynamics simulation with GROMACS.\n\nThis is a simple workflow intended for use as a subworkflow in more complex\nMD workflows. It is used as a subworkflow by the GROMACS MMGBSA and dcTMD\nworkflows. \n"
     },
     {
         "version": 1.2,
@@ -1081,7 +1116,8 @@
                 ]
             }
         ],
-        "path": "./workflows/computational-chemistry/gromacs-dctmd"
+        "path": "./workflows/computational-chemistry/gromacs-dctmd",
+        "readme": "# GROMACS dcTMD free energy calculation\n\nPerform an ensemble of targeted MD simulations of a user-specified size using\nthe GROMACS PULL code and calculate dcTMD free energy and friction profiles\nfor the resulting dissocation pathway. Note that pathway separation is not\nperformed by the workflow; the user is responsible for checking the ensemble themselves.\n\nThe input protein (PDB) and ligand (SDF) files provided are parameterized by\nthe 'Protein-ligand complex parameterization' subworkflow.\n\nNote that the workflow uses a MDP file for configuring the TMD simulations; this\nis packaged alongside the workflow as `tmd.mdp`.\n\n## Citations\n* Steffen Wolf and Gerhard Stock (2018), Targeted Molecular Dynamics Calculations of Free Energy Profiles Using a Nonequilibrium Friction Correction, J. Chem. Theory Comput. doi:10.1021/acs.jctc.8b00835\n* Steffen Wolf, Benjamin Lickert, Simon Bray and Gerhard Stock (2020), Multisecond ligand dissociation dynamics from atomistic simulations, Nat. Commun. doi:10.1038/s41467-020-16655-1\n"
     },
     {
         "version": 1.2,
@@ -1102,7 +1138,8 @@
                 ]
             }
         ],
-        "path": "./workflows/computational-chemistry/gromacs-mmgbsa"
+        "path": "./workflows/computational-chemistry/gromacs-mmgbsa",
+        "readme": "# GROMACS MMGBSA free energy calculation\n\nPerform an ensemble of MD simulations of a user-specified size using GROMACS,\nand calculate MMGBSA free energies using AmberTools. An ensemble average is\ncalculated and returned to the user as the final input.\n\nThe input protein (PDB) and ligand (SDF) files provided are parameterized by\nthe 'Protein-ligand complex parameterization' subworkflow.\n"
     },
     {
         "version": 1.2,
@@ -1127,7 +1164,8 @@
                 ]
             }
         ],
-        "path": "./workflows/computational-chemistry/fragment-based-docking-scoring"
+        "path": "./workflows/computational-chemistry/fragment-based-docking-scoring",
+        "readme": "# Fragment-based virtual screening with docking and pose scoring\n\nDock a compound library against a target protein with rDock and validate the\nposes generated against a reference fragment using SuCOS to compare the feature\noverlap. Poses are filtered by a user-specified SuCOS threshold.\n\nA list of fragments should be specified which will be used to define the cavity\nfor docking, using the 'Frankenstein ligand' technique. For more details, please\nsee https://www.informaticsmatters.com/blog/2018/11/23/cavities-and-frankenstein-molecules.html\n\nCompounds are split into collections and then recombined to allow the workflow\nto be run in a highly parallelized fashion. To specify the level of\nparallelization, use the 'Collection size' parameter.\n"
     },
     {
         "version": 1.2,
@@ -1148,7 +1186,8 @@
                 ]
             }
         ],
-        "path": "./workflows/variant-calling/variation-reporting"
+        "path": "./workflows/variant-calling/variation-reporting",
+        "readme": "Generic variation analysis reporting\n--------------------------------------\n\nThis workflow takes table of variants produced by any of the variant calling workflows in\nhttps://github.com/galaxyproject/iwc/tree/main/workflows/variant-calling\nand generates a list of variants by Samples and by Variant.\n"
     },
     {
         "version": 1.2,
@@ -1169,7 +1208,8 @@
                 ]
             }
         ],
-        "path": "./workflows/variant-calling/generic-variant-calling-wgs-pe"
+        "path": "./workflows/variant-calling/generic-variant-calling-wgs-pe",
+        "readme": "Generic variation analysis on WGS PE data\n-------------------------------------------\n\nThis workflows performs paired end read mapping with bwa-mem followed by\nsensitive variant calling across a wide range of AFs with lofreq and variant\nannotation with snpEff. The reference genome can be provided as a GenBank file.\n"
     },
     {
         "version": 1.2,
@@ -1190,7 +1230,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-se-illumina-wgs-variant-calling"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-se-illumina-wgs-variant-calling",
+        "readme": "COVID-19: variation analysis on WGS SE data\n-------------------------------------------\n\nThis workflows performs single end read mapping with bowtie2 followed by\nsensitive variant calling across a wide range of AFs with lofreq and variant\nannotation with snpEff 4.5covid19.\n"
     },
     {
         "version": 1.2,
@@ -1208,7 +1249,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-ivar-analysis"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-ivar-analysis",
+        "readme": "# COVID-19 sequence analysis on Illumina Amplicon PE data\n\nThis workflow implements an [iVar](https://github.com/andersen-lab/ivar) based analysis similar to\nthe one in [ncov2019-artic-nf](https://github.com/connor-lab/ncov2019-artic-nf), [covid-19-signal](https://github.com/jaleezyy/covid-19-signal/) and the Thiagen [Titan workflow](https://github.com/theiagen/public_health_viral_genomics). These workflows (written in  Nextflow, Snakemake and WDL) are widely in use in [COG UK](https://www.cogconsortium.uk/), [CanCOGeN](https://www.genomecanada.ca/en/cancogen) and some US state public health laboratories.\n\nThis workflow is also the subject of a Galaxy Training Network tutorial (currently a [Work in Progress](https://github.com/galaxyproject/training-material/pull/2633)).\nIt differs from [this workflow](https://github.com/galaxyproject/iwc/tree/main/workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-variant-calling) in\nthat it does not use `lofreq` and is aimed at rapid analysis of majority variants and lineage/clade assignment with `pangolin` and `nextclade`.\n\nTODO:\n\n1. Add support for QC using negative and positive controls\n2. Integrate with phylogeny tools including IQTree and UShER (and possibly more).\n"
     },
     {
         "version": 1.2,
@@ -1229,7 +1271,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-wgs-variant-calling"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-wgs-variant-calling",
+        "readme": "COVID-19: variation analysis on WGS PE data\n-------------------------------------------\n\nThis workflows performs paired end read mapping with bwa-mem followed by\nsensitive variant calling across a wide range of AFs with lofreq and variant\nannotation with snpEff 4.5covid19.\n"
     },
     {
         "version": 1.2,
@@ -1250,7 +1293,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-ont-artic-variant-calling"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-ont-artic-variant-calling",
+        "readme": "COVID-19: variation analysis on ARTIC ONT data\n----------------------------------------------\n\nThis workflow for ONT-sequenced ARTIC data is modeled after the alignment/variant-calling steps of the [ARTIC pipeline](https://artic.readthedocs.io/en/latest/). It performs, essentially, the same steps as that pipeline\u2019s minion command, i.e. read mapping with minimap2 and variant calling with medaka. Like the Illumina ARTIC workflow it uses ivar for primer trimming. Since ONT-sequenced reads have a much higher error rate than Illumina-sequenced reads and are therefor plagued more by false-positive variant calls, this workflow does make no attempt to handle amplicons affected by potential primer-binding site mutations.\n"
     },
     {
         "version": 1.2,
@@ -1271,7 +1315,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-variant-calling"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-variant-calling",
+        "readme": "COVID-19: variation analysis on ARTIC PE data\n---------------------------------------------\n\nThe workflow for Illumina-sequenced ampliconic data builds on the RNASeq workflow\nfor paired-end data using the same steps for mapping and variant calling, but\nadds extra logic for trimming amplicon primer sequences off reads with the ivar\npackage. In addition, this workflow uses ivar also to identify amplicons\naffected by primer-binding site mutations and, if possible, excludes reads\nderived from such \"tainted\" amplicons when calculating allele-frequencies\nof other variants.\n"
     },
     {
         "version": 1.2,
@@ -1292,7 +1337,8 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-variation-reporting"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-variation-reporting",
+        "readme": "COVID-19: variation analysis reporting\n--------------------------------------\n\nThis workflow takes VCF datasets of variants produced by any of the\n\"*-variant-calling\" workflows in\nhttps://github.com/galaxyproject/iwc/tree/main/workflows/sars-cov-2-variant-calling\nand generates tabular reports of variants by samples and by variant, along with\nan overview plot of variants and their allele-frequencies across all samples.\n"
     },
     {
         "version": 1.2,
@@ -1313,6 +1359,7 @@
                 ]
             }
         ],
-        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-consensus-from-variation"
+        "path": "./workflows/sars-cov-2-variant-calling/sars-cov-2-consensus-from-variation",
+        "readme": "COVID-19: consensus construction\n--------------------------------\n\nThis workflow aims at generating reliable consensus sequences from variant\ncalls according to transparent criteria that capture at least some of the\ncomplexity of variant calling.\n\nIt takes a collection of VCFs (with DP and DP4 INFO fields) and a collection of\nthe corresponding aligned reads (for the purpose of calculating genome-wide\ncoverage) such as produced by any of the variant calling workflows in\nhttps://github.com/galaxyproject/iwc/tree/main/workflows/sars-cov-2-variant-calling\nand generates a collection of viral consensus sequences and a multisample FASTA\nof all these sequences.\n\nEach consensus sequence is guaranteed to capture all called, filter-passing (as\nper the FILTER column of the VCF input) variants found in the VCF of its sample\nthat reach a user-defined consensus allele frequency threshold.\n\nFilter-failing variants and variants below a second user-defined minimal\nallele frequency threshold will be ignored.\n\nGenomic positions of filter-passing variants with an allele frequency in\nbetween the two thresholds will be hard-masked (with N) in the consensus\nsequence of their sample.\n\nGenomic positions with a coverage (calculated from the read alignments input)\nbelow another user-defined threshold will be hard-masked, too, unless they are\nconsensus variant sites.\n"
     }
 ]
