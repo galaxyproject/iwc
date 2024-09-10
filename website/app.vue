@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <NuxtLoadingIndicator />
-    <IWCHeader />
-    <UMain>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
-  </div>
+    <div>
+        <NuxtLoadingIndicator />
+        <IWCHeader />
+        <main>
+            <NuxtLayout>
+                <NuxtPage />
+            </NuxtLayout>
+        </main>
+    </div>
 </template>

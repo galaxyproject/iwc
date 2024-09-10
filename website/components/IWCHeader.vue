@@ -1,7 +1,7 @@
 <template>
     <header>
-        <UContainer class="py-4">
-            <div class="flex justify-between items-center">
+        <UContainer class="py-8">
+            <div>
                 <NuxtLink to="/" class="text-xl font-semibold hover:text-primary-600 transition-colors">
                     Galaxy Workflow Library
                 </NuxtLink>
