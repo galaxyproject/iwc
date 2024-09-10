@@ -45,6 +45,16 @@ function launchUrl(workflow: Workflow) {
     return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}&trs_version=v${workflow.definition.release}&run_form=true`;
 }
 
+const tools = computed(() => {
+    if (!workflow.value || !workflow.value.definition || !workflow.value.definition.steps) {
+        return [];
+    }
+    const toolIds = Object.values(workflow.value.definition.steps)
+        .map((step) => step.tool_id)
+        .filter((id): id is string => id !== null && id !== undefined);
+    return Array.from(new Set(toolIds));
+});
+
 const tabs = computed(() => [
     {
         label: "README",
@@ -55,7 +65,12 @@ const tabs = computed(() => [
         content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
+        label: "TOOLS",
+        tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
+    },
+    {
         label: "PREVIEW",
+        preview: true,
     },
 ]);
 </script>
@@ -101,7 +116,19 @@ const tabs = computed(() => [
                             <div v-if="item.content" class="mt-6">
                                 <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
                             </div>
-                            <div v-else class="mt-6">
+                            <div v-else-if="item.tools" class="mt-6">
+                                <div class="prose !max-w-none">
+                                    <h3>The following tools are required to run this workflow.</h3>
+                                    <p>
+                                        This will eventually be a pretty page with links to each tool in the (new)
+                                        toolshed, etc.
+                                    </p>
+                                    <ul>
+                                        <li v-for="tool in tools" :key="tool">{{ tool }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div v-else-if="item.preview" class="mt-6">
                                 <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
                                 <iframe
                                     title="Galaxy Workflow Embed"
