@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <header class="bg-white shadow-sm">
+  <div>
+    <header>
       <UContainer class="py-4">
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-semibold text-gray-800">Galaxy Workflow Library</h1>
+          <h1 class="text-xl font-semibold">Galaxy Workflow Library</h1>
         </div>
       </UContainer>
     </header>
