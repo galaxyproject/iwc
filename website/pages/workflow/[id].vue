@@ -44,6 +44,34 @@ function launchUrl(workflow: Workflow) {
     // https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=%23workflow/github.com/iwc-workflows/hic-hicup-cooler/hic-fastq-to-cool-hicup-cooler
     return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}`;
 }
+
+// const items = [{
+//   label: 'Readme',
+//   icon: 'i-heroicons-information-circle',
+//   content: (workflow.value.readme)
+// }, {
+//   label: 'Changelog',
+//   icon: 'i-heroicons-arrow-down-tray',
+//   content: parseMarkdown(workflow.value.changelog)
+// }, {
+//   label: 'Preview',
+//   icon: 'i-heroicons-eye-dropper',
+//   content: 'Finally, this is the content for Tab3'
+// }]
+
+const tabs = computed(() => [
+    {
+        label: "README",
+        content: workflow.value?.readme || "No README available.",
+    },
+    {
+        label: "CHANGELOG",
+        content: workflow.value?.changelog || "No CHANGELOG available.",
+    },
+    {
+        label: "PREVIEW",
+    },
+]);
 </script>
 
 <template>
@@ -77,13 +105,25 @@ function launchUrl(workflow: Workflow) {
         <div class="w-3/4 p-4 overflow-y-auto" ref="workflowContainer">
             <div class="mx-auto py-8">
                 <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
-                    <div v-if="workflow.readme" class="mt-6">
-                        <div class="prose !max-w-none" v-html="parseMarkdown(workflow.readme)"></div>
-                    </div>
-                    <div v-if="workflow.changelog" class="mt-6">
-                        <h2 class="text-2xl font-semibold mb-4">CHANGELOG</h2>
-                        <div class="prose !max-w-none" v-html="parseMarkdown(workflow.changelog)"></div>
-                    </div>
+                    <UTabs :items="tabs" class="w-full">
+                        <template #default="{ item, index, selected }">
+                            <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
+                                item.label
+                            }}</span>
+                        </template>
+                        <template #item="{ item }">
+                            <div v-if="item.content" class="mt-6">
+                                <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
+                            </div>
+                            <div v-else class="mt-6">
+                                <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
+                                <iframe
+                                    title="Galaxy Workflow Embed"
+                                    style="width: 100%; height: 700px; border: none"
+                                    src="https://usegalaxy.org/published/workflow?id=a63d3ee4a2a4a20b&embed=true&buttons=true&about=false&heading=false&minimap=true&zoom_controls=true&initialX=-20&initialY=-20&zoom=1"></iframe>
+                            </div>
+                        </template>
+                    </UTabs>
                 </div>
             </div>
         </div>
