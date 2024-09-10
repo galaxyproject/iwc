@@ -32,22 +32,39 @@ const authors = computed(() => {
     }
     return authorLine;
 });
+const links = [
+    {
+        label: "Back to index",
+        icon: "i-heroicons-home",
+        to: "/",
+    },
+];
 </script>
 
 <template>
     <div v-if="workflow" class="flex h-screen">
         <!-- Left sidebar -->
         <div class="w-1/4 p-4 overflow-y-auto">
-            <p class="mb-4">{{ workflow.definition.annotation }}</p>
-            <h2 class="text-xl font-semibold mb-2">Details</h2>
-            <p><strong>Authors:</strong> {{ authors }}</p>
-            <p><strong>Release:</strong> {{ workflow.definition.release }}</p>
+            <div class="sticky top-4 h-16">
+                <UBreadcrumb :links="links" />
+            </div>
+            <div class="mt-8">
+                <h2 class="font-bold mb-4">{{ workflow.definition.name }}</h2>
+                <p class="mb-4">{{ workflow.definition.annotation }}</p>
+                <h3 class="text-xl font-semibold mb-2">Details:</h3>
+                <ul>
+                    <li><strong>UUID:</strong> {{ workflow.definition.uuid }}</li>
+                    <li><strong>Author(s):</strong> {{ authors }}</li>
+                    <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
+                    <li><strong>Created:</strong> {{ formatDate(workflow.definition.created) }}</li>
+                    <li><strong>Modified:</strong> {{ formatDate(workflow.definition.modified) }}</li>
+                </ul>
+            </div>
         </div>
 
         <!-- Right side workflow cards -->
         <div class="w-3/4 p-4 overflow-y-auto" ref="workflowContainer">
             <div class="mx-auto py-8">
-                <h1 class="text-3xl font-bold mb-4">{{ workflow.definition.name }}</h1>
                 <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
                     <div v-if="workflow.readme" class="mt-6">
                         <div class="prose !max-w-none" v-html="parseMarkdown(workflow.readme)"></div>
