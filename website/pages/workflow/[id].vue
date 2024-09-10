@@ -28,9 +28,9 @@ const parseMarkdown = (content: string) => {
 </script>
 
 <template>
-  <div v-if="workflow" class="max-w-3xl mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-4">{{ workflow.name }}</h1>
-    <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
+  <div v-if="workflow" class="flex h-screen">
+    <!-- Left sidebar -->
+    <div class="w-1/4 p-4 overflow-y-auto">
       <p class="mb-4">{{ workflow.definition.annotation }}</p>
       <h2 class="text-xl font-semibold mb-2">Details</h2>
       <p><strong>Authors:</strong> {{ workflow.authors.join(', ') }}</p>
@@ -41,12 +41,21 @@ const parseMarkdown = (content: string) => {
           {{ category }}
         </li>
       </ul> -->
-      <div v-if="workflow.readme" class="mt-6">
-        <div class="prose prose-sm" v-html="parseMarkdown(workflow.readme)"></div>
-      </div>
-      <div v-if="workflow.changelog" class="mt-6">
-        <h2 class="text-2xl font-semibold mb-4">CHANGELOG</h2>
-        <div class="prose prose-sm" v-html="parseMarkdown(workflow.changelog)"></div>
+    </div>
+
+    <!-- Right side workflow cards -->
+    <div class="w-3/4 p-4 overflow-y-auto" ref="workflowContainer">
+      <div class="mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-4">{{ workflow.name }}</h1>
+        <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
+          <div v-if="workflow.readme" class="mt-6">
+            <div class="prose prose-sm" v-html="parseMarkdown(workflow.readme)"></div>
+          </div>
+          <div v-if="workflow.changelog" class="mt-6">
+            <h2 class="text-2xl font-semibold mb-4">CHANGELOG</h2>
+            <div class="prose prose-sm" v-html="parseMarkdown(workflow.changelog)"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
