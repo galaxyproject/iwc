@@ -1,5 +1,10 @@
 # Changelog
 
+
+## [0.2.8] 2024-09-12
+
+- Add suffix to the scaffold names corresponding to the haplotype being assembled
+
 ## [0.2.7] 2024-08-13
 
 - Expose Busco lineage database parameter
