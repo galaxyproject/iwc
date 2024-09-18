@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.2] 2024-08-05
+
+### Manual update
+
+- Updated the tool versions manually in the ToolDistillator parameters
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/2.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/3.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/recentrifuge/recentrifuge/1.14.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/recentrifuge/recentrifuge/1.14.1+galaxy0`
+
 ## [1.1.1] 2024-07-08
 
 ### Automatic update
