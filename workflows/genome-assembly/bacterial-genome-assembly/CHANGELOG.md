@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.2] 2024-09-19
+
+### Manual update
+
+- Updated the tool versions manually in the ToolDistillator parameters
+
 ## [1.1.1] 2024-07-08
 
 ### Automatic update
