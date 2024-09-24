@@ -8,6 +8,9 @@
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0`
 
+### Manual update
+- Add a step to remove comments lines from histogram to be compatible with new multiQC version
+
 ## [0.16] 2024-07-15
 
 ### Automatic update
