@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.4] 2024-09-19
+
+### Manual update
+
+- Updated the tool versions manually in the ToolDistillator parameters
+
+## [1.1.3] 2024-09-09
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy0`
+
 ## [1.1.2] - 2024-07-19
 
 - PlasmidFinder database correction in .ga

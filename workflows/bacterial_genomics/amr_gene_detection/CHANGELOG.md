@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.2] 2024-09-19
+
+### Manual update
+
+- Change percent identity threshold for Resfinder blast results in StarAMR from 98.0% to 90.0%
+
 ## [1.1.1] 2024-07-08
 
 ### Automatic update
