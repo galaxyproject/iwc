@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.3] 2024-09-27
+
+### Manual update
+
+- Changed 'shovill_contigs_graph' test in bacterial_genome_assembly-tests.yml
+
 ## [1.1.2] 2024-09-19
 
 ### Manual update
