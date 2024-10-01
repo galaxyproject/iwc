@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3] 2024-10-01
+
+### Tool updates
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy0` updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.3+galaxy0` updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.3+galaxy1`
+
 ## [0.5.2] 2024-03-05
 
 ### Automatic update
