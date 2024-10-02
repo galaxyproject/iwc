@@ -2,6 +2,10 @@
 
 ## [1.1.3] 2024-09-30
 
+### Manual update
+
+- Updated Recentrifuge version manually in the ToolDistillator parameters
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/recentrifuge/recentrifuge/1.14.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/recentrifuge/recentrifuge/1.15.0+galaxy0`
