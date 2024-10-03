@@ -1,18 +1,25 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "This workflow takes as input a list of paired-end fastqs. Adapters and bad quality bases are removed with cutadapt. Reads are mapped with STAR with ENCODE parameters and genes are counted simultaneously as well as normalized coverage (per million mapped reads) on uniquely mapped reads. The counts are reprocessed to be similar to HTSeq-count output. FPKM are computed with cufflinks and/or with StringTie. The unstranded normalized coverage is computed with bedtools.",
+    "annotation": "This workflow takes as input a list of paired-end fastqs. Adapters and bad quality bases are removed with cutadapt. Reads are mapped with STAR with ENCODE parameters and genes are counted simultaneously as well as normalized coverage (per million mapped reads) on uniquely mapped reads. The counts are reprocessed to be similar to HTSeq-count output. FPKM are computed with cufflinks and/or with StringTie. The unstranded normalized coverage is computed with bedtools. The differential expression analysis is performed using DESeq2.\n",
     "comments": [],
     "creator": [
         {
             "class": "Person",
             "identifier": "0000-0002-1964-4960",
             "name": "Lucille Delisle"
+        },
+        {
+            "class": "Person",
+            "identifier": "0000-0002-5192-126X",
+            "name": "Pavankumar Videm"
         }
     ],
     "format-version": "0.1",
     "license": "MIT",
-    "release": "0.9",
     "name": "RNAseq_PE",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
     "steps": {
         "0": {
             "annotation": "Should be a list of paired-end RNA-seq fastqs",
@@ -23,15 +30,15 @@
             "inputs": [
                 {
                     "description": "Should be a list of paired-end RNA-seq fastqs",
-                    "name": "PE fastq input"
+                    "name": "Collection paired FASTQ files"
                 }
             ],
-            "label": "PE fastq input",
+            "label": "Collection paired FASTQ files",
             "name": "Input dataset collection",
             "outputs": [],
             "position": {
                 "left": 0,
-                "top": 252.80832516863774
+                "top": 420
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"tag\": \"\", \"collection_type\": \"list:paired\"}",
@@ -42,77 +49,50 @@
             "workflow_outputs": []
         },
         "1": {
-            "annotation": "Please use: For R1: - For Nextera: CTGTCTCTTATACACATCTCCGAGCCCACGAGAC - For TrueSeq: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC or AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
+            "annotation": "Whether to report QC",
             "content_id": null,
             "errors": null,
             "id": 1,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Please use: For R1: - For Nextera: CTGTCTCTTATACACATCTCCGAGCCCACGAGAC - For TrueSeq: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC or AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
-                    "name": "forward_adapter"
+                    "description": "Whether to report QC",
+                    "name": "Generate QC reports?"
                 }
             ],
-            "label": "forward_adapter",
+            "label": "Generate QC reports?",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 26.45001220703125,
-                "top": 338.9083312721534
+                "left": 40,
+                "top": 530
             },
             "tool_id": null,
-            "tool_state": "{\"parameter_type\": \"text\", \"optional\": false}",
+            "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "db025004-00b9-4fa0-b4ae-e47d58a615ae",
+            "uuid": "f3dcb910-684b-463d-bf98-03bc18451666",
             "when": null,
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "Please use: For R2: - For Nextera: CTGTCTCTTATACACATCTGACGCTGCCGACGA - For TruSeq: GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT or AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
+            "annotation": "",
             "content_id": null,
             "errors": null,
             "id": 2,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Please use: For R2: - For Nextera: CTGTCTCTTATACACATCTGACGCTGCCGACGA - For TruSeq: GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT or AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT",
-                    "name": "reverse_adapter"
+                    "description": "",
+                    "name": "Reference genome"
                 }
             ],
-            "label": "reverse_adapter",
+            "label": "Reference genome",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 68,
-                "top": 427.04166257098154
-            },
-            "tool_id": null,
-            "tool_state": "{\"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "ad4f5c84-4a83-4d66-afe1-a7fdfc37f638",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "3": {
-            "annotation": "reference_genome",
-            "content_id": null,
-            "errors": null,
-            "id": 3,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "reference_genome",
-                    "name": "reference_genome"
-                }
-            ],
-            "label": "reference_genome",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 132.63336181640625,
-                "top": 522.134886401586
+                "left": 70,
+                "top": 640
             },
             "tool_id": null,
             "tool_state": "{\"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
@@ -122,24 +102,24 @@
             "when": null,
             "workflow_outputs": []
         },
-        "4": {
-            "annotation": "gtf compatible with the reference_genome. Mind the UCSC/Ensembl differences in chromosome naming",
+        "3": {
+            "annotation": "GTF compatible with the reference genome. Mind the UCSC/Ensembl differences in chromosome naming.",
             "content_id": null,
             "errors": null,
-            "id": 4,
+            "id": 3,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "gtf compatible with the reference_genome. Mind the UCSC/Ensembl differences in chromosome naming",
-                    "name": "gtf"
+                    "description": "GTF compatible with the reference genome. Mind the UCSC/Ensembl differences in chromosome naming.",
+                    "name": "GTF file of annotation"
                 }
             ],
-            "label": "gtf",
+            "label": "GTF file of annotation",
             "name": "Input dataset",
             "outputs": [],
             "position": {
-                "left": 150.60003662109375,
-                "top": 606.751585620336
+                "left": 120,
+                "top": 740
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"tag\": \"\"}",
@@ -149,11 +129,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "5": {
+        "4": {
             "annotation": "For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence",
             "content_id": null,
             "errors": null,
-            "id": 5,
+            "id": 4,
             "input_connections": {},
             "inputs": [
                 {
@@ -165,8 +145,8 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 181.25,
-                "top": 667.118284839086
+                "left": 160,
+                "top": 830
             },
             "tool_id": null,
             "tool_state": "{\"restrictions\": [\"stranded - forward\", \"stranded - reverse\", \"unstranded\"], \"parameter_type\": \"text\", \"optional\": false}",
@@ -176,24 +156,24 @@
             "when": null,
             "workflow_outputs": []
         },
-        "6": {
-            "annotation": "Whether FPKM values should be computed with cufflinks",
+        "5": {
+            "annotation": "Whether FPKM values should be computed with Cufflinks",
             "content_id": null,
             "errors": null,
-            "id": 6,
+            "id": 5,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Whether FPKM values should be computed with cufflinks",
-                    "name": "cufflinks_FPKM"
+                    "description": "Whether FPKM values should be computed with Cufflinks",
+                    "name": "Compute Cufflinks FPKM?"
                 }
             ],
-            "label": "cufflinks_FPKM",
+            "label": "Compute Cufflinks FPKM?",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 202.6500244140625,
-                "top": 735.4800895070166
+                "left": 190,
+                "top": 920
             },
             "tool_id": null,
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false}",
@@ -203,24 +183,24 @@
             "when": null,
             "workflow_outputs": []
         },
-        "7": {
-            "annotation": "Could be a gtf with for example one entry for the chrM forward and one entry for the chrM reverse",
+        "6": {
+            "annotation": "It could be a GTF with for example one entry for the chrM forward and one entry for the chrM reverse",
             "content_id": null,
             "errors": null,
-            "id": 7,
+            "id": 6,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Could be a gtf with for example one entry for the chrM forward and one entry for the chrM reverse",
-                    "name": "gtf with regions to exclude from FPKM normalization with Cufflinks"
+                    "description": "It could be a GTF with for example one entry for the chrM forward and one entry for the chrM reverse",
+                    "name": "GTF with regions to exclude from FPKM normalization with Cufflinks"
                 }
             ],
-            "label": "gtf with regions to exclude from FPKM normalization with Cufflinks",
+            "label": "GTF with regions to exclude from FPKM normalization with Cufflinks",
             "name": "Input dataset",
             "outputs": [],
             "position": {
-                "left": 226.73333740234375,
-                "top": 809.5967887257666
+                "left": 210,
+                "top": 1020
             },
             "tool_id": null,
             "tool_state": "{\"optional\": true, \"tag\": \"\"}",
@@ -230,30 +210,57 @@
             "when": null,
             "workflow_outputs": []
         },
-        "8": {
+        "7": {
             "annotation": "Whether FPKM values should be computed with StringTie",
             "content_id": null,
             "errors": null,
-            "id": 8,
+            "id": 7,
             "input_connections": {},
             "inputs": [
                 {
                     "description": "Whether FPKM values should be computed with StringTie",
-                    "name": "stringtie_FPKM"
+                    "name": "Compute StringTie FPKM?"
                 }
             ],
-            "label": "stringtie_FPKM",
+            "label": "Compute StringTie FPKM?",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 270.88330078125,
-                "top": 926.4134391163916
+                "left": 230,
+                "top": 1140
             },
             "tool_id": null,
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
             "uuid": "47972cba-6df9-4883-8280-24ea28bcc4bb",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "Provide experimental and batch details. This is tabular containing all the sample names in the first column. There must be a column with primary factor/experimental information. There might be additional columns with one batch information each.",
+            "content_id": null,
+            "errors": null,
+            "id": 8,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Provide experimental and batch details. This is tabular containing all the sample names in the first column. There must be a column with primary factor/experimental information. There might be additional columns with one batch information each.",
+                    "name": "Sample table"
+                }
+            ],
+            "label": "Sample table",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 260,
+                "top": 1250
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "9b903f17-a37b-48d9-a214-bcdf393a7574",
             "when": null,
             "workflow_outputs": []
         },
@@ -265,14 +272,6 @@
             "input_connections": {
                 "library|input_1": {
                     "id": 0,
-                    "output_name": "output"
-                },
-                "library|r1|adapters_0|adapter_source|adapter": {
-                    "id": 1,
-                    "output_name": "output"
-                },
-                "library|r2|adapters2_0|adapter_source|adapter": {
-                    "id": 2,
                     "output_name": "output"
                 }
             },
@@ -295,8 +294,8 @@
                 }
             ],
             "position": {
-                "left": 527.61669921875,
-                "top": 200.13333129882812
+                "left": 430,
+                "top": 100
             },
             "post_job_actions": {
                 "HideDatasetActionout1": {
@@ -322,7 +321,7 @@
                 "owner": "lparsons",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"adapter_options\": {\"action\": \"trim\", \"error_rate\": \"0.1\", \"no_indels\": false, \"times\": \"1\", \"overlap\": \"3\", \"match_read_wildcards\": false, \"no_match_adapter_wildcards\": true, \"revcomp\": false}, \"filter_options\": {\"discard_trimmed\": false, \"discard_untrimmed\": false, \"minimum_length\": \"15\", \"minimum_length2\": null, \"maximum_length\": null, \"maximum_length2\": null, \"max_n\": null, \"max_expected_errors\": null, \"max_average_error_rate\": null, \"discard_casava\": false, \"pair_filter\": \"any\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 2, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"r1\": {\"adapters\": [{\"__index__\": 0, \"adapter_source\": {\"adapter_source_list\": \"user\", \"__current_case__\": 0, \"adapter_name\": \"Please use: For R1: - For Nextera: CTGTCTCTTATACACATCTCCGAGCCCACGAGAC - For TrueSeq: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC or AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC\", \"adapter\": {\"__class__\": \"ConnectedValue\"}}, \"single_noindels\": false}], \"front_adapters\": [], \"anywhere_adapters\": []}, \"r2\": {\"adapters2\": [{\"__index__\": 0, \"adapter_source\": {\"adapter_source_list\": \"user\", \"__current_case__\": 0, \"adapter_name\": \"Please use: For R2: - For Nextera: CTGTCTCTTATACACATCTGACGCTGCCGACGA - For TruSeq: GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT or AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT\", \"adapter\": {\"__class__\": \"ConnectedValue\"}}, \"single_noindels\": false}], \"front_adapters2\": [], \"anywhere_adapters2\": []}, \"pair_adapters\": false}, \"other_trimming_options\": {\"cut\": \"0\", \"cut2\": \"0\", \"quality_cutoff\": \"30\", \"quality_cutoff2\": \"\", \"nextseq_trim\": \"0\", \"trim_n\": false, \"poly_a\": false, \"shorten_options\": {\"shorten_values\": \"False\", \"__current_case__\": 1}, \"shorten_options_r2\": {\"shorten_values_r2\": \"False\", \"__current_case__\": 1}}, \"output_selector\": [\"report\"], \"read_mod_options\": {\"strip_suffix\": \"\", \"length_tag\": \"\", \"rename\": \"\", \"zero_cap\": false}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"adapter_options\": {\"action\": \"trim\", \"error_rate\": \"0.1\", \"no_indels\": false, \"times\": \"1\", \"overlap\": \"3\", \"match_read_wildcards\": false, \"no_match_adapter_wildcards\": true, \"revcomp\": false}, \"filter_options\": {\"discard_trimmed\": false, \"discard_untrimmed\": false, \"minimum_length\": \"15\", \"minimum_length2\": null, \"maximum_length\": null, \"maximum_length2\": null, \"max_n\": null, \"max_expected_errors\": null, \"max_average_error_rate\": null, \"discard_casava\": false, \"pair_filter\": \"any\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 2, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"r1\": {\"adapters\": [], \"front_adapters\": [], \"anywhere_adapters\": []}, \"r2\": {\"adapters2\": [], \"front_adapters2\": [], \"anywhere_adapters2\": []}, \"pair_adapters\": false}, \"other_trimming_options\": {\"cut\": \"0\", \"cut2\": \"0\", \"quality_cutoff\": \"30\", \"quality_cutoff2\": \"\", \"nextseq_trim\": \"0\", \"trim_n\": false, \"poly_a\": false, \"shorten_options\": {\"shorten_values\": \"False\", \"__current_case__\": 1}, \"shorten_options_r2\": {\"shorten_values_r2\": \"False\", \"__current_case__\": 1}}, \"output_selector\": [\"report\"], \"read_mod_options\": {\"strip_suffix\": \"\", \"length_tag\": \"\", \"rename\": \"\", \"zero_cap\": false}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_version": "4.9+galaxy1",
             "type": "tool",
             "uuid": "bb78142b-c185-40a6-b7c5-4fa9f6b3d314",
@@ -336,7 +335,7 @@
             "id": 10,
             "input_connections": {
                 "components_0|param_type|component_value": {
-                    "id": 3,
+                    "id": 2,
                     "output_name": "output"
                 }
             },
@@ -350,8 +349,8 @@
                 }
             ],
             "position": {
-                "left": 1004.0166015625,
-                "top": 1004.2468131398291
+                "left": 940,
+                "top": 1100
             },
             "post_job_actions": {
                 "HideDatasetActionout1": {
@@ -381,7 +380,7 @@
             "id": 11,
             "input_connections": {
                 "input_param_type|input_param": {
-                    "id": 5,
+                    "id": 4,
                     "output_name": "output"
                 }
             },
@@ -400,8 +399,8 @@
                 }
             ],
             "position": {
-                "left": 1221.5,
-                "top": 814.2634757374854
+                "left": 960,
+                "top": 920
             },
             "post_job_actions": {
                 "HideDatasetActionoutput_param_text": {
@@ -431,7 +430,7 @@
             "id": 12,
             "input_connections": {
                 "input_param_type|input_param": {
-                    "id": 5,
+                    "id": 4,
                     "output_name": "output"
                 }
             },
@@ -450,8 +449,8 @@
                 }
             ],
             "position": {
-                "left": 1035.4833984375,
-                "top": 1180.2257433107284
+                "left": 975.4833984375,
+                "top": 1330.2257433107284
             },
             "post_job_actions": {
                 "HideDatasetActionoutput_param_text": {
@@ -481,7 +480,7 @@
             "id": 13,
             "input_connections": {
                 "input_param_type|input_param": {
-                    "id": 5,
+                    "id": 4,
                     "output_name": "output"
                 }
             },
@@ -500,8 +499,8 @@
                 }
             ],
             "position": {
-                "left": 938.0522727953694,
-                "top": 1576.8436797276113
+                "left": 740,
+                "top": 1810
             },
             "post_job_actions": {
                 "HideDatasetActionoutput_param_text": {
@@ -526,16 +525,55 @@
         },
         "14": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11a+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1",
             "errors": null,
             "id": 14,
             "input_connections": {
+                "infile": {
+                    "id": 8,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Add group: to the tags",
+            "name": "Replace",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1740,
+                "top": 1060
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "86755160afbf",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"find_and_replace\": [{\"__index__\": 0, \"find_pattern\": \"(\\\\t)(?!group:)\", \"replace_pattern\": \"$1group:\", \"is_regex\": true, \"global\": true, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}], \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "9.3+galaxy1",
+            "type": "tool",
+            "uuid": "b73de223-a60a-46ab-944f-71378f03df16",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "15": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11a+galaxy1",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
                 "refGenomeSource|GTFconditional|genomeDir": {
-                    "id": 3,
+                    "id": 2,
                     "output_name": "output"
                 },
                 "refGenomeSource|GTFconditional|sjdbGTFfile": {
-                    "id": 4,
+                    "id": 3,
                     "output_name": "output"
                 },
                 "singlePaired|input": {
@@ -586,8 +624,8 @@
                 }
             ],
             "position": {
-                "left": 844.25,
-                "top": 335.9166717529297
+                "left": 800,
+                "top": 70
             },
             "post_job_actions": {
                 "HideDatasetActionsignal_unique_str1": {
@@ -614,6 +652,20 @@
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
                     "output_name": "splice_junctions"
+                },
+                "RenameDatasetActionmapped_reads": {
+                    "action_arguments": {
+                        "newname": "Mapped reads"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "mapped_reads"
+                },
+                "RenameDatasetActionreads_per_gene": {
+                    "action_arguments": {
+                        "newname": "Reads per gene from STAR"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "reads_per_gene"
                 }
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11a+galaxy1",
@@ -630,91 +682,14 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "mapped-reads",
+                    "label": "mapped_reads",
                     "output_name": "mapped_reads",
-                    "uuid": "9353ea66-8e9c-4771-901b-cf82dce0f925"
+                    "uuid": "3fac95d2-fb44-4f4b-b2cb-c4f2b5c0bb94"
                 },
                 {
-                    "label": "output_log",
-                    "output_name": "output_log",
-                    "uuid": "09738048-8469-448a-8706-3530e0632baa"
-                },
-                {
-                    "label": "reads_per_gene from STAR",
+                    "label": "reads_per_gene_from_STAR",
                     "output_name": "reads_per_gene",
-                    "uuid": "0006f49d-bf29-4aaf-bc0a-0e0bf575744e"
-                }
-            ]
-        },
-        "15": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0",
-            "errors": null,
-            "id": 15,
-            "input_connections": {
-                "results_0|software_cond|input": {
-                    "id": 9,
-                    "output_name": "report"
-                },
-                "results_1|software_cond|output_0|type|input": {
-                    "id": 14,
-                    "output_name": "output_log"
-                },
-                "results_1|software_cond|output_1|type|input": {
-                    "id": 14,
-                    "output_name": "reads_per_gene"
-                }
-            },
-            "inputs": [],
-            "label": "MultiQC",
-            "name": "MultiQC",
-            "outputs": [
-                {
-                    "name": "plots",
-                    "type": "input"
-                },
-                {
-                    "name": "html_report",
-                    "type": "html"
-                },
-                {
-                    "name": "stats",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 1220.211542597603,
-                "top": 0
-            },
-            "post_job_actions": {
-                "HideDatasetActionplots": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "plots"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "f7e2f1eb3a16",
-                "name": "multiqc",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"comment\": \"\", \"export\": true, \"flat\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"cutadapt\", \"__current_case__\": 5, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"software_cond\": {\"software\": \"star\", \"__current_case__\": 28, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"log\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"type\": {\"type\": \"genecounts\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}}]}}], \"saveLog\": \"false\", \"title\": \"\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "1.24.1+galaxy0",
-            "type": "tool",
-            "uuid": "da516e4c-e074-4930-a6f8-a68d9844d386",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "MultiQC webpage",
-                    "output_name": "html_report",
-                    "uuid": "43c889aa-0bfa-48e8-b204-a557a918549c"
-                },
-                {
-                    "label": "MultiQC on input dataset(s): Stats",
-                    "output_name": "stats",
-                    "uuid": "27607c05-cf81-4795-a3e7-0dab33f41552"
+                    "uuid": "2a6eea11-e562-4b77-ae43-96b38719cb4b"
                 }
             ]
         },
@@ -723,12 +698,12 @@
             "id": 16,
             "input_connections": {
                 "STAR BAM": {
-                    "id": 14,
+                    "id": 15,
                     "input_subworkflow_step_id": 0,
                     "output_name": "mapped_reads"
                 },
                 "STAR log": {
-                    "id": 14,
+                    "id": 15,
                     "input_subworkflow_step_id": 1,
                     "output_name": "output_log"
                 }
@@ -738,8 +713,8 @@
             "name": "Get Uniquely mapped unstranded coverage",
             "outputs": [],
             "position": {
-                "left": 1159,
-                "top": 420
+                "left": 1370,
+                "top": 0
             },
             "subworkflow": {
                 "a_galaxy_workflow": "true",
@@ -1074,17 +1049,17 @@
             "id": 17,
             "input_connections": {
                 "Bedgraph strand 1": {
-                    "id": 14,
+                    "id": 15,
                     "input_subworkflow_step_id": 1,
                     "output_name": "signal_unique_str1"
                 },
                 "Bedgraph strand 2": {
-                    "id": 14,
+                    "id": 15,
                     "input_subworkflow_step_id": 2,
                     "output_name": "signal_unique_str2"
                 },
                 "strandedness": {
-                    "id": 5,
+                    "id": 4,
                     "input_subworkflow_step_id": 0,
                     "output_name": "output"
                 }
@@ -1094,8 +1069,8 @@
             "name": "Re-arrange Stranded RNA-seq coverage",
             "outputs": [],
             "position": {
-                "left": 1169,
-                "top": 591
+                "left": 1360,
+                "top": 650
             },
             "subworkflow": {
                 "a_galaxy_workflow": "true",
@@ -1650,16 +1625,701 @@
         },
         "18": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1",
             "errors": null,
             "id": 18,
+            "input_connections": {
+                "code": {
+                    "id": 11,
+                    "output_name": "output_param_text"
+                },
+                "infile": {
+                    "id": 15,
+                    "output_name": "reads_per_gene"
+                }
+            },
+            "inputs": [],
+            "label": "Extract gene counts",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1360,
+                "top": 900
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutfile": {
+                    "action_arguments": {
+                        "newname": "HTS count like output"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "86755160afbf",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": {\"__class__\": \"ConnectedValue\"}, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "9.3+galaxy1",
+            "type": "tool",
+            "uuid": "34922bd3-4676-4f7d-8e05-af0ef0c1efa4",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "HTS count like output",
+                    "output_name": "outfile",
+                    "uuid": "45b51c7f-57ca-45d4-8460-30ead2bda023"
+                }
+            ]
+        },
+        "19": {
+            "annotation": "",
+            "id": 19,
+            "input_connections": {
+                "Cutadapt Reports": {
+                    "id": 9,
+                    "input_subworkflow_step_id": 1,
+                    "output_name": "report"
+                },
+                "Paired-end FASTQ collection": {
+                    "id": 15,
+                    "input_subworkflow_step_id": 0,
+                    "output_name": "mapped_reads"
+                },
+                "STAR logs": {
+                    "id": 15,
+                    "input_subworkflow_step_id": 2,
+                    "output_name": "output_log"
+                },
+                "STAR paired-end BAM": {
+                    "id": 15,
+                    "input_subworkflow_step_id": 4,
+                    "output_name": "mapped_reads"
+                },
+                "reference_annotation_gtf": {
+                    "id": 3,
+                    "input_subworkflow_step_id": 3,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "RNA-seq-Paired-QC",
+            "outputs": [],
+            "position": {
+                "left": 1700,
+                "top": 290
+            },
+            "subworkflow": {
+                "a_galaxy_workflow": "true",
+                "annotation": "",
+                "comments": [],
+                "creator": [
+                    {
+                        "class": "Person",
+                        "identifier": "https://orcid.org/0000-0002-5192-126X",
+                        "name": "Pavankumar Videm"
+                    }
+                ],
+                "format-version": "0.1",
+                "license": "MIT",
+                "name": "RNA-seq-Paired-QC",
+                "report": {
+                    "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+                },
+                "steps": {
+                    "0": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 0,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "",
+                                "name": "Paired-end FASTQ collection"
+                            }
+                        ],
+                        "label": "Paired-end FASTQ collection",
+                        "name": "Input dataset collection",
+                        "outputs": [],
+                        "position": {
+                            "left": 1.755206136522247e-05,
+                            "top": 16
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\"}",
+                        "tool_version": null,
+                        "type": "data_collection_input",
+                        "uuid": "1bb12b7e-2ee1-4d8a-80d6-4259bea1efae",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "1": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 1,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "",
+                                "name": "Cutadapt Reports"
+                            }
+                        ],
+                        "label": "Cutadapt Reports",
+                        "name": "Input dataset collection",
+                        "outputs": [],
+                        "position": {
+                            "left": 560.0000871280138,
+                            "top": 334
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\"}",
+                        "tool_version": null,
+                        "type": "data_collection_input",
+                        "uuid": "43c69a53-b1dc-4089-9801-18e980088a2e",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "2": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 2,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "",
+                                "name": "STAR logs"
+                            }
+                        ],
+                        "label": "STAR logs",
+                        "name": "Input dataset collection",
+                        "outputs": [],
+                        "position": {
+                            "left": 560.0000871280138,
+                            "top": 457
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\"}",
+                        "tool_version": null,
+                        "type": "data_collection_input",
+                        "uuid": "5ae91949-4ffe-4aef-81fa-fa3cb4e86f5a",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "3": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 3,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "",
+                                "name": "reference_annotation_gtf"
+                            }
+                        ],
+                        "label": "reference_annotation_gtf",
+                        "name": "Input dataset",
+                        "outputs": [],
+                        "position": {
+                            "left": 1.755206136522247e-05,
+                            "top": 775
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"tag\": null}",
+                        "tool_version": null,
+                        "type": "data_input",
+                        "uuid": "9657bd5f-5510-412b-9128-0bb903e2f572",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "4": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 4,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "",
+                                "name": "STAR paired-end BAM"
+                            }
+                        ],
+                        "label": "STAR paired-end BAM",
+                        "name": "Input dataset collection",
+                        "outputs": [],
+                        "position": {
+                            "left": 0,
+                            "top": 923
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\"}",
+                        "tool_version": null,
+                        "type": "data_collection_input",
+                        "uuid": "b3a7345d-49fa-4b34-bd56-565f250f6d97",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "5": {
+                        "annotation": "",
+                        "content_id": "__FLATTEN__",
+                        "errors": null,
+                        "id": 5,
+                        "input_connections": {
+                            "input": {
+                                "id": 0,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Flatten paired collection for FastQC",
+                        "name": "Flatten collection",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 280.00001723591487,
+                            "top": 0
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__FLATTEN__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "1.0.0",
+                        "type": "tool",
+                        "uuid": "55248052-3b65-4d8a-bca5-61fc561cd1e1",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "6": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gtftobed12/gtftobed12/357",
+                        "errors": null,
+                        "id": 6,
+                        "input_connections": {
+                            "gtf_file": {
+                                "id": 3,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "convert gtf to bed12",
+                        "name": "Convert GTF to BED12",
+                        "outputs": [
+                            {
+                                "name": "bed_file",
+                                "type": "bed12"
+                            }
+                        ],
+                        "position": {
+                            "left": 279.9999996838535,
+                            "top": 759
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/gtftobed12/gtftobed12/357",
+                        "tool_shed_repository": {
+                            "changeset_revision": "b026dae67fba",
+                            "name": "gtftobed12",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"advanced_options\": {\"advanced_options_selector\": \"default\", \"__current_case__\": 0}, \"gtf_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "357",
+                        "type": "tool",
+                        "uuid": "ed8685b7-7904-4f28-8ea9-2faffb05bacf",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "7": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3",
+                        "errors": null,
+                        "id": 7,
+                        "input_connections": {
+                            "input": {
+                                "id": 4,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Subsample 200k reads",
+                        "name": "Samtools view",
+                        "outputs": [
+                            {
+                                "name": "outputsam",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 280.00001723591487,
+                            "top": 913
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3",
+                        "tool_shed_repository": {
+                            "changeset_revision": "32dc5f781059",
+                            "name": "samtools_view",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mode\": {\"outtype\": \"selected_reads\", \"__current_case__\": 1, \"filter_config\": {\"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cond_rg\": {\"select_rg\": \"no\", \"__current_case__\": 0}, \"cond_expr\": {\"select_expr\": \"no\", \"__current_case__\": 0}, \"quality\": null, \"library\": \"\", \"cigarcons\": null, \"inclusive_filter\": null, \"exclusive_filter\": null, \"exclusive_filter_all\": null, \"tag\": \"\", \"qname_file\": {\"__class__\": \"RuntimeValue\"}}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"target\", \"__current_case__\": 1, \"target\": \"200000\", \"seed\": \"1\"}}, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"complementary_output\": false, \"adv_output\": {\"readtags\": [], \"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "1.20+galaxy3",
+                        "type": "tool",
+                        "uuid": "fa918b19-c767-43dd-afb6-fcdb3cd20fa7",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "8": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0.5",
+                        "errors": null,
+                        "id": 8,
+                        "input_connections": {
+                            "input": {
+                                "id": 4,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Get reads number per chromosome",
+                        "name": "Samtools idxstats",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "tabular"
+                            }
+                        ],
+                        "position": {
+                            "left": 280.00001723591487,
+                            "top": 1118
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/2.0.5",
+                        "tool_shed_repository": {
+                            "changeset_revision": "fa5d3e61e429",
+                            "name": "samtools_idxstats",
+                            "owner": "devteam",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "2.0.5",
+                        "type": "tool",
+                        "uuid": "0c0789f8-21d9-4fdc-80c6-488aded24611",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "9": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/3.1.1.0",
+                        "errors": null,
+                        "id": 9,
+                        "input_connections": {
+                            "inputFile": {
+                                "id": 4,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Remove duplicates",
+                        "name": "MarkDuplicates",
+                        "outputs": [
+                            {
+                                "name": "metrics_file",
+                                "type": "txt"
+                            },
+                            {
+                                "name": "outFile",
+                                "type": "bam"
+                            }
+                        ],
+                        "position": {
+                            "left": 280.00001723591487,
+                            "top": 1272
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/3.1.1.0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "3f254c5ced1d",
+                            "name": "picard",
+                            "owner": "devteam",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"assume_sorted\": true, \"barcode_tag\": \"\", \"comments\": [], \"duplicate_scoring_strategy\": \"SUM_OF_BASE_QUALITIES\", \"inputFile\": {\"__class__\": \"ConnectedValue\"}, \"optical_duplicate_pixel_distance\": \"100\", \"read_name_regex\": \"\", \"remove_duplicates\": false, \"validation_stringency\": \"LENIENT\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "3.1.1.0",
+                        "type": "tool",
+                        "uuid": "c8d04f50-da21-4f5b-9d64-2dc652b71d77",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "10": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/0.74+galaxy1",
+                        "errors": null,
+                        "id": 10,
+                        "input_connections": {
+                            "input_file": {
+                                "id": 5,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool FastQC",
+                                "name": "adapters"
+                            },
+                            {
+                                "description": "runtime parameter for tool FastQC",
+                                "name": "contaminants"
+                            },
+                            {
+                                "description": "runtime parameter for tool FastQC",
+                                "name": "limits"
+                            }
+                        ],
+                        "label": "FastQC check read qualities",
+                        "name": "FastQC",
+                        "outputs": [
+                            {
+                                "name": "html_file",
+                                "type": "html"
+                            },
+                            {
+                                "name": "text_file",
+                                "type": "txt"
+                            }
+                        ],
+                        "position": {
+                            "left": 560.000052023891,
+                            "top": 18
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/0.74+galaxy1",
+                        "tool_shed_repository": {
+                            "changeset_revision": "2c64fded1286",
+                            "name": "fastqc",
+                            "owner": "devteam",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"adapters\": {\"__class__\": \"RuntimeValue\"}, \"contaminants\": {\"__class__\": \"RuntimeValue\"}, \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"kmers\": \"7\", \"limits\": {\"__class__\": \"RuntimeValue\"}, \"min_length\": null, \"nogroup\": false, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "0.74+galaxy1",
+                        "type": "tool",
+                        "uuid": "d4f16966-836e-49cd-8987-18b6e68205b8",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "11": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_read_distribution/5.0.3+galaxy0",
+                        "errors": null,
+                        "id": 11,
+                        "input_connections": {
+                            "input": {
+                                "id": 4,
+                                "output_name": "output"
+                            },
+                            "refgene": {
+                                "id": 6,
+                                "output_name": "bed_file"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Read distribution over genomic features",
+                        "name": "Read Distribution",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "txt"
+                            }
+                        ],
+                        "position": {
+                            "left": 550,
+                            "top": 650
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_read_distribution/5.0.3+galaxy0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "27e16a30667a",
+                            "name": "rseqc",
+                            "owner": "nilesh",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"refgene\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "5.0.3+galaxy0",
+                        "type": "tool",
+                        "uuid": "4ecf1a7a-8648-4224-9c04-ab5d33614d63",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "12": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy0",
+                        "errors": null,
+                        "id": 12,
+                        "input_connections": {
+                            "batch_mode|input": {
+                                "id": 7,
+                                "output_name": "outputsam"
+                            },
+                            "refgene": {
+                                "id": 6,
+                                "output_name": "bed_file"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Gene Body Coverage (BAM)",
+                                "name": "batch_mode"
+                            }
+                        ],
+                        "label": "Get gene body coverage",
+                        "name": "Gene Body Coverage (BAM)",
+                        "outputs": [
+                            {
+                                "name": "outputcurvespdf",
+                                "type": "pdf"
+                            },
+                            {
+                                "name": "outputtxt",
+                                "type": "txt"
+                            }
+                        ],
+                        "position": {
+                            "left": 550,
+                            "top": 860
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "27e16a30667a",
+                            "name": "rseqc",
+                            "owner": "nilesh",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"batch_mode\": {\"batch_mode_selector\": \"batch\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"minimum_length\": \"100\", \"refgene\": {\"__class__\": \"ConnectedValue\"}, \"rscript_output\": false, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "5.0.3+galaxy0",
+                        "type": "tool",
+                        "uuid": "c996512e-789b-422c-833c-de854e30674f",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "13": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0",
+                        "errors": null,
+                        "id": 13,
+                        "input_connections": {
+                            "results_0|software_cond|output_0|input": {
+                                "id": 10,
+                                "output_name": "text_file"
+                            },
+                            "results_1|software_cond|input": {
+                                "id": 1,
+                                "output_name": "output"
+                            },
+                            "results_2|software_cond|output_0|type|input": {
+                                "id": 2,
+                                "output_name": "output"
+                            },
+                            "results_3|software_cond|output_0|type|input": {
+                                "id": 11,
+                                "output_name": "output"
+                            },
+                            "results_4|software_cond|output_0|input": {
+                                "id": 9,
+                                "output_name": "metrics_file"
+                            },
+                            "results_5|software_cond|output_0|type|input": {
+                                "id": 12,
+                                "output_name": "outputtxt"
+                            },
+                            "results_6|software_cond|output_0|type|input": {
+                                "id": 8,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Combined Quality Report",
+                        "name": "MultiQC",
+                        "outputs": [
+                            {
+                                "name": "html_report",
+                                "type": "html"
+                            },
+                            {
+                                "name": "stats",
+                                "type": "tabular"
+                            }
+                        ],
+                        "position": {
+                            "left": 870.000069259806,
+                            "top": 420
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "f7e2f1eb3a16",
+                            "name": "multiqc",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"fastqc\", \"__current_case__\": 8, \"output\": [{\"__index__\": 0, \"type\": \"data\", \"input\": {\"__class__\": \"RuntimeValue\"}}]}}, {\"__index__\": 1, \"software_cond\": {\"software\": \"cutadapt\", \"__current_case__\": 5, \"input\": {\"__class__\": \"RuntimeValue\"}}}, {\"__index__\": 2, \"software_cond\": {\"software\": \"star\", \"__current_case__\": 28, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"log\", \"__current_case__\": 0, \"input\": {\"__class__\": \"RuntimeValue\"}}}]}}, {\"__index__\": 3, \"software_cond\": {\"software\": \"rseqc\", \"__current_case__\": 22, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"read_distribution\", \"__current_case__\": 6, \"input\": {\"__class__\": \"RuntimeValue\"}}}]}}, {\"__index__\": 4, \"software_cond\": {\"software\": \"picard\", \"__current_case__\": 17, \"output\": [{\"__index__\": 0, \"type\": \"markdups\", \"input\": {\"__class__\": \"RuntimeValue\"}}]}}, {\"__index__\": 5, \"software_cond\": {\"software\": \"rseqc\", \"__current_case__\": 22, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"gene_body_coverage\", \"__current_case__\": 1, \"input\": {\"__class__\": \"RuntimeValue\"}}}]}}, {\"__index__\": 6, \"software_cond\": {\"software\": \"samtools\", \"__current_case__\": 24, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"idxstats\", \"__current_case__\": 2, \"input\": {\"__class__\": \"RuntimeValue\"}}}]}}], \"title\": \"Combined Quality Report \", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "1.24.1+galaxy0",
+                        "type": "tool",
+                        "uuid": "b5e9c0d2-62f4-41b2-a1c7-5677d8555fd4",
+                        "when": null,
+                        "workflow_outputs": [
+                            {
+                                "label": "html_report",
+                                "output_name": "html_report",
+                                "uuid": "fc0a8ca4-556e-4889-aac0-dba7934a3e75"
+                            }
+                        ]
+                    }
+                },
+                "tags": [],
+                "uuid": "5cba6b7d-fcb0-4f2f-a660-4b4484706a2a"
+            },
+            "tool_id": null,
+            "type": "subworkflow",
+            "uuid": "b494df58-fef4-48a2-a773-8f18fef07f4f",
+            "when": "$(inputs.when)",
+            "workflow_outputs": [
+                {
+                    "label": "qc_html_report",
+                    "output_name": "html_report",
+                    "uuid": "2c18a720-6327-4538-b2a8-cdd19594ee9a"
+                }
+            ]
+        },
+        "20": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.3",
+            "errors": null,
+            "id": 20,
             "input_connections": {
                 "advanced_settings|library_type": {
                     "id": 12,
                     "output_name": "output_param_text"
                 },
                 "advanced_settings|mask_file": {
-                    "id": 7,
+                    "id": 6,
                     "output_name": "output"
                 },
                 "bias_correction|seq_source|index": {
@@ -1667,15 +2327,15 @@
                     "output_name": "out1"
                 },
                 "input": {
-                    "id": 14,
+                    "id": 15,
                     "output_name": "mapped_reads"
                 },
                 "reference_annotation|reference_annotation_file": {
-                    "id": 4,
+                    "id": 3,
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 6,
+                    "id": 5,
                     "output_name": "output"
                 }
             },
@@ -1718,8 +2378,8 @@
                 }
             ],
             "position": {
-                "left": 1291.433349609375,
-                "top": 1002.5131353932526
+                "left": 1400,
+                "top": 1160
             },
             "post_job_actions": {
                 "HideDatasetActionassembled_isoforms": {
@@ -1763,75 +2423,18 @@
                 }
             ]
         },
-        "19": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1",
-            "errors": null,
-            "id": 19,
-            "input_connections": {
-                "code": {
-                    "id": 11,
-                    "output_name": "output_param_text"
-                },
-                "infile": {
-                    "id": 14,
-                    "output_name": "reads_per_gene"
-                }
-            },
-            "inputs": [],
-            "label": "Extract gene counts",
-            "name": "Text reformatting",
-            "outputs": [
-                {
-                    "name": "outfile",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1463.3449044140093,
-                "top": 809.4166412353516
-            },
-            "post_job_actions": {
-                "RenameDatasetActionoutfile": {
-                    "action_arguments": {
-                        "newname": "HTS count like output"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "outfile"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1",
-            "tool_shed_repository": {
-                "changeset_revision": "86755160afbf",
-                "name": "text_processing",
-                "owner": "bgruening",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"code\": {\"__class__\": \"ConnectedValue\"}, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "9.3+galaxy1",
-            "type": "tool",
-            "uuid": "34922bd3-4676-4f7d-8e05-af0ef0c1efa4",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "HTS count like output",
-                    "output_name": "outfile",
-                    "uuid": "45b51c7f-57ca-45d4-8460-30ead2bda023"
-                }
-            ]
-        },
-        "20": {
+        "21": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/2.2.3+galaxy0",
             "errors": null,
-            "id": 20,
+            "id": 21,
             "input_connections": {
                 "guide|guide_source|ref_hist": {
-                    "id": 4,
+                    "id": 3,
                     "output_name": "output"
                 },
                 "input_options|input_bam": {
-                    "id": 14,
+                    "id": 15,
                     "output_name": "mapped_reads"
                 },
                 "rna_strandness": {
@@ -1839,7 +2442,7 @@
                     "output_name": "output_param_text"
                 },
                 "when": {
-                    "id": 8,
+                    "id": 7,
                     "output_name": "output"
                 }
             },
@@ -1866,8 +2469,8 @@
                 }
             ],
             "position": {
-                "left": 1249.9188687452759,
-                "top": 1561.7042971930236
+                "left": 1400,
+                "top": 1740
             },
             "post_job_actions": {
                 "HideDatasetActionoutput_gtf": {
@@ -1895,11 +2498,111 @@
                     "uuid": "fc2a77c2-1868-46c0-ad76-648484d764a2"
                 }
             ]
+        },
+        "22": {
+            "annotation": "",
+            "content_id": "__TAG_FROM_FILE__",
+            "errors": null,
+            "id": 22,
+            "input_connections": {
+                "input": {
+                    "id": 18,
+                    "output_name": "outfile"
+                },
+                "tags": {
+                    "id": 14,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Tag elements",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2020,
+                "top": 910
+            },
+            "post_job_actions": {},
+            "tool_id": "__TAG_FROM_FILE__",
+            "tool_state": "{\"how\": \"add\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"tags\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "d145af57-9b56-4927-8bee-3cf672caa2f9",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "23": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy0",
+            "errors": null,
+            "id": 23,
+            "input_connections": {
+                "select_data|countsFile": {
+                    "id": 22,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool DESeq2",
+                    "name": "batch_factors"
+                },
+                {
+                    "description": "runtime parameter for tool DESeq2",
+                    "name": "select_data"
+                }
+            ],
+            "label": "Differential expression analysis using DESeq2",
+            "name": "DESeq2",
+            "outputs": [
+                {
+                    "name": "deseq_out",
+                    "type": "tabular"
+                },
+                {
+                    "name": "plots",
+                    "type": "pdf"
+                }
+            ],
+            "position": {
+                "left": 2390,
+                "top": 880
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "9a882d108833",
+                "name": "deseq2",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"advanced_options\": {\"esf_cond\": {\"esf\": \"\", \"__current_case__\": 0}, \"fit_type\": \"1\", \"outlier_replace_off\": false, \"outlier_filter_off\": false, \"auto_mean_filter_off\": false, \"prefilter_conditional\": {\"prefilter\": \"\", \"__current_case__\": 1}, \"use_beta_priors\": false}, \"batch_factors\": {\"__class__\": \"RuntimeValue\"}, \"header\": true, \"output_options\": {\"output_selector\": \"pdf\", \"alpha_ma\": \"0.1\"}, \"select_data\": {\"how\": \"group_tags\", \"__current_case__\": 0, \"countsFile\": {\"__class__\": \"ConnectedValue\"}, \"rep_factorName\": [{\"__index__\": 0, \"factorName\": {\"__class__\": \"RuntimeValue\"}, \"rep_factorLevel\": [{\"__index__\": 0, \"factorLevel\": {\"__class__\": \"RuntimeValue\"}, \"groups\": {\"__class__\": \"RuntimeValue\"}}, {\"__index__\": 1, \"factorLevel\": {\"__class__\": \"RuntimeValue\"}, \"groups\": {\"__class__\": \"RuntimeValue\"}}]}]}, \"tximport\": {\"tximport_selector\": \"count\", \"__current_case__\": 1}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.11.40.8+galaxy0",
+            "type": "tool",
+            "uuid": "61638ee7-d466-4b4b-988e-40f898041033",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "plots",
+                    "output_name": "plots",
+                    "uuid": "ac6ab034-3197-4200-ad4c-e859a407247c"
+                },
+                {
+                    "label": "deseq_out",
+                    "output_name": "deseq_out",
+                    "uuid": "ba5bd61d-42df-41c1-9424-ece543807248"
+                }
+            ]
         }
     },
     "tags": [
         "RNAseq"
     ],
-    "uuid": "242ed0e9-f1fc-4eb0-af99-8328211f5998",
-    "version": 1
+    "uuid": "d1fa2d32-0436-448c-85e6-3087de674917",
+    "version": 10
 }
