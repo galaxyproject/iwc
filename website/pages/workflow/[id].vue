@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { type Workflow, type WorkflowCollection } from "~/models/workflow";
 import { workflowCollections } from "~/models/workflow";
@@ -41,10 +41,10 @@ const links = [
     },
 ];
 
-function launchUrl(workflow: Workflow) {
-    // https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=%23workflow/github.com/iwc-workflows/hic-hicup-cooler/hic-fastq-to-cool-hicup-cooler
-    return `https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.trsID)}&trs_version=v${workflow.definition.release}&run_form=true`;
-}
+const launchUrl = computed(() => {
+    if (!workflow.value) return "";
+    return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.value.trsID)}&trs_version=v${workflow.value.definition.release}&run_form=true`;
+});
 
 const tools = computed(() => {
     if (!workflow.value || !workflow.value.definition || !workflow.value.definition.steps) {
@@ -74,6 +74,28 @@ const tabs = computed(() => [
         preview: true,
     },
 ]);
+
+/* Instance SElector -- factor out to a component */
+const selectedInstance = ref("");
+const instances = reactive([
+    { value: "http://usegalaxy.org", label: "usegalaxy.org" },
+    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
+    { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
+]);
+
+onBeforeMount(() => {
+    // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
+    const savedInstance = localStorage.getItem("selectedInstance");
+    if (savedInstance) {
+        selectedInstance.value = savedInstance;
+    } else {
+        selectedInstance.value = instances[0].value;
+    }
+});
+
+const onInstanceChange = (value: string) => {
+    localStorage.setItem("selectedInstance", value);
+};
 </script>
 
 <template>
@@ -95,14 +117,20 @@ const tabs = computed(() => [
                     <li><strong>License:</strong> {{ workflow.definition.license }}</li>
                     <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
                 </ul>
-                <UButton
-                    class="mt-4"
-                    :to="launchUrl(workflow)"
-                    target="_blank"
-                    icon="i-heroicons-rocket-launch"
-                    color="primary"
-                    variant="solid"
-                    label="Use this workflow" />
+                <UButtonGroup class="mt-4" size="sm" orientation="horizontal">
+                    <UButton
+                        :to="launchUrl"
+                        target="_blank"
+                        icon="i-heroicons-rocket-launch"
+                        color="primary"
+                        variant="solid"
+                        label="Launch at" />
+                    <USelect
+                        v-model="selectedInstance"
+                        :options="instances"
+                        label="Select Galaxy Instance"
+                        @change="onInstanceChange" />
+                </UButtonGroup>
             </div>
         </div>
 
