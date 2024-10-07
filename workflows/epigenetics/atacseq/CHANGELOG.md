@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.18] 2024-10-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/pe_histogram/pe_histogram/1.0.1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pe_histogram/pe_histogram/1.0.2`
+
 ## [0.17] 2024-09-23
 
 ### Automatic update
