@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10] 2024-10-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.4`
+
 ## [0.9] 2024-09-23
 
 ### Automatic update
