@@ -11,6 +11,7 @@ export interface Workflow {
     publish: boolean;
     primaryDescriptorPath: string;
     testParameterFiles: string[];
+    tests: any[]; // replace with actual interface from openapi schema
     authors: Author[];
     definition: WorkflowDefinition;
     readme: string;

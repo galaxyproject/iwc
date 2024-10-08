@@ -82,6 +82,14 @@ def find_and_load_compliant_workflows(directory):
                     dirname = os.path.dirname(workflow_path).split("/")[-1]
                     workflow["trsID"] = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
 
+                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    if os.path.exists(workflow_test_path):
+                        with open(workflow_test_path) as f:
+                            tests = yaml.safe_load(f)
+                        workflow["tests"] = tests
+                    else:
+                        print(f"no test for {workflow_test_path}")
+
             except Exception as e:
                 print(f"Error reading file {os.path.join(root, '.dockstore.yml')}: {e}")
 

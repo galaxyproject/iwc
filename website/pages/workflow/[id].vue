@@ -46,6 +46,33 @@ const launchUrl = computed(() => {
     return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.value.trsID)}&trs_version=v${workflow.value.definition.release}&run_form=true`;
 });
 
+function testToRequestState() {
+    const tests = workflow.value?.tests
+    if (tests && tests.length) {
+        return tests[0].job;
+    }
+}
+
+async function createLandingPage() {
+    const job = testToRequestState()
+    console.log(job);
+    console.log("creating landing page");
+    const response = await fetch("http://localhost:8081/api/workflow_landings", {
+        headers: {"Content-Type": "application/json"},
+        method: "POST",
+        body: JSON.stringify({
+            workflow_id: workflow.value?.trsID,
+            workflow_target_type: "trs_id",
+            trs_version: workflow.value?.definition.release,
+            request_state: job
+        })
+    })
+    const json = await response.json();
+    const landingPage =  `http://localhost:8080/workflow_landings/${json['uuid']}`;
+    console.log("Landing page url:", landingPage);
+    // window.open(landingPage, "_blank");
+}
+
 const tools = computed(() => {
     if (!workflow.value || !workflow.value.definition || !workflow.value.definition.steps) {
         return [];
@@ -78,6 +105,7 @@ const tabs = computed(() => [
 /* Instance SElector -- factor out to a component */
 const selectedInstance = ref("");
 const instances = reactive([
+    { value: "http://localhost:8081", label: "local dev instance"},
     { value: "http://usegalaxy.org", label: "usegalaxy.org" },
     { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
@@ -118,6 +146,11 @@ const onInstanceChange = (value: string) => {
                     <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
                 </ul>
                 <UButtonGroup class="mt-4" size="sm" orientation="horizontal">
+                    <USelect
+                        v-model="selectedInstance"
+                        :options="instances"
+                        label="Select Galaxy Instance"
+                        @change="onInstanceChange" />
                     <UButton
                         :to="launchUrl"
                         target="_blank"
@@ -125,11 +158,14 @@ const onInstanceChange = (value: string) => {
                         color="primary"
                         variant="solid"
                         label="Launch at" />
-                    <USelect
-                        v-model="selectedInstance"
-                        :options="instances"
-                        label="Select Galaxy Instance"
-                        @change="onInstanceChange" />
+                    <UButton
+                    class="mt-4"
+                    @click="createLandingPage"
+                    target="_blank"
+                    icon="i-heroicons-rocket-launch"
+                    color="primary"
+                    variant="solid"
+                    label="Run with example data" />
                 </UButtonGroup>
             </div>
         </div>
