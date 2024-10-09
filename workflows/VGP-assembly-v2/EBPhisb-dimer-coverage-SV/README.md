@@ -1,27 +1,40 @@
-## Purpose
-Workflow to prepare a custom JBrowse2 interactive browser from VGP sized assemblies and data.
+## Creates a custom JBrowse2 interactive browser from VGP scale assemblies and data.
 
-Inputs:
+#### Inputs required:
 
-Two haplotype assembly fasta
-PacBio reads as fastqsanger
-Optional external annotation fasta such as NCBI by taxon ID if available
-Optional closely related species reference or assembly haplotype fasta for sequence similarity mapping
+- Two haplotype assembly fasta
+- PacBio reads as fastqsanger
 
-Outputs:
+#### Output tracks:
 
-20 browser tracks and a combined reference fasta to allow tracks from both haplotypes to be viewed together.
-Each haplotype has an independently derived
- - Telomere bed
- - Gaps bed
- - Repeats GFF or bigwig
- - Structural Variants as VCF from Sniffles
+A combined reference fasta from both haplotypes, allows 25 tracks to be viewed together.
+### For each haplotype
 
-Haplotype sequence similarity is displayed as "sequence synteny" tracks using Mashmap PAF for a range of
-settings for minimum match lengths and minimum percentage identity. 
-Mashmap is run on optional closely related species sequences if provided, for additional PAF tracks.
-JBrowse allows dotplots to be easily created and explored for visually comparing PAF tracks by contig. 
+#### Dimer density as bigwig 
 
+- AT
+- GC
+- GA
+- TC
 
+#### Map 1 coverage and fold changeH2, H1 SV, solo coverage and fold
 
+- map1
+- fold
+- SV.vcf
 
+#### Dimer density outlier bed tracks 
+
+-AT
+-GC
+-GA
+-TC
+
+A separate browser window provides 4 tracks on a combined reference with suffixed (H1 or H2) contig names
+
+#### Dimer density fold change h2/h1
+
+-H2vsH1ATfold
+-H2vsH1GCfold
+-H2vsH1GAfold
+-H2vsH1TCfold
