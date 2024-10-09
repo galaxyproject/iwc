@@ -1,0 +1,79 @@
+- doc: Test outline for Standard-scRNA-seq-with-Scanpy
+  job:
+    Workflow Params:
+      class: File
+      location: test-data/Workflow Params.tabular
+      filetype: tabular
+    Barcodes:
+      class: File
+      location: https://zenodo.org/record/3581213/files/barcodes.tsv
+      filetype: txt
+    Genes:
+      class: File
+      location: https://zenodo.org/record/3581213/files/genes.tsv
+      filetype: tabular
+    Matrix:
+      class: File
+      location: https://zenodo.org/record/3581213/files/matrix.mtx
+      filetype: mtx
+    Input is from Cell Ranger v2 or earlier versions: true
+    Manually annotate celltypes?: true
+    Annotate louvain clusters with these cell types: CD4+ T, CD14+, B, CD8+ T, FCGR3A+, NK, Dendritic, Megakaryocytes
+  outputs:
+    initial_anndata_general_info:
+      asserts:
+        has_text:
+            text: "AnnData object with n_obs × n_vars = 2700 × 32738"
+    anndata_with_raw:
+      asserts:
+        has_h5_keys:
+            keys: "obs/log1p_total_counts"
+            keys: "obs/total_counts_mito"
+            keys: "var/mito"
+            keys: "uns/rank_genes_groups"
+    uns_rank_genes_groups_names_wilcoxon_test:
+      asserts:
+        has_line:
+            line: "LDHB	LYZ	CD74	CCL5	LST1	NKG7	HLA-DPA1	PF4"
+    anndata_out:
+      asserts:
+        has_h5_keys:
+            keys: "obs/louvain"
+            keys: "var/highly_variable"
+            keys: "uns/rank_genes_groups"
+    cells_per_cluster:
+      asserts:
+        has_line:
+            line: "0	1162"
+            line: "3	311"
+            line: "6	34"
+    pl_scatter_total_counts_vs_n_genes_by_counts:
+      path: test-data/pl_scatter_total_counts_vs_n_genes_by_counts.png
+      compare: sim_size
+    pl_pca_loadings:
+      path: test-data/pl_pca_loadings.png
+      compare: sim_size
+    pl_pca_variance_ratio:
+      path: test-data/pl_pca_variance_ratio.png
+      compare: sim_size
+    pl_rank_gene_groups_t_test_wilcoxon_test:
+      path: test-data/pl_rank_gene_groups_t_test_wilcoxon_test.png
+      compare: sim_size
+    pl_scatter_n_genes_by_counts_vs_pct_mito:
+      path: test-data/pl_scatter_n_genes_by_counts_vs_pct_mito.png
+      compare: sim_size
+    pl_violin_initial:
+      path: test-data/pl_violin_initial.png
+      compare: sim_size
+    pl_highly_variable:
+      path: test-data/pl_highly_variable.png
+      compare: sim_size
+    pl_pca_overview_genes:
+      path: test-data/pl_pca_overview_genes.png
+      compare: sim_size
+    pl_umap_louvain:
+      path: test-data/pl_umap_louvain.png
+      compare: sim_size
+    pl_rank_genes_heatmap:
+      path: test-data/pl_umap_louvain.png
+      compare: sim_size
