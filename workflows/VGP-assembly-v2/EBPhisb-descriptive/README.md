@@ -1,8 +1,8 @@
-Haplotype Interactive Sequence Browser - Descriptive
+## Haplotype Interactive Sequence Browser - Descriptive
 
-This workflow makes a preconfigured JBrowse2 genome browser.
+### Generate a preconfigured JBrowse2 interactive genome browser from VGP scale assemblies
 
-Tracks include:
+#### Tracks available - some hidden on track menu initially:
  - Coverage from minimap2 mapping PacBio reads to the haplotype, as a bigwig track
  - Structural variants found by sniffles in the minimap bam, as a vcf track
  - Repeatmasker (Dfam based) repeats as an optional gff3 track
@@ -12,7 +12,7 @@ Tracks include:
  - Mashmap approximate PAF tracks for the two haplotypes
  - Mashmap approximate PAF tracks for any number of closely related species.
 
-Inputs include:
+#### Inputs required:
  - Two assembled haplotypes (same contig names) 
  - Optional NCBI gene/rna/protein taxon id and downloaded fasta files 
  - Optional haplotype or reference fasta from two or more closely related species for sequence similarity mapping
