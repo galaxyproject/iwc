@@ -57,20 +57,20 @@ async function createLandingPage() {
     const job = testToRequestState()
     console.log(job);
     console.log("creating landing page");
-    const response = await fetch("http://localhost:8081/api/workflow_landings", {
+    const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
         headers: {"Content-Type": "application/json"},
         method: "POST",
         body: JSON.stringify({
             workflow_id: workflow.value?.trsID,
             workflow_target_type: "trs_id",
-            trs_version: workflow.value?.definition.release,
+            trs_version: `v${workflow.value?.definition.release}`,
             request_state: job
         })
     })
     const json = await response.json();
-    const landingPage =  `http://localhost:8080/workflow_landings/${json['uuid']}`;
+    const landingPage =  `${selectedInstance.value}/workflow_landings/${json['uuid']}`;
     console.log("Landing page url:", landingPage);
-    // window.open(landingPage, "_blank");
+    window.open(landingPage, "_blank");
 }
 
 const tools = computed(() => {
@@ -145,7 +145,7 @@ const onInstanceChange = (value: string) => {
                     <li><strong>License:</strong> {{ workflow.definition.license }}</li>
                     <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
                 </ul>
-                <UButtonGroup class="mt-4" size="sm" orientation="horizontal">
+                <UButtonGroup class="mt-4" size="sm" orientation="vertical">
                     <USelect
                         v-model="selectedInstance"
                         :options="instances"
