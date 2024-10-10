@@ -1,4 +1,4 @@
-## Haplotype Interactive Sequence Browser - Descriptive
+## Haplotype Interactive Browser - Descriptive
 
 ### Generate a preconfigured JBrowse2 interactive genome browser from VGP scale assemblies
 
@@ -13,8 +13,8 @@
  - Mashmap approximate PAF tracks for any number of closely related species.
 
 #### Inputs required:
- - Two assembled haplotypes (same contig names) 
- - Optional NCBI gene/rna/protein taxon id and downloaded fasta files 
+ - Two assembled haplotypes (same contig names)
+ - Optional NCBI gene/rna/protein taxon id and downloaded fasta files
  - Optional haplotype or reference fasta from two or more closely related species for sequence similarity mapping
  - Optionally run repeatmodeler for repeatmasker
 

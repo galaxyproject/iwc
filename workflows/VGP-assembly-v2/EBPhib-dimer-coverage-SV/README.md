@@ -1,4 +1,6 @@
-## Creates a custom JBrowse2 interactive browser from VGP scale assemblies and data.
+## EBP Haplotype Interactive Browser
+
+### Creates a custom JBrowse2 interactive browser from VGP scale assemblies and data.
 
 #### Inputs required:
 
