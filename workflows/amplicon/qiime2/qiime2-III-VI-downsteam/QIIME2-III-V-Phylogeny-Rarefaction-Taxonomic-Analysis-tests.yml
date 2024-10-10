@@ -1,0 +1,108 @@
+- doc: Test outline for QIIME2-III:-Phylogenetic-tree-for-diversity-analysis
+  job:
+    Metadata:
+      class: File
+      location: https://data.qiime2.org/2024.2/tutorials/pd-mice/sample_metadata.tsv
+      filetype: tabular
+    Representative sequences:
+      class: File
+      location: https://docs.qiime2.org/2024.2/data/tutorials/pd-mice/dada2_rep_set.qza
+      filetype: qza
+    Feature table:
+      class: File
+      location: https://docs.qiime2.org/2024.2/data/tutorials/pd-mice/dada2_table.qza
+      filetype: qza
+    Minimum depth: 1
+    Maximum depth: 2019
+    Taxonomic classifier:
+      class: File
+      location: https://docs.qiime2.org/2024.2/data/tutorials/pd-mice/gg-13-8-99-515-806-nb-classifier.qza
+      filetype: qza
+    SEPP fragment insertion reference:
+      class: File
+      location: https://data.qiime2.org/2024.2/common/sepp-refs-gg-13-8.qza
+      filetype: qza
+  outputs:
+    Rooted tree:
+      ftype: qza
+      asserts:
+        - has_size:
+            min: 2M
+            max: 3M
+        - has_archive_member:
+            path: "^[^/]*/data/tree.nwk"
+            n: 1
+            asserts:
+              - has_text_matching:
+                  expression: "k__Bacteria"
+        - has_archive_member:
+            path: "^[^/]*/metadata.yaml"
+            n: 1
+            asserts:
+              - has_line:
+                  line: "type: Phylogeny[Rooted]"
+              - has_line:
+                  line: "format: NewickDirectoryFormat"
+
+    Rarefaction curve:
+      ftype: qzv
+      asserts:
+        - has_size:
+            min: 400k
+            max: 500k
+        - has_archive_member:
+            path: "^[^/]*/data/index.html"
+            n: 1
+        # data per measure
+        - has_archive_member:
+            path: "^[^/]*/data/.*\\.csv"
+            n: 3
+        # data for each measure and metadata variable (*7)
+        - has_archive_member:
+            path: "^[^/]*/data/.*\\.jsonp"
+            n: 21
+
+    Taxonomy classification:
+      ftype: qza
+      asserts:
+        - has_size:
+            min: 70k
+            max: 80k
+        - has_archive_member:
+            path: "^[^/]*/metadata.yaml"
+            n: 1
+            asserts:
+              - has_line:
+                  line: "type: FeatureData[Taxonomy]"
+              - has_line:
+                  line: "format: TSVTaxonomyDirectoryFormat"
+        - has_archive_member:
+            path: "^[^/]*/data/taxonomy.tsv"
+            n: 1
+            asserts:
+              - has_n_lines:
+                  n: 288
+    Taxa barplot:
+      ftype: qzv
+      asserts:
+        - has_size:
+            min: 400k
+            max: 500k
+        - has_archive_member:
+            path: "^[^/]*/data/.*\\.csv"
+            n: 7
+        - has_archive_member:
+            path: "^[^/]*/data/.*\\.jsonp"
+            n: 7
+    Taxonomy classification table:
+      ftype: qza
+      asserts:
+        - has_size:
+            min: 1M
+            max: 2M
+        - has_archive_member:
+            path: "^[^/]*/data/metadata.tsv"
+            n: 1
+            asserts:
+              - has_n_lines:
+                  n: 289

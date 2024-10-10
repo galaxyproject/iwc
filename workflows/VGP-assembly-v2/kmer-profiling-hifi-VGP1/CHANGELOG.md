@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.7] 2024-08-05
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0.1+galaxy0`
+
 ## [0.1.6] 2024-07-12
 
 - Add workflow report

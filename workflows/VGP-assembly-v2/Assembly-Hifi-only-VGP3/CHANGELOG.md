@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.1] 2024-08-13
+
+- Expose Busco lineage database parameter
+
+## [0.2] 2024-08-01
+
+### Added
+
+- Add bandage image
+- Add workflow report
+
+### Changed
+
+- Fix bug in merging assembly statistics
+
 ## [0.1.8] 2024-07-22
 
 ### Automatic update

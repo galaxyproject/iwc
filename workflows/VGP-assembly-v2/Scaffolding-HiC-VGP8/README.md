@@ -10,10 +10,14 @@ Example of trajectory :
 ## Inputs
 
 1. Scaffolded assembly [fasta]
-2. Concatenated HiC forward reads [fastq]
-3. Concatenated HiC reverse reads [fastq]
-4. Restriction enzyme sequence [txt]
-5. Estimated genome size [txt]
+2. Database for busco lineage (recommended: latest)
+3. Busco lineage (recommended: vertebrata)
+4. Concatenated HiC forward reads [fastq]
+5. Concatenated HiC reverse reads [fastq]
+6. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
+7. Estimated genome size [txt]
+8. Haplotype name 
+
 
 ### Outputs
 
