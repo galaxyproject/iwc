@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4] 2024-10-10
+
+### Manual update
+
+- Changed input parameters to select databases in WFs. Use "Attempt restriction based on connections" instead of "Provide list of suggested values".
+
 ## [1.1.3] 2024-09-30
 
 ### Manual update
