@@ -35,7 +35,7 @@ function selectWorkflow(workflow: Workflow) {
 </script>
 
 <template>
-    <div class="flex h-screen">
+    <div class="flex">
         <!-- Left sidebar -->
         <div class="w-1/4 p-4 overflow-y-auto">
             <div class="sticky top-4 h-16">
