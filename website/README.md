@@ -20,6 +20,14 @@ yarn install
 bun install
 ```
 
+## Build workflow manifest
+
+Build the workflow manifest file with
+
+```bash
+python scripts/workflow_manifest.py
+```
+
 ## Development Server
 
 Start the development server on `http://localhost:3000`:
