@@ -42,33 +42,33 @@ const links = [
 ];
 
 const launchUrl = computed(() => {
-    if (!workflow.value) return "";
+    if (!workflow.value || !selectedInstance.value) return "";
     return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.value.trsID)}&trs_version=v${workflow.value.definition.release}&run_form=true`;
 });
 
 function testToRequestState() {
-    const tests = workflow.value?.tests
+    const tests = workflow.value?.tests;
     if (tests && tests.length) {
         return tests[0].job;
     }
 }
 
 async function createLandingPage() {
-    const job = testToRequestState()
+    const job = testToRequestState();
     console.log(job);
     console.log("creating landing page");
     const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify({
             workflow_id: workflow.value?.trsID,
             workflow_target_type: "trs_id",
             trs_version: `v${workflow.value?.definition.release}`,
-            request_state: job
-        })
-    })
+            request_state: job,
+        }),
+    });
     const json = await response.json();
-    const landingPage =  `${selectedInstance.value}/workflow_landings/${json['uuid']}`;
+    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}`;
     console.log("Landing page url:", landingPage);
     window.open(landingPage, "_blank");
 }
@@ -105,7 +105,7 @@ const tabs = computed(() => [
 /* Instance SElector -- factor out to a component */
 const selectedInstance = ref("");
 const instances = reactive([
-    { value: "http://localhost:8081", label: "local dev instance"},
+    { value: "http://localhost:8081", label: "local dev instance" },
     { value: "http://usegalaxy.org", label: "usegalaxy.org" },
     { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
@@ -159,13 +159,13 @@ const onInstanceChange = (value: string) => {
                         variant="solid"
                         label="Launch at" />
                     <UButton
-                    class="mt-4"
-                    @click="createLandingPage"
-                    target="_blank"
-                    icon="i-heroicons-rocket-launch"
-                    color="primary"
-                    variant="solid"
-                    label="Run with example data" />
+                        class="mt-4"
+                        @click="createLandingPage"
+                        target="_blank"
+                        icon="i-heroicons-rocket-launch"
+                        color="primary"
+                        variant="solid"
+                        label="Run with example data" />
                 </UButtonGroup>
             </div>
         </div>
