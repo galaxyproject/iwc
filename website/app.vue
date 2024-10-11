@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="h-dvh flex flex-col">
         <NuxtLoadingIndicator />
         <IWCHeader />
-        <main>
+        <main class="flex overflow-hidden">
             <NuxtLayout>
                 <NuxtPage />
             </NuxtLayout>
