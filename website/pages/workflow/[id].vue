@@ -53,23 +53,25 @@ function testToRequestState() {
     }
 }
 
+function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
+    return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`
+}
+
+
 async function createLandingPage() {
-    const job = testToRequestState();
-    console.log(job);
-    console.log("creating landing page");
+    const job = testToRequestState()
+    const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`)
     const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify({
-            workflow_id: workflow.value?.trsID,
-            workflow_target_type: "trs_id",
-            trs_version: `v${workflow.value?.definition.release}`,
-            request_state: job,
-        }),
-    });
+            workflow_id: trs_url,
+            workflow_target_type: "trs_url",
+            request_state: job
+        })
+    })
     const json = await response.json();
-    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}`;
-    console.log("Landing page url:", landingPage);
+    const landingPage =  `${selectedInstance.value}/workflow_landings/${json['uuid']}`;
     window.open(landingPage, "_blank");
 }
 
