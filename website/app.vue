@@ -1,5 +1,5 @@
 <template>
-    <div class="h-svh flex flex-col">
+    <div class="h-dvh flex flex-col">
         <NuxtLoadingIndicator />
         <IWCHeader />
         <main class="flex overflow-hidden">
