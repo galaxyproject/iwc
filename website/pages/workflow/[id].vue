@@ -106,7 +106,7 @@ const tabs = computed(() => [
 const selectedInstance = ref("");
 const instances = reactive([
     { value: "http://localhost:8081", label: "local dev instance" },
-    { value: "http://usegalaxy.org", label: "usegalaxy.org" },
+    { value: "https://usegalaxy.org", label: "usegalaxy.org" },
     { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
 ]);
