@@ -54,24 +54,23 @@ function testToRequestState() {
 }
 
 function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
-    return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`
+    return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`;
 }
 
-
 async function createLandingPage() {
-    const job = testToRequestState()
-    const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`)
+    const job = testToRequestState();
+    const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`);
     const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify({
             workflow_id: trs_url,
             workflow_target_type: "trs_url",
-            request_state: job
-        })
-    })
+            request_state: job,
+        }),
+    });
     const json = await response.json();
-    const landingPage =  `${selectedInstance.value}/workflow_landings/${json['uuid']}`;
+    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}`;
     window.open(landingPage, "_blank");
 }
 
@@ -129,7 +128,7 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <div v-if="workflow" class="flex h-screen">
+    <div v-if="workflow" class="flex">
         <!-- Left sidebar -->
         <div class="w-1/4 p-4 overflow-y-auto">
             <div class="sticky top-4 h-16">
