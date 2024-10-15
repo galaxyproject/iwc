@@ -1,11 +1,26 @@
-# Standard scRNA-seq Workflow using Scanpy and Anndata
+# Preprocessing and Clustering of Single-cell RNA-seq Data with Scanpy
 
-## Inputs dataset
+## Inputs
 
-- The workflow needs 4 files as input
-    - A singl-cell count matrix file in Matrix Market Exchange format
+### Input datasets
+- This workflow needs 3 files as input
+    - A single-cell count matrix file in Matrix Market Exchange format
     - A cell barcodes file with a single barcode in each line. The barcodes should correspond to the cells in the matrix file
-    - A genes/feature tabular file with gene ids and gene symbols
+    - A genes/features tabular file with gene ids and gene names.
+        - Cell Ranger v2 or earlier version call this file as `genes.tsv` and contains two columns:
+            - Gene ID (Ensembl gene ID or other identifiers)
+            - Gene Name (common gene name or symbol)
+        - Cell Ranger v2 or earlier version call this file as `features.tsv` and contains three columns:
+            - Feature ID (Ensembl gene ID or other identifiers)
+            - Feature Name (common gene name or symbol)
+            - Feature Type (e.g., Gene Expression, Antibody Capture, CRISPR Guide Capture, etc.)
+### Input parameters
+- The following parameters should be configured according to the data.
+    - Minimum number of cells expressed per gene. The workflow default is 3.
+    - Minimum number of genes expressed per cell. The workflow default is 200.
+    - Maximum number of genes expressed per cell. The workflow default is 2500.
+    - Size of the local neighborhood. Number of neighbours for computing neighborhood graph. The default is 15.
+    - Size of the local neighborhood (aka resolution) in louvain algorithm. The default is 1.
 
 ## Processing
 
@@ -20,4 +35,4 @@
 ## Outputs
 
 - Final output is an Anndata object with annotations of louvain clusters.
-- Some informative plots from QC to end results
+- Some informative plots from QC to the end results
