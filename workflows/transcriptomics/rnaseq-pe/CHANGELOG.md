@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.10] 2024-10-17
+
+### Manual update
+- Changed test data for testing
+
 ## [0.9] 2024-09-23
 
 ### Automatic update
