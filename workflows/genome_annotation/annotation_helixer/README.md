@@ -1,4 +1,4 @@
-# Helixer Workflow
+# Genome annotation workflow with Helixer
 
 This workflow allows you to annotate a genome with Helixer and evaluate the quality of the annotation using BUSCO and Genome Annotation statistics. GFFRead is also used to predict protein sequences derived from this annotation, and BUSCO and OMArk are used to assess proteome quality. 
 
