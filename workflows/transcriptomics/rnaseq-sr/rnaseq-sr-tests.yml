@@ -1,101 +1,211 @@
-- doc: Test outline for RNAseq_SR
+- doc: Test outline for rnaseq-sr
   job:
-    gtf:
+    GTF file of annotation:
       class: File
-      location: https://zenodo.org/record/4541751/files/Drosophila_melanogaster.BDGP6.87.gtf
+      path: test-data/GTF file of annotation.gtf
       filetype: gtf
-    SR fastq input:
+    Sample table:
+      class: File
+      location: https://zenodo.org/records/13951092/files/chr4.gtf
+      filetype: gtf
+    Collection single-end FASTQ files:
       class: Collection
       collection_type: list
       elements:
       - class: File
         identifier: GSM461177
-        location: https://zenodo.org/record/4541751/files/GSM461177_1_subsampled.fastqsanger
-    forward_adapter: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
-    reference_genome: dm6
+        location: https://zenodo.org/records/13951092/files/GSM461177_1.fastqsanger
+      - class: File
+        identifier: GSM461178
+        location: https://zenodo.org/records/13951092/files/GSM461178_1.fastqsanger
+      - class: File
+        identifier: GSM461180
+        location: https://zenodo.org/records/13951092/files/GSM461180_1.fastqsanger
+      - class: File
+        identifier: GSM461181
+        location: https://zenodo.org/records/13951092/files/GSM461181_1.fastqsanger
+    Generate QC reports?: true
+    Reference genome: dm6
+    Use featureCounts for generating count tables: true
     strandedness: unstranded
-    cufflinks_FPKM: true
-    stringtie_FPKM: true
+    Compute Cufflinks RPKM?: true
+    GTF with regions to exclude from RPKM normalization with Cufflinks: null
+    Compute StringTie RPKM?: true
+    DEseq2 batch factors: null
   outputs:
-    output_log:
-      element_tests:
-        GSM461177:
-          asserts:
-            - that: "has_text"
-              text: "Number of input reads |\t1051466"
-            - that: "has_text"
-              text: "Uniquely mapped reads number |\t871202"
-            - that: "has_text"
-              text: "Number of reads mapped to multiple loci |\t91808"
-    mapped-reads:
-      element_tests:
-        GSM461177:
-          asserts:
-            has_size:
-              value: 43037033
-              delta: 4000000
-  'MultiQC on input dataset(s): Stats':
-    asserts:
-      has_line:
-        line: "Sample	STAR_mqc_generalstats_star_total_reads_1	STAR_mqc_generalstats_star_mapped_1	STAR_mqc_generalstats_star_mapped_percent_1	STAR_mqc_generalstats_star_uniquely_mapped_1	STAR_mqc_generalstats_star_uniquely_mapped_percent_1	STAR_mqc_generalstats_star_multimapped_1	Cutadapt_mqc_generalstats_cutadapt_percent_trimmed"
-      has_text_matching:
-        expression: "GSM461177\t1.0[0-9]*\t0.96[0-9]*\t91.[0-9]*\t0.8[0-9]*\t82.8[0-9]*\t0.091[0-9]*\t4.0[0-9]*"
-    MultiQC webpage:
+    MultiQC stats:
+        has_text_matching:
+            expression: "GSM461177\t0.04[0-9]*\t80.94[0-9]*\t0.61[0-9]*\t0.05[0-9]*\t0.04[0-9]*\t99.32[0-9]*\t0.04[0-9]*\t95.98\t0.00[0-9]*\t1.86[0-9]*"
+            expression: "GSM461177_forward\t\t\t\t\t\t\t\t\t\t\t27.95[0-9]*\t44.0\t37.0\t37\t10.0\t0.05[0-9]*"
+            expression: "GSM461177_reverse\t\t\t\t\t\t\t\t\t\t\t28.22[0-9]*\t44.0\t37.0\t37\t10.0\t0.05[0-9]*"
+            expression: "GSM461180\t0.03[0-9]*\t81.41[0-9]*\t1.64[0-9]*\t0.04[0-9]*\t0.04[0-9]*\t97.94\t0.04[0-9]*\t94.84\t0.00[0-9]*\t13.51[0-9]*"
+            expression: "GSM461180_forward\t\t\t\t\t\t\t\t\t\t\t23.85[0-9]*\t45.0\t37.0\t37\t10.0\t0.04[0-9]*"
+            expression: "GSM461180_reverse\t\t\t\t\t\t\t\t\t\t\t12.44[0-9]*\t45.0\t37.0\t37\t10.0\t0.04[0-9]*"
+    Differential Expression Analysis using DESeq2:
       asserts:
-        - that: "has_text"
-          text: "GSM461177"
-        - that: "has_text"
-          text: "<a href=\"#cutadapt_filtered_reads\" class=\"nav-l2\">Filtered Reads</a>"
-        - that: "has_text"
-          text: "<a href=\"#star\" class=\"nav-l1\">STAR</a>"
-    reads_per_gene from STAR:
+        has_text_matching:
+            expression: "FBgn0025740\t333.11[0-9]*\t-0.33[0-9]*\t0.11[0-9]*\t-2.88[0-9]*\t0.00[0-9]*\t0.39[0-9]*"
+            expression: "FBgn0039923\t411.66[0-9]*\t-0.10[0-9]*\t0.10[0-9]*\t-0.95[0-9]*\t0.33[0-9]*\t0.99[0-9]*"    DESeq2 Plots:
+      has_size:
+        size: 33420
+        delta: 1500
+    Mapped Reads:
+      element_tests:
+        GSM461177:
+          has_size:
+            value: 3058282
+            delta: 150000
+        GSM461178:
+          has_size:
+            value: 3032322
+            delta: 150000
+        GSM461180:
+          has_size:
+            value: 3165439
+            delta: 150000
+        GSM461181:
+          has_size:
+            value: 3075214
+            delta: 150000
+    Transcripts Expression from Cufflinks:
       element_tests:
         GSM461177:
           asserts:
-            - that: "has_text"
-              text: "N_ambiguous\t20961\t5272\t4705"
-            - that: "has_text"
-              text: "FBgn0010247\t14\t6\t8"
-    HTS count like output:
+            has_line:
+              line: "FBtr0089175	-	-	FBgn0017545	RpS3A	-	chr4:66196-67207	910	409.883	114524	108672	120376	OK"
+        GSM461178:
+          asserts:
+            has_line:
+              line: "FBtr0089175	-	-	FBgn0017545	RpS3A	-	chr4:66196-67207	910	370.382	128757	122145	135370	OK"
+        GSM461180:
+          asserts:
+            has_line:
+              line: "FBtr0089175	-	-	FBgn0017545	RpS3A	-	chr4:66196-67207	910	366.172	122426	116120	128732	OK"
+        GSM461181:
+          asserts:
+            has_line:
+              line: "FBtr0089175	-	-	FBgn0017545	RpS3A	-	chr4:66196-67207	910	404.198	115973	110059	121886	OK"
+    Genes Expression from Cufflinks:
       element_tests:
         GSM461177:
           asserts:
-            has_text:
-              text: "FBgn0010247\t14"
-    transcripts_expression_cufflinks:
+            has_line:
+              line: "FBgn0017545	-	-	FBgn0017545	RpS3A	-	chr4:65224-67207	-	-	128511	122676	134345	OK"
+        GSM461178:
+          asserts:
+            has_line:
+              line: "FBgn0017545	-	-	FBgn0017545	RpS3A	-	chr4:65224-67207	-	-	141422	134823	148020	OK"
+        GSM461180:
+          asserts:
+            has_line:
+              line: "FBgn0017545	-	-	FBgn0017545	RpS3A	-	chr4:65224-67207	-	-	134779	128494	141063	OK"
+        GSM461181:
+          asserts:
+            has_line:
+              line: "FBgn0017545	-	-	FBgn0017545	RpS3A	-	chr4:65224-67207	-	-	127880	121988	133772	OK"
+    Unstranded Coverage:
       element_tests:
         GSM461177:
-          asserts:
-            has_text:
-              text: "FBtr0078104\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t1583\t0.626702\t18.291\t9.78605\t26.796\tOK"
-    genes_expression_cufflinks:
+          has_size:
+            value: 445281
+            delta: 20000
+        GSM461178:
+          has_size:
+            value: 406443
+            delta: 20000
+        GSM461180:
+          has_size:
+            value: 423518
+            delta: 20000
+        GSM461181:
+          has_size:
+            value: 455334
+            delta: 20000
+    Stranded Coverage:
+      element_tests:
+        GSM461177_forward:
+          has_size:
+            value: 313382
+            delta: 15000
+        GSM461178_forward:
+          has_size:
+            value: 285608
+            delta: 15000
+        GSM461180_forward:
+          has_size:
+            value: 295650
+            delta: 15000
+        GSM461181_forward:
+          has_size:
+            value: 311698
+            delta: 15000
+        GSM461177_reverse:
+          has_size:
+            value: 313241
+            delta: 15000
+        GSM461178_reverse:
+          has_size:
+            value: 281153
+            delta: 15000
+        GSM461180_reverse:
+          has_size:
+            value: 292239
+            delta: 15000
+        GSM461181_reverse:
+          has_size:
+            value: 322248
+            delta: 15000
+    Gene Abundance Estimates from StringTie:
       element_tests:
         GSM461177:
           asserts:
             has_text_matching:
-              expression: "FBgn0031217\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t-\t-\t32.1016\t22.1771\t42.02[0-9]*\tOK"
-    genes_expression_stringtie:
+              expression: "FBgn0017545\tRpS3A\tchr4\t-\t65225\t67207\t324.32[0-9]*\t135844.57[0-9]*\t364040.59[0-9]*"
+        GSM461178:
+          asserts:
+            has_text_matching:
+              expression: "FBgn0017545\tRpS3A\tchr4\t-\t65225\t67207\t286.68[0-9]*\t143296.84[0-9]*\t365993.15[0-9]*"
+        GSM461180:
+          asserts:
+            has_text_matching:
+              expression: "FBgn0017545\tRpS3A\tchr4\t-\t65225\t67207\t282.60[0-9]*\t138208.90[0-9]*\t367356.56[0-9]*"
+        GSM461181:
+          asserts:
+            has_text_matching:
+              expression: "FBgn0017545\tRpS3A\tchr4\t-\t65225\t67207\t316.33[0-9]*\t129439.64[0-9]*\t344739.90[0-9]*"
+    FeatureCounts Summary Table:
       element_tests:
         GSM461177:
           asserts:
-            has_text:
-              text: "FBgn0031220\tCG4822\tchr2L\t-\t116970\t121754\t1.067492\t36.649773\t74.784904"
-    both strands coverage:
+            has_line:
+              line: "Assigned	45715"
+        GSM461178:
+          asserts:
+            has_line:
+              line: "Assigned	38738"
+        GSM461180:
+          asserts:
+            has_line:
+              line: "Assigned	39998"
+        GSM461181:
+          asserts:
+            has_line:
+              line: "Assigned	44734"
+    Tagged Count Tables:
       element_tests:
         GSM461177:
           asserts:
-            has_size:
-              value: 6075761
-              delta: 600000
-    stranded coverage:
-      element_tests:
-        GSM461177_reverse:
+            has_line:
+              line: "FBgn0017545	6109"
+        GSM461178:
           asserts:
-            has_size:
-              value: 3103918
-              delta: 300000
-        GSM461177_forward:
+            has_line:
+              line: "FBgn0017545	5649"
+        GSM461180:
           asserts:
-            has_size:
-              value: 3103918
-              delta: 300000
+            has_line:
+              line: "FBgn0017545	5600"
+        GSM461181:
+          asserts:
+            has_line:
+              line: "FBgn0017545	5943"
