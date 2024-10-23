@@ -2,6 +2,10 @@
 
 ## [0.2.3] 2024-10-14
 
+### Changes
+
+- Hi-C inputs are now entered as collections instead of single datasets
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0`
