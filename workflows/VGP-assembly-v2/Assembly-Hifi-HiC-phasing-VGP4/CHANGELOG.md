@@ -5,6 +5,7 @@
 ### Changes
 
 - Hi-C inputs are now entered as collections instead of single datasets
+- Add optional trimming of Hi-C reads
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
