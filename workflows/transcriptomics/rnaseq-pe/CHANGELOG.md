@@ -3,7 +3,7 @@
 ## [0.10] 2024-09-23
 
 ### Manual update
-- Using a new subsampled test data from Zenodo record https://zenodo.org/records/13888221
+- Using a new subsampled test data from Zenodo record https://zenodo.org/records/13951092
 - Added a subworkflow with MultiQC on FastQC, Cutadapt, STAR, Picard reports
 - Added DESeq2 step that uses tags to choose factors
 
