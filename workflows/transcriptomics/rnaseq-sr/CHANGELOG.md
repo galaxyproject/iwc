@@ -3,7 +3,7 @@
 ## [0.10] 2024-10-22
 
 ### Manual update
-- Using a new subsampled Yeast test data from Zenodo record https://zenodo.org/records/4541751
+- Using a new subsampled Yeast test data from Zenodo record https://zenodo.org/records/13987631
 - Added a subworkflow with MultiQC on FastQC, Cutadapt, STAR, featureCounts and Picard reports
 - Added featureCounts as an alternative way to generate count files
 
