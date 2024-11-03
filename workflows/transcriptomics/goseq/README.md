@@ -10,9 +10,9 @@ The workflow need the following inputs:
 - The KEGG file:
     - A tabular file with first column the Pathway ID and second column the Pathway name like: 
         -   ```
-            ID 	   Name
-            01100 	Metabolic pathways - mmus
-            01200 	Carbon metabolism - mmus 
+            ID  Name
+            01100   Metabolic pathways - mmus
+            01200   Carbon metabolism - mmus 
             ```
  
 ## Processing
