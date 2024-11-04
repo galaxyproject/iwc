@@ -4,7 +4,7 @@
 
 The workflow need the following inputs:
 - The DEG file:
-    - A tabular file with first column the gene symbol and second column a boolean value whether the gene is DEG or not. 
+    - A tabular file with first column the gene symbol and second column a boolean value whether the gene is a differentially expressed gene or not. 
 - The gene length file:
     - A tabular file with first column the gene symbol and second column the gene length of the genes.
 - The KEGG file:
