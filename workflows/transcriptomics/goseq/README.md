@@ -18,7 +18,7 @@ The workflow need the following inputs:
 ## Processing
 
 - The workflow will do a simple enrichment analysis with taking into account the gene length
-- The output will be 3 files `GO table`, `Top ontology plot` and `DE genes in each category` for CC, BP, and MF ontologies and `KEGG table` and `DE genes in each KEGG Pathways`
+- The output will be 3 files `GO table`, `Top ontology plot` and `DE genes in each category` for Cellular Component, Biological Processes, and Molecular Function ontologies and `KEGG table` and `DE genes in each KEGG Pathways`
 
 ### Warning
 
