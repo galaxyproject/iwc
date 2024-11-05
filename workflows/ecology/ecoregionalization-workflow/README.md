@@ -117,10 +117,10 @@ This file is a list of taxa cleaned (without “_”, “_sp”, etc.) that obta
 This output is a graph presenting the value of the SIH index according to the number of clusters. The silhouette index provides a measure of the separation between clusters and the compactness within each cluster. The silhouette index ranges from -1 to 1. Values close to 1 indicate that objects are well grouped and separated from other clusters, while values close to -1 indicate that objects are poorly grouped and may be closer to other clusters. A value close to 0 indicates a situation where objects are located at the border between two neighboring clusters. Thus, the optimal number of clusters is the one that maximizes the value of the SIH index.With this graph you will be able to determine the optimal number of clusters retained for the construction of ecoregions. 
 
 #### Data to cluster
-File containing the data to be partitioned.
+This file contains the data to be partitioned.
 
 #### Data.bio table
-File containing four pieces of information, latitude, longitude, presence prediction and corresponding taxon.
+This file contains four pieces of information, latitude, longitude, presence prediction and corresponding taxon.
 
 ## Ecoregionalization workflow part 2
 ### Input data set 
@@ -135,7 +135,7 @@ This file contains all the information related to the clusters created, that is,
 This file contains the latitude and longitude of each environmental point and the associated cluster number. This will be used in the EcoMap tool. 
 
 #### Silhouette plot 
-The workflow will produce a silhouette plot. A silhouette graph is a representation used to visualize the silhouette index of each observation in a clustered data set. It makes it possible to assess the quality of clusters and determine their coherence and separation. In a silhouette graph, each observation is represented by a horizontal bar whose length is proportional to its silhouette index. The longer the bar, the better the consistency of the observation with its cluster and the separation from other clusters. As mentioned above, the silhouette index ranges from -1 to 1. Values close to 1 indicate that objects are well grouped and separated from other clusters, while values close to -1 indicate that objects are poorly grouped and may be closer to other clusters. A value close to 0 indicates a situation where objects are located at the border between two clusters. Here, in the graph below, there is a good distribution of the observations because the majority of the bars are above the average value of the silhouette index.
+The workflow will produce a silhouette plot. A silhouette graph is a representation used to visualize the silhouette index of each observation in a clustered data set. It makes it possible to assess the quality of clusters and determine their coherence and separation. In a silhouette graph, each observation is represented by a horizontal bar whose length is proportional to its silhouette index. The longer the bar, the better the consistency of the observation with its cluster and the separation from other clusters. As mentioned above, the silhouette index ranges from -1 to 1. Values close to 1 indicate that objects are well grouped and separated from other clusters, while values close to -1 indicate that objects are poorly grouped and may be closer to other clusters. A value close to 0 indicates a situation where objects are located at the border between two clusters.
 
 #### Ecomap
 The last output is the map with clusters representing ecoregions. 
