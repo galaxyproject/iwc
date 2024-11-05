@@ -28,10 +28,15 @@ The second part use two tools:
 Some definitions:
 
 Ecoregionalization: The process by which a territory is classified into a category of area that respond to the same environmental factors taking into account species information. 
+
 Occurrences data: Data showing the presence of a species at a particular location.
+
 Environmental data: Environmental data are any measurement or information that describe environmental processes, location, or conditions.
+
 Boosted regression trees (BRT): Boosted Regression Trees is a kind of regression methodology based on Machine Learning. Unlike conventional regression methods (GLMs, GAMs), BRTs combine numerous basic decision trees to enhance the predictive performance. BRTs can handle complex relationships and interactions among predictors, and it is considered a robust technique that can control outliers and nonlinearity.
+
 Clustering:Clustering is a machine learning method of grouping data points by similarity or distance.
+
 CLARA/PAM: CLARA (Clustering Large Applications), is an extension to k-medoids (PAM) methods to deal with data containing a large number of objects. PAM stands for "Partition Around Medoids", the PAM algorithm searches for k representative objects in a data set (k medoids) and then assigns each object to the closest medoid in order to create clusters.
 
 ## Ecoregionalization workflow part 1 
