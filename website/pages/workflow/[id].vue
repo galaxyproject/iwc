@@ -67,10 +67,11 @@ async function createLandingPage() {
             workflow_id: trs_url,
             workflow_target_type: "trs_url",
             request_state: job,
+            public: true,
         }),
     });
     const json = await response.json();
-    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}`;
+    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}?public=true`;
     window.open(landingPage, "_blank");
 }
 
