@@ -100,10 +100,10 @@ const tabs = computed(() => [
         label: "Tools",
         tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
     },
-    {
-        label: "Preview",
-        preview: true,
-    },
+    // {
+    //     label: "Preview",
+    //     preview: true,
+    // },
 ]);
 
 /* Instance SElector -- factor out to a component */
