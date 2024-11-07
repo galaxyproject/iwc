@@ -2,16 +2,17 @@
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { type Workflow, type WorkflowCollection } from "~/models/workflow";
-import { workflowCollections } from "~/models/workflow";
 import { marked } from "marked";
 import Author from "~/components/Author.vue";
+import { useWorkflowStore } from "~/stores/workflows";
 
 const route = useRoute();
-const workflow = ref<Workflow | null>(null);
+const workflowStore = useWorkflowStore();
 
-const allWorkflows = computed(() => workflowCollections.flatMap((collection) => collection.workflows));
+workflowStore.setWorkflow();
 
-workflow.value = allWorkflows.value.find((w) => w.definition.uuid === route.params.id);
+const workflow = computed(() => workflowStore.workflow);
+const allWorkflows = computed(() => workflowStore.allWorkflows);
 
 const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -28,11 +29,12 @@ const parseMarkdown = (content: string) => {
 // TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
 const authors = computed(() => {
     let authorLine = "";
-    if (workflow.value.authors) {
+    if (workflow.value?.authors) {
         authorLine = workflow.value.authors.map((author) => author.name).join(", ");
     }
     return authorLine;
 });
+
 const links = [
     {
         label: "Back to index",
