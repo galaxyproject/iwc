@@ -4,7 +4,6 @@ import { type Workflow, type WorkflowCollection } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
 
 const searchQuery = ref("");
-const workflowContainer = ref<HTMLElement | null>(null);
 const selectedWorkflow = ref<Workflow | null>(null);
 
 const workflowStore = useWorkflowStore();
@@ -19,8 +18,8 @@ const filteredWorkflows = computed(() =>
 
 function scrollToWorkflow(workflow: Workflow) {
     const element = document.getElementById(`workflow-${workflow.definition.uuid}`);
-    if (element && workflowContainer.value) {
-        workflowContainer.value.scrollTop = element.offsetTop - workflowContainer.value.offsetTop;
+    if (element) {
+        element.parentElement?.scrollTo({ top: element.offsetTop - element.parentElement.offsetTop - 8, behavior: "smooth" });
     }
 }
 
