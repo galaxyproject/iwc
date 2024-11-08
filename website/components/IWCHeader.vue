@@ -13,7 +13,7 @@
                 <NuxtLink to="https://github.com/galaxyproject/iwc/blob/main/workflows/README.md#adding-workflows">
                     Contribute
                 </NuxtLink>
-                <NuxtLink to="https://github.com/galaxyproject/iwc/">GitHub</NuxtLink>
+                <NuxtLink to="https://github.com/galaxyproject/iwc/">GitHub <Icon name="uil:github" /></NuxtLink>
             </div>
         </div>
     </header>
