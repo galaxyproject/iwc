@@ -131,13 +131,12 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <div v-if="workflow" class="flex">
-        <!-- Left sidebar -->
-        <div class="w-1/4 p-4 overflow-y-auto">
+    <NuxtLayout>
+        <template #sidebar>
             <div class="sticky top-4 h-16">
                 <UBreadcrumb :links="links" />
             </div>
-            <div class="mt-6">
+            <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
                 <ul>
@@ -172,49 +171,51 @@ const onInstanceChange = (value: string) => {
                         label="Run with example data" />
                 </UButtonGroup>
             </div>
-        </div>
+        </template>
 
         <!-- Right side workflow cards -->
-        <div class="w-3/4 p-4 overflow-y-auto" ref="workflowContainer">
-            <div class="mx-auto py-8">
-                <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
-                    <UTabs :items="tabs" class="w-full">
-                        <template #default="{ item, index, selected }">
-                            <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
-                                item.label
-                            }}</span>
-                        </template>
-                        <template #item="{ item }">
-                            <div v-if="item.content" class="mt-6">
-                                <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
-                            </div>
-                            <div v-else-if="item.tools" class="mt-6">
-                                <div class="prose !max-w-none">
-                                    <h3>The following tools are required to run this workflow.</h3>
-                                    <p>
-                                        This will eventually be a pretty page with links to each tool in the (new)
-                                        toolshed, etc.
-                                    </p>
-                                    <ul>
-                                        <li v-for="tool in tools" :key="tool">{{ tool }}</li>
-                                    </ul>
+         <template #content>
+            <UCard class="mb-4 p-6">
+                <div v-if="workflow" class="mx-auto py-8">
+                    <div class="p-6 rounded-lg mb-6">
+                        <UTabs :items="tabs" class="w-full">
+                            <template #default="{ item, index, selected }">
+                                <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
+                                    item.label
+                                }}</span>
+                            </template>
+                            <template #item="{ item }">
+                                <div v-if="item.content" class="mt-6">
+                                    <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
                                 </div>
-                            </div>
-                            <div v-else-if="item.preview" class="mt-6">
-                                <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
-                                <iframe
-                                    title="Galaxy Workflow Embed"
-                                    style="width: 100%; height: 700px; border: none"
-                                    src="https://usegalaxy.org/published/workflow?id=a63d3ee4a2a4a20b&embed=true&buttons=true&about=false&heading=false&minimap=true&zoom_controls=true&initialX=-20&initialY=-20&zoom=1"></iframe>
-                            </div>
-                        </template>
-                    </UTabs>
+                                <div v-else-if="item.tools" class="mt-6">
+                                    <div class="prose !max-w-none">
+                                        <h3>The following tools are required to run this workflow.</h3>
+                                        <p>
+                                            This will eventually be a pretty page with links to each tool in the (new)
+                                            toolshed, etc.
+                                        </p>
+                                        <ul>
+                                            <li v-for="tool in tools" :key="tool">{{ tool }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div v-else-if="item.preview" class="mt-6">
+                                    <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
+                                    <iframe
+                                        title="Galaxy Workflow Embed"
+                                        style="width: 100%; height: 700px; border: none"
+                                        src="https://usegalaxy.org/published/workflow?id=a63d3ee4a2a4a20b&embed=true&buttons=true&about=false&heading=false&minimap=true&zoom_controls=true&initialX=-20&initialY=-20&zoom=1"></iframe>
+                                </div>
+                            </template>
+                        </UTabs>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div v-else class="max-w-3xl mx-auto py-8">
-        <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-        <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
-    </div>
+                <div v-else class="max-w-3xl mx-auto py-8">
+                    <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
+                    <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
+                </div>
+            </UCard>
+         </template>
+    </NuxtLayout>
 </template>
