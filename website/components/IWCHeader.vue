@@ -9,10 +9,8 @@
                     </NuxtLink>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <NuxtLink to="https://github.com/galaxyproject/iwc/">About</NuxtLink>
-                    <NuxtLink to="https://planemo.readthedocs.io/en/latest/best_practices_workflows.html"
-                        >Development</NuxtLink
-                    >
+                    <NuxtLink to="https://planemo.readthedocs.io/en/latest/best_practices_workflows.html">About</NuxtLink>
+                    <NuxtLink to="https://github.com/galaxyproject/iwc/">Development</NuxtLink>
                 </div>
             </div>
         </UContainer>
