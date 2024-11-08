@@ -174,15 +174,17 @@ const onInstanceChange = (value: string) => {
         </template>
 
         <!-- Right side workflow cards -->
-         <template #content>
+        <template #content>
             <UCard class="mb-4 p-6">
                 <div v-if="workflow" class="mx-auto py-8">
                     <div class="p-6 rounded-lg mb-6">
                         <UTabs :items="tabs" class="w-full">
                             <template #default="{ item, index, selected }">
-                                <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
-                                    item.label
-                                }}</span>
+                                <span
+                                    class="truncate"
+                                    :class="[selected && 'text-primary-500 dark:text-primary-400']"
+                                    >{{ item.label }}</span
+                                >
                             </template>
                             <template #item="{ item }">
                                 <div v-if="item.content" class="mt-6">
@@ -216,6 +218,6 @@ const onInstanceChange = (value: string) => {
                     <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
                 </div>
             </UCard>
-         </template>
+        </template>
     </NuxtLayout>
 </template>
