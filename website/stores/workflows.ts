@@ -11,7 +11,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
     const allWorkflows = computed(() => workflowCollections.flatMap((collection) => collection.workflows));
 
     const setWorkflow = () => {
-        workflow.value = allWorkflows.value.find((w) => w.trsID === route.hash) as Workflow;
+        workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
 
     return {

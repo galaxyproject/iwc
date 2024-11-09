@@ -70,7 +70,7 @@ function selectWorkflow(workflow: Workflow) {
                     </UBadge>
                 </div>
 
-                <UButton :to="`/workflow/${workflow.trsID}`">Details</UButton>
+                <UButton :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">Details</UButton>
             </UCard>
         </template>
     </NuxtLayout>

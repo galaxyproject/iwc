@@ -207,7 +207,7 @@ const onInstanceChange = (value: string) => {
             </div>
             <div v-else class="max-w-3xl mx-auto py-8">
                 <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-                <p>Workflow with identifier {{ route.hash }} could not be found.</p>
+                <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
             </div>
         </template>
     </NuxtLayout>
