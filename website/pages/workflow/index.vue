@@ -178,10 +178,12 @@ const onInstanceChange = (value: string) => {
                         </template>
                         <template #item="{ item }">
                             <div v-if="item.content" class="mt-6">
-                                <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
+                                <div
+                                    class="prose dark:prose-invert !max-w-none"
+                                    v-html="parseMarkdown(item.content)"></div>
                             </div>
                             <div v-else-if="item.tools" class="mt-6">
-                                <div class="prose !max-w-none">
+                                <div class="prose dark:prose-invert !max-w-none">
                                     <h3>The following tools are required to run this workflow.</h3>
                                     <p>
                                         This will eventually be a pretty page with links to each tool in the (new)
