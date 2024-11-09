@@ -129,9 +129,6 @@ const onInstanceChange = (value: string) => {
 <template>
     <NuxtLayout>
         <template #sidebar>
-            <div class="sticky top-4 h-16">
-                <UBreadcrumb :links="links" />
-            </div>
             <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
