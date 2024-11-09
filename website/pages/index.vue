@@ -19,7 +19,10 @@ const filteredWorkflows = computed(() =>
 function scrollToWorkflow(workflow: Workflow) {
     const element = document.getElementById(`workflow-${workflow.definition.uuid}`);
     if (element) {
-        element.parentElement?.scrollTo({ top: element.offsetTop - element.parentElement.offsetTop - 8, behavior: "smooth" });
+        element.parentElement?.scrollTo({
+            top: element.offsetTop - element.parentElement.offsetTop - 8,
+            behavior: "smooth",
+        });
     }
 }
 
@@ -67,7 +70,7 @@ function selectWorkflow(workflow: Workflow) {
                     </UBadge>
                 </div>
 
-                <UButton :to="`/workflow/${workflow.definition.uuid}`">Details</UButton>
+                <UButton :to="`/workflow/${workflow.trsID}`">Details</UButton>
             </UCard>
         </template>
     </NuxtLayout>

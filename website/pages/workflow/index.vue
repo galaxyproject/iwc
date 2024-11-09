@@ -1,18 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { type Workflow, type WorkflowCollection } from "~/models/workflow";
 import { marked } from "marked";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 
 const route = useRoute();
 const workflowStore = useWorkflowStore();
-
-workflowStore.setWorkflow();
-
 const workflow = computed(() => workflowStore.workflow);
-const allWorkflows = computed(() => workflowStore.allWorkflows);
 
 const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -117,6 +112,7 @@ const instances = reactive([
 
 onBeforeMount(() => {
     // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
+    workflowStore.setWorkflow();
     const savedInstance = localStorage.getItem("selectedInstance");
     if (savedInstance) {
         selectedInstance.value = savedInstance;
@@ -215,7 +211,7 @@ const onInstanceChange = (value: string) => {
                 </div>
                 <div v-else class="max-w-3xl mx-auto py-8">
                     <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-                    <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
+                    <p>Workflow with identifier {{ route.hash }} could not be found.</p>
                 </div>
             </UCard>
         </template>
