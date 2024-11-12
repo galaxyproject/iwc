@@ -130,9 +130,10 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <div v-if="loading" class="max-w-3xl mx-auto py-8">
-        <div class="flex justify-center items-center">
-            <div class="loader"></div>
+    <div v-if="loading" class="flex mx-auto justify-center items-center" style="height: 60vh;">
+        <div class="relative">
+            <div class="loader border-t-8 border-hokey-pokey"></div>
+            <div class="absolute inset-0 flex justify-center items-center text-xl font-bold font-mono">Loading...</div>
         </div>
     </div>
     <NuxtLayout v-else>
@@ -223,11 +224,9 @@ const onInstanceChange = (value: string) => {
 
 <style scoped>
 .loader {
-    border: 16px solid #f3f3f3;
-    border-top: 16px solid #3498db;
     border-radius: 50%;
-    width: 120px;
-    height: 120px;
+    width: 240px;
+    height: 240px;
     animation: spin 2s linear infinite;
 }
 
