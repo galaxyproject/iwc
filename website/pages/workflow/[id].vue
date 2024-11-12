@@ -130,7 +130,12 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <NuxtLayout>
+    <div v-if="loading" class="max-w-3xl mx-auto py-8">
+        <div class="flex justify-center items-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+    <NuxtLayout v-else>
         <template #sidebar>
             <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
@@ -171,12 +176,7 @@ const onInstanceChange = (value: string) => {
 
         <!-- Right side workflow cards -->
         <template #content>
-            <div v-if="loading" class="max-w-3xl mx-auto py-8">
-                <div class="flex justify-center items-center">
-                    <div class="loader"></div>
-                </div>
-            </div>
-            <div v-else-if="workflow" class="mx-auto">
+            <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
                     <UTabs :items="tabs" class="w-full">
                         <template #default="{ item, index, selected }">
