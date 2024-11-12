@@ -110,15 +110,18 @@ const instances = reactive([
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
 ]);
 
-onBeforeMount(() => {
+const loading = ref(true);
+
+onBeforeMount(async () => {
     // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
-    workflowStore.setWorkflow();
+    await workflowStore.setWorkflow();
     const savedInstance = localStorage.getItem("selectedInstance");
     if (savedInstance) {
         selectedInstance.value = savedInstance;
     } else {
         selectedInstance.value = instances[0].value;
     }
+    loading.value = false;
 });
 
 const onInstanceChange = (value: string) => {
@@ -168,7 +171,12 @@ const onInstanceChange = (value: string) => {
 
         <!-- Right side workflow cards -->
         <template #content>
-            <div v-if="workflow" class="mx-auto">
+            <div v-if="loading" class="max-w-3xl mx-auto py-8">
+                <div class="flex justify-center items-center">
+                    <div class="loader"></div>
+                </div>
+            </div>
+            <div v-else-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
                     <UTabs :items="tabs" class="w-full">
                         <template #default="{ item, index, selected }">
@@ -212,3 +220,19 @@ const onInstanceChange = (value: string) => {
         </template>
     </NuxtLayout>
 </template>
+
+<style scoped>
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
