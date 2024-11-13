@@ -2,9 +2,9 @@
 
 ## Inputs dataset
 
-- The workflow needs a list of datasets of fastqsanger.
-- As well as a gtf file with genes
-- Optional, but recommended: a gtf file with regions to exclude from normalization in Cufflinks.
+- Collection of FASTQ files: The workflow needs a list of datasets of fastqsanger.
+- GTF file of annotation: A gtf file with genes annotation.
+- GTF with regions to exclude from FPKM normalization with Cufflinks: Optional, but recommended. A gtf file with regions to exclude from normalization in Cufflinks.
 
   - For instance a gtf that masks chrM for the mm10 genome:
 
@@ -15,11 +15,13 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 ## Inputs values
 
-- forward adapter sequence: this depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.
-- reference_genome: this field will be adapted to the genomes available for STAR
-- strandedness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.
-- cufflinks_FPKM: Whether you want to get FPKM with Cufflinks (pretty long)
-- stringtie_FPKM: Whether you want to get FPKM/TPM etc... with Stringtie.
+- Forward adapter (optional): If not provided, fastp will try to guess the adapter sequence from the data. Its sequences  depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.
+- Generate additional QC reports: whether to compute additional QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.
+- Reference genome: this field will be adapted to the genomes available for STAR.
+- Strandedness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.
+- Use featureCounts for generating count tables: Whether to use count tables from featureCounts instead of from STAR.
+- Compute Cufflinks FPKM: Whether you want to get FPKM with Cufflinks (pretty long).
+- Compute StringTie FPKM: Whether you want to get FPKM/TPM etc... with StringTie.
 
 ## Processing
 
@@ -41,6 +43,12 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 ## Contribution
 
+### Version 0.1
+
 @lldelisle wrote the workflow and the tests.
 
 @nagoue updated the tools, made it work in usegalaxy.org, fixed some best practices.
+
+### Version 1.0
+
+@pavanvidem added the new features (featurecount + additional QC) and found a smaller test dataset.
