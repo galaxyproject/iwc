@@ -7,6 +7,9 @@
 - Add featureCounts as an alternative way to generate count files
 - Use fastp instead of cutadapt which uses pair overlap and allows to have optional adapter sequences
 
+### Tool update
+- `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.4`
+
 ### Test dataset
 - Using a new subsampled Yeast test data from Zenodo record https://zenodo.org/records/13987631
 
