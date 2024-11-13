@@ -1,11 +1,14 @@
 # Changelog
 
-## [0.10] 2024-09-23
+## [1.0] 2024-09-23
 
-### Manual update
+### Changes in workflows
+- Add an optional subworkflow with more QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.
+- Add featureCounts as an alternative way to generate count files
+- Use fastp instead of cutadapt which uses pair overlap and allows to have optional adapter sequences
+
+### Test dataset
 - Using a new subsampled Yeast test data from Zenodo record https://zenodo.org/records/13987631
-- Added a subworkflow with MultiQC on FastQC, Cutadapt, STAR, featureCounts and Picard reports
-- Added featureCounts as an alternative way to generate count files
 
 ## [0.9] 2024-09-23
 
