@@ -101,7 +101,7 @@ const tabs = computed(() => [
     // },
 ]);
 
-/* Instance SElector -- factor out to a component */
+/* Instance Selector -- factor out to a component */
 const selectedInstance = ref("");
 const instances = reactive([
     { value: "http://localhost:8081", label: "local dev instance" },
@@ -130,7 +130,7 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <div v-if="loading" class="flex mx-auto justify-center items-center" style="height: 60vh;">
+    <div v-if="loading" class="flex mx-auto justify-center items-center" style="height: 60vh">
         <div class="relative">
             <div class="loader border-t-8 border-hokey-pokey"></div>
             <div class="absolute inset-0 flex justify-center items-center text-xl font-bold font-mono">Loading...</div>
@@ -231,7 +231,11 @@ const onInstanceChange = (value: string) => {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
