@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1] 2024-11-18
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.6+galaxy0`
+
 ## [1.0] 2024-09-23
 
 ### Changes in workflows
