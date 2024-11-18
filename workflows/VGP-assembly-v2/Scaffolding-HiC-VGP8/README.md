@@ -16,6 +16,7 @@ Example of trajectory :
 5. Concatenated HiC reverse reads [fastq]
 6. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
 7. Estimated genome size [txt]
+8. Haplotype name 
 
 
 ### Outputs

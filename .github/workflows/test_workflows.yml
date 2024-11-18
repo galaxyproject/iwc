@@ -60,18 +60,20 @@ jobs:
         ports:
           - 5432:5432
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 1
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache .cache/pip
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-pip
       with:
         path: ~/.cache/pip
         key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ inputs.galaxy-head-sha }}
+    - name: Clean dotnet folder for space
+      run: rm -Rf /usr/share/dotnet
     - name: Planemo test workflows
       uses: galaxyproject/planemo-ci-action@v1
       id: test-workflows
@@ -84,7 +86,7 @@ jobs:
         galaxy-branch: ${{ inputs.galaxy-branch }}
         chunk: ${{ matrix.chunk }}
         chunk-count: ${{ inputs.chunk-count }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: 'Workflow test output ${{ matrix.chunk }}'
         path: upload

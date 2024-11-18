@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.1.5] 2024-10-21
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1`
+
+## [1.1.4] 2024-10-11
+
+### Manual update
+
+- Changed input parameters to select databases in WFs. Use "Attempt restriction based on connections" instead of "Provide list of suggested values".
+
+## [1.1.3] 2024-09-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy0`
+
+## [1.1.2] 2024-09-19
+
+### Manual update
+
+- Change percent identity threshold for Resfinder blast results in StarAMR from 98.0% to 90.0%
+
 ## [1.1.1] 2024-07-08
 
 ### Automatic update
