@@ -24,5 +24,5 @@ For MSstatsTMT:
 
 
 ## Processing
-Perform taxonomic and functional annotations for quantified microbial peptides using Unipept.
-Select microbial and human protein groups to perform statistical analysis using MSstatsTMT.
+- Perform taxonomic and functional annotations for quantified microbial peptides using Unipept.
+- Select microbial and human protein groups to perform statistical analysis using MSstatsTMT.
