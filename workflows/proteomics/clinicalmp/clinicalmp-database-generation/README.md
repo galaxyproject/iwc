@@ -8,11 +8,11 @@ A GTN has been developed for this workflow. [https://training.galaxyproject.org/
 
 ## Inputs dataset
 
-### Search Databases (FASTA)
+### Search Databases (FASTA) from [Zenodo](https://zenodo.org/records/14181725)
 - `HUMAN_SwissProt_Protein_Database.fasta`
 - `Species_UniProt_FASTA.fasta`
 - `Contaminants_(cRAP)_Protein_Database.fasta`
-### MSMS files
+### MSMS files download from [Zenodo](https://zenodo.org/records/14181725)
 - `PTRC_Skubitz_Plex2_F10_9Aug19_Rage_Rep-19-06-08.mgf`
 - `PTRC_Skubitz_Plex2_F11_9Aug19_Rage_Rep-19-06-08.mgf`
 - `PTRC_Skubitz_Plex2_F13_9Aug19_Rage_Rep-19-06-08.mgf`
