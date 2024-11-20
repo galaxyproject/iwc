@@ -9,9 +9,9 @@ A GTN has been developed for this workflow. [https://training.galaxyproject.org/
 ## Inputs dataset
 
 ### Search Databases (FASTA) from [Zenodo](https://zenodo.org/records/14181725)
-- `HUMAN_SwissProt_Protein_Database.fasta`
-- `Species_UniProt_FASTA.fasta`
-- `Contaminants_(cRAP)_Protein_Database.fasta`
+- `HUMAN SwissProt Protein_Database.fasta`
+- `Species UniProt FASTA.fasta`
+- `Contaminants (cRAP) Protein Database.fasta`
 ### MSMS files download from [Zenodo](https://zenodo.org/records/14181725)
 - `PTRC_Skubitz_Plex2_F10_9Aug19_Rage_Rep-19-06-08.mgf`
 - `PTRC_Skubitz_Plex2_F11_9Aug19_Rage_Rep-19-06-08.mgf`
