@@ -4,6 +4,13 @@ This workflow uses the decoupler tool in Galaxy to generate pseudobulk counts fr
 using the edgeR tool. The workflow also includes data sanitation steps to ensure smooth operation of edgeR and minimizing potential issues. Additionally, a Volcano plot tool is used to visualize the results after the DEG 
 analysis.
 
+The workflow deposited here is based on an earlier version of the [Persist-SEQ](https://persist-seq.org/)[^1] Pseudo-bulk scRNA-seq pipeline, of which the latest version is available [here](https://usegalaxy.eu/published/workflow?id=c3a11e1ac1aa8383). In terms of core procedures, the main differences with the IWC workflow are that the Persist-SEQ workflow:
+
+[^1]: The PERSIST-SEQ consortium is funded by the Innovative Medicines Initiative (IMI) Joint Undertaking, which receives support from the European Union's Horizon 2020 research and innovation program and EFPIA.
+
+- Is more opinionanted on the downstream enrichment analysis for the cancer biology use case.
+- Enables filtering out of seldomly expressed genes (with a configurable threshold) per contrast after DE calling, which reduces poorly supported highly DE genes and improves the signal for downstream enrichment analysis.
+
 ## Inputs
 
 - deCoupler: Source AnnData (`h5ad`).
