@@ -4,7 +4,7 @@ Metaproteomics involves the large-scale identification and analysis of all prote
 To overcome this challenge, we developed a metaproteomics workflow using tandem mass spectrometry (MS/MS) and bioinformatics tools on the Galaxy platform. This workflow enables the characterization of metaproteomes in clinical samples.
 
 The first step in this workflow is the Database Generation process. The Galaxy-P team has created a workflow that compiles a large database by downloading protein sequences of known disease-causing microorganisms. From this extensive database, a compact, relevant database is then created using the Metanovo tool.
-A GTN has been developed for this workflow. [https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-4-quantitation/tutorial.html](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-1-database-generation/tutorial.html)
+A GTN has been developed for this workflow. [https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-1-database-generation/tutorial.html](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-1-database-generation/tutorial.html)
 
 ## Inputs dataset
 
