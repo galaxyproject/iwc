@@ -1,101 +1,76 @@
 - doc: Test outline for RNAseq_SR
   job:
-    gtf:
+    GTF file of annotation:
       class: File
-      location: https://zenodo.org/record/4541751/files/Drosophila_melanogaster.BDGP6.87.gtf
+      location: https://zenodo.org/records/13987631/files/Saccharomyces_cerevisiae.R64-1-1.113.gtf
       filetype: gtf
-    SR fastq input:
+    Collection of FASTQ files:
       class: Collection
       collection_type: list
       elements:
       - class: File
-        identifier: GSM461177
-        location: https://zenodo.org/record/4541751/files/GSM461177_1_subsampled.fastqsanger
-    forward_adapter: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
-    reference_genome: dm6
-    strandedness: unstranded
-    cufflinks_FPKM: true
-    stringtie_FPKM: true
+        identifier: SRR5085167
+        location: https://zenodo.org/records/13987631/files/SRR5085167_forward.fastqsanger.gz
+    Forward adapter: AGATCGGAAGAG
+    Generate additional QC reports: true
+    Reference genome: sacCer3
+    Strandedness: stranded - forward
+    Use featureCounts for generating count tables: true
+    Compute Cufflinks FPKM: true
+    GTF with regions to exclude from FPKM normalization with Cufflinks: null
+    Compute StringTie FPKM: true
   outputs:
-    output_log:
+    MultiQC stats:
+      asserts:
+        has_text_matching:
+          expression: "SRR5085167\t0.11[0-9]*\t18.3[0-9]*\t69.6[0-9]*\t0.3[0-9]*\t0.3[0-9]*\t94.62\t0.12[0-9]*\t34.43\t0.2[0-9]*\t28.[0-9]*\t90.[0-9]*\t16.[0-9]*\t0.36[0-9]*\t43.[0-9]*\t91.[0-9]*\t70.[0-9]*\t36.[0-9]*\t46.0\t75.0\t75\t27.27[0-9]*\t0.39[0-9]*"
+    Counts Table:
       element_tests:
-        GSM461177:
+        SRR5085167:
           asserts:
-            - that: "has_text"
-              text: "Number of input reads |\t1051466"
-            - that: "has_text"
-              text: "Uniquely mapped reads number |\t871202"
-            - that: "has_text"
-              text: "Number of reads mapped to multiple loci |\t91808"
-    mapped-reads:
+            has_line:
+              line: "YAL038W	1775"
+    Mapped Reads:
       element_tests:
-        GSM461177:
+        SRR5085167:
           asserts:
             has_size:
-              value: 43037033
-              delta: 4000000
-  'MultiQC on input dataset(s): Stats':
-    asserts:
-      has_line:
-        line: "Sample	STAR_mqc_generalstats_star_total_reads_1	STAR_mqc_generalstats_star_mapped_1	STAR_mqc_generalstats_star_mapped_percent_1	STAR_mqc_generalstats_star_uniquely_mapped_1	STAR_mqc_generalstats_star_uniquely_mapped_percent_1	STAR_mqc_generalstats_star_multimapped_1	Cutadapt_mqc_generalstats_cutadapt_percent_trimmed"
-      has_text_matching:
-        expression: "GSM461177\t1.0[0-9]*\t0.96[0-9]*\t91.[0-9]*\t0.8[0-9]*\t82.8[0-9]*\t0.091[0-9]*\t4.0[0-9]*"
-    MultiQC webpage:
-      asserts:
-        - that: "has_text"
-          text: "GSM461177"
-        - that: "has_text"
-          text: "<a href=\"#cutadapt_filtered_reads\" class=\"nav-l2\">Filtered Reads</a>"
-        - that: "has_text"
-          text: "<a href=\"#star\" class=\"nav-l1\">STAR</a>"
-    reads_per_gene from STAR:
+              value: 31570787
+              delta: 3000000
+    Gene Abundance Estimates from StringTie:
       element_tests:
-        GSM461177:
-          asserts:
-            - that: "has_text"
-              text: "N_ambiguous\t20961\t5272\t4705"
-            - that: "has_text"
-              text: "FBgn0010247\t14\t6\t8"
-    HTS count like output:
-      element_tests:
-        GSM461177:
-          asserts:
-            has_text:
-              text: "FBgn0010247\t14"
-    transcripts_expression_cufflinks:
-      element_tests:
-        GSM461177:
-          asserts:
-            has_text:
-              text: "FBtr0078104\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t1583\t0.626702\t18.291\t9.78605\t26.796\tOK"
-    genes_expression_cufflinks:
-      element_tests:
-        GSM461177:
+        SRR5085167:
           asserts:
             has_text_matching:
-              expression: "FBgn0031217\t-\t-\tFBgn0031217\tCG11377\t-\tchr2L:102379-104142\t-\t-\t32.1016\t22.1771\t42.02[0-9]*\tOK"
-    genes_expression_stringtie:
+              expression: "YAL038W\tCDC19\tchrI\t\\+\t71786\t73288\t57.[0-9]*\t3575.[0-9]*\t3084.[0-9]*"
+    Genes Expression from Cufflinks:
       element_tests:
-        GSM461177:
+        SRR5085167:
           asserts:
-            has_text:
-              text: "FBgn0031220\tCG4822\tchr2L\t-\t116970\t121754\t1.067492\t36.649773\t74.784904"
-    both strands coverage:
+            has_line:
+              line: "YAL038W	-	-	YAL038W	CDC19	-	chrI:71785-73288	-	-	3375.85	3161.36	3590.33	OK"
+    Transcripts Expression from Cufflinks:
       element_tests:
-        GSM461177:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W_mRNA	-	-	YAL038W	CDC19	-	chrI:71785-73288	1503	57.5601	3375.85	3161.36	3590.33	OK"
+    Stranded Coverage:
+      element_tests:
+        SRR5085167_forward:
           asserts:
             has_size:
-              value: 6075761
-              delta: 600000
-    stranded coverage:
+              value: 555489
+              delta: 50000
+        SRR5085167_reverse:
+          asserts:
+            has_size:
+              value: 526952
+              delta: 50000
+    Unstranded Coverage:
       element_tests:
-        GSM461177_reverse:
+        SRR5085167:
           asserts:
             has_size:
-              value: 3103918
-              delta: 300000
-        GSM461177_forward:
-          asserts:
-            has_size:
-              value: 3103918
-              delta: 300000
+              value: 978542
+              delta: 90000
