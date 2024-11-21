@@ -10,7 +10,7 @@ A GTN has been developed for this workflow. [https://training.galaxyproject.org/
 
 ### Search Databases (FASTA) from [Zenodo](https://zenodo.org/records/14181725)
 - `HUMAN SwissProt Protein_Database.fasta`
-- `Species UniProt FASTA.fasta`
+- `Species UniProt Protein Database FASTA.fasta`
 - `Contaminants (cRAP) Protein Database.fasta`
 ### MSMS files download from [Zenodo](https://zenodo.org/records/14181725)
 - `PTRC_Skubitz_Plex2_F10_9Aug19_Rage_Rep-19-06-08.mgf`
