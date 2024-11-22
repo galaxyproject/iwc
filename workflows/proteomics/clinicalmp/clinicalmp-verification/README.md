@@ -1,6 +1,8 @@
 # Clinical Metaproteomics 3: Verification
-In proteomics research, verifying detected peptides is an essential step for reporting accurate peptide detections. This tutorial continues from the clinical metaproteomics discovery workflow, focusing on verifying identified microbial peptides using the PepQuery tool. The PepQuery tool provides an output of verified peptides that can be used to generate a verified protein database that can be used for the next Quantitation workflow.
-[https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-3-verification/tutorial.html](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-3-verification/tutorial.html)
+This workflow uses the PepQuery tool to verify peptides discovered with the clinical metaproteomics discovery workflow.
+The PepQuery tool outputs verified peptides that can be used to generate a verified protein database that can be used for the clinical metaproteomics quantitation workflow.
+
+More background on this workflow can be found in the [Clinical Metaproteomics 3: Verification tutorial](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-3-verification/tutorial.html)
 
 ## Inputs datasets
 
