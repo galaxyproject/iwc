@@ -16,11 +16,7 @@ More background on this workflow can be found in the [Clinical Metaproteomics 3:
 - cRAP
 
 ### MSMS files
-The MGF files can be accessed via Zenodo.
-- `PTRC_Skubitz_Plex2_F10_9Aug19_Rage_Rep-19-06-08.mgf`
-- `PTRC_Skubitz_Plex2_F11_9Aug19_Rage_Rep-19-06-08.mgf`
-- `PTRC_Skubitz_Plex2_F13_9Aug19_Rage_Rep-19-06-08.mgf`
-- `PTRC_Skubitz_Plex2_F15_9Aug19_Rage_Rep-19-06-08.mgf`
+The tandem MS/MS files can be downloaded via Zenodo. These MS/MS input files are pilot datasets from Papanicolaou test samples from healthy, benign and ovarian cancer patients. 
 
 ## Input Values
 For PepQuery:
