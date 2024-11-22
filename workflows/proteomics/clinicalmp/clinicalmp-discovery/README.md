@@ -7,7 +7,7 @@ In this current workflow, we perform Discovery using the SearchGUI and MaxQuant 
 
 ## Inputs dataset
 
-- `MSMS datasets` in RAW dataset collection and MGF Dataset collection
+- `MSMS datasets` in RAW dataset collection
 - `Databases for discovery` in Fasta (protein sequences for database searching)
 - `Experimental-Design Discovery MaxQuant` in Tabular Format 
 
