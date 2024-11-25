@@ -18,7 +18,8 @@ The final step is to view the generated annotation using a genome browser such a
 Helixer requires the genome sequence to be annotated, in fasta format.
 
 ## Output dataset for Helixer
-Helixer produces a single output dataset: a GFF3 file. The GFF3 format is a standard bioinformatics format for storing genome annotations. Each row describes a genomic entity, with columns detailing its identifier, location, score and other attributes.
+Helixer produces a single output dataset: a GFF3 file. 
+
 
 ## Input dataset for Genome Annotation Statistics
 This software requires a GFF3 file. In this workflow, the output generated is Helixer.
@@ -35,7 +36,6 @@ In this workflow, GFFRead requires two inputs:
 
 ## Output dataset for GFFRead
 In this workflow, a unique output will be generated. This file, in fasta format, contains the protein sequences predicted from the annotation.
-
 
 ## Input dataset for BUSCO
 BUSCO requires a fasta file.
