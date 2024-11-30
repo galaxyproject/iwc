@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { marked } from "marked";
+import MarkdownRenderer from "./MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 
@@ -15,10 +15,6 @@ const formatDate = (date: string) => {
         month: "long",
         day: "numeric",
     });
-};
-
-const parseMarkdown = (content: string) => {
-    return marked(content);
 };
 
 // TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
@@ -92,13 +88,13 @@ const tabs = computed(() => [
         content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
+        label: "Diagram",
+        content: workflow.value?.diagrams || "No diagram available",
+    },
+    {
         label: "Tools",
         tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
     },
-    // {
-    //     label: "Preview",
-    //     preview: true,
-    // },
 ]);
 
 /* Instance Selector -- factor out to a component */
@@ -187,13 +183,13 @@ const onInstanceChange = (value: string) => {
                         </template>
                         <template #item="{ item }">
                             <div v-if="item.content" class="mt-6">
-                                <div
-                                    class="prose dark:prose-invert !max-w-none"
-                                    v-html="parseMarkdown(item.content)"></div>
+                                <div class="prose dark:prose-invert !max-w-none">
+                                    <MarkdownRenderer :markdownContent="item.content" />
+                                </div>
                             </div>
                             <div v-else-if="item.tools" class="mt-6">
                                 <div class="prose dark:prose-invert !max-w-none">
-                                    <h3>The following tools are required to run this workflow.</h3>
+                                    <h3>The following tools are used by this workflow.</h3>
                                     <p>
                                         This will eventually be a pretty page with links to each tool in the (new)
                                         toolshed, etc.
