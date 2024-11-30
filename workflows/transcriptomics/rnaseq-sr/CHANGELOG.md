@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1] 2024-11-25
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.6+galaxy0`
+
+## [1.0] 2024-10-22
+
+### Changes in workflows
+- Add an optional subworkflow with more QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.
+- Add featureCounts as an alternative way to generate count files
+- Use fastp instead of cutadapt which uses pair overlap and allows to have optional adapter sequences
+
+### Tool update
+- `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/cufflinks/cufflinks/2.2.1.4`
+
+### Test dataset
+- Using a new subsampled Yeast test data from Zenodo record https://zenodo.org/records/13987631
+
 ## [0.9] 2024-09-23
 
 ### Automatic update

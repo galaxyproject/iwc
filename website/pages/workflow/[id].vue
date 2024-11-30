@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { type Workflow, type WorkflowCollection } from "~/models/workflow";
-import { workflowCollections } from "~/models/workflow";
 import { marked } from "marked";
 import Author from "~/components/Author.vue";
+import { useWorkflowStore } from "~/stores/workflows";
 
 const route = useRoute();
-const workflow = ref<Workflow | null>(null);
-
-const allWorkflows = computed(() => workflowCollections.flatMap((collection) => collection.workflows));
-
-workflow.value = allWorkflows.value.find((w) => w.definition.uuid === route.params.id);
+const workflowStore = useWorkflowStore();
+const workflow = computed(() => workflowStore.workflow);
 
 const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -28,11 +24,12 @@ const parseMarkdown = (content: string) => {
 // TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
 const authors = computed(() => {
     let authorLine = "";
-    if (workflow.value.authors) {
+    if (workflow.value?.authors) {
         authorLine = workflow.value.authors.map((author) => author.name).join(", ");
     }
     return authorLine;
 });
+
 const links = [
     {
         label: "Back to index",
@@ -54,24 +51,24 @@ function testToRequestState() {
 }
 
 function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
-    return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`
+    return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`;
 }
 
-
 async function createLandingPage() {
-    const job = testToRequestState()
-    const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`)
+    const job = testToRequestState();
+    const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`);
     const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify({
             workflow_id: trs_url,
             workflow_target_type: "trs_url",
-            request_state: job
-        })
-    })
+            request_state: job,
+            public: true,
+        }),
+    });
     const json = await response.json();
-    const landingPage =  `${selectedInstance.value}/workflow_landings/${json['uuid']}`;
+    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}?public=true`;
     window.open(landingPage, "_blank");
 }
 
@@ -98,13 +95,13 @@ const tabs = computed(() => [
         label: "Tools",
         tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
     },
-    {
-        label: "Preview",
-        preview: true,
-    },
+    // {
+    //     label: "Preview",
+    //     preview: true,
+    // },
 ]);
 
-/* Instance SElector -- factor out to a component */
+/* Instance Selector -- factor out to a component */
 const selectedInstance = ref("");
 const instances = reactive([
     { value: "http://localhost:8081", label: "local dev instance" },
@@ -113,14 +110,18 @@ const instances = reactive([
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
 ]);
 
-onBeforeMount(() => {
+const loading = ref(true);
+
+onBeforeMount(async () => {
     // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
+    await workflowStore.setWorkflow();
     const savedInstance = localStorage.getItem("selectedInstance");
     if (savedInstance) {
         selectedInstance.value = savedInstance;
     } else {
         selectedInstance.value = instances[0].value;
     }
+    loading.value = false;
 });
 
 const onInstanceChange = (value: string) => {
@@ -129,13 +130,15 @@ const onInstanceChange = (value: string) => {
 </script>
 
 <template>
-    <div v-if="workflow" class="flex h-screen">
-        <!-- Left sidebar -->
-        <div class="w-1/4 p-4 overflow-y-auto">
-            <div class="sticky top-4 h-16">
-                <UBreadcrumb :links="links" />
-            </div>
-            <div class="mt-6">
+    <div v-if="loading" class="flex mx-auto justify-center items-center" style="height: 60vh">
+        <div class="relative">
+            <div class="loader border-t-8 border-hokey-pokey"></div>
+            <div class="absolute inset-0 flex justify-center items-center text-xl font-bold font-mono">Loading...</div>
+        </div>
+    </div>
+    <NuxtLayout v-else>
+        <template #sidebar>
+            <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
                 <ul>
@@ -170,12 +173,12 @@ const onInstanceChange = (value: string) => {
                         label="Run with example data" />
                 </UButtonGroup>
             </div>
-        </div>
+        </template>
 
         <!-- Right side workflow cards -->
-        <div class="w-3/4 p-4 overflow-y-auto" ref="workflowContainer">
-            <div class="mx-auto py-8">
-                <div class="bg-gray-100 p-6 rounded-lg mb-6 text-gray-800">
+        <template #content>
+            <div v-if="workflow" class="mx-auto">
+                <div class="p-4 mb-6">
                     <UTabs :items="tabs" class="w-full">
                         <template #default="{ item, index, selected }">
                             <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
@@ -184,10 +187,12 @@ const onInstanceChange = (value: string) => {
                         </template>
                         <template #item="{ item }">
                             <div v-if="item.content" class="mt-6">
-                                <div class="prose !max-w-none" v-html="parseMarkdown(item.content)"></div>
+                                <div
+                                    class="prose dark:prose-invert !max-w-none"
+                                    v-html="parseMarkdown(item.content)"></div>
                             </div>
                             <div v-else-if="item.tools" class="mt-6">
-                                <div class="prose !max-w-none">
+                                <div class="prose dark:prose-invert !max-w-none">
                                     <h3>The following tools are required to run this workflow.</h3>
                                     <p>
                                         This will eventually be a pretty page with links to each tool in the (new)
@@ -209,10 +214,28 @@ const onInstanceChange = (value: string) => {
                     </UTabs>
                 </div>
             </div>
-        </div>
-    </div>
-    <div v-else class="max-w-3xl mx-auto py-8">
-        <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-        <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
-    </div>
+            <div v-else class="max-w-3xl mx-auto py-8">
+                <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
+                <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
+            </div>
+        </template>
+    </NuxtLayout>
 </template>
+
+<style scoped>
+.loader {
+    border-radius: 50%;
+    width: 240px;
+    height: 240px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
