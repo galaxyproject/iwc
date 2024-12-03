@@ -16,8 +16,10 @@ Generate phased assembly based on PacBio Hifi Reads using HiC data from the same
 
 1. Haplotype 1 assembly ([fasta] and [gfa])
 2. Haplotype 2 assembly ([fasta] and [gfa])
-3. QC: BUSCO report for both assemblies
-4. QC: Merqury report for both assemblies
-5. QC: Assembly statistics for both assemblies
-6. QC: Nx plot for both assemblies
-7. QC: Size plot for both assemblies
+3. Trimmed Hi-C forward reads collection
+4. Trimmed Hi-C reverse reads collection
+5. QC: BUSCO report for both assemblies
+6. QC: Merqury report for both assemblies
+7. QC: Assembly statistics for both assemblies
+8. QC: Nx plot for both assemblies
+9. QC: Size plot for both assemblies
