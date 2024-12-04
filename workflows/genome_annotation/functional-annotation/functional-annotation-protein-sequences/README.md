@@ -8,7 +8,7 @@ EggNOG Mapper compares each protein sequence of the annotation to a huge set of 
 InterProScan is a tool that analyses each protein sequence from our annotation to determine if they contain one or several of the signatures from InterPro. When a protein contains a known signature, the corresponding functional annotation will be assigned to it by InterProScan.
 
 ## Input dataset
-This workflow requires only a input file: a protein sequneces file in fasta format.
+This workflow requires only a input file: a protein sequences file in fasta format.
 
 
 ## Outputs for eggNOG Mapper
