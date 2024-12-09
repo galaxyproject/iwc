@@ -1,10 +1,8 @@
 name: PR Preview
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'website/**'
 
 jobs:
   build-and-deploy:
@@ -14,7 +12,7 @@ jobs:
       - name: Checkout PR Branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,11 +40,10 @@ jobs:
         working-directory: ./website
 
       - name: Deploy to Publication Branch
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/.output/public
-          publish_branch: gh-pages
           destination_dir: __preview/pr-${{ github.event.pull_request.number }}
 
       - name: Create or Update PR Comment with Preview Link
