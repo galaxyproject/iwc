@@ -3,6 +3,18 @@ import json
 import yaml
 
 
+def read_contents(path: str):
+    try:
+        with open(path) as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"No {os.path.basename(path)} at {path}")
+    except Exception as e:
+        print(
+            f"Error reading file {path}: {e}"
+        )
+
+
 def find_and_load_compliant_workflows(directory):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
@@ -57,28 +69,10 @@ def find_and_load_compliant_workflows(directory):
                             f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
                         )
 
-                    # also try to load a README.md file for each workflow
-                    try:
-                        with open(os.path.join(root, "README.md")) as f:
-                            workflow["readme"] = f.read()
-                    # catch FileNotFound
-                    except FileNotFoundError:
-                        print(f"No README.md at {os.path.join(root, 'README.md')}")
-                    except Exception as e:
-                        print(
-                            f"Error reading file {os.path.join(root, 'README.md')}: {e}"
-                        )
-
-                    # also try to load a CHANGELOG.md file for each workflow
-                    try:
-                        with open(os.path.join(root, "CHANGELOG.md")) as f:
-                            workflow["changelog"] = f.read()
-                    except FileNotFoundError:
-                        print(f"No CHANGELOG.md at {os.path.join(root, 'CHANGELOG.md')}")
-                    except Exception as e:
-                        print(
-                            f"Error reading file {os.path.join(root, 'CHANGELOG.md')}: {e}"
-                        )
+                    # load readme, changelog and diagrams
+                    workflow["readme"] = read_contents(os.path.join(root, "README.md"))
+                    workflow["changelog"] = read_contents(os.path.join(root, "CHANGELOG.md"))
+                    workflow["diagrams"] = read_contents(f"{os.path.splitext(workflow_path)[0]}_diagrams.md")
                     dirname = os.path.dirname(workflow_path).split("/")[-1]
                     workflow["trsID"] = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
 
