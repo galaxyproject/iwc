@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted, watch } from "vue";
+import { ref, nextTick, watch } from "vue";
 import { marked } from "marked";
 import mermaid from "mermaid";
 
@@ -17,7 +17,10 @@ const renderedHtml = ref<string>("");
 // Initialize Mermaid
 mermaid.initialize({
     startOnLoad: false,
-    theme: "neutral",
+    theme: "default",
+    themeVariables: {
+        background: "#f4f4f4",
+    }
 });
 
 // Watch Markdown Content for Changes
@@ -31,7 +34,6 @@ watch(
 
 // Render Markdown Function
 async function renderMarkdown(content: string) {
-    console.log("rendering now");
     renderedHtml.value = await marked(content);
     await nextTick();
     renderMermaidDiagrams();
@@ -47,6 +49,7 @@ function renderMermaidDiagrams() {
             try {
                 const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
                 mermaid.render(id, code).then((value) => (parent.innerHTML = value.svg));
+                parent.classList.add("not-prose");
             } catch (e) {
                 console.error("Mermaid rendering error:", e);
             }
