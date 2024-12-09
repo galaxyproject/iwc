@@ -36,7 +36,7 @@ def workflow_to_mermaid_diagrams(workflow, workflows = None):
     if workflows is None:
         workflows = {}
 
-    mermaid_diagram = "graph LR\n"
+    mermaid_diagram = ["graph LR"]
 
     # Create a mapping of step IDs to their labels
     id_step_labels = {
@@ -47,19 +47,19 @@ def workflow_to_mermaid_diagrams(workflow, workflows = None):
     # Iterate through each step and its connections
     for step_id, step in workflow["steps"].items():
         step_label = id_step_labels.get(int(step_id))
-        mermaid_diagram += (
-            f'{step_id}{step_to_mermaid_item(step["type"], step_label)}\n'
+        mermaid_diagram.append(
+            f'{step_id}{step_to_mermaid_item(step["type"], step_label)}'
         )
         for input_connection in step.get("input_connections", {}).values():
             if not isinstance(input_connection, list):
                 input_connection = [input_connection]
                 for ic in input_connection:
-                    mermaid_diagram += f"{ic['id']} --> {step_id}\n"
+                    mermaid_diagram.append(f"{ic['id']} --> {step_id}")
         
         if step["type"] == "subworkflow":
             workflow_to_mermaid_diagrams(step["subworkflow"], workflows=workflows)
 
-    workflows[workflow["name"]] = mermaid_diagram
+    workflows[workflow["name"]] = "\n".join(mermaid_diagram)
 
     return workflows
 
@@ -79,7 +79,7 @@ def walk_directory(directory):
                 markdown_items = ["# Workflow diagrams\n"]
                 for workflow_name, diagram in reversed(mermaid_diagrams.items()):
                     markdown_items.append(f"## {workflow_name}\n")
-                    markdown_items.append(f"```mermaid\n{diagram}```\n")
+                    markdown_items.append(f"```mermaid\n{diagram}\n```\n")
 
                 mmd_path = f"{os.path.splitext(file_path)[0]}_diagrams.md"
                 with open(mmd_path, "w") as f:
