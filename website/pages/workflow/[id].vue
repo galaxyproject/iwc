@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import MarkdownRenderer from "./MarkdownRenderer.vue";
+import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 
