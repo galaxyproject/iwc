@@ -17,10 +17,7 @@ const renderedHtml = ref<string>("");
 // Initialize Mermaid
 mermaid.initialize({
     startOnLoad: false,
-    theme: "default",
-    themeVariables: {
-        background: "#f4f4f4",
-    }
+    theme: "neutral",
 });
 
 // Watch Markdown Content for Changes
