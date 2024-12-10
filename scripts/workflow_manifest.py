@@ -1,6 +1,7 @@
 import os
 import json
 import yaml
+from create_mermaid import walk_directory
 
 
 def read_contents(path: str):
@@ -102,5 +103,6 @@ def write_to_json(data, filename):
 
 
 if __name__ == "__main__":
+    walk_directory("./workflows")
     workflow_data = find_and_load_compliant_workflows("./workflows")
     write_to_json(workflow_data, "workflow_manifest.json")
