@@ -13,6 +13,13 @@ STEP_TYPE_TO_SHAPE = {
     "tool": "@{ shape: process }",
     "subworkflow": "@{ shape: subprocess }",
 }
+STEP_TYPE_TO_SYMBOL = {
+    "data_input": "ℹ️ ",
+    "data_collection_input": "ℹ️ ",
+    "parameter_input": "ℹ️ ",
+    "subworkflow": "🛠️ ",
+    "tool": "",
+}
 
 
 def step_to_mermaid_item(
@@ -21,7 +28,8 @@ def step_to_mermaid_item(
     ],
     step_label: str,
 ):
-    step_label_anchor = f'["{step_label}"]'
+    prefix = STEP_TYPE_TO_SYMBOL[step_type]
+    step_label_anchor = f'["{prefix}{step_label}"]'
     shape = STEP_TYPE_TO_SHAPE.get(step_type, "")
     return f"{step_label_anchor}{shape}"
 
