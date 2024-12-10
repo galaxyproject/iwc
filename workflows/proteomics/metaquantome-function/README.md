@@ -1,0 +1,4 @@
+# metaQuantome 2: Function
+metaQuantome software suite Easterly et al. 2019 was developed by the Team for quantitative and statistical analysis of metaproteomics data. For taxonomic and functional expression analysis within the microbial community, metaQuantome leverages peptide-level quantitative information to generate visual outputs for data interpretation. It also generates outputs that help in understanding the taxonomic contribution to a selected function as well as functions expressed by selected taxonomic group.
+
+More background on this workflow can be found in the [metaQuantome 2: Function tutorial](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/metaquantome-function/tutorial.html)
