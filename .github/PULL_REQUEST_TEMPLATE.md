@@ -5,6 +5,7 @@ FOR CONTRIBUTOR:
 
 FOR REVIEWERS:
 * [ ] .dockstore.yml: file is present and aligned with creator metadata in workflow. ORCID identifiers are strongly encouraged in creator metadata. The .dockstore.yml file is required to run tests
+* [ ] Workflow is sufficiently generic to be used with lab data and does not hardcode sample names, reference data and can be run without reading an accompanying tutorial.
 * [ ] In workflow: annotation field contains short description of what the workflow does. Should start with `This workflow does/runs/performs … xyz … to generate/analyze/etc …`
 * [ ] In workflow: workflow inputs and outputs have human readable names (spaces are fine, no underscore, dash only where spelling dictates it), no abbreviation unless it is generally understood. Altering input or output labels requires adjusting these labels in the the workflow-tests.yml file as well
 * [ ] In workflow: `name` field should be human readable (spaces are fine, no underscore, dash only where spelling dictates it), no abbreviation unless generally understood
