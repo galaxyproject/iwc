@@ -1,7 +1,17 @@
 # workflow level env vars cannot be used at the job level
 # https://github.community/t/how-to-set-and-access-a-workflow-variable/17335/15
 name: Galaxy Workflow Tests for push and PR
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/**'
+      - 'website/**'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/**'
+      - 'website/**'
 env:
   GITHUB_USER: iwc-workflows-bot
 jobs:
@@ -40,6 +50,7 @@ jobs:
       run: pip install wheel
     - name: Planemo lint workflows
       uses: galaxyproject/planemo-ci-action@v1
+      id: lint
       with:
         mode: lint
         workflows: true
@@ -169,3 +180,13 @@ jobs:
           Attention: deployment ${{ needs.deploy.result }}!
 
           https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  determine-success:
+    name: Check workflow success
+    needs: [setup, lint, combine_outputs]
+    if: ${{ always() && github.ref != 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check status
+      if: ${{ needs.combine_outputs.result != 'skipped' && (needs.lint.result != 'success' || needs.combine_outputs.result != 'success') }}
+      run: exit 1

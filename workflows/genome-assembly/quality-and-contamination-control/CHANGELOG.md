@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.6] 2024-11-18
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy3`
+
+## [1.1.5] 2024-10-21
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1`
+
 ## [1.1.4] 2024-10-10
 
 ### Manual update

@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [0.1.8] 2024-12-03
+
+- `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy6` was updated to `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl_count_kmers/meryl_count_kmers/1.3+galaxy7`
+- `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy6` was updated to `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl_groups_kmers/meryl_groups_kmers/1.3+galaxy7`
+- `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy6` was updated to `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl_histogram_kmers/meryl_histogram_kmers/1.3+galaxy7`
+- Fix invalid connections using optional inputs to set default values for non-optional tool inputs. Now using the "pick parameter value" tool to set default value 
+
+
 ## [0.1.7] 2024-08-05
 
 ### Automatic update

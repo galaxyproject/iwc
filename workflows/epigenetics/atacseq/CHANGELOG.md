@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0] 2024-11-28
+
+### Manual update
+
+Use the options like written in the README: in all previous versions, bowtie2 was running with `--very-sensitive` option but without allowing dovetail and without fragment length up to 1kb. Bowtie2 has been adjusted and is now running with these options: allow dovetail and fragment length up to 1kb.
+
 ## [0.17] 2024-09-23
 
 ### Automatic update
