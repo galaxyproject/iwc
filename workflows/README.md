@@ -19,6 +19,17 @@ The structure is as follows:
 
 ## Adding workflows
 
+### Workflow eligibility
+
+We want to collect production workflows targeted at users that want to analyze their own data.
+As such, the workflow should be sufficiently generic that users can provide their own data.
+
+We encourage, but do not require, links to related [Galaxy Training Network Tutorials](https://training.galaxyproject.org/).
+Importantly, each workflow should be described in a way that a user can run the
+workflow on their own data without modifying the workflow. If you wish to
+deposit a workflow that accompanies a tutorial please make sure that the workflow
+does not refer to datasets that only make sense in the context of the tutorial.
+
 Here are some guidelines to help new contributors to add their workflows.
 
 Everything starts from a workflow that you have on a galaxy instance.
