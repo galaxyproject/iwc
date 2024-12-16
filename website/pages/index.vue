@@ -41,7 +41,7 @@ function selectWorkflow(workflow: Workflow) {
 
 <template>
     <NuxtLayout>
-        <template #sidebar>
+        <template #leftSidebar>
             <div class="sticky top-4 h-16">
                 <input
                     v-model="searchQuery"

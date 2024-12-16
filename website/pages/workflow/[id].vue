@@ -126,7 +126,7 @@ const onInstanceChange = (value: string) => {
         </div>
     </div>
     <NuxtLayout v-else>
-        <template #sidebar>
+        <template #rightSidebar>
             <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
