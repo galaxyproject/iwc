@@ -39,7 +39,7 @@ function selectWorkflow(workflow: Workflow) {
 
 function formatDate(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+    return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 </script>
 
