@@ -1,5 +1,5 @@
 <template>
-    <header class="p-8 bg-ebony-clay-800 border-b text-white">
+    <header class="p-8 bg-ebony-clay text-white">
         <div class="flex">
             <div class="flex flex-grow space-x-2">
                 <NuxtLink to="/" class="flex items-center space-x-2 hover:text-hokey-pokey">
