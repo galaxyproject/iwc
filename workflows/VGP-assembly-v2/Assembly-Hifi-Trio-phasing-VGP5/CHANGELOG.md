@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] 2024-12-16
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy1`
+
 ## [0.3] 2024-11-11
 
 ### Automatic update
