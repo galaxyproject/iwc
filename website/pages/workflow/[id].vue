@@ -77,12 +77,12 @@ const tabs = computed(() => [
         content: workflow.value?.readme || "No README available.",
     },
     {
-        label: "Version History",
-        content: workflow.value?.changelog || "No CHANGELOG available.",
-    },
-    {
         label: "Diagram",
         content: workflow.value?.diagrams || "No diagram available",
+    },
+    {
+        label: "Version History",
+        content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
         label: "Tools",
