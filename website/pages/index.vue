@@ -60,11 +60,6 @@ function selectWorkflow(workflow: Workflow) {
                 :id="`workflow-${workflow.definition.uuid}`"
                 :ui="{
                     strategy: 'override',
-                    color: {
-                        white: {
-                            solid: 'bg-white dark:bg-gray-900',
-                        },
-                    },
                     footer: {
                         padding: 'px-6 py-2',
                     },
