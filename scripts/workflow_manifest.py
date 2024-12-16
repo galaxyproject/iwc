@@ -1,6 +1,7 @@
 import os
 import json
 import yaml
+import datetime
 from create_mermaid import walk_directory
 
 
@@ -11,9 +12,7 @@ def read_contents(path: str):
     except FileNotFoundError:
         print(f"No {os.path.basename(path)} at {path}")
     except Exception as e:
-        print(
-            f"Error reading file {path}: {e}"
-        )
+        print(f"Error reading file {path}: {e}")
 
 
 def find_and_load_compliant_workflows(directory):
@@ -70,14 +69,32 @@ def find_and_load_compliant_workflows(directory):
                             f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
                         )
 
+                    # Get workflow file update time and add it to the data as
+                    # isoformat -- most accurate version of the latest 'update'
+                    # to the workflow?
+                    updated_timestamp = os.path.getmtime(workflow_path)
+                    updated_datetime = datetime.datetime.fromtimestamp(
+                        updated_timestamp
+                    )
+                    updated_isoformat = updated_datetime.isoformat()
+                    workflow["updated"] = updated_isoformat
+
                     # load readme, changelog and diagrams
                     workflow["readme"] = read_contents(os.path.join(root, "README.md"))
-                    workflow["changelog"] = read_contents(os.path.join(root, "CHANGELOG.md"))
-                    workflow["diagrams"] = read_contents(f"{os.path.splitext(workflow_path)[0]}_diagrams.md")
+                    workflow["changelog"] = read_contents(
+                        os.path.join(root, "CHANGELOG.md")
+                    )
+                    workflow["diagrams"] = read_contents(
+                        f"{os.path.splitext(workflow_path)[0]}_diagrams.md"
+                    )
                     dirname = os.path.dirname(workflow_path).split("/")[-1]
-                    workflow["trsID"] = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
+                    workflow["trsID"] = (
+                        f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
+                    )
 
-                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    workflow_test_path = (
+                        f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    )
                     if os.path.exists(workflow_test_path):
                         with open(workflow_test_path) as f:
                             tests = yaml.safe_load(f)
