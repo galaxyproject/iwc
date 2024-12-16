@@ -68,6 +68,14 @@ function selectWorkflow(workflow: Workflow) {
                     :id="`workflow-${workflow.definition.uuid}`"
                     :ui="{
                         strategy: 'override',
+                        base: 'flex flex-col',
+                        header: {
+                            padding: 'px-6 py-4',
+                        },
+                        body: {
+                            base: 'flex-1',
+                            padding: 'px-6 py-4',
+                        },
                         footer: {
                             padding: 'px-6 py-2',
                         },
