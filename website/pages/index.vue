@@ -10,8 +10,14 @@ const workflowStore = useWorkflowStore();
 
 const allWorkflows = computed(() => workflowStore.allWorkflows);
 
+// Sort workflows descending by workflow.updated
+
+const sortedWorkflows = computed(() =>
+    allWorkflows.value.sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
+);
+
 const filteredWorkflows = computed(() =>
-    allWorkflows.value.filter((workflow) =>
+    sortedWorkflows.value.filter((workflow) =>
         workflow.definition.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
     ),
 );
