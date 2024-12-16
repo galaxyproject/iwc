@@ -30,6 +30,11 @@ function selectWorkflow(workflow: Workflow) {
     selectedWorkflow.value = workflow;
     scrollToWorkflow(workflow);
 }
+
+function formatDate(isoString: string): string {
+    const date = new Date(isoString);
+    return date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+}
 </script>
 
 <template>
@@ -79,7 +84,7 @@ function selectWorkflow(workflow: Workflow) {
                     <template #footer>
                         <div class="flex space-x-4">
                             <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
-                            <p class="text-xs text-gray-500">{{ workflow.updated}}</p>
+                            <p class="text-xs text-gray-500">{{ formatDate(workflow.updated) }}</p>
                         </div>
                     </template>
 
