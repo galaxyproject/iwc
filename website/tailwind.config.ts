@@ -32,7 +32,7 @@ export default <Partial<Config>>{
                     600: "#5D678D",
                     700: "#4C5574",
                     800: "#3C435C",
-                    900: "#2C3143",
+                    900: "#2C3143", // default
                     950: "#212532",
                 },
                 // Galaxy bright highlight
@@ -53,7 +53,7 @@ export default <Partial<Config>>{
                 // Galaxy grey, secondary color
                 chicago: {
                     DEFAULT: "#58585a",
-                    "50": "#f5f5f6",
+                    "50": "#f5f5f6", // background light
                     "100": "#e6e6e7",
                     "200": "#d0d0d1",
                     "300": "#afafb1",
