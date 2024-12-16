@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { type Workflow, type WorkflowCollection } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
+import { formatDate } from "~/utils/";
 
 const searchQuery = ref("");
 const selectedWorkflow = ref<Workflow | null>(null);
@@ -35,11 +36,6 @@ function scrollToWorkflow(workflow: Workflow) {
 function selectWorkflow(workflow: Workflow) {
     selectedWorkflow.value = workflow;
     scrollToWorkflow(workflow);
-}
-
-function formatDate(isoString: string): string {
-    const date = new Date(isoString);
-    return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 </script>
 
