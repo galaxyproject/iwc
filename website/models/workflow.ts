@@ -16,6 +16,7 @@ export interface Workflow {
     definition: WorkflowDefinition;
     readme: string;
     changelog: string;
+    updated: string;
     diagrams: string;
     trsID: string;
 }

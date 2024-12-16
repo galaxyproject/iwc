@@ -79,7 +79,7 @@ function selectWorkflow(workflow: Workflow) {
                     <template #footer>
                         <div class="flex space-x-4">
                             <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
-                            <p class="text-xs text-gray-500">(todo:last_update)</p>
+                            <p class="text-xs text-gray-500">{{ workflow.updated}}</p>
                         </div>
                     </template>
 
