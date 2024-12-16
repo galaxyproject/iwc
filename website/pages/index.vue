@@ -81,7 +81,10 @@ function selectWorkflow(workflow: Workflow) {
                     </UBadge>
                 </div>
                 <template #footer>
-                    <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
+                    <div class="flex space-x-4">
+                        <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
+                        <p class="text-xs text-gray-500">(todo:last_update)</p>
+                    </div>
                 </template>
 
                 <UButton :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">Details</UButton>
