@@ -58,7 +58,18 @@ function selectWorkflow(workflow: Workflow) {
                 v-for="workflow in filteredWorkflows"
                 :key="workflow.definition.uuid"
                 :id="`workflow-${workflow.definition.uuid}`"
-                class="mb-4 p-6">
+                :ui="{
+                    strategy: 'override',
+                    color: {
+                        white: {
+                            solid: 'bg-white dark:bg-gray-900',
+                        },
+                    },
+                    footer: {
+                        padding: 'px-6 py-2',
+                    },
+                }"
+                class="mb-6">
                 <template #header>
                     <h2 class="text-xl font-bold mb-2">{{ workflow.definition.name }}</h2>
                 </template>
