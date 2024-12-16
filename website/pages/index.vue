@@ -69,6 +69,9 @@ function selectWorkflow(workflow: Workflow) {
                         {{ tag }}
                     </UBadge>
                 </div>
+                <template #footer>
+                    <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
+                </template>
 
                 <UButton :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">Details</UButton>
             </UCard>
