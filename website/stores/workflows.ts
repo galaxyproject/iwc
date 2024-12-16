@@ -13,13 +13,16 @@ export const useWorkflowStore = defineStore("workflow", () => {
     const getWorkflowByTrsId = (trsID: string) => {
         return allWorkflows.value.find((w) => w.trsID === trsID) as Workflow;
     }
+    const allCategories = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.categories))));
+    const allTags = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.definition.tags))));
 
     const setWorkflow = () => {
         workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
 
     return {
-        workflow,
+        allCategories,
+        allTags,
         allWorkflows,
         getWorkflowByTrsId,
         setWorkflow,
