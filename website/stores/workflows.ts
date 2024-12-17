@@ -10,6 +10,10 @@ export const useWorkflowStore = defineStore("workflow", () => {
 
     const allWorkflows = computed(() => workflowCollections.flatMap((collection) => collection.workflows));
 
+    const getWorkflowByTrsId = (trsID: string) => {
+        return allWorkflows.value.find((w) => w.trsID === trsID) as Workflow;
+    }
+
     const setWorkflow = () => {
         workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
@@ -17,6 +21,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
     return {
         workflow,
         allWorkflows,
+        getWorkflowByTrsId,
         setWorkflow,
     };
 });
