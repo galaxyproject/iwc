@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.1.9] 2024-12-17
+### Added
+- Annotation for workflow describing its function
 
 ## [0.1.8] 2024-12-03
 
