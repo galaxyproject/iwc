@@ -3,6 +3,10 @@ import { computed, useSlots } from "vue";
 
 const slots = useSlots();
 
+const hasHero = computed(() => {
+    return !!slots.hero;
+});
+
 const hasLeftSidebar = computed(() => {
     return !!slots.leftSidebar;
 });
@@ -11,7 +15,8 @@ const hasRightSidebar = computed(() => {
 });
 </script>
 <template>
-    <div class="overflow-y-auto">
+    <div :class="hasHero ? 'overflow-y-auto' : 'overflow-hidden'">
+        <!-- Hero -->
         <slot name="hero"></slot>
         <div class="flex w-full h-full">
             <!-- Left sidebar -->
