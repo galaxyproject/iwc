@@ -41,6 +41,27 @@ function selectWorkflow(workflow: Workflow) {
 
 <template>
     <NuxtLayout>
+        <template #hero>
+            <div class="container-fluid text-white text-center bg-ebony-clay p-8 space-y-6">
+                <h1 class="text-6xl mx-8" :style="{ 'font-weight': 700 }">
+                    Discover and run vetted analysis pipelines  on Galaxy
+                </h1>
+                <h3 class="text-xl mx-8" :style="{ 'font-weight': 600 }">
+                    Ready-to-use, open-source pipelines with sample data and training materials
+                    to make progress quickly and reliably.
+                </h3>
+            </div>
+            <div class="overflow-hidden p-0">
+                <svg
+                    viewBox="14 0 100 40"
+                    preserveAspectRatio="none"
+                    height="100"
+                    class="fill-ebony-clay w-full"
+                    :style="{ transform: 'rotate(180deg)' }">
+                    <use xlink:href="/waveNounProject.svg#path" />
+                </svg>
+            </div>
+        </template>
         <template #leftSidebar>
             <div class="sticky top-4 h-16">
                 <input
