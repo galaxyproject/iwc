@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Workflow } from '~/models/workflow';
+import type { Workflow } from "~/models/workflow";
 import { formatDate } from "~/utils/";
 
 defineProps<{
