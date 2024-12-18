@@ -34,7 +34,7 @@ All IWC workflows are automatically installed onto usegalaxy.* servers (i.e. [Ga
 
 ## Contributing a Workflow
 
-Anyone can contribute a Galaxy Workflow. Please check out the [Adding workflow guidelines](workflows/README.md#adding-workflows).
+Anyone can contribute a production Galaxy Workflow. Please check out the [Adding workflow guidelines](workflows/README.md#adding-workflows).
 
 If linting passes, tests pass, and human review passes, the PR is merged and
 
