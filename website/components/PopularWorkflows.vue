@@ -21,10 +21,7 @@ const workflows = computed(() => {
             Get started with some of the most popular or recently updated pipelines
         </h2>
         <div class="grid grid-cols-3 gap-8 mx-8">
-            <WorkflowCard
-                v-for="workflow in workflows"
-                :key="workflow.definition.uuid"
-                :workflow="workflow" />
+            <WorkflowCard v-for="workflow in workflows" :key="workflow.definition.uuid" :workflow="workflow" />
         </div>
     </div>
 </template>
