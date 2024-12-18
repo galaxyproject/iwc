@@ -1,7 +1,12 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-    modules: ["@nuxt/ui", "@nuxt/content", "@pinia/nuxt"],
+    modules: [
+        "@nuxt/ui",
+        "@nuxt/content",
+        "@pinia/nuxt",
+        'nuxt-icon'
+    ],
     colorMode: {
         preference: "light",
     },
