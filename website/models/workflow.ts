@@ -20,6 +20,7 @@ export interface Workflow {
     diagrams: string;
     trsID: string;
     categories: string[];
+    collections: string[];
 }
 
 // Define the interface for an author

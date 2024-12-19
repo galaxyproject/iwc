@@ -14,6 +14,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
         return allWorkflows.value.find((w) => w.trsID === trsID) as Workflow;
     };
     const allCategories = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.categories))));
+    const allCollections = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.collections))));
     const allTags = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.definition.tags))));
 
     const setWorkflow = () => {
@@ -23,6 +24,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
     return {
         workflow,
         allCategories,
+        allCollections,
         allTags,
         allWorkflows,
         getWorkflowByTrsId,
