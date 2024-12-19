@@ -27,6 +27,7 @@ def get_dockstore_details(trsID):
 
     details = None
     categories = []
+    collections = []
 
     if response.status_code == 200:
         details = response.json()
@@ -45,11 +46,24 @@ def get_dockstore_details(trsID):
                 print(
                     f"Failed to get categories. Status code: {cat_response.status_code}"
                 )
+
+            # With the ID, request collections
+            url_collections = f"https://dockstore.org/api/entries/{entry_id}/collections"
+            collection_response = requests.get(url_collections)
+
+            if collection_response.status_code == 200:
+                collections_data = collection_response.json()
+                for collection in collections_data:
+                    collections.append(collection["collectionDisplayName"])
+            else:
+                print(
+                    f"Failed to get collections. Status code: {collection_response.status_code}"
+                )
         else:
             print("No 'id' field found in the top-level data.")
     else:
         print(f"Failed to retrieve details. Status code: {response.status_code}")
-    return details, categories
+    return details, categories, collections
 
 
 def find_and_load_compliant_workflows(directory):
@@ -125,10 +139,11 @@ def find_and_load_compliant_workflows(directory):
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
 
-                dockstore_details, categories = get_dockstore_details(trsID)
+                dockstore_details, categories, collections = get_dockstore_details(trsID)
 
                 workflow["dockstore_id"] = dockstore_details["id"]
                 workflow["categories"] = categories
+                workflow["collections"] = collections
 
                 workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
                 if os.path.exists(workflow_test_path):
