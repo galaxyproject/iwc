@@ -8,6 +8,7 @@
                 </NuxtLink>
             </div>
             <div class="flex items-center space-x-8">
+                <NuxtLink to="/about" class="hover:text-hokey-pokey"> About </NuxtLink>
                 <NuxtLink
                     to="https://github.com/galaxyproject/iwc/blob/main/workflows/README.md#adding-workflows"
                     class="hover:text-hokey-pokey">
