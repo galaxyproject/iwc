@@ -4,18 +4,11 @@ import { useRoute } from "vue-router";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
+import { formatDate } from "~/utils/";
 
 const route = useRoute();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
-
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-};
 
 // TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
 const authors = computed(() => {
@@ -84,12 +77,12 @@ const tabs = computed(() => [
         content: workflow.value?.readme || "No README available.",
     },
     {
-        label: "Version History",
-        content: workflow.value?.changelog || "No CHANGELOG available.",
-    },
-    {
         label: "Diagram",
         content: workflow.value?.diagrams || "No diagram available",
+    },
+    {
+        label: "Version History",
+        content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
         label: "Tools",
@@ -133,7 +126,7 @@ const onInstanceChange = (value: string) => {
         </div>
     </div>
     <NuxtLayout v-else>
-        <template #sidebar>
+        <template #rightSidebar>
             <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
@@ -143,6 +136,7 @@ const onInstanceChange = (value: string) => {
                         <Author :author="author" />
                     </li>
                     <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
+                    <li><strong>Updated:</strong> {{ formatDate(workflow.updated) }}</li>
                     <li><strong>License:</strong> {{ workflow.definition.license }}</li>
                     <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
                 </ul>
