@@ -7,3 +7,15 @@ This workflow uses a function file, an intensity file and the metaQuantome datab
 ***Note:*** The **expand** module of the metaQuantome suite is run in "Functional analysis" mode in this workflow. 
 
 More background on this workflow can be found in the [metaQuantome 2: Function tutorial](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/metaquantome-function/tutorial.html)
+
+
+## Inputs dataset
+
+- `Functional metaQuantome file` containing the list of gene onotlogy (GO) terms for each peptide
+- `Intensity metaQuantome file` created with peptide quantification tool (e.g. FlashLFQ)
+- `metaQuantome databases` (NCBI Taxonomy, GO term and ENZYME database) downloaded
+- `metaQuantome: create samples file` to specify the column names used for each experimental group (T2, T4, T7)
+
+## Objectives
+
+- A functional and quantitational analysis of metaproteomic mass spectrometry data
