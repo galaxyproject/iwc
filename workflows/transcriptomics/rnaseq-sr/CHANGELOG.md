@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2] 2024-12-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.0.8+galaxy0`
+
 ## [1.1] 2024-11-25
 
 ### Automatic update
