@@ -1,5 +1,7 @@
 # Preprocessing and Clustering of Single-cell RNA-seq Data with Scanpy
 
+This workflow follows Scanpy legacy workflow [clustering 3k PBMCs](https://scanpy.readthedocs.io/en/stable/tutorials/basics/clustering-2017.html). For more details on concepts and parameters, please refer to the equivalent Galaxy-based [tutorial](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-scanpy-pbmc3k/tutorial.html).
+
 ## Inputs
 
 ### Input datasets
