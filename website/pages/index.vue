@@ -13,6 +13,8 @@ const POPULAR_WORKFLOW_TRS_IDS = [
     "#workflow/github.com/iwc-workflows/sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING",
 ];
 
+import Filters from "~/components/Filters.vue";
+
 const searchQuery = ref("");
 const selectedWorkflow = ref<Workflow | null>(null);
 const gridDiv = ref<HTMLDivElement | null>(null);
@@ -20,6 +22,8 @@ const gridDiv = ref<HTMLDivElement | null>(null);
 const workflowStore = useWorkflowStore();
 
 const allWorkflows = computed(() => workflowStore.allWorkflows);
+const allCategories = computed(() => workflowStore.allCategories);
+const allTags = computed(() => workflowStore.allTags);
 
 // Sort workflows descending by workflow.updated
 
@@ -82,26 +86,15 @@ function selectWorkflow(workflow: Workflow) {
                 </svg>
             </div>
         </template>
-        <template #leftSidebar>
-            <div class="sticky top-4 h-16">
+        <template #content>
+            <div class="h-16">
                 <input
                     v-model="searchQuery"
                     type="text"
                     placeholder="Search workflows"
                     class="w-full mb-4 p-2 border rounded" />
             </div>
-            <ul class="mt-6">
-                <li
-                    v-for="workflow in filteredWorkflows"
-                    :key="workflow.definition.uuid"
-                    @click="selectWorkflow(workflow)"
-                    class="cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    :class="{ 'bg-blue-100': selectedWorkflow === workflow }">
-                    {{ workflow.definition.name }}
-                </li>
-            </ul>
-        </template>
-        <template #content>
+            <Filters />
             <div ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
                     v-for="workflow in filteredWorkflows"

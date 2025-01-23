@@ -23,7 +23,7 @@ const hasRightSidebar = computed(() => {
             <div v-if="hasLeftSidebar" class="w-1/4 p-4 overflow-y-auto">
                 <slot name="leftSidebar"></slot>
             </div>
-            <!-- Left side content -->
+            <!-- content -->
             <div class="flex-1 p-4 overflow-y-auto">
                 <slot name="content"></slot>
             </div>

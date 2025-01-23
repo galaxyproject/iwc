@@ -13,34 +13,42 @@ defineProps<{
             strategy: 'override',
             base: 'flex flex-col',
             header: {
-                padding: 'px-6 py-4',
+                // padding: 'px-6 py-4',
             },
             body: {
-                base: 'flex-1',
-                padding: 'px-6 py-4',
+                base: 'flex-1 flex flex-col',
+                // padding: 'px-6 py-2',
             },
             footer: {
-                padding: 'px-6 py-2',
+                // padding: 'px-6 py-2',
             },
         }"
         class="mb-6">
         <template #header>
-            <h2 class="text-xl font-bold mb-2">{{ workflow.definition.name }}</h2>
+            <ULink :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">
+                <h2 class="text-xl font-bold mb-2 hover:underline">{{ workflow.definition.name }}</h2>
+            </ULink>
         </template>
-        <p class="mb-4">{{ workflow.definition.annotation }}</p>
 
-        <div v-if="workflow.definition.tags && workflow.definition.tags.length > 0" class="mb-4">
-            <UBadge v-for="tag in workflow.definition.tags" :key="tag" class="mr-2 mb-2" variant="soft">
-                {{ tag }}
-            </UBadge>
+        <div class="flex flex-col flex-grow">
+            <p class="flex-grow mb-4">{{ workflow.definition.annotation }}</p>
+
+            <div v-if="workflow.definition.tags && workflow.definition.tags.length > 0">
+                <UBadge v-for="tag in workflow.definition.tags" :key="tag" class="mr-2 mb-2" variant="soft">
+                    {{ tag }}
+                </UBadge>
+            </div>
+
         </div>
+
         <template #footer>
             <div class="flex space-x-4">
-                <p class="text-xs text-gray-500">Release {{ workflow.definition.release }}</p>
+                <p class="text-xs text-gray-500">
+                    {{ workflow.definition.release }} 
+                    <Icon name="uil:tag" class="mx-1" />
+                </p>
                 <p class="text-xs text-gray-500">{{ formatDate(workflow.updated) }}</p>
             </div>
         </template>
-
-        <UButton :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">Details</UButton>
     </UCard>
 </template>
