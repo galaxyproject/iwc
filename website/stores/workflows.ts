@@ -51,6 +51,6 @@ export const useWorkflowStore = defineStore("workflow", () => {
         selectedCategories,
         selectedTags,
         toggleCategory,
-        toggleTag
+        toggleTag,
     };
 });
