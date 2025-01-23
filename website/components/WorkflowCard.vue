@@ -38,13 +38,12 @@ defineProps<{
                     {{ tag }}
                 </UBadge>
             </div>
-
         </div>
 
         <template #footer>
             <div class="flex space-x-4">
                 <p class="text-xs text-gray-500">
-                    {{ workflow.definition.release }} 
+                    {{ workflow.definition.release }}
                     <Icon name="uil:tag" class="mx-1" />
                 </p>
                 <p class="text-xs text-gray-500">{{ formatDate(workflow.updated) }}</p>

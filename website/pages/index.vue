@@ -33,9 +33,7 @@ const sortedWorkflows = computed(() =>
 
 const filteredWorkflows = computed(() =>
     sortedWorkflows.value.filter((workflow) => {
-        const matchesSearch = workflow.definition.name
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase());
+        const matchesSearch = workflow.definition.name.toLowerCase().includes(searchQuery.value.toLowerCase());
         const matchesCategory =
             !workflowStore.selectedCategories.length ||
             workflowStore.selectedCategories.some((cat) => workflow.categories.includes(cat));
@@ -78,11 +76,6 @@ function selectWorkflow(workflow: Workflow) {
                     and reliably.
                 </h3>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
-                <div>
-                    <button class="bg-white text-ebony-clay text-xl px-4 py-2 rounded" @click="scrollToGrid">
-                        Browse all pipelines
-                    </button>
-                </div>
             </div>
             <div class="overflow-hidden p-0">
                 <svg
