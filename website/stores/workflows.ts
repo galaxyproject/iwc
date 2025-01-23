@@ -17,6 +17,25 @@ export const useWorkflowStore = defineStore("workflow", () => {
     const allCollections = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.collections))));
     const allTags = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.definition.tags))));
 
+    const selectedCategories = ref<string[]>([]);
+    const selectedTags = ref<string[]>([]);
+
+    function toggleCategory(category: string) {
+        if (selectedCategories.value.includes(category)) {
+            selectedCategories.value = selectedCategories.value.filter((c) => c !== category);
+        } else {
+            selectedCategories.value.push(category);
+        }
+    }
+
+    function toggleTag(tag: string) {
+        if (selectedTags.value.includes(tag)) {
+            selectedTags.value = selectedTags.value.filter((t) => t !== tag);
+        } else {
+            selectedTags.value.push(tag);
+        }
+    }
+
     const setWorkflow = () => {
         workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
@@ -29,5 +48,9 @@ export const useWorkflowStore = defineStore("workflow", () => {
         allWorkflows,
         getWorkflowByTrsId,
         setWorkflow,
+        selectedCategories,
+        selectedTags,
+        toggleCategory,
+        toggleTag
     };
 });

@@ -21,11 +21,11 @@ const allCategories = store.allCategories;
 const allTags = store.allTags;
 
 const handleCategoryClick = (category: string) => {
-    // ...handle category click...
+    store.toggleCategory(category);
 };
 
 const handleTagClick = (tag: string) => {
-    // ...handle tag click...
+    store.toggleTag(tag);
 };
 // ...existing code...
 </script>
