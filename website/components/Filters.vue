@@ -1,18 +1,3 @@
-<template>
-    <div id="filters">
-        <UBadge
-            v-for="category in allCategories"
-            :key="category"
-            @click="handleCategoryClick(category)"
-            class="badge m-1">
-            {{ category }}
-        </UBadge>
-        <UBadge v-for="tag in allTags" :key="tag" @click="handleTagClick(tag)" class="badge m-1">
-            {{ tag }}
-        </UBadge>
-    </div>
-</template>
-
 <script setup lang="ts">
 import { useWorkflowStore } from "~/stores/workflows";
 
@@ -29,10 +14,23 @@ const handleTagClick = (tag: string) => {
 };
 // ...existing code...
 </script>
-
-<style scoped>
-.badge {
-    /* ...styles... */
-}
-/* ...existing styles... */
-</style>
+<template>
+    <div id="filters">
+        <UBadge
+            v-for="category in allCategories"
+            :key="category"
+            :variant="store.selectedCategories.includes(category) ? null : 'soft'"
+            @click="handleCategoryClick(category)"
+            class="badge m-1">
+            {{ category }}
+        </UBadge>
+        <UBadge
+            v-for="tag in allTags"
+            :key="tag"
+            :variant="store.selectedTags.includes(tag) ? null : 'soft'"
+            @click="handleTagClick(tag)"
+            class="badge m-1">
+            {{ tag }}
+        </UBadge>
+    </div>
+</template>
