@@ -36,10 +36,10 @@ The workflow provides a subtyping report, the consensus sequences arranged by ge
 
 - **Vapor - closest references**: a nested collection listing, for each sample and segment, the up to 500 best matching reference sequences according to VAPOR; inspect this collection if you are curious how many good matches to your data there were in the reference collection; useful for debugging, for example, if generated consensus sequences contain unresolved bases (Ns)
 - **Subtyping results**: a table listing one sample and its detected subtype (with respect to the HA and NA segments) per row
-- **Hybrid reference genome used for mapping**: collection of compiled reference genomes (in FASTA format, one per sample) that served as input for bwa-mem; each reference genome consists of the genome segments from the reference collections that best matched the corresponding sample's sequencing data
-- **fastp report**: QC and read trimming and filtering results from fastp
+- **Hybrid reference genomes used for mapping**: collection of compiled reference genomes (in FASTA format, one per sample) that served as input for bwa-mem; each reference genome consists of the genome segments from the reference collections that best matched the corresponding sample's sequencing data
+- **fastp reports**: QC and read trimming and filtering results from fastp
 - **Final read mapping results**: bwa-mem mapping results in BAM format post-processed with samtools view
-- **QC report for mapping results**: a report of QC metrics for the "Final read mapping results" generated with Qualimap
+- **QC reports for mapping results**: a collection of reports of QC metrics for the "Final read mapping results" generated with Qualimap
 - **Per-sample consensus sequences**: a nested collection of consensus sequences organized first by sample, then by segment
 - **Per-segment consensus sequences with samples combined**: a collection of the same consensus sequences organized by segment; each collection element is a multi-sequence FASTA dataset with the segment-specific sequences of all samples
 - **Multiple sequence alignments per segment**: a collection of multiple sequence alignments generated with MAFFT from each of the "Per-segment consensus sequences with samples combined" above; generated only if you provided input sequencing data of at least two samples
