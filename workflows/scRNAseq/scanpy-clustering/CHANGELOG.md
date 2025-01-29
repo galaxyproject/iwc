@@ -1,5 +1,3 @@
-## [0.1] 2024-10-09
-
 ## [0.2] 2025-01-27
 
 ### Automatic update
@@ -11,5 +9,10 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/1.10.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/1.10.2+galaxy2`
 - `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/1.10.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/1.10.2+galaxy2`
 - `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/1.10.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/1.10.2+galaxy2`
+
+### Manual update
+- Manipulate Anndata filtering steps were moved to Scanpy filter tool v1.10.2+galaxy3. Hence, replaced all Manipulate Anndata filtering steps with the latest Scanpy Filter steps.
+
+## [0.1] 2024-10-09
 
 First release.
