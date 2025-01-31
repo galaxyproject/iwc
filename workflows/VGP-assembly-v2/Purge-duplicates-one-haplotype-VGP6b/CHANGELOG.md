@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.2] 2024-12-16
+## [0.7.2] 2025-01-30
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
