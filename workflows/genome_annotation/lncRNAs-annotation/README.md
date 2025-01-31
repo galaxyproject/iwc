@@ -4,6 +4,7 @@ This workflow uses the FEELnc tool to annotate long non-coding RNAs. Before anno
 
 For future analyses, it would be interesting to use an updated annotation containing messenger RNA and long non-coding RNA. The concatenante tool merges the reference annotation with the long non-coding RNA annotation obtained with FEELnc.
 
+This workflow is taken from the tutorial “Long non-coding RNAs (lncRNAs) annotation with FEELnc” on the GTN.
 
 ## Workflows steps
 - Transcript Assembly with StringTie: RNA-seq alignments are assembled into potential transcripts to provide a comprehensive view of expressed regions.
