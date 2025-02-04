@@ -6,15 +6,16 @@ This workflow generates Hi-C contact maps for diploid genome assemblies in the P
 ## Inputs
 
 1. **Haplotype 1** [fasta]
-2. **Haplotype 2** [fasta]
-3. **Do you want to add suffixes to the scaffold names?** Select yes if the scaffold names in your assembly do not contain haplotype information.
-4. **Haplotype 1 suffix** This suffix will be added to haplotype 1 scaffold names if you selected to add suffixes to the scaffold names.
-5. **Haplotype 2 suffix** This suffix will be added to haplotype 2 scaffold names if you selected to add suffixes to the scaffold names.
-6. **Hi-C reads - forward**  [fastq] Collection containing the Hi-C forward reads
-7. **Hi-C reads - reverse**  [fastq] Collection containing the Hi-C reverse reads
-8. **Do you want to trim the Hi-C data?** If *yes*, remove 5bp at the end of Hi-C reads. Use with Arima Hi-C data if the Hi-C map looks "noisy".
-9.  **Telomere repeat to suit species** Expected value of the repeated sequences in the telomeres. Default value [CCCTAA] is suited to vertebrates.
-10. **PacBio reads** [fastq] Collection of PacBio reads.
+2. **Will you use a second haplotype?** 
+3. **Haplotype 2** [fasta]
+4. **Do you want to add suffixes to the scaffold names?** Select yes if the scaffold names in your assembly do not contain haplotype information.
+5. **Haplotype 1 suffix** This suffix will be added to haplotype 1 scaffold names if you selected to add suffixes to the scaffold names.
+6. **Haplotype 2 suffix** This suffix will be added to haplotype 2 scaffold names if you selected to add suffixes to the scaffold names.
+7. **Hi-C reads - forward**  [fastq] Collection containing the Hi-C forward reads
+8. **Hi-C reads - reverse**  [fastq] Collection containing the Hi-C reverse reads
+9. **Do you want to trim the Hi-C data?** If *yes*, remove 5bp at the end of Hi-C reads. Use with Arima Hi-C data if the Hi-C map looks "noisy".
+10. **Telomere repeat to suit species** Expected value of the repeated sequences in the telomeres. Default value [CCCTAA] is suited to vertebrates.
+11. **PacBio reads** [fastq] Collection of PacBio reads.
 
 
 ## Outputs
