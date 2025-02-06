@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2022-11-22
+## [0.2.3] 2022-11-22
 
 - update all tools:
   - fastp from 0.20.1 to 0.23.2
