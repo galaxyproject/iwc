@@ -2,8 +2,8 @@
 import { useWorkflowStore } from "~/stores/workflows";
 
 const store = useWorkflowStore();
-const allCategories = store.allCategories;
-const allTags = store.allTags;
+const validCategories = computed(() => store.getValidCategories);
+const validTags = computed(() => store.getValidTags);
 
 const handleCategoryClick = (category: string) => {
     store.toggleCategory(category);
@@ -12,21 +12,22 @@ const handleCategoryClick = (category: string) => {
 const handleTagClick = (tag: string) => {
     store.toggleTag(tag);
 };
-// ...existing code...
 </script>
 <template>
     <div id="filters">
         <UBadge
-            v-for="category in allCategories"
+            v-for="category in validCategories"
             :key="category"
+            v-show="validCategories.includes(category)"
             :variant="store.selectedCategories.includes(category) ? null : 'soft'"
             @click="handleCategoryClick(category)"
             class="badge m-1">
             {{ category }}
         </UBadge>
         <UBadge
-            v-for="tag in allTags"
+            v-for="tag in validTags"
             :key="tag"
+            v-show="validTags.includes(tag)"
             :variant="store.selectedTags.includes(tag) ? null : 'soft'"
             @click="handleTagClick(tag)"
             class="badge m-1">
