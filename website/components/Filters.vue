@@ -19,7 +19,7 @@ const handleTagClick = (tag: string) => {
             v-for="category in validCategories"
             :key="category"
             v-show="validCategories.includes(category)"
-            :variant="store.selectedCategories.includes(category) ? null : 'soft'"
+            :variant="store.selectedCategories.includes(category) ? 'solid' : 'soft'"
             @click="handleCategoryClick(category)"
             class="badge m-1">
             {{ category }}
@@ -28,7 +28,7 @@ const handleTagClick = (tag: string) => {
             v-for="tag in validTags"
             :key="tag"
             v-show="validTags.includes(tag)"
-            :variant="store.selectedTags.includes(tag) ? null : 'soft'"
+            :variant="store.selectedTags.includes(tag) ? 'solid ' : 'soft'"
             @click="handleTagClick(tag)"
             class="badge m-1">
             {{ tag }}
