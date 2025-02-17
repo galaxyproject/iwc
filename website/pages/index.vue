@@ -34,13 +34,12 @@ const sortedWorkflows = computed(() =>
 const filteredWorkflows = computed(() =>
     sortedWorkflows.value.filter((workflow) => {
         const matchesSearch = workflow.definition.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesCategory =
-            !workflowStore.selectedCategories.length ||
-            workflowStore.selectedCategories.some((cat) => workflow.categories.includes(cat));
-        const matchesTag =
-            !workflowStore.selectedTags.length ||
-            workflowStore.selectedTags.some((tag) => workflow.definition.tags.includes(tag));
-        return matchesSearch && matchesCategory && matchesTag;
+        const matchesFilters =
+            !workflowStore.selectedFilters.length ||
+            workflowStore.selectedFilters.every(
+                (filter) => workflow.categories.includes(filter) || workflow.definition.tags.includes(filter),
+            );
+        return matchesSearch && matchesFilters;
     }),
 );
 
