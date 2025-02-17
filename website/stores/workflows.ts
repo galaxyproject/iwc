@@ -40,6 +40,28 @@ export const useWorkflowStore = defineStore("workflow", () => {
         workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
 
+    const getValidCategories = computed(() => {
+        return allCategories.value.filter((category) => {
+            const tempCategories = [...selectedCategories.value, category];
+            return allWorkflows.value.some(
+                (workflow) =>
+                    tempCategories.every((c) => workflow.categories.includes(c)) &&
+                    selectedTags.value.every((t) => workflow.definition.tags.includes(t)),
+            );
+        });
+    });
+
+    const getValidTags = computed(() => {
+        return allTags.value.filter((tag) => {
+            const tempTags = [...selectedTags.value, tag];
+            return allWorkflows.value.some(
+                (workflow) =>
+                    selectedCategories.value.every((c) => workflow.categories.includes(c)) &&
+                    tempTags.every((t) => workflow.definition.tags.includes(t)),
+            );
+        });
+    });
+
     return {
         workflow,
         allCategories,
@@ -52,5 +74,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
         selectedTags,
         toggleCategory,
         toggleTag,
+        getValidCategories,
+        getValidTags,
     };
 });
