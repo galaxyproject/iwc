@@ -17,50 +17,34 @@ export const useWorkflowStore = defineStore("workflow", () => {
     const allCollections = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.collections))));
     const allTags = computed(() => Array.from(new Set(allWorkflows.value.flatMap((w) => w.definition.tags))));
 
-    const selectedCategories = ref<string[]>([]);
-    const selectedTags = ref<string[]>([]);
+    const selectedFilters = ref<string[]>([]);
 
-    function toggleCategory(category: string) {
-        if (selectedCategories.value.includes(category)) {
-            selectedCategories.value = selectedCategories.value.filter((c) => c !== category);
-        } else {
-            selectedCategories.value.push(category);
-        }
-    }
+    const allFilters = computed(() => {
+        const categories = allWorkflows.value.flatMap((w) => w.categories);
+        const tags = allWorkflows.value.flatMap((w) => w.definition.tags);
+        return Array.from(new Set([...categories, ...tags])).sort();
+    });
 
-    function toggleTag(tag: string) {
-        if (selectedTags.value.includes(tag)) {
-            selectedTags.value = selectedTags.value.filter((t) => t !== tag);
+    const validFilters = computed(() => {
+        return allFilters.value.filter((filter) => {
+            const tempFilters = [...selectedFilters.value, filter];
+            return allWorkflows.value.some((workflow) =>
+                tempFilters.every((f) => workflow.categories.includes(f) || workflow.definition.tags.includes(f)),
+            );
+        });
+    });
+
+    function toggleFilter(filter: string) {
+        if (selectedFilters.value.includes(filter)) {
+            selectedFilters.value = selectedFilters.value.filter((f) => f !== filter);
         } else {
-            selectedTags.value.push(tag);
+            selectedFilters.value.push(filter);
         }
     }
 
     const setWorkflow = () => {
         workflow.value = allWorkflows.value.find((w) => w.trsID === route.params.id) as Workflow;
     };
-
-    const getValidCategories = computed(() => {
-        return allCategories.value.filter((category) => {
-            const tempCategories = [...selectedCategories.value, category];
-            return allWorkflows.value.some(
-                (workflow) =>
-                    tempCategories.every((c) => workflow.categories.includes(c)) &&
-                    selectedTags.value.every((t) => workflow.definition.tags.includes(t)),
-            );
-        });
-    });
-
-    const getValidTags = computed(() => {
-        return allTags.value.filter((tag) => {
-            const tempTags = [...selectedTags.value, tag];
-            return allWorkflows.value.some(
-                (workflow) =>
-                    selectedCategories.value.every((c) => workflow.categories.includes(c)) &&
-                    tempTags.every((t) => workflow.definition.tags.includes(t)),
-            );
-        });
-    });
 
     return {
         workflow,
@@ -70,11 +54,9 @@ export const useWorkflowStore = defineStore("workflow", () => {
         allWorkflows,
         getWorkflowByTrsId,
         setWorkflow,
-        selectedCategories,
-        selectedTags,
-        toggleCategory,
-        toggleTag,
-        getValidCategories,
-        getValidTags,
+        selectedFilters,
+        allFilters,
+        validFilters,
+        toggleFilter,
     };
 });
