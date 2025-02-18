@@ -76,7 +76,7 @@ function selectWorkflow(workflow: Workflow) {
                 </h3>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
             </div>
-            <div class="overflow-hidden p-0">
+            <!-- <div class="overflow-hidden p-0">
                 <svg
                     viewBox="14 0 100 40"
                     preserveAspectRatio="none"
@@ -85,7 +85,7 @@ function selectWorkflow(workflow: Workflow) {
                     :style="{ transform: 'rotate(180deg)' }">
                     <use :xlink:href="`${waveSvg}#path`" />
                 </svg>
-            </div>
+            </div> -->
         </template>
         <template #content>
             <div class="h-16">
