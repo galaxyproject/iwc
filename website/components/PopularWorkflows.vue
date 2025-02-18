@@ -17,7 +17,7 @@ const workflows = computed(() => {
 
 <template>
     <div>
-        <h2 class="text-2xl mx-8 my-4 text-white text-center" :style="{ 'font-weight': 600 }">
+        <h2 class="text-xl my-8 text-white text-center" :style="{ 'font-weight': 600 }">
             Get started with some of the most popular or recently updated pipelines
         </h2>
         <div class="grid grid-cols-3 gap-8 mx-8">

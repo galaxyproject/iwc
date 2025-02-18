@@ -67,13 +67,13 @@ function selectWorkflow(workflow: Workflow) {
     <NuxtLayout class="overflow-hidden">
         <template #hero>
             <div class="flex bg-ebony-clay p-8 space-y-6 items-center" :style="{ 'flex-direction': 'column' }">
-                <h1 class="text-6xl mx-8 text-white text-center" :style="{ 'font-weight': 700 }">
+                <h1 class="text-5xl my-2 text-white text-center font-bold">
                     Discover and run vetted analysis pipelines on Galaxy
                 </h1>
-                <h3 class="text-xl mx-8 text-white text-center" :style="{ 'font-weight': 600 }">
+                <h2 class="text-xl text-white text-center font-semibold">
                     Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly
                     and reliably.
-                </h3>
+                </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
             </div>
             <!-- <div class="overflow-hidden p-0">
