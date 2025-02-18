@@ -10,7 +10,7 @@ const handleFilterClick = (filter: string) => {
 </script>
 
 <template>
-    <div id="filters">
+    <div id="filters" class="mb-4">
         <UBadge
             v-for="filter in validFilters"
             :key="filter"
