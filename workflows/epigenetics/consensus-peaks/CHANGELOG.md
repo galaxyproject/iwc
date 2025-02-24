@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4] 2025-02-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/table_compute/table_compute/1.2.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/table_compute/table_compute/1.2.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3`
+
 ## [1.3] 2025-01-27
 
 ### Automatic update
