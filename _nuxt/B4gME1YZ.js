@@ -1,0 +1,1 @@
+import{_ as t,b as a,e as s,r as o,o as c}from"./DAA7Zr0B.js";const r={},l={class:"flex w-full"},n={class:"w-1/4 p-4 overflow-y-auto"},_={class:"w-3/4 p-4 overflow-y-auto"};function d(e,f){return c(),a("div",l,[s("div",n,[o(e.$slots,"sidebar")]),s("div",_,[o(e.$slots,"content")])])}const u=t(r,[["render",d]]);export{u as default};
