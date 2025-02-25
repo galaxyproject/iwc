@@ -33,9 +33,9 @@ defineProps<{
         <div class="flex flex-col flex-grow">
             <p class="flex-grow mb-4">{{ workflow.definition.annotation }}</p>
 
-            <div v-if="workflow.definition.tags && workflow.definition.tags.length > 0">
-                <UBadge v-for="tag in workflow.definition.tags" :key="tag" class="mr-2 mb-2" variant="soft">
-                    {{ tag }}
+            <div v-if="workflow.collections && workflow.collections.length > 0">
+                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="solid">
+                    {{ collection }}
                 </UBadge>
             </div>
         </div>

@@ -7,6 +7,8 @@ const validFilters = computed(() => store.validFilters);
 const handleFilterClick = (filter: string) => {
     store.toggleFilter(filter);
 };
+
+console.debug(validFilters);
 </script>
 
 <template>

@@ -20,16 +20,15 @@ export const useWorkflowStore = defineStore("workflow", () => {
     const selectedFilters = ref<string[]>([]);
 
     const allFilters = computed(() => {
-        const categories = allWorkflows.value.flatMap((w) => w.categories);
-        const tags = allWorkflows.value.flatMap((w) => w.definition.tags);
-        return Array.from(new Set([...categories, ...tags])).sort();
+        const collections = allWorkflows.value.flatMap((w) => w.collections);
+        return Array.from(new Set(collections)).sort();
     });
 
     const validFilters = computed(() => {
         return allFilters.value.filter((filter) => {
             const tempFilters = [...selectedFilters.value, filter];
             return allWorkflows.value.some((workflow) =>
-                tempFilters.every((f) => workflow.categories.includes(f) || workflow.definition.tags.includes(f)),
+                tempFilters.every((f) => workflow.collections.includes(f)),
             );
         });
     });
