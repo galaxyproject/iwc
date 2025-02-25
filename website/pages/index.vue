@@ -37,7 +37,7 @@ const filteredWorkflows = computed(() =>
         const matchesFilters =
             !workflowStore.selectedFilters.length ||
             workflowStore.selectedFilters.every(
-                (filter) => workflow.categories.includes(filter) || workflow.definition.tags.includes(filter),
+                (filter) => workflow.collections.includes(filter)
             );
         return matchesSearch && matchesFilters;
     }),
