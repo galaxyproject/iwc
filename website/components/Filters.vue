@@ -3,12 +3,13 @@ import { useWorkflowStore } from "~/stores/workflows";
 
 const store = useWorkflowStore();
 const validFilters = computed(() => store.validFilters);
+const invalidFilters = computed(() => store.invalidFilters);
 
 const handleFilterClick = (filter: string) => {
     store.toggleFilter(filter);
+    console.debug('validFilters', validFilters);
+    console.debug('invalidFilters', invalidFilters);
 };
-
-console.debug(validFilters);
 </script>
 
 <template>

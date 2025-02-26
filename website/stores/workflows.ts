@@ -67,6 +67,9 @@ export const useWorkflowStore = defineStore("workflow", () => {
         selectedFilters,
         allFilters,
         validFilters,
+        invalidFilters: computed(() => {
+            return allFilters.value.filter(filter => !validFilters.value.includes(filter));
+        }),
         toggleFilter,
     };
 });
