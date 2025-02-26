@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0] 2025-02-26
+
+### Changes
+
+- Output bin files from Hifiasm. Helpful for debugging
+- Output lighter gfas without sequences along with the regular gfas 
+
 ## [0.8] 2025-02-24
 
 ### Automatic update
