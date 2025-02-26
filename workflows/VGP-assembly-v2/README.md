@@ -1,28 +1,46 @@
-# Vertebrate Genome Project in Galaxy
+# Vertebrate Genome Project (VGP) Assembly Workflows
 
-## VGP pipeline
+## Overview
 
-The VGP pipeline is composed of:
-    
-- Five main workflows
+This collection provides a comprehensive set of workflows for high-quality vertebrate genome assembly following the VGP standards. These workflows enable researchers to generate chromosome-scale, phased genome assemblies using PacBio HiFi, Bionano, and Hi-C data.
 
-1. Quality control and parameter estimation. It provides a kmer coverage database and an estimation of parameters that will be useful in the genome assembly process.
-2. Phased assembly with Hifiasm
-3. Purging of duplications and overlap from the phased assembly
-4. Scafolding using Bionano optical mapping (optional)
-5. Scafolding using HiC data
-    
-- Two secondary workflows to correct the assembly purging by using custom cutoffs
+## Workflow Components
 
-1. Custom Purging of duplications and overlap from the primary assembly
-2. Custom Purging of duplications and overlap from the alternate assembly
+### Main Assembly Workflows
 
-- Four export workflows to AWS VGP repository
+1. **Quality Control & Parameter Estimation**
+   * Performs k-mer analysis on input sequencing data
+   * Generates coverage statistics and genome size estimates
+   * Provides essential parameters for optimizing downstream assembly steps
 
-1. Phased assembly export
-2. Purged assembly export
-3. Bionano scaffolding export
-4. Hi-C Scafolding export
+2. **Phased Assembly**
+   * Utilizes Hifiasm for generating high-quality primary and alternate assemblies
+   * Produces haplotype-resolved contigs from PacBio HiFi reads
 
-> Note: For more details about the workflows steps by steps, which parameters to use, and how to understand the results, read our
-[VGP assembly pipeline tutorial](https://training.galaxyproject.org/training-material//topics/assembly/tutorials/vgp_genome_assembly/tutorial.html)
+3. **Purge Duplications**
+   * Removes haplotigs and overlaps from the phased assembly
+   * Improves assembly accuracy by eliminating redundant sequences
+
+4. **Bionano Optical Map Scaffolding** (optional)
+   * Integrates Bionano optical mapping data
+   * Increases contiguity by joining contigs into larger scaffolds
+
+5. **Hi-C Scaffolding**
+   * Uses chromatin proximity data to achieve chromosome-scale scaffolding
+   * Creates the final chromosome-length assembly
+
+### Supporting Workflows
+
+**Custom Purging Workflows**
+* Primary assembly purging with custom cutoffs
+* Alternate assembly purging with custom cutoffs
+
+**Data Export Workflows**
+* Phased assembly export to AWS VGP repository
+* Purged assembly export to AWS VGP repository
+* Bionano scaffolding export to AWS VGP repository
+* Hi-C scaffolding export to AWS VGP repository
+
+## Detailed Documentation
+
+For comprehensive guidance on using these workflows, including parameter selection and results interpretation, please refer to our [VGP Assembly Pipeline Tutorial](https://training.galaxyproject.org/training-material/topics/assembly/tutorials/vgp_genome_assembly/tutorial.html).

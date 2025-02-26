@@ -1,28 +1,40 @@
-# Microbiome Workflows
+# Microbiome Analysis Workflows
 
-In this directory, you will find a collection of workflows designed for microbiome data analysis, pathogen detection, and tracking. These workflows are ready to use and can be adapted for various sequencing techniques using Galaxy's customizable and automatable API.
+This collection provides comprehensive workflows for microbiome analysis, pathogen detection, and microbial tracking. Each workflow is production-ready and fully compatible with Galaxy's automation capabilities, making them suitable for integration into larger analytical pipelines.
 
-## Avaiable Workflows
+## Workflow Collection
 
-- **Nanopore Preprocessing**
+### Core Microbiome Analysis
 
-- **Taxonomy Profiling and Visualisation with Krona**
+- **Nanopore Preprocessing**  
+  Optimized pipeline for quality control and preparation of Oxford Nanopore sequencing data from microbiome samples
 
-- **Gene-based Pathogen Identification**
+- **Taxonomy Profiling with Krona**  
+  Complete taxonomic classification workflow with interactive Krona visualizations for intuitive exploration of microbial community composition
 
-- **Allele-based Pathogen Identification**
+### Pathogen Detection Suite
 
-- **Pathogen Detection: PathoGFAIR Samples Aggregation and Visualisation**
+- **Gene-based Pathogen Identification**  
+  Targeted workflow for identifying pathogens based on marker gene detection and classification
 
-## Getting Started
+- **Allele-based Pathogen Identification**  
+  High-resolution strain typing workflow using allele-level identification for precise pathogen characterization
 
-To learn more about these workflows and to try them with real datasets, please visit our Microbiome tutorials on the Galaxy Training Network (GTN):
+- **PathoGFAIR Aggregation and Visualization**  
+  Advanced workflow for combining multiple sample analyses with standardized visualization following FAIR principles
 
-[Microbiome Tutorials on GTN](https://training.galaxyproject.org/training-material/topics/microbiome/)
+## Implementation and Training
 
+### Getting Started
 
-## Dedicated Training Material
+For comprehensive documentation and example datasets, explore our collection of microbiome analysis tutorials available through the Galaxy Training Network:
 
-The workflows for **Nanopore Preprocessing**, **Taxonomy Profiling and Visualization with Krona**, **Gene-based Pathogen Identification**, **Allele-based Pathogen Identification**, and **Pathogen Detection: PathoGFAIR Samples Aggregation and Visualization** can all be tried out in a dedicated training material on GTN for foodborne pathogen detection and tracking:
+[Complete Microbiome Tutorial Collection](https://training.galaxyproject.org/training-material/topics/microbiome/)
 
-[GTN Tutorial for Foodborne Pathogen Detection and Tracking](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+### Dedicated Pathogen Analysis Tutorial
+
+All workflows in this collection are featured in our comprehensive tutorial on foodborne pathogen detection and tracking:
+
+[Foodborne Pathogen Detection and Tracking Tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)
+
+This tutorial provides step-by-step guidance for implementing these workflows with real-world datasets.
