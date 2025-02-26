@@ -1,9 +1,14 @@
 # Changelog
 
-## [0.2.5] 2025-02-17
+## [0.3.0] 2025-02-26
+
+### Changes
+
+- Output bin files from Hifiasm. Helpful for debugging
+- Output lighter gfas without sequences along with the regular gfas 
 
 ### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3`
 
 ## [0.2.4] 2025-02-10
 
