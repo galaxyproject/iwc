@@ -75,6 +75,18 @@ function selectWorkflow(workflow: Workflow) {
                     and reliably.
                 </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
+                <div class="mt-6">
+                    <UButton
+                        to="#workflows"
+                        variant="outline"
+                        color="white"
+                        @click="scrollToGrid"
+                        icon="i-heroicons-arrow-down"
+                        class="font-medium"
+                    >
+                        Browse all workflows
+                    </UButton>
+                </div>
             </div>
             <!-- <div class="overflow-hidden p-0">
                 <svg
@@ -96,7 +108,7 @@ function selectWorkflow(workflow: Workflow) {
                     class="w-full mb-4 p-2 border rounded" />
             </div>
             <Filters />
-            <div ref="gridDiv" class="grid grid-cols-3 gap-4">
+            <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
                     v-for="workflow in filteredWorkflows"
                     :key="workflow.definition.uuid"

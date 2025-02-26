@@ -16,12 +16,25 @@ const workflows = computed(() => {
 </script>
 
 <template>
-    <div>
-        <h2 class="text-xl my-8 text-white text-center" :style="{ 'font-weight': 600 }">
+    <div class="w-full max-w-5xl mx-auto">
+        <h2 class="text-xl my-6 text-white text-center font-semibold">
             Get started with some of the most popular or recently updated pipelines
         </h2>
-        <div class="grid grid-cols-3 gap-8 mx-8">
-            <WorkflowCard v-for="workflow in workflows" :key="workflow.definition.uuid" :workflow="workflow" />
+        <div class="grid grid-cols-3 gap-4 mx-auto px-4">
+            <WorkflowCard 
+                v-for="workflow in workflows" 
+                :key="workflow.definition.uuid" 
+                :workflow="workflow" 
+                compact
+            />
         </div>
     </div>
 </template>
+
+<style scoped>
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
