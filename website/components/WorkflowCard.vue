@@ -45,7 +45,12 @@ defineProps<{
                 </UBadge>
             </div>
             <div v-else-if="workflow.collections && workflow.collections.length > 0 && compact">
-                <UBadge v-for="collection in workflow.collections.slice(0, 2)" :key="collection" class="mr-1 mb-1" size="xs" variant="soft">
+                <UBadge
+                    v-for="collection in workflow.collections.slice(0, 2)"
+                    :key="collection"
+                    class="mr-1 mb-1"
+                    size="xs"
+                    variant="soft">
                     {{ collection }}
                 </UBadge>
                 <UBadge v-if="workflow.collections.length > 2" size="xs" variant="soft" class="mr-1 mb-1">
