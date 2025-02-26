@@ -11,8 +11,7 @@ Example of trajectory :
 
 1. Scaffolded assembly [gfa]
 2. Name of the haplotype
-3. HiC forward reads [fastq]
-4. HiC reverse reads [fastq]
+3. HiC reads paired collection [fastq]
 5. Trim Hi-C data? If `yes` Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy". 
 6. Database for busco lineage (recommended: latest)
 7. Busco lineage (recommended: vertebrata)

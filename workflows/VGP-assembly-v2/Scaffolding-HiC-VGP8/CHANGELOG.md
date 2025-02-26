@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0] 2025-02-13
+
+### Changes
+
+ - Remove the tool `filter and merge` and replace it by the use of the -SP option in bwa-mem to skip mate rescue and pairing. 
+ - Hi-C data are now input as a paired collection
+ - Generate lighter `gfa` file without sequences
+ 
+### Updates 
+
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy2`
+
+
 ## [0.3] 2025-01-30
 
 ### Changes
