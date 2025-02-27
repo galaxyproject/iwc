@@ -1,4 +1,4 @@
-# RNA-seq paired-end Workflow
+# RNA-Seq Analysis: Paired-End Read Processing and Quantification
 
 ## Inputs dataset
 
