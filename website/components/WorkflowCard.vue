@@ -12,7 +12,7 @@ defineProps<{
         :id="`workflow-${workflow.definition.uuid}`"
         :ui="{
             strategy: 'override',
-            base: `flex flex-col ${compact ? 'h-full shadow-md hover:shadow-lg transition-shadow' : 'mb-6'}`,
+            base: `flex flex-col ${compact ? 'h-[18rem] shadow-md hover:shadow-lg transition-shadow' : 'mb-6'}`,
             header: {
                 padding: compact ? 'p-3' : 'px-6 py-4',
             },
@@ -24,8 +24,7 @@ defineProps<{
                 padding: compact ? 'p-3' : 'px-6 py-2',
             },
         }"
-        :class="compact ? 'bg-white bg-opacity-90 backdrop-blur-sm rounded-lg' : ''"
-        :color="compact ? 'white' : undefined">
+        :class="compact ? 'bg-white bg-opacity-90 backdrop-blur-sm rounded-lg' : ''">
         <template #header>
             <ULink :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">
                 <h2 :class="`font-bold hover:underline ${compact ? 'text-lg' : 'text-xl mb-2'}`">
@@ -40,7 +39,7 @@ defineProps<{
             </p>
 
             <div v-if="workflow.collections && workflow.collections.length > 0 && !compact">
-                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="solid">
+                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="soft">
                     {{ collection }}
                 </UBadge>
             </div>
@@ -49,11 +48,10 @@ defineProps<{
                     v-for="collection in workflow.collections.slice(0, 2)"
                     :key="collection"
                     class="mr-1 mb-1"
-                    size="xs"
                     variant="soft">
                     {{ collection }}
                 </UBadge>
-                <UBadge v-if="workflow.collections.length > 2" size="xs" variant="soft" class="mr-1 mb-1">
+                <UBadge v-if="workflow.collections.length > 2" variant="soft" class="mr-1 mb-1">
                     +{{ workflow.collections.length - 2 }}
                 </UBadge>
             </div>

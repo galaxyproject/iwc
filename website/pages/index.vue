@@ -36,9 +36,7 @@ const filteredWorkflows = computed(() =>
         const matchesSearch = workflow.definition.name.toLowerCase().includes(searchQuery.value.toLowerCase());
         const matchesFilters =
             !workflowStore.selectedFilters.length ||
-            workflowStore.selectedFilters.every(
-                (filter) => workflow.collections.includes(filter)
-            );
+            workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter));
         return matchesSearch && matchesFilters;
     }),
 );
@@ -75,29 +73,7 @@ function selectWorkflow(workflow: Workflow) {
                     and reliably.
                 </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
-                <div class="mt-6">
-                    <UButton
-                        to="#workflows"
-                        variant="outline"
-                        color="white"
-                        @click="scrollToGrid"
-                        icon="i-heroicons-arrow-down"
-                        class="font-medium"
-                    >
-                        Browse all workflows
-                    </UButton>
-                </div>
             </div>
-            <!-- <div class="overflow-hidden p-0">
-                <svg
-                    viewBox="14 0 100 40"
-                    preserveAspectRatio="none"
-                    height="100"
-                    class="fill-ebony-clay w-full"
-                    :style="{ transform: 'rotate(180deg)' }">
-                    <use :xlink:href="`${waveSvg}#path`" />
-                </svg>
-            </div> -->
         </template>
         <template #content>
             <div class="h-16">
