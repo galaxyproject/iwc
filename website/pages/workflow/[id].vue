@@ -93,10 +93,10 @@ const tabs = computed(() => [
 /* Instance Selector -- factor out to a component */
 const selectedInstance = ref("");
 const instances = reactive([
-    { value: "http://localhost:8081", label: "local dev instance" },
     { value: "https://usegalaxy.org", label: "usegalaxy.org" },
-    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
+    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
+    { value: "http://localhost:8081", label: "local dev instance" },
 ]);
 
 const loading = ref(true);
