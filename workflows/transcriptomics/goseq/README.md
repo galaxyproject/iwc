@@ -1,4 +1,4 @@
-# Goseq GO-KEGG Enrichment Analysis Workflow
+# Gene Ontology and KEGG Pathway Enrichment Analysis
 
 ## Inputs dataset
 
