@@ -62,7 +62,7 @@ function selectWorkflow(workflow: Workflow) {
 </script>
 
 <template>
-    <NuxtLayout class="overflow-hidden">
+    <NuxtLayout>
         <template #hero>
             <div class="flex bg-ebony-clay p-8 space-y-6 items-center" :style="{ 'flex-direction': 'column' }">
                 <h1 class="text-5xl my-2 text-white text-center font-bold">
