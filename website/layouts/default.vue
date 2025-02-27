@@ -15,7 +15,7 @@ const hasRightSidebar = computed(() => {
 });
 </script>
 <template>
-    <div class="w-full" :class="hasHero ? 'overflow-y-auto' : 'overflow-hidden'">
+    <div class="w-full overflow-y-auto">
         <!-- Hero -->
         <slot name="hero"></slot>
         <div class="flex">
@@ -24,7 +24,7 @@ const hasRightSidebar = computed(() => {
                 <slot name="leftSidebar"></slot>
             </div>
             <!-- content -->
-            <div class="flex-1 p-4" :class="{ 'overflow-y-auto': !hasHero }">
+            <div class="flex-1 p-4 overflow-y-auto">
                 <slot name="content"></slot>
             </div>
             <!-- Right sidebar -->
