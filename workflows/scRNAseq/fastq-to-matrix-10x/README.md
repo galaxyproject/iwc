@@ -1,4 +1,4 @@
-# Single-cell RNA-seq fastq to matrix for 10X data
+# Single-Cell RNA-seq Preprocessing: 10X Genomics Data to Analysis-Ready Formats
 
 These workflows are inspired by the [training material](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-preprocessing-tenx/tutorial.html). Except that the output is in a 'bundle' format: three files (one matrix, one with genes, one with barcodes) which is similar to the cellranger output format.
 
