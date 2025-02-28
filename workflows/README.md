@@ -1,190 +1,265 @@
-# Workflows
+# IWC Workflows Collection
 
-This directory contains all IWC workflows.
+This directory contains the complete collection of curated Galaxy workflows maintained by the Intergalactic Workflow Commission.
 
-## Structure of the directory
+## Repository Structure
 
-The structure is as follows:
+The workflows are organized in a hierarchical structure:
 
-* top-level directories represent categories, e.g., `sars-cov-2-variant-calling`;
-* directories right under the top level represent individual workflow repositories, e.g., `sars-cov-2-consensus-from-variation` which will be deployed to https://github.com/iwc-workflows/sars-cov-2-consensus-from-variation;
-* please, only use lower case and `-` in directory names.
-* workflow repository directories contain:
+### Top Level: Scientific Domains
+* Each top-level directory represents a scientific domain or analytical category
+* Examples include: `sars-cov-2-variant-calling`, `proteomics`, `genome-assembly`
 
-  * at least one `.ga` workflow file, e.g., `consensus-from-variation.ga`;
-  * as many [Planemo test file](https://planemo.readthedocs.io/en/latest/test_format.html) as workflow files, with the same name as the workflow file, but with a `-tests.yml` extension, e.g., `consensus-from-variation-tests.yml`;
-  * a `test-data` directory with the test data used by Planemo (optional);
-  * a [Dockstore](https://dockstore.org) [metadata file](https://docs.dockstore.org/en/develop/getting-started/github-apps/github-apps.html#workflow-yml-file) named `.dockstore.yml`;
-  * a `README.md` and a `CHANGELOG.md` file.
+### Second Level: Individual Workflows
+* Each subdirectory represents a specific workflow that will be deployed as its own repository
+* Example: `sars-cov-2-consensus-from-variation` → https://github.com/iwc-workflows/sars-cov-2-consensus-from-variation
+* **Naming convention**: Use lowercase with hyphens (`-`) to separate words
 
-## Adding workflows
+### Workflow Directory Contents
+Each workflow directory must contain:
 
-### Workflow eligibility
+* **Workflow File(s)**: At least one `.ga` Galaxy workflow file (e.g., `consensus-from-variation.ga`)
+* **Test File(s)**: Corresponding [Planemo test files](https://planemo.readthedocs.io/en/latest/test_format.html) with `-tests.yml` extension (e.g., `consensus-from-variation-tests.yml`)
+* **Documentation**:
+  * `README.md` - Workflow description, usage instructions, and requirements
+  * `CHANGELOG.md` - Version history and modifications
+* **Metadata**: [Dockstore metadata file](https://docs.dockstore.org/en/develop/getting-started/github-apps/github-apps.html#workflow-yml-file) (`.dockstore.yml`)
+* **Test Data**: Optional `test-data` directory containing datasets used for testing
 
-We want to collect production workflows targeted at users that want to analyze their own data.
-As such, the workflow should be sufficiently generic that users can provide their own data.
+## Contributing Workflows
 
-We encourage, but do not require, links to related [Galaxy Training Network Tutorials](https://training.galaxyproject.org/).
-Importantly, each workflow should be described in a way that a user can run the
-workflow on their own data without modifying the workflow. If you wish to
-deposit a workflow that accompanies a tutorial please make sure that the workflow
-does not refer to datasets that only make sense in the context of the tutorial.
+### Eligibility Requirements
 
-Here are some guidelines to help new contributors to add their workflows.
+The IWC focuses on production-grade workflows that enable scientists to analyze their own datasets. To be eligible for inclusion:
 
-Everything starts from a workflow that you have on a galaxy instance.
+1. **Generalizability**: Workflows must be sufficiently generic to accommodate user-provided data
+2. **Self-contained**: Users should be able to run the workflow without modifications
+3. **Production-ready**: Workflows should be thoroughly tested and reliable
 
-### Optional: Updating tools
+While not required, we strongly encourage:
+- Links to relevant [Galaxy Training Network tutorials](https://training.galaxyproject.org/)
+- Clear documentation explaining parameter choices and expected inputs/outputs
 
-It is recommended to check and update tools with Planemo before import.
+**Important**: If your workflow accompanies a tutorial, ensure it does not contain hard-coded references to tutorial-specific datasets. Users should be able to substitute their own data without needing to modify the workflow structure.
 
- - You can do it from the galaxy instance using "Workflow Options" "Upgrade Workflow":
+### Contribution Workflow
 
- ![Update galaxy workflow in galaxy](../static/update_workflow.png)
- 
- - Or by downloading the ga file and running planemo:
+Follow these steps to contribute your Galaxy workflow to the IWC collection:
 
-  ```bash
-  planemo autoupdate <workflow.ga>
-  ```
+#### Step 1: Prepare Your Workflow
 
-### Ensure workflows follow best-practices
+Start with a functional workflow developed in a Galaxy instance. Before submission, ensure your workflow:
+- Uses the latest tool versions available
+- Includes comprehensive metadata (license, creators, etc.)
+- Has been tested with real data
 
-The best way is to check it into a galaxy instance: click on "Workflow Options", select "Best Practices" and apply the suggested improvements. In particular, in order to make the workflow usable, **make sure you specify a license**. Another important field is "Creator", which allows to give proper credit to the author(s). The "Identifier" field of a Creator added as a _person_ should be filled with a fully qualified URI, e.g., https://orcid.org/0000-0002-1825-0097.
+#### Step 2: Update Tool Versions
 
-![Add Creator GIF](../static/add-creator.gif)
+Ensure your workflow uses current tool versions by:
 
-If you add an _organization_ as Creator, you should include a "URL" field pointing to the organization's web site, e.g., https://github.com/galaxyproject/iwc.
+**Option A: Update within Galaxy**
+1. Open your workflow in Galaxy
+2. Click "Workflow Options" → "Upgrade Workflow"
 
+![Update workflow in Galaxy interface](../static/update_workflow.png)
 
-### Generate tests
-
-This is usually the most difficult part and we encourage all new contributors to IWC to propose their workflows even if they did not managed to generate tests. However, the publication of these workflow will be speed up if tests are already present.
-To generate tests, you can either write test cases by hand, or use a workflow invocation to generate a test case (see below).
-
-#### Find input datasets
-
-If your analysis is covered by the GTN, using GTN dataset material is a good start! If it is not, try to generate a toy dataset for example following [this](https://training.galaxyproject.org/training-material/topics/contributing/tutorials/create-new-tutorial/tutorial.html#get-a-toy-dataset) and then publish it to zenodo to have a permanent URL.
-
-#### Generate test from a workflow invocation
-
-Create a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
-Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows). Only use lower-case and `-` in names of categories and repositories.
-
-Execute the workflow on your Galaxy server using the smallest input data you can generate.
-Go to the workflow invocations page:
-- Before 24.0: (User > Workflow Invocations)
-- In 24.0: (Data > Workflow Invocations)
-- Above 24.1: In the activity bar in Workflow Invocation.
-
-Open the most recent item and find the invocation id:
-
-In below 24.0, you can get it here:
-
-![Workflow Invocations GUI](../static/wf-invocations.png)
-
-If you have the activity bar, you can find the workflow invocation id from the URL. For example, `https://usegalaxy.org/workflows/invocations/be5c48c113145dd5?from_panel=true` means that the workflow invocation id is `be5c48c113145dd5`.
-
-You will also need your Galaxy API key. To copy it, or generate it if you don't have one yet, go to User > Preferences > Manage API Key. Then run:
-
-```
-planemo workflow_test_init --from_invocation <your_invocation_id> --galaxy_url <your_prefered_galaxy_instance_url> --galaxy_user_key <your_api_key>
+**Option B: Update using Planemo**
+1. Download your workflow (.ga file)
+2. Run the Planemo update command:
+```bash
+planemo autoupdate <workflow.ga>
 ```
 
-This will place the workflow and workflow test files in your current working directory.
-You may still want to remove test files and edit the test comparisons so that tests
-will pass reliably. For example, you could consider using assertions to test the
-outputs, rather than comparing the entire output file with test data.
-Also, if some outputs are large, it is better to use assertions than storing the whole output file to the iwc repository.
-The description of assertion can be find in [the documentation](https://docs.galaxyproject.org/en/latest/dev/schema.html#tool-tests-test-output-assert-contents). Do not hesitate to look at different test files in the repo for examples.
+#### Step 3: Apply Best Practices
 
-#### Manually write test for workflow
+Ensure your workflow follows Galaxy's best practices:
 
-Download the workflow and place it in a new directory under one of the directories that represent categories. If no category is suitable you can create a new category directory.
-Name the directory that contains your workflow(s) appropriately, as it will become the name of the repository deployed to [iwc-workflows github organization](https://github.com/iwc-workflows). Only use lower-case and `-` in names of categories and repositories.
-You can then generate a template planemo test file with planemo:
+1. In your Galaxy instance, open your workflow
+2. Click "Workflow Options" → "Best Practices" 
+3. Apply the suggested improvements
+
+**Critical Metadata Requirements:**
+
+* **License**: Every workflow must have a specified license to be usable
+* **Creator Information**: 
+  * For individuals: Include name and identifier (preferably ORCID)
+  * For person type creators: The "Identifier" field should contain a fully qualified URI (e.g., https://orcid.org/0000-0002-1825-0097)
+  * For organizations: Include name and URL (e.g., https://github.com/galaxyproject/iwc)
+
+![Adding creator information](../static/add-creator.gif)
+
+
+#### Step 4: Create Workflow Tests
+
+Testing is a critical but challenging component of workflow submission. While we still accept workflows without tests, having proper tests will significantly accelerate the review and publication process.
+
+There are two approaches to generating tests:
+1. Write test cases manually
+2. Generate test cases from a workflow invocation (recommended)
+
+**Input Test Datasets**
+
+For test data, consider these sources:
+* **Galaxy Training Network (GTN)**: If your workflow relates to a GTN tutorial, use the tutorial's dataset
+* **Custom Dataset**: Create a minimal test dataset following [this guide](https://training.galaxyproject.org/training-material/topics/contributing/tutorials/create-new-tutorial/tutorial.html#get-a-toy-dataset)
+* **Permanent Dataset URL**: For reproducibility, consider publishing your test dataset to Zenodo
+
+#### Option A: Generate Tests from a Workflow Execution
+
+This approach converts an actual workflow execution into a test case:
+
+1. **Prepare Directory Structure**:
+   * Create a directory for your workflow under the appropriate category
+   * If no suitable category exists, create a new one
+   * Use lowercase hyphenated names (e.g., `my-new-workflow`)
+
+2. **Run Your Workflow**:
+   * Execute your workflow in Galaxy using minimal test data
+   * Use the smallest viable input dataset to keep tests efficient
+
+3. **Find the Workflow Invocation ID**:
+   * Navigate to the Workflow Invocations page:
+     * Galaxy version < 24.0: User > Workflow Invocations
+     * Galaxy version 24.0: Data > Workflow Invocations
+     * Galaxy version ≥ 24.1: Activity bar > Workflow Invocations
+   * Open your recent workflow execution
+   * Locate the invocation ID
+
+   ![Workflow Invocations Interface](../static/wf-invocations.png)
+
+   * Alternative: Extract the ID from the URL
+     * Example: In `https://usegalaxy.org/workflows/invocations/be5c48c113145dd5?from_panel=true`, the ID is `be5c48c113145dd5`
+
+4. **Generate Test Files**:
+   * Generate your Galaxy API key (User > Preferences > Manage API Key)
+   * Run the Planemo command:
+   ```bash
+   planemo workflow_test_init --from_invocation <your_invocation_id> --galaxy_url <your_galaxy_instance_url> --galaxy_user_key <your_api_key>
+   ```
+
+5. **Optimize Test Files**:
+   * Review and edit generated test files for reliability
+   * Consider using [assertions](https://docs.galaxyproject.org/en/latest/dev/schema.html#tool-tests-test-output-assert-contents) instead of full file comparisons for large outputs
+   * Examine existing test files in the repository for examples
+
+#### Option B: Manually Write Workflow Tests
+
+If you prefer to write tests manually:
+
+1. **Prepare Directory Structure**:
+   * Create a directory for your workflow in the appropriate category
+   * Use lowercase hyphenated names for all directories
+   * Download and place your workflow file (.ga) in this directory
+
+2. **Generate Test Template**:
+   * Use Planemo to create a starter test file:
+   ```bash
+   planemo workflow_test_init <your_workflow_file.ga>
+   ```
+
+3. **Example Test Template**:
+   * For a workflow like `parallel-accession-download.ga`, this generates:
+   ```yaml
+   - doc: Test outline for parallel-accession-download.ga
+     job:
+       Run accessions:
+         class: File
+         path: todo_test_data_path.ext
+     outputs:
+       Paired End Reads:
+         class: ''
+       Single End Reads:
+         class: ''
+   ```
+
+4. **Complete the Test File**:
+   * Replace placeholder values with actual test data paths
+   * Define expected outputs and comparison methods
+   * Refer to the [Planemo test format documentation](https://planemo.readthedocs.io/en/latest/test_format.html)
+
+5. **Example Completed Test**:
+   ```yaml
+   - doc: Test download of single end accession
+     job:
+       Run accessions:
+         class: File
+         path: test-data/input_accession_single_end.txt
+     outputs:
+       Single End Reads:
+         element_tests:
+           SRR044777:
+             file: test-data/SRR044777_head.fastq
+             decompress: true
+             compare: contains
+   ```
+
+This example shows a completed test for a workflow that downloads sequence data from accession numbers, demonstrating how to specify input files and validate outputs.
+
+#### Step 5: Validate Your Workflow
+
+After creating your workflow and tests, validate everything with these quality checks:
+
+**Workflow Linting**
+
+Run Planemo's linting tool to check for structural issues:
 
 ```bash
-planemo workflow_test_init <your_workflow_file.ga>
+planemo workflow_lint your-workflow-file.ga
 ```
 
-If you run it on `parallel-accession-download.ga`, this generates the file parallel-accession-download-tests.yml:
-
-```yaml
-- doc: Test outline for parallel-accession-download.ga
-  job:
-    Run accessions:
-      class: File
-      path: todo_test_data_path.ext
-  outputs:
-    Paired End Reads:
-      class: ''
-    Single End Reads:
-      class: ''
+Successful output should look like:
 ```
-
-We now need to provide inputs and outputs. You can find details about the test format in the [planemo documentation](https://planemo.readthedocs.io/en/latest/test_format.html). You can also check other test files into this repository to get examples.
-For this example workflow the final parallel-accession-download-tests.yml might look like this:
-
-```yaml
-- doc: Test download of single end accession
-  job:
-    Run accessions:
-      class: File
-      path: test-data/input_accession_single_end.txt
-  outputs:
-    Single End Reads:
-      element_tests:
-        SRR044777:
-          file: test-data/SRR044777_head.fastq
-          decompress: true
-          compare: contains
-```
-
-#### Lint your workflow
-
-Note that we've removed the "Paired End Reads" output, since the accession we test is a single end accession.
-We can now run `planemo workflow_lint` to make sure the workflow and its test are syntactically correct:
-
-```console
-$ planemo workflow_lint parallel-accession-download.ga
 Applying linter tests... CHECK
-.. CHECK: Tests appear structurally correct for parallel-accession-download.ga
+.. CHECK: Tests appear structurally correct for your-workflow-file.ga
 ```
 
-#### Test your workflow against an instance which have all tools installed.
+**Testing on a Galaxy Instance**
 
-Before running the CI, it might be interesting to run your tests against a galaxy instance using planemo so you can easily see what is failing and what are the differences between your expectations and the output you get:
+Before submitting your PR, test your workflow against a live Galaxy instance:
 
 ```bash
-planemo test --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow.ga>
+planemo test --galaxy_url <galaxy_server_url> --galaxy_user_key <your_api_key> <workflow.ga>
 ```
 
-If your tests are not passing because you made an error into your test file you can modify your test file and use planemo to check that the test is valid against the same invocation.
+**Debugging Test Issues**
+
+If your tests fail, you can validate and fix them against your original workflow execution:
 
 ```bash
-planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
+planemo workflow_test_on_invocation --galaxy_url <galaxy_server_url> --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 ```
 
-Note: If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
+**Important Note about Reference Data**
 
-#### Add required metadata
+If your workflow uses built-in reference data (genomes, indexes, etc.):
+* The CI environment uses CVMFS for reference data
+* Browse available reference data at http://datacache.galaxyproject.org/
+* Ensure your workflow uses reference data available in this system 
 
-We now need to generate a `.dockstore.yml` file that contains metadata needed for [Dockstore](https://dockstore.org/organizations/iwc).
-`planemo dockstore_init` operates on a directory of workflows. If your current working directory contains the workflow(s) run
+#### Step 6: Add Required Metadata Files
 
-```console
-$ planemo dockstore_init .
+Your workflow submission requires several key metadata files:
 
+**1. Dockstore Metadata**
+
+Generate the Dockstore configuration file from your workflow directory:
+
+```bash
+planemo dockstore_init .
 ```
 
-to generate a `.dockstore.yml` file.
+This creates a `.dockstore.yml` file with metadata needed for [Dockstore](https://dockstore.org/organizations/iwc) registration.
 
-We now only need a README.md file that briefly describes the workflow and a CHANGELOG.md file
-that lists changes, additions and fixed. Please follow the formatting and principles proposed on [keepachangelog.com](https://keepachangelog.com/en/1.0.0/).
+**2. Documentation Files**
 
-We currently do not have a user interface within Galaxy to define release versions, so you have to manually set a `release: "0.1"` key value pair in the workflow.ga file.
-With a text editor of your choice make this change:
+Create two essential documentation files:
+
+* **README.md**: Brief description of the workflow, its purpose, inputs, outputs, and usage
+* **CHANGELOG.md**: Version history following the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
+
+**3. Version Information**
+
+Add a version to your workflow by manually editing the .ga file to include a release tag:
 
 ```diff
      ],
@@ -196,44 +271,110 @@ With a text editor of your choice make this change:
          "0": {
 ```
 
-At this point you can commit the new files and open a pull request.
-If you are encountering difficulties at any point don't hesitate to ask for help on [gitter](https://gitter.im/galaxyproject/iwc).
+#### Step 7: Submit Your Workflow
 
-### Multiple directories or multiple workflows into the same directory
+With all files prepared, you're ready to contribute:
 
-The submitter is free to choose what will match the best its case.
-When multiple workflows are in the same directory, the submitter must know that:
-- The CHANGELOG.md is common and all workflows must constantly have the same version.
-- Workflowhub does not support multiple 'main' workflows in the same directory. One of the workflow will be considred as the main one while all others will be considered as subworkflows. However, this is not an issue for dockstore which will publish each workflow listed in the dockstore file as main.
-- If you want to decide which one is the main, you should write the `.workflowhub.yml` manually.
+1. Commit your files to your fork of the IWC repository
+2. Open a pull request with a clear description of your workflow
+3. Respond to any feedback from reviewers
 
-## RO-Crate Metadata
+**Need Help?**
 
-[RO-Crate](https://doi.org/10.3233/DS-210053) is a format for packaging research artifacts along with their metadata in a machine readable manner. The base RO-Crate specification is complemented by a set of _profiles_ tailored to more specific domains: in particular, [Workflow RO-Crate](https://about.workflowhub.eu/Workflow-RO-Crate/) can be used to package computational workflows, and [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) further describes how to add metadata related to workflow testing.
+If you encounter any difficulties during this process, don't hesitate to:
+* Ask for help in the [IWC Gitter channel](https://gitter.im/galaxyproject/iwc)
+* Open an issue in the [IWC repository](https://github.com/galaxyproject/iwc)
 
-Workflow Testing RO-Crate metadata is automatically generated and added to the workflow repository after a PR is merged, before the repository is deployed to [iwc-workflows](https://github.com/iwc-workflows). RO-Crate metadata is based on [Schema.org](https://schema.org/) annotations in [JSON-LD](https://json-ld.org/) ([example](https://github.com/iwc-workflows/parallel-accession-download/blob/7971b6dc0ee246262a1898e7c7016143ff63007c/ro-crate-metadata.json)). The Workflow Testing RO-Crate representation of the repository ensures its compatibility with the [WorkflowHub](https://workflowhub.eu) registry and the [LifeMonitor](https://www.lifemonitor.eu) workflow health monitoring service.
+### Advanced: Multiple Workflows in a Repository
 
-To ensure that the RO-Crate metadata generation succeeds, make sure you apply the best practices described in the [section on adding workflows](#adding-workflows). In particular, the conversion tool expects to find the workflow file and the Planemo test file; a `README.md` file is not expected, but it will be included if found. The workflow file should specify a `license`, a `release` and one or more `creator`s among its metadata.
+You have flexibility in organizing your workflow submissions:
 
-## Workflow auto-update
+#### Option 1: Multiple Directories (Recommended)
+Create separate directories for each workflow, each with its own complete set of files.
 
-### Code links and steps
+#### Option 2: Multiple Workflows in a Single Directory
 
-The workflows submitted to iwc are updated automatically. We describe here where you can find the code of each step of this process and what they are doing today (2024-06-23).
+If you choose to include multiple workflows in the same directory, be aware of these important considerations:
 
-- Once a week the github workflow described [here](https://github.com/planemo-autoupdate/autoupdate/blob/main/.github/workflows/autoupdate.yml) will be run:
-  - The fork of iwc of the planemo-autoupdate author ([here](https://github.com/planemo-autoupdate/iwc/)) is cloned.
-  - For each workflow directory like  `workflows/data-fetching/parallel-accession-download`:
-    - If there is already a PR by planemo-autodupdate for this workflow, the git is checkout to the corresponding branch. If there is no PR the potential existing branch is deleted and the new branch is created.
-    - `planemo autoupdate` is run in the directory using the [skip list](https://github.com/planemo-autoupdate/autoupdate/blob/main/galaxyproject_iwc_skip_list).
-      - Toolshed updates are checked for all tools used in the workflow. If there are updates, the new version will be used and parameter values will be kept if they stay in the same section with the same name.
-    - If there is a change in the workflow.
-      - The `CHANGELOG.md` is updated using the [python script](https://github.com/planemo-autoupdate/autoupdate/blob/main/pr_text_iwc.py): the log of `planemo autoupdate` is analysed and if there is no PR opened the CHANGELOG file is updated, on top is written the release number and the date. Then under the Automatic update title is written a list of the changes.
-      - If there is a closed PR with the same title. Then everything is cancelled.
-      - If a PR was already opened, the title is updated (but the CHANGELOG has not been updated).
-      - If no PR was opened, a new PR is opened.
+- **Versioning**: All workflows in the directory share a single CHANGELOG.md and must maintain the same version number
+- **WorkflowHub Integration**: 
+  - WorkflowHub treats only one workflow as the "main" workflow
+  - Additional workflows are considered "subworkflows"
+  - Dockstore, however, will publish each workflow listed in the .dockstore.yml file as a main workflow
+- **Workflow Selection**: 
+  - To control which workflow is designated as the main workflow in WorkflowHub
+  - Create a `.workflowhub.yml` file manually with the appropriate configuration
 
-### FAQ
-- A workflow has not been updated while it has tools that have newer versions available?
-  - Check the [autoupdate actions](https://github.com/planemo-autoupdate/autoupdate/actions). Maybe one workflow raise an error while updating and this prevents other workflows to be updated. Please report this to the matrix channel.
-  - Check that there is no closed PR named 'Updating blabla from xx to xx' corresponding to your workflow. This would prevent any automatic update. If this is the case, leave a comment into this PR so IWC reopen it.
+## Additional Technical Information
+
+### RO-Crate Metadata Integration
+
+IWC workflows are automatically packaged with machine-readable metadata using the [RO-Crate](https://doi.org/10.3233/DS-210053) format. This provides several important benefits:
+
+**What is RO-Crate?**
+- A standardized format for packaging research artifacts with rich metadata
+- Enables workflow discovery, reuse, and validation
+- Uses [Schema.org](https://schema.org/) annotations in [JSON-LD](https://json-ld.org/) format
+- Example: [View a workflow's RO-Crate metadata](https://github.com/iwc-workflows/parallel-accession-download/blob/7971b6dc0ee246262a1898e7c7016143ff63007c/ro-crate-metadata.json)
+
+**IWC's RO-Crate Implementation**
+- IWC uses specialized profiles:
+  - [Workflow RO-Crate](https://about.workflowhub.eu/Workflow-RO-Crate/) for workflow packaging
+  - [Workflow Testing RO-Crate](https://crs4.github.io/life_monitor/workflow_testing_ro_crate) for test metadata
+
+**Automated Process**
+- RO-Crate metadata is automatically generated after your PR is merged
+- Generated before deployment to [iwc-workflows](https://github.com/iwc-workflows)
+- Ensures compatibility with [WorkflowHub](https://workflowhub.eu) and [LifeMonitor](https://www.lifemonitor.eu)
+
+**Requirements for Successful Generation**
+- The workflow must follow all best practices described in this guide
+- Critical elements that must be present:
+  - Workflow file (.ga)
+  - Planemo test file (-tests.yml)
+  - `license` field in workflow metadata
+  - `release` field in workflow metadata
+  - One or more `creator` entries
+
+### Automated Workflow Updates
+
+IWC workflows benefit from an automated update system that ensures they remain compatible with the latest Galaxy tool versions.
+
+#### How Automatic Updates Work
+
+The update process runs weekly through a GitHub Actions workflow:
+
+1. **Update Detection**
+   - The [automated update system](https://github.com/planemo-autoupdate/autoupdate/blob/main/.github/workflows/autoupdate.yml) scans all IWC workflows
+   - For each workflow directory (e.g., `workflows/data-fetching/parallel-accession-download`):
+     - Checks whether an update PR already exists
+     - Runs `planemo autoupdate` to identify available tool updates
+     - Uses a [skip list](https://github.com/planemo-autoupdate/autoupdate/blob/main/galaxyproject_iwc_skip_list) to exclude certain tools
+
+2. **Update Application**
+   - When tool updates are found, the workflow is automatically updated
+   - Parameter values are preserved when they exist in the same section with the same name
+   - The `CHANGELOG.md` is automatically updated with:
+     - New version number and date
+     - List of changes under an "Automatic update" heading
+
+3. **Pull Request Creation**
+   - For workflows with changes, the system:
+     - Creates a new PR (if none exists)
+     - Updates an existing PR (if one exists)
+     - Takes no action if a PR with the same title was previously closed
+
+#### Troubleshooting Updates
+
+If your workflow isn't being updated despite newer tool versions being available:
+
+1. **Check Update Actions**
+   - Review the [autoupdate action logs](https://github.com/planemo-autoupdate/autoupdate/actions)
+   - Errors in one workflow update can sometimes block updates to other workflows
+
+2. **Check for Closed PRs**
+   - A closed PR titled "Updating [workflow] from [version] to [version]" will prevent automatic updates
+   - If you find such a PR, leave a comment requesting it be reopened
+
+3. **Report Issues**
+   - Report any persistent update problems in the IWC Matrix channel

@@ -1,30 +1,59 @@
-# Assembly polishing with Racon workflow
+# Assembly Polishing with Long Reads
 
-## Inputs
+## Overview
 
-- Sequencing reads in format: fastq, fastq.gz, fastqsanger.gz or fastqsanger
-- Genome assembly to be polished, in fasta format
+This workflow implements an iterative assembly polishing strategy using long-read sequencing data to improve the accuracy of genome assemblies. By leveraging the same long reads used for initial assembly, this process corrects base-level errors, improves consensus accuracy, and resolves ambiguities to produce a higher-quality final assembly.
 
-## What does the workflow do
+## Workflow Process
 
-- After long reads have been assembled into a genome (contigs), this can be polished with the same long reads. 
-- This workflow uses the tool minimap2 to map the long reads back to the assembly, and then uses Racon to make polishes. 
-- This is repeated a further 3 times. 
+The Assembly-Polishing-with-Long-Reads workflow provides:
 
-In more detail:
+1. **Initial Read Mapping**
+   - Maps long sequencing reads back to the draft assembly using minimap2
+   - Optimized for different long-read technologies (PacBio, ONT)
+   - Generates precise alignment files for polishing
+   - Accounts for technology-specific error profiles
 
-- minimap2 : long reads are mapped to assembly => overlaps.paf.
-- overaps, long reads, assembly => Racon => polished assembly 1
-- using polished assembly 1 as input; repeat minimap2 + racon => polished assembly 2
-- using polished assembly 2 as input, repeat minimap2 + racon => polished assembly 3
-- using polished assembly 3 as input, repeat minimap2 + racon => polished assembly 4
+2. **Iterative Polishing with Racon**
+   - Implements a four-round polishing strategy for progressive improvement
+   - Uses Racon consensus tool designed specifically for long-read data
+   - Corrects systematic errors in draft assemblies
+   - Improves per-base accuracy through multiple refinement cycles
+   - Corrects homopolymer errors common in long-read assemblies
 
-## Settings
+3. **Multi-iteration Refinement**
+   - First iteration: Initial draft assembly → Polished assembly 1
+   - Second iteration: Polished assembly 1 → Polished assembly 2
+   - Third iteration: Polished assembly 2 → Polished assembly 3
+   - Fourth iteration: Polished assembly 3 → Final polished assembly
+   - Each iteration builds upon previous improvements for maximum accuracy
 
-- Run as-is or change parameters at runtime.
-- For the input at "minimap settings for long reads", enter (map-pb) for PacBio reads, (map-hifi) for PacBio HiFi reads, or (map-ont) for Oxford Nanopore reads.
+## Input Requirements
 
-## Outputs
+**Sequencing Reads**
+- Long-read sequencing data in one of these formats:
+  - FASTQ (.fastq)
+  - Compressed FASTQ (.fastq.gz)
+  - Galaxy-specific FASTQ formats (.fastqsanger.gz or .fastqsanger)
+- Data from PacBio or Oxford Nanopore sequencing platforms
 
-There is one output: the polished assembly in fasta format. 
+**Draft Assembly**
+- Initial genome assembly in FASTA format
+- Typically generated from the same long-read dataset
+
+**Technology-Specific Settings**
+- For "minimap settings for long reads" parameter:
+  - PacBio CLR reads: use `map-pb`
+  - PacBio HiFi/CCS reads: use `map-hifi`
+  - Oxford Nanopore reads: use `map-ont`
+
+## Applications
+
+This polishing workflow is essential for:
+- Improving draft assemblies prior to annotation
+- Correcting sequencing errors in long-read assemblies
+- Enhancing consensus accuracy for reference genome projects
+- Preparing assemblies for submission to public databases
+- Resolving ambiguities in repetitive regions
+- Achieving reference-quality genome assemblies
 
