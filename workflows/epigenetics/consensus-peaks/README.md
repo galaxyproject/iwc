@@ -1,4 +1,4 @@
-# Consensus peaks Workflow
+# Consensus Peak Calling for ChIP-seq, ATAC-seq and CUT&RUN Replicates
 
 The goal of this workflow is to get a list of confident peaks with summits from n replicates.
 

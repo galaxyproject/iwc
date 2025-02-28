@@ -1,4 +1,4 @@
-# Average Bigwig between replicates
+# BigWig Replicates Averaging Tool
 
 This workflow is very useful when you processed multiple samples in collections and you want to generate an average coverage per condition.
 
