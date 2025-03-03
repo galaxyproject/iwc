@@ -1,4 +1,4 @@
-# CUT&RUN Analysis: Protein-DNA Interaction Mapping
+# CUT&RUN/CUT&TAG Analysis: Protein-DNA Interaction Mapping
 
 ## Inputs dataset
 
