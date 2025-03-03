@@ -146,8 +146,9 @@ const onInstanceChange = (value: string) => {
                     <li><strong>License: </strong>{{ workflow.definition.license }}</li>
                     <li>
                         <strong>TRS: </strong>
-                        <ULink :to="dockstoreWorkflowPageUrl" target="_blank">
+                        <ULink :to="dockstoreWorkflowPageUrl" target="_blank" class="hover:underline">
                             {{ workflow.trsID }}
+                            <UIcon name="i-heroicons-arrow-top-right-on-square" />
                         </ULink>
                     </li>
                 </ul>
