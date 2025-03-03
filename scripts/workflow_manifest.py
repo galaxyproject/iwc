@@ -1,10 +1,10 @@
 import os
 import json
 import yaml
-import datetime
 import requests
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
+import git
 
 
 def read_contents(path: str):
@@ -48,7 +48,9 @@ def get_dockstore_details(trsID):
                 )
 
             # With the ID, request collections
-            url_collections = f"https://dockstore.org/api/entries/{entry_id}/collections"
+            url_collections = (
+                f"https://dockstore.org/api/entries/{entry_id}/collections"
+            )
             collection_response = requests.get(url_collections)
 
             if collection_response.status_code == 200:
@@ -119,12 +121,22 @@ def find_and_load_compliant_workflows(directory):
                         f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
                     )
 
-                # Get workflow file update time and add it to the data as
-                # isoformat -- most accurate version of the latest 'update'
-                # to the workflow?
-                updated_timestamp = os.path.getmtime(workflow_path)
-                updated_datetime = datetime.datetime.fromtimestamp(updated_timestamp)
-                updated_isoformat = updated_datetime.isoformat()
+                # Get workflow file update time from git
+                try:
+                    repo = git.Repo(directory, search_parent_directories=True)
+                    last_commit = next(
+                        repo.iter_commits(paths=[workflow_path], max_count=1)
+                    )
+                    updated_isoformat = last_commit.committed_datetime.isoformat()
+                except git.InvalidGitRepositoryError as e:
+                    print(
+                        f"Error: Not a git repository or any of the parent directories: {e}"
+                    )
+                    updated_isoformat = None
+                except Exception as e:
+                    print(f"Error getting git log for {workflow_path}: {e}")
+                    updated_isoformat = None
+
                 workflow["updated"] = updated_isoformat
 
                 # load readme, changelog and diagrams
@@ -139,7 +151,9 @@ def find_and_load_compliant_workflows(directory):
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
 
-                dockstore_details, categories, collections = get_dockstore_details(trsID)
+                dockstore_details, categories, collections = get_dockstore_details(
+                    trsID
+                )
 
                 workflow["dockstore_id"] = dockstore_details["id"]
                 workflow["categories"] = categories
