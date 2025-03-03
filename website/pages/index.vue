@@ -8,9 +8,9 @@ import waveSvg from "~/public/waveNounProject.svg";
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
 //       Could use any other identifier instead of trsId that seems fit
 const POPULAR_WORKFLOW_TRS_IDS = [
+    "#workflow/github.com/iwc-workflows/rnaseq-pe/main",
+    "#workflow/github.com/iwc-workflows/chipseq-pe/main",
     "#workflow/github.com/iwc-workflows/atacseq/main",
-    "#workflow/github.com/iwc-workflows/chipseq-sr/main",
-    "#workflow/github.com/iwc-workflows/sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING",
 ];
 
 import Filters from "~/components/Filters.vue";
