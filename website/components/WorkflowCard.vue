@@ -34,7 +34,7 @@ defineProps<{
         </template>
 
         <div class="flex flex-col flex-grow">
-            <p :class="`flex-grow ${compact ? 'text-sm line-clamp-2 mb-2' : 'mb-4'}`">
+            <p :class="`flex-grow ${compact ? 'text-sm line-clamp-6 mb-2' : 'mb-4'}`">
                 {{ workflow.definition.annotation }}
             </p>
 
