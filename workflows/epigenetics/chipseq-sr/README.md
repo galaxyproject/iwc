@@ -1,4 +1,4 @@
-# ChIP-seq single-read Workflow
+# ChIP-seq Analysis: Single-End Read Processing
 
 ## Inputs dataset
 
