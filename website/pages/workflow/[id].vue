@@ -43,6 +43,12 @@ function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
     return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`;
 }
 
+const dockstoreWorkflowPageUrl = computed(() => {
+    const repoPath = workflow.value?.trsID.substring("#workflow/".length);
+    const baseUrl = "https://dockstore.org/workflows/";
+    return baseUrl + repoPath;
+});
+
 async function createLandingPage() {
     const job = testToRequestState();
     const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`);
@@ -135,10 +141,16 @@ const onInstanceChange = (value: string) => {
                     <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
                         <Author :author="author" />
                     </li>
-                    <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
-                    <li><strong>Updated:</strong> {{ formatDate(workflow.updated) }}</li>
-                    <li><strong>License:</strong> {{ workflow.definition.license }}</li>
-                    <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
+                    <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
+                    <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
+                    <li><strong>License: </strong>{{ workflow.definition.license }}</li>
+                    <li>
+                        <strong>TRS: </strong>
+                        <ULink :to="dockstoreWorkflowPageUrl" target="_blank" class="hover:underline">
+                            {{ workflow.trsID }}
+                            <UIcon name="i-heroicons-arrow-top-right-on-square" />
+                        </ULink>
+                    </li>
                 </ul>
                 <UButtonGroup class="mt-4" size="sm" orientation="vertical">
                     <USelect
