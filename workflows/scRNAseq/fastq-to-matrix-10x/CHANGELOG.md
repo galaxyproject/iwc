@@ -2,6 +2,10 @@
 
 ## [0.6] - 2025-01-27
 
+### Added
+
+- Added individual STARSolo outputs for proessing with scanpy tools
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0`
 
