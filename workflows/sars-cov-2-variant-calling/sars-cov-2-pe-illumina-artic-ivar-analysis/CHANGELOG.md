@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2022-11-22
+## [0.3] - 2022-11-22
 
 - update all tools:
   - fastp from 0.20.1 to 0.23.2
@@ -14,17 +14,17 @@
   - pangolin from 3.1.14 to 4.3
   - nextclade from 1.4.1 to 2.7.0
 
-## [0.2.3] 2022-05-25
+## [0.2.3] - 2022-05-25
 
 ### Changed
 - Changed creator ORCID to absolute URI
 
-## [0.2.2] 2021-12-13
+## [0.2.2] - 2021-12-13
 
 ### Added
 - Added GitHub Actions workflow. No functional changes.
 
-## [0.2.1] 2021-11-04
+## [0.2.1] - 2021-11-04
 
 ### Added
 - Added .workflowhub.yml

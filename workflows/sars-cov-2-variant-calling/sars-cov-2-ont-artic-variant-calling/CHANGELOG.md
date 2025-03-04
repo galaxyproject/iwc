@@ -1,16 +1,16 @@
 # Changelog
 
-## [0.3.2] 2023-11-20
+## [0.3.2] - 2023-11-20
 
 - Fix author in dockstore
 - Use ncbi link instead of googleapis for fastq
 
-## [0.3.1] 2021-12-13
+## [0.3.1] - 2021-12-13
 
 ### Added
 - Added GitHub Actions workflow. No functional changes.
 
-## [0.3] 2021-09-22
+## [0.3] - 2021-09-22
 
 ### Changed
 
@@ -67,7 +67,7 @@ and:
   collection containing failed datasets would cause the invocation of the
   workflow to fail.
 
-## [0.2.1] 2021-07-23
+## [0.2.1] - 2021-07-23
 
 ### Added
 

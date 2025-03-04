@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2025-02-17
+## [0.3] - 2025-02-17
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_plotqualityprofile/dada2_plotQualityProfile/1.30.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_plotqualityprofile/dada2_plotQualityProfile/1.34.0+galaxy0`
@@ -13,7 +13,7 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_seqcounts/dada2_seqCounts/1.30.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_seqcounts/dada2_seqCounts/1.34.0+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_assigntaxonomyaddspecies/dada2_assignTaxonomyAddspecies/1.30.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_assigntaxonomyaddspecies/dada2_assignTaxonomyAddspecies/1.34.0+galaxy0`
 
-## [0.2] 2024-05-27
+## [0.2] - 2024-05-27
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_plotqualityprofile/dada2_plotQualityProfile/1.28+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_plotqualityprofile/dada2_plotQualityProfile/1.30.0+galaxy0`
@@ -26,5 +26,5 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_seqcounts/dada2_seqCounts/1.28+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_seqcounts/dada2_seqCounts/1.30.0+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/dada2_assigntaxonomyaddspecies/dada2_assignTaxonomyAddspecies/1.28+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/dada2_assigntaxonomyaddspecies/dada2_assignTaxonomyAddspecies/1.30.0+galaxy0`
 
-## [0.1] 2024-01-09
+## [0.1] - 2024-01-09
 First release.

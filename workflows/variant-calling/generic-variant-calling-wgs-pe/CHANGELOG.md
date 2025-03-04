@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [0.1.1] 2023-11-20
+## [0.1.1] - 2023-11-20
 
 - Fix author in dockstore
 

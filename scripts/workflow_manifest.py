@@ -71,14 +71,14 @@ def get_dockstore_details(trsID):
 def extract_date_from_changelog(changelog_content):
     """
     Extract the date from the first entry in a CHANGELOG.md file.
-    Expected format: ## [version] YYYY-MM-DD
+    Expected format: ## [version] - YYYY-MM-DD
     """
     if not changelog_content:
         return None
 
     # Regular expression to match the date pattern in the first changelog entry
     # Looks for patterns like "## [0.13] 2025-01-27" and extracts the date
-    date_match = re.search(r"##\s*\[[^\]]+\]\s*(\d{4}-\d{2}-\d{2})", changelog_content)
+    date_match = re.search(r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content)
 
     if date_match:
         return date_match.group(1)

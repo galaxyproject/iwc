@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2] 2024-06-19
+## [0.2] - 2024-06-19
 
 ### Tool version updates
 
