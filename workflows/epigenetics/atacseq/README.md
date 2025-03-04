@@ -1,4 +1,4 @@
-# ATACseq Workflow
+# ATAC-seq Analysis: Chromatin Accessibility Profiling
 
 This workflow is highly concordant with the corresponding training material.
 You can have more information about ATAC-seq analysis in the [slides](https://training.galaxyproject.org/training-material/topics/epigenetics/tutorials/atac-seq/slides.html) and the [tutorial](https://training.galaxyproject.org/training-material/topics/epigenetics/tutorials/atac-seq/tutorial.html).
