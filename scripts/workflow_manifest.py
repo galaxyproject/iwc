@@ -2,9 +2,9 @@ import os
 import json
 import yaml
 import requests
+import re
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
-import git
 
 
 def read_contents(path: str):
@@ -68,6 +68,23 @@ def get_dockstore_details(trsID):
     return details, categories, collections
 
 
+def extract_date_from_changelog(changelog_content):
+    """
+    Extract the date from the first entry in a CHANGELOG.md file.
+    Expected format: ## [version] YYYY-MM-DD
+    """
+    if not changelog_content:
+        return None
+
+    # Regular expression to match the date pattern in the first changelog entry
+    # Looks for patterns like "## [0.13] 2025-01-27" and extracts the date
+    date_match = re.search(r"##\s*\[[^\]]+\]\s*(\d{4}-\d{2}-\d{2})", changelog_content)
+
+    if date_match:
+        return date_match.group(1)
+    return None
+
+
 def find_and_load_compliant_workflows(directory):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
@@ -121,32 +138,27 @@ def find_and_load_compliant_workflows(directory):
                         f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
                     )
 
-                # Get workflow file update time from git
-                try:
-                    repo = git.Repo(directory, search_parent_directories=True)
-                    last_commit = next(
-                        repo.iter_commits(paths=[workflow_path], max_count=1)
-                    )
-                    updated_isoformat = last_commit.committed_datetime.isoformat()
-                except git.InvalidGitRepositoryError as e:
-                    print(
-                        f"Error: Not a git repository or any of the parent directories: {e}"
-                    )
-                    updated_isoformat = None
-                except Exception as e:
-                    print(f"Error getting git log for {workflow_path}: {e}")
-                    updated_isoformat = None
-
-                workflow["updated"] = updated_isoformat
-
                 # load readme, changelog and diagrams
                 workflow["readme"] = read_contents(os.path.join(root, "README.md"))
-                workflow["changelog"] = read_contents(
-                    os.path.join(root, "CHANGELOG.md")
-                )
+                changelog_content = read_contents(os.path.join(root, "CHANGELOG.md"))
+                workflow["changelog"] = changelog_content
                 workflow["diagrams"] = read_contents(
                     f"{os.path.splitext(workflow_path)[0]}_diagrams.md"
                 )
+
+                # Extract update date from changelog
+                update_date = extract_date_from_changelog(changelog_content)
+                if update_date:
+                    # Convert to ISO format (YYYY-MM-DDT00:00:00)
+                    updated_isoformat = f"{update_date}T00:00:00"
+                else:
+                    updated_isoformat = None
+                    print(
+                        f"Could not extract date from CHANGELOG.md for {workflow_path}"
+                    )
+
+                workflow["updated"] = updated_isoformat
+
                 dirname = os.path.dirname(workflow_path).split("/")[-1]
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
