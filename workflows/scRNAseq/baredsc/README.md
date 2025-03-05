@@ -1,4 +1,4 @@
-# BaredSC Workflows
+# Single-Cell Mixture Analysis: baredSC Log-Normalized Models
 
 These workflows allow to run a baredSC analysis from a table with counts in a single click. It uses models from 1 to N Gaussians and combine them. It uses the logNorm scale, 100 bins for 1 dimension and 25 bins on each axis in 2 dimensions.
 
