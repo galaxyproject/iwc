@@ -15,7 +15,7 @@ The goal of this workflow is to get a list of confident peaks with summits from 
 ## Strategy summary
 
 Here is a generated example to highlight the strategy:
-![strategy](https://raw.githubusercontent.com/galaxyproject/iwc/blob/main/workflows/epigenetics/consensus-peaks/strategy.png)
+![strategy](https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/epigenetics/consensus-peaks/strategy.png)
 
 ## Processing
 
