@@ -1,6 +1,6 @@
-# Velocyto on 10X data
+# RNA Velocity Analysis: Velocyto for 10X Genomics Data
 
-These workflows simply run velocyto. There are 2 workflows because one can be easily run after the 'fastq-to-matrix-10x' workflows (Velocyto-on10X-from-bundled). The other can be easily run from uploaded datasets (Velocyto-on10X-filtered-barcodes).
+These workflows simply run velocyto. There are 2 workflows because one can be easily run after the Single-Cell RNA-seq Preprocessing: 10X Genomics v3 to Seurat-Compatible Format' workflows (RNA Velocity Analysis: Velocyto for 10X Data from Bundled Output). The other can be easily run from uploaded datasets (RNA Velocity Analysis: Velocyto for 10X Data with Filtered Barcodes).
 
 ## Input datasets
 

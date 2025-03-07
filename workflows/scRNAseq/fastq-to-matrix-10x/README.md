@@ -1,8 +1,8 @@
-# Single-cell RNA-seq fastq to matrix for 10X data
+# Single-Cell RNA-seq Preprocessing: 10X Genomics Data to Analysis-Ready Formats
 
-These workflows are inspired by the [training material](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-preprocessing-tenx/tutorial.html). Except that the output is in a 'bundle' format: three files (one matrix, one with genes, one with barcodes) which is similar to the cellranger output format.
+These workflows are inspired by the [training material](https://training.galaxyproject.org/training-material/topics/single-cell/tutorials/scrna-preprocessing-tenx/tutorial.html). The output is in a 'bundle' format with three files (one matrix, one with genes, one with barcodes) which is similar to the cellranger output format, and is compatible with any Read10X function (Seurat or Scanpy). There are 2 types of output collections: either one collection with all matrices, one collection with all genes and one collection with all barcodes (compatible with post processing in galaxy) or a single nested collection with one sub-collection per sample with the 3 files (easier for local downstream analysis).
 
-Both are designed for fastqs from 10X libraries v3. One is for regular 10X library (one library per sample), while the other one is for CellPlex 10X library which allows to multiplex samples using CMOs (see [this blog article](https://www.10xgenomics.com/blog/answering-your-questions-about-sample-multiplexing-for-single-cell-gene-expression)).
+Both workflows are designed for fastqs from 10X libraries v3. One is for regular 10X library (one library per sample), while the other one is for CellPlex 10X library which allows to multiplex samples using CMOs (see [this blog article](https://www.10xgenomics.com/blog/answering-your-questions-about-sample-multiplexing-for-single-cell-gene-expression)).
 
 ## Input datasets
 
