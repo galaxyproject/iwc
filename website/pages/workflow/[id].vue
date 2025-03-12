@@ -101,6 +101,7 @@ const selectedInstance = ref("");
 const instances = reactive([
     { value: "https://usegalaxy.org", label: "usegalaxy.org" },
     { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
+    { value: "https://usegalaxy.org.au", label: "usegalaxy.org.au" },
     { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
     { value: "http://localhost:8081", label: "local dev instance" },
 ]);
