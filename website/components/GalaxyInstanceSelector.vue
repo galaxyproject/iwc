@@ -127,7 +127,8 @@ const showCreateOption = computed(() => {
             :options="allInstances"
             :searchable="true"
             v-model:query="internalQuery"
-            placeholder="Select or enter a Galaxy instance URL"
+            searchable-placeholder="Select or enter a custom Galaxy instance URL"
+            show-create-option-when="always"
             by="value"
             creatable>
             <template #option-create="{ option }">
