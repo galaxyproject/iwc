@@ -5,7 +5,7 @@ import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 import { formatDate } from "~/utils/";
-import GalaxyInstanceSelector from '~/components/GalaxyInstanceSelector.vue';
+import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
 const workflowStore = useWorkflowStore();
@@ -134,10 +134,8 @@ onBeforeMount(async () => {
                         </ULink>
                     </li>
                 </ul>
+                <GalaxyInstanceSelector v-model="selectedInstance" />
                 <UButtonGroup class="mt-4" size="sm" orientation="vertical">
-                  <GalaxyInstanceSelector
-                    v-model="selectedInstance"
-                  />
                     <UButton
                         :to="launchUrl"
                         target="_blank"
