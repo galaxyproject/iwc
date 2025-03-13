@@ -52,21 +52,11 @@ const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
 const internalQuery = ref("");
 
 onMounted(() => {
-    // Check if the current model value exists in our instances
-    const instanceExists = allInstances.value.some((instance) => instance === props.modelValue);
-
-    if (props.modelValue && !instanceExists) {
-        // If model value is provided but not in our lists, try to add it as custom
-        try {
-            const url = new URL(props.modelValue);
-            onCreateInstance(props.modelValue);
-        } catch (e) {
-            // If not a valid URL, select the last known instance
-            selectedInstance.value = lastSelectedInstance.value;
-        }
-    } else if (!props.modelValue) {
+    if (!props.modelValue) {
         // If no model value provided, use the last selected instance
         selectedInstance.value = lastSelectedInstance.value;
+        emit("update:modelValue", selectedInstance.value);
+        emit("change", selectedInstance.value);
     }
 });
 
@@ -95,7 +85,6 @@ watch(selectedInstance, (newVal, oldVal) => {
         }
         // Update the last selected instance in storage
         lastSelectedInstance.value = instanceUrl;
-
         // Emit the changes
         emit("update:modelValue", instanceUrl);
         emit("change", instanceUrl);
