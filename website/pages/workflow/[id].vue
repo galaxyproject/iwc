@@ -134,17 +134,20 @@ onBeforeMount(async () => {
                         </ULink>
                     </li>
                 </ul>
+                <h3 class="font-bold text-l mt-4">Running this workflow</h3>
                 <GalaxyInstanceSelector v-model="selectedInstance" />
-                <UButtonGroup class="mt-4" size="sm" orientation="vertical">
+                <p class="my-2 text-sm font-medium">
+                    You can choose to run the workflow with sample data prefilled, or with your own data.
+                </p>
+                <UButtonGroup class="mt-4" size="sm">
                     <UButton
                         :to="launchUrl"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"
                         color="primary"
                         variant="solid"
-                        label="Launch at" />
+                        label="Run Workflow" />
                     <UButton
-                        class="mt-4"
                         @click="createLandingPage"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"

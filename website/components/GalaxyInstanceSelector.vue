@@ -118,10 +118,9 @@ const showCreateOption = computed(() => {
 <template>
     <div class="galaxy-instance-selector">
         <div class="my-2">
-            <span class="text-sm font-medium"
-                >Select or enter a Galaxy instance URL in the field below to launch this workflow on that
-                instance.</span
-            >
+            <p class="text-sm font-medium">
+                Select or enter a Galaxy instance URL in the field below to launch this workflow on that instance.
+            </p>
         </div>
         <USelectMenu
             v-model="selectedInstance"
