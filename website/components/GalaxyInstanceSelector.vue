@@ -19,13 +19,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change']);
 
-// Use useStorage to persist the selected instance
-const selectedInstance = ref('');
-const selectedInstanceStorage = useStorage('galaxy-instance-preference', selectedInstance);
-const customMode = ref(false);
-const customInstanceUrl = ref('');
+// Store available instances in local storage, starting with defaults
+const availableInstances = useStorage('galaxy-available-instances', defaultInstances);
+const selectedInstance = ref(props.modelValue);
 
-// Watch for changes to modelValue from parent component.
+// Watch for changes to modelValue from parent component
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -35,97 +33,53 @@ watch(
   }
 );
 
-// Watch for changes to the selected instance.
+// Watch for changes to the selected instance
 watch(selectedInstance, (newVal) => {
-  selectedInstanceStorage.value = newVal;
   emit('update:modelValue', newVal);
   emit('change', newVal);
 });
 
-onMounted(() => {
-  // Check if current value is a predefined instance or custom
-  customMode.value = !defaultInstances.some(instance => instance.value === selectedInstance.value);
-  if (customMode.value) {
-    customInstanceUrl.value = selectedInstance.value;
-  }
-});
-
-function selectInstance(instance) {
-  selectedInstance.value = instance;
-}
-
-function toggleCustomMode() {
-  customMode.value = !customMode.value;
-  if (!customMode.value) {
-    // When switching back to predefined, select the first instance
-    selectInstance(defaultInstances[0].value);
-  } else {
-    // When switching to custom, pre-fill with current selection
-    customInstanceUrl.value = selectedInstance.value;
-  }
-}
-
-function applyCustomUrl() {
+// Function to create a new instance
+function onCreateInstance(url: string) {
   try {
     // Basic validation
-    new URL(customInstanceUrl.value);
-    selectInstance(customInstanceUrl.value);
+    const parsedUrl = new URL(url);
+    
+    // Create a label from the URL
+    const label = parsedUrl.hostname;
+    
+    // Check if this URL already exists
+    if (!availableInstances.value.some(instance => instance.value === url)) {
+      // Add to available instances
+      availableInstances.value.push({ value: url, label });
+    }
+    
+    // Set as selected
+    selectedInstance.value = url;
   } catch (e) {
-    console.error("Invalid URL provided");
+    console.error("Invalid URL provided:", e);
     // You could add visual feedback here
-  }
-}
-
-function handleCustomInputBlur() {
-  if (customInstanceUrl.value) {
-    applyCustomUrl();
   }
 }
 </script>
 
 <template>
   <div class="galaxy-instance-selector">
-    <div class="flex items-center justify-between mb-2">
+    <div class="mb-2">
       <span class="text-sm font-medium">Galaxy Instance</span>
-      <UButton
-        size="xs"
-        :color="customMode ? 'primary' : 'gray'"
-        :variant="customMode ? 'solid' : 'ghost'"
-        @click="toggleCustomMode"
-      >
-        {{ customMode ? 'Use Predefined' : 'Use Custom' }}
-      </UButton>
     </div>
-
-    <div v-if="!customMode">
-      <USelect
-        v-model="selectedInstance"
-        :options="defaultInstances"
-        @change="selectInstance"
-        placeholder="Select a Galaxy instance"
-        class="w-full"
-      />
-    </div>
-
-    <div v-else class="custom-url-input">
-      <UInput
-        v-model="customInstanceUrl"
-        placeholder="Enter Galaxy Instance URL"
-        @blur="handleCustomInputBlur"
-        @keyup.enter="applyCustomUrl"
-        class="w-full"
-      >
-        <template #trailing>
-          <UButton
-            icon="i-heroicons-check"
-            color="primary"
-            variant="ghost"
-            size="xs"
-            @click="applyCustomUrl"
-          />
-        </template>
-      </UInput>
-    </div>
+    
+    <USelectMenu
+      v-model="selectedInstance"
+      create-item
+      create-text="Use custom Galaxy instance:"
+      :items="availableInstances"
+      placeholder="Select or enter a Galaxy instance URL"
+      by="value"
+      option-attribute="label"
+      class="w-full"
+      @create="onCreateInstance"
+    />
   </div>
 </template>
 
