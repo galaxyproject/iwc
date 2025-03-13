@@ -27,15 +27,6 @@ const links = [
     },
 ];
 
-// Instance Selector -- defined in the component now
-const instances = [
-    { value: "https://usegalaxy.org", label: "usegalaxy.org" },
-    { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
-    { value: "https://usegalaxy.org.au", label: "usegalaxy.org.au" },
-    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
-    { value: "http://localhost:8081", label: "local dev instance" },
-];
-
 const selectedInstance = ref("");
 
 const launchUrl = computed(() => {
@@ -113,10 +104,6 @@ onBeforeMount(async () => {
     await workflowStore.setWorkflow();
     loading.value = false;
 });
-
-const onInstanceChange = (value: string) => {
-    selectedInstance.value = value
-};
 </script>
 
 <template>
@@ -150,9 +137,7 @@ const onInstanceChange = (value: string) => {
                 <UButtonGroup class="mt-4" size="sm" orientation="vertical">
                   <GalaxyInstanceSelector
                     v-model="selectedInstance"
-                    :instances="instances"
-                    @change="onInstanceChange"
-                    />
+                  />
                     <UButton
                         :to="launchUrl"
                         target="_blank"
