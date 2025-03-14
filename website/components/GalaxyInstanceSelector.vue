@@ -13,6 +13,7 @@ const defaultInstances = [
     "https://usegalaxy.org",
     "https://usegalaxy.eu",
     "https://usegalaxy.org.au",
+    "https://usegalaxy.fr",
     "https://test.galaxyproject.org",
 ];
 
