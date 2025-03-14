@@ -55,6 +55,8 @@ onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
         selectedInstance.value = lastSelectedInstance.value;
+        // TODO -- the watch should do this but is not?  Is it because of the string handling?
+        // No harm in kicking it out here, though.
         emit("update:modelValue", selectedInstance.value);
         emit("change", selectedInstance.value);
     }
@@ -90,18 +92,6 @@ watch(selectedInstance, (newVal, oldVal) => {
         emit("change", instanceUrl);
     }
 });
-
-const filteredOptions = computed(() => {
-    if (!internalQuery.value) {
-        return allInstances.value;
-    }
-    const query = internalQuery.value.toLowerCase();
-    return allInstances.value.filter((instance) => instance.toLowerCase().includes(query));
-});
-
-const showCreateOption = computed(() => {
-    return internalQuery.value && !filteredOptions.value.some((item) => item === internalQuery.value);
-});
 </script>
 
 <template>
@@ -113,12 +103,11 @@ const showCreateOption = computed(() => {
         </div>
         <USelectMenu
             v-model="selectedInstance"
+            v-model:query="internalQuery"
             :options="allInstances"
             :searchable="true"
-            v-model:query="internalQuery"
             searchable-placeholder="Select or enter a custom Galaxy instance URL"
             show-create-option-when="always"
-            by="value"
             creatable>
             <template #option-create="{ option }">
                 <span>Create "{{ internalQuery }}"</span>
