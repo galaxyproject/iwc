@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4] 2025-03-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0`
+
 ## [0.3] - 2024-08-26
 
 - Changed the regex to only change the sequences. The workflow is now more robust to different (non VGP) scaffold names and VGP names with prefixes. 
