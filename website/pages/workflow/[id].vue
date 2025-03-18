@@ -5,12 +5,12 @@ import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 import { formatDate } from "~/utils/";
+import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
 
-// TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
 const authors = computed(() => {
     let authorLine = "";
     if (workflow.value?.authors) {
@@ -26,6 +26,8 @@ const links = [
         to: "/",
     },
 ];
+
+const selectedInstance = ref("");
 
 const launchUrl = computed(() => {
     if (!workflow.value || !selectedInstance.value) return "";
@@ -96,32 +98,12 @@ const tabs = computed(() => [
     },
 ]);
 
-/* Instance Selector -- factor out to a component */
-const selectedInstance = ref("");
-const instances = reactive([
-    { value: "https://usegalaxy.org", label: "usegalaxy.org" },
-    { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
-    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
-    { value: "http://localhost:8081", label: "local dev instance" },
-]);
-
 const loading = ref(true);
 
 onBeforeMount(async () => {
-    // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
     await workflowStore.setWorkflow();
-    const savedInstance = localStorage.getItem("selectedInstance");
-    if (savedInstance) {
-        selectedInstance.value = savedInstance;
-    } else {
-        selectedInstance.value = instances[0].value;
-    }
     loading.value = false;
 });
-
-const onInstanceChange = (value: string) => {
-    localStorage.setItem("selectedInstance", value);
-};
 </script>
 
 <template>
@@ -152,21 +134,20 @@ const onInstanceChange = (value: string) => {
                         </ULink>
                     </li>
                 </ul>
-                <UButtonGroup class="mt-4" size="sm" orientation="vertical">
-                    <USelect
-                        v-model="selectedInstance"
-                        :options="instances"
-                        label="Select Galaxy Instance"
-                        @change="onInstanceChange" />
+                <h3 class="font-bold text-l mt-4">Running this workflow</h3>
+                <GalaxyInstanceSelector v-model="selectedInstance" />
+                <p class="my-2 text-sm font-medium">
+                    You can choose to run the workflow with sample data prefilled, or with your own data.
+                </p>
+                <UButtonGroup class="mt-4" size="sm">
                     <UButton
                         :to="launchUrl"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"
                         color="primary"
                         variant="solid"
-                        label="Launch at" />
+                        label="Run Workflow" />
                     <UButton
-                        class="mt-4"
                         @click="createLandingPage"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"
@@ -177,7 +158,6 @@ const onInstanceChange = (value: string) => {
             </div>
         </template>
 
-        <!-- Right side workflow cards -->
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
@@ -206,7 +186,6 @@ const onInstanceChange = (value: string) => {
                                 </div>
                             </div>
                             <div v-else-if="item.preview" class="mt-6">
-                                <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
                                 <iframe
                                     title="Galaxy Workflow Embed"
                                     style="width: 100%; height: 700px; border: none"
