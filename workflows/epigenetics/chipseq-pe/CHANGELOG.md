@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.14] 2025-03-10
+## [0.14] - 2025-03-10
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.9+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0`

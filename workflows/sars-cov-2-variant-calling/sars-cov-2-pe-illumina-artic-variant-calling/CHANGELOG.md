@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.5.4] 2025-03-17
+## [0.5.4] - 2025-03-17
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.23.4+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy4`

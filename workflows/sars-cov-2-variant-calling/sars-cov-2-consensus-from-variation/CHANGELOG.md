@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4.3] 2025-03-10
+## [0.4.3] - 2025-03-10
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.30.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.31.1`

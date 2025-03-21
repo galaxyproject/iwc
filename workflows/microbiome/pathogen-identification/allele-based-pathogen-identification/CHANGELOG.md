@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.4] 2025-03-10
+## [0.1.4] - 2025-03-10
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy0`

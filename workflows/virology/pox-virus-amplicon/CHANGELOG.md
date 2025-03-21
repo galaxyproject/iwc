@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3] 2025-03-17
+## [0.3] - 2025-03-17
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.4`
