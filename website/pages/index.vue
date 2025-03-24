@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { type Workflow, type WorkflowCollection } from "~/models/workflow";
+import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
-import waveSvg from "~/public/waveNounProject.svg";
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
@@ -64,26 +63,26 @@ function selectWorkflow(workflow: Workflow) {
 <template>
     <NuxtLayout>
         <template #hero>
-            <div class="flex bg-ebony-clay p-8 space-y-6 items-center" :style="{ 'flex-direction': 'column' }">
-                <h1 class="text-5xl my-2 text-white text-center font-bold">
+            <div class="flex bg-ebony-clay p-4 items-center" :style="{ 'flex-direction': 'column' }">
+                <h1 class="text-5xl my-8 text-white text-center font-bold">
                     Discover and run vetted analysis pipelines on Galaxy
                 </h1>
-                <h2 class="text-xl text-white text-center font-semibold">
+                <h2 class="text-xl text-white text-center font-semibold mb-16">
                     Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly
                     and reliably.
                 </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
+                <div class="max-w-6xl w-full mt-12 p-4">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search pipelines"
+                        class="w-full p-2 mb-2 border rounded-lg" />
+                </div>
+                <Filters />
             </div>
         </template>
         <template #content>
-            <div class="h-16">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search workflows"
-                    class="w-full mb-4 p-2 border rounded" />
-            </div>
-            <Filters />
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
                     v-for="workflow in filteredWorkflows"

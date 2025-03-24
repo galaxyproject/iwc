@@ -39,7 +39,7 @@ defineProps<{
             </p>
 
             <div v-if="workflow.collections && workflow.collections.length > 0 && !compact">
-                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="soft">
+                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="solid">
                     {{ collection }}
                 </UBadge>
             </div>
@@ -48,10 +48,10 @@ defineProps<{
                     v-for="collection in workflow.collections.slice(0, 2)"
                     :key="collection"
                     class="mr-1 mb-1"
-                    variant="soft">
+                    variant="solid">
                     {{ collection }}
                 </UBadge>
-                <UBadge v-if="workflow.collections.length > 2" variant="soft" class="mr-1 mb-1">
+                <UBadge v-if="workflow.collections.length > 2" variant="solid" class="mr-1 mb-1">
                     +{{ workflow.collections.length - 2 }}
                 </UBadge>
             </div>
@@ -63,7 +63,11 @@ defineProps<{
                     <Icon name="uil:tag" :class="compact ? 'mr-1 w-3 h-3' : 'mx-1'" />
                     {{ workflow.definition.release }}
                 </p>
-                <p>{{ formatDate(workflow.updated) }}</p>
+                <p class="flex items-center">
+                    <Icon name="uil:clock-two" :class="compact ? 'mr-1 w-3 h-3' : 'mx-1'" />
+                    Updated on
+                    {{ formatDate(workflow.updated) }}
+                </p>
             </div>
         </template>
     </UCard>

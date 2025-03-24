@@ -25,28 +25,17 @@ export const useWorkflowStore = defineStore("workflow", () => {
     });
 
     const validFilters = computed(() => {
-        // If no filters are selected, return all available filters
-        if (selectedFilters.value.length === 0) {
-            return allFilters.value;
-        }
-
-        // If filters are already selected, only show filters that would produce results
-        return allFilters.value.filter((filter) => {
-            if (selectedFilters.value.includes(filter)) {
-                return true; // Always show already selected filters
-            }
-
-            // Check if adding this filter would still return results
-            const tempFilters = [...selectedFilters.value, filter];
-            return allWorkflows.value.some((workflow) => tempFilters.every((f) => workflow.collections.includes(f)));
-        });
+        // All filters are valid when single selection is allowed
+        return allFilters.value;
     });
 
     function toggleFilter(filter: string) {
+        // If the filter is already selected, deselect it
         if (selectedFilters.value.includes(filter)) {
-            selectedFilters.value = selectedFilters.value.filter((f) => f !== filter);
+            selectedFilters.value = [];
         } else {
-            selectedFilters.value.push(filter);
+            // Otherwise replace the current selection with the new filter
+            selectedFilters.value = [filter];
         }
     }
 
