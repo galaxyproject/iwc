@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { type Workflow, type WorkflowCollection } from "~/models/workflow";
+import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
-import waveSvg from "~/public/waveNounProject.svg";
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
