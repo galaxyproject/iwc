@@ -1,3 +1,6 @@
-A collection of workflows for molecular modeling applications, including protein-ligand docking simulations, 
-molecular dynamics calculations, and force field parameterization. These computational methods enable 
-quantitative analysis of chemical interactions relevant to drug discovery and materials science research.
+Computational Chemistry Workflows: A comprehensive collection of molecular
+modeling applications for the Galaxy workflow management system, including
+protein-ligand docking simulations, molecular dynamics calculations, force field
+parameterization, free energy calculations, QSAR/QSPR, and cheminformatics.
+These computational methods enable quantitative analysis of chemical
+interactions relevant to drug discovery and materials science research.
