@@ -4,6 +4,10 @@ import defaultTheme from "tailwindcss/defaultTheme";
 export default <Partial<Config>>{
     theme: {
         extend: {
+            fontFamily: {
+                sans: ["Atkinson Hyperlegible", ...defaultTheme.fontFamily.sans],
+                mono: ["Monaco", "Menlo", "Consolas", "Courier New", "monospace"],
+            },
             colors: {
                 // Galaxy primary
                 "bay-of-many": {
