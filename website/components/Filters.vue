@@ -60,5 +60,4 @@ const handleFilterClick = (filter: string) => {
 .filter-transition-leave-active {
     position: absolute;
 }
-
 </style>

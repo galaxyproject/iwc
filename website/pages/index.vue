@@ -73,12 +73,12 @@ function selectWorkflow(workflow: Workflow) {
                     and reliably.
                 </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
-                <div class="max-w-6xl w-full my-">
+                <div class="max-w-6xl w-full p-4">
                     <input
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Search workflows"
-                        class="w-full mb-4 p-2 border rounded" />
+                        placeholder="Search pipelines"
+                        class="w-full p-2 border rounded-lg" />
                 </div>
                 <Filters />
             </div>
