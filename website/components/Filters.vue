@@ -13,31 +13,52 @@ const handleFilterClick = (filter: string) => {
 
 <template>
     <div id="filters" class="mb-4">
-        <TransitionGroup name="filter-transition">
-            <UBadge
-                v-for="filter in allFilters"
-                :key="filter"
-                :variant="store.selectedFilters.includes(filter) ? 'solid' : 'soft'"
-                :class="['badge m-1', { incompatible: !validFilters.includes(filter) }]"
-                @click="validFilters.includes(filter) ? handleFilterClick(filter) : null"
-                :data-tooltip="!validFilters.includes(filter) ? 'Incompatible with current selection' : null">
-                {{ filter }}
-            </UBadge>
+        <TransitionGroup name="filter-transition" tag="div" class="flex flex-wrap items-center">
+            <template v-for="(filter, index) in allFilters" :key="filter">
+                <span
+                    class="filter-item py-1 px-2"
+                    :class="{
+                        active: store.selectedFilters.includes(filter),
+                        incompatible: !validFilters.includes(filter),
+                    }"
+                    @click="validFilters.includes(filter) ? handleFilterClick(filter) : null"
+                    :data-tooltip="!validFilters.includes(filter) ? 'Incompatible with current selection' : null">
+                    {{ filter }}
+                </span>
+                <span v-if="index < allFilters.length - 1" class="text-gray-400 mx-1">|</span>
+            </template>
         </TransitionGroup>
     </div>
 </template>
 
 <style scoped>
+.filter-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    color: #eab308; /* yellow-500 */
+}
+
+.filter-item:hover:not(.incompatible) {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #ffffff; /* white */
+    background-color: #eab308; /* yellow-500 background on hover */
+}
+
+.filter-item.active {
+    font-weight: 600;
+    color: #ffffff; /* white text for active state */
+    background-color: #eab308; /* yellow-500 background for active state */
+}
+
 .incompatible {
     opacity: 0.65;
     cursor: not-allowed;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    transition: all 0.3s ease; /* Add transition for a nice visual effect */
+    transition: all 0.3s ease;
 }
 
 .incompatible:hover {
-    opacity: 0.85; /* Slightly increase opacity on hover for better feedback */
+    opacity: 0.85;
 }
 
 .filter-transition-move,
