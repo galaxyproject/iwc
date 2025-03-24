@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
 
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
 const categoryDescription = ref<string | null>(null);
+const selectedCategory = ref<string | null>(null);
 
-async function handleFilterSelected(category: string) {
-    selectedCategory.value = category;
+const workflowStore = useWorkflowStore();
+
+async function loadCategoryDescription(category: string) {
     try {
         const response = await fetch(`/category-descriptions/${category.toLowerCase().replace(/ /g, "-")}.md`);
         if (response.ok) {
@@ -23,6 +25,20 @@ async function handleFilterSelected(category: string) {
     }
 }
 
+watch(
+    () => workflowStore.selectedFilters,
+    (newFilters) => {
+        if (newFilters.length === 1) {
+            selectedCategory.value = newFilters[0];
+            loadCategoryDescription(newFilters[0]);
+        } else {
+            selectedCategory.value = null;
+            categoryDescription.value = null;
+        }
+    },
+    { immediate: true },
+);
+
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
 const POPULAR_WORKFLOW_TRS_IDS = [
@@ -36,9 +52,6 @@ import Filters from "~/components/Filters.vue";
 const searchQuery = ref("");
 const selectedWorkflow = ref<Workflow | null>(null);
 const gridDiv = ref<HTMLDivElement | null>(null);
-const selectedCategory = ref<string | null>(null);
-
-const workflowStore = useWorkflowStore();
 
 const allWorkflows = computed(() => workflowStore.allWorkflows);
 const allCategories = computed(() => workflowStore.allCategories);
@@ -99,7 +112,7 @@ function selectWorkflow(workflow: Workflow) {
                         placeholder="Search pipelines"
                         class="w-full p-2 mb-2 border rounded-lg" />
                 </div>
-                <Filters @filter-selected="handleFilterSelected" />
+                <Filters />
             </div>
         </template>
         <template #content>
