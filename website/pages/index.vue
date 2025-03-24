@@ -68,22 +68,22 @@ function selectWorkflow(workflow: Workflow) {
                 <h1 class="text-5xl my-2 text-white text-center font-bold">
                     Discover and run vetted analysis pipelines on Galaxy
                 </h1>
-                <h2 class="text-xl text-white text-center font-semibold">
+                <h2 class="text-xl text-white text-center font-semibold mb-8">
                     Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly
                     and reliably.
                 </h2>
                 <PopularWorkflows :workflow-trs-ids="POPULAR_WORKFLOW_TRS_IDS" />
+                <div class="max-w-6xl w-full my-">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        placeholder="Search workflows"
+                        class="w-full mb-4 p-2 border rounded" />
+                </div>
+                <Filters />
             </div>
         </template>
         <template #content>
-            <div class="h-16">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Search workflows"
-                    class="w-full mb-4 p-2 border rounded" />
-            </div>
-            <Filters />
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
                     v-for="workflow in filteredWorkflows"

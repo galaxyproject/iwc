@@ -2,8 +2,6 @@
 import { useWorkflowStore } from "~/stores/workflows";
 
 const store = useWorkflowStore();
-const validFilters = computed(() => store.validFilters);
-const invalidFilters = computed(() => store.invalidFilters);
 const allFilters = computed(() => store.allFilters);
 
 const handleFilterClick = (filter: string) => {
@@ -19,10 +17,8 @@ const handleFilterClick = (filter: string) => {
                     class="filter-item py-1 px-2"
                     :class="{
                         active: store.selectedFilters.includes(filter),
-                        incompatible: !validFilters.includes(filter),
                     }"
-                    @click="validFilters.includes(filter) ? handleFilterClick(filter) : null"
-                    :data-tooltip="!validFilters.includes(filter) ? 'Incompatible with current selection' : null">
+                    @click="handleFilterClick(filter)">
                     {{ filter }}
                 </span>
                 <span v-if="index < allFilters.length - 1" class="text-gray-400 mx-1">|</span>
@@ -36,29 +32,17 @@ const handleFilterClick = (filter: string) => {
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 4px;
-    color: #eab308; /* yellow-500 */
+    @apply text-gold;
 }
 
-.filter-item:hover:not(.incompatible) {
+.filter-item:hover {
     background-color: rgba(0, 0, 0, 0.05);
-    color: #ffffff; /* white */
-    background-color: #eab308; /* yellow-500 background on hover */
+    @apply text-white bg-gold;
 }
 
 .filter-item.active {
-    font-weight: 600;
-    color: #ffffff; /* white text for active state */
-    background-color: #eab308; /* yellow-500 background for active state */
-}
-
-.incompatible {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transition: all 0.3s ease;
-}
-
-.incompatible:hover {
-    opacity: 0.85;
+    /* font-weight: 600; */
+    @apply text-white bg-gold;
 }
 
 .filter-transition-move,
@@ -90,7 +74,7 @@ const handleFilterClick = (filter: string) => {
     transform: translateX(-50%);
     padding: 0.25rem 0.5rem;
     background-color: rgba(0, 0, 0, 0.8);
-    color: white;
+    @apply text-white;
     border-radius: 0.25rem;
     font-size: 0.75rem;
     white-space: nowrap;
