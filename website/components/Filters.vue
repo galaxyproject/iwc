@@ -21,7 +21,7 @@ const handleFilterClick = (filter: string) => {
                     @click="handleFilterClick(filter)">
                     {{ filter }}
                 </span>
-                <span v-if="index < allFilters.length - 1" class="text-gray-400 mx-1">|</span>
+                <span v-if="index < allFilters.length - 1" class="text-gray-200 mx-1">|</span>
             </template>
         </TransitionGroup>
     </div>
@@ -32,7 +32,7 @@ const handleFilterClick = (filter: string) => {
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 4px;
-    @apply text-gold;
+    @apply text-gold border-b-2 border-t-2 border-transparent;
 }
 
 .filter-item:hover {
@@ -41,8 +41,8 @@ const handleFilterClick = (filter: string) => {
 }
 
 .filter-item.active {
-    /* font-weight: 600; */
-    @apply text-white bg-gold;
+    @apply text-white border-gold;
+    background-color: transparent;
 }
 
 .filter-transition-move,
@@ -61,24 +61,4 @@ const handleFilterClick = (filter: string) => {
     position: absolute;
 }
 
-/* Custom tooltip styles */
-[data-tooltip] {
-    position: relative;
-}
-
-[data-tooltip]:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.25rem 0.5rem;
-    background-color: rgba(0, 0, 0, 0.8);
-    @apply text-white;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    z-index: 10;
-    margin-bottom: 0.25rem;
-}
 </style>
