@@ -177,9 +177,9 @@ def find_and_load_compliant_workflows(directory):
                 if doi_selection and concept_dois and doi_selection in concept_dois:
                     workflow["doi"] = concept_dois[doi_selection]["name"]
                 else:
+                    print(f"DOI Missing: {trsID}")
                     workflow["doi"] = None
 
-                print(f"DOI: {workflow['doi']}")
 
                 workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
                 if os.path.exists(workflow_test_path):
