@@ -51,6 +51,10 @@ const dockstoreWorkflowPageUrl = computed(() => {
     return baseUrl + repoPath;
 });
 
+const doiResolverUrl = computed(() => {
+    return `https://doi.org/${workflow.value?.doi}`;
+});
+
 async function createLandingPage() {
     const job = testToRequestState();
     const trs_url = trsIdAndVersionToDockstoreUrl(workflow.value?.trsID!, `v${workflow.value?.definition.release}`);
@@ -126,7 +130,13 @@ onBeforeMount(async () => {
                     <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
                     <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
                     <li><strong>License: </strong>{{ workflow.definition.license }}</li>
-                    <li v-if="workflow.doi"><strong>DOI: </strong>{{ workflow.doi }}</li>
+                    <li v-if="workflow.doi">
+                        <strong>DOI: </strong>
+                        <ULink :to="doiResolverUrl" target="_blank" class="hover:underline">
+                            {{ workflow.doi }}
+                            <UIcon name="i-heroicons-arrow-top-right-on-square" />
+                        </ULink>
+                    </li>
                     <li>
                         <strong>TRS: </strong>
                         <ULink :to="dockstoreWorkflowPageUrl" target="_blank" class="hover:underline">
