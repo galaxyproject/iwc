@@ -2,21 +2,26 @@
 import { ref, computed, onMounted } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
-import * as yaml from 'yaml';
 
-interface CategoryDescriptions {
-  [key: string]: string;
+import MarkdownRenderer from '~/components/MarkdownRenderer.vue';
+
+const categoryDescription = ref<string | null>(null);
+
+async function handleFilterSelected(category: string) {
+    selectedCategory.value = category;
+    try {
+        const response = await fetch(`/category-descriptions/${category.toLowerCase().replace(/ /g, '-')}.md`);
+        if (response.ok) {
+            categoryDescription.value = await response.text();
+        } else {
+            categoryDescription.value = null;
+            console.error(`Failed to fetch description for ${category}`);
+        }
+    } catch (error) {
+        categoryDescription.value = null;
+        console.error(`Error fetching description for ${category}:`, error);
+    }
 }
-
-const categoryDescriptions = ref<CategoryDescriptions>({});
-
-onMounted(() => {
-  fetch('/category-descriptions.yaml')
-    .then(response => response.text())
-    .then(text => {
-      categoryDescriptions.value = yaml.parse(text) as CategoryDescriptions;
-    });
-});
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
@@ -73,10 +78,6 @@ function selectWorkflow(workflow: Workflow) {
     selectedWorkflow.value = workflow;
     scrollToWorkflow(workflow);
 }
-
-function handleFilterSelected(category: string) {
-    selectedCategory.value = category;
-}
 </script>
 
 <template>
@@ -103,8 +104,8 @@ function handleFilterSelected(category: string) {
         </template>
         <template #content>
             <div v-if="selectedCategory" class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4">{{ selectedCategory }} Overview</h2>
-                <p v-if="categoryDescriptions[selectedCategory]">{{ categoryDescriptions[selectedCategory] }}</p>
+                <h2 class="text-xl font-semibold mb-4">{{ selectedCategory }}</h2>
+                <MarkdownRenderer v-if="categoryDescription" :markdownContent="categoryDescription" />
             </div>
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
