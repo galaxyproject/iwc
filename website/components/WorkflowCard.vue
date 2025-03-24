@@ -63,7 +63,11 @@ defineProps<{
                     <Icon name="uil:tag" :class="compact ? 'mr-1 w-3 h-3' : 'mx-1'" />
                     {{ workflow.definition.release }}
                 </p>
-                <p>Updated on {{ formatDate(workflow.updated) }}</p>
+                <p class="flex items-center">
+                    <Icon name="uil:clock-two" :class="compact ? 'mr-1 w-3 h-3' : 'mx-1'" />
+                    Updated on
+                    {{ formatDate(workflow.updated) }}
+                </p>
             </div>
         </template>
     </UCard>
