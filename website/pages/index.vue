@@ -105,7 +105,9 @@ function selectWorkflow(workflow: Workflow) {
         <template #content>
             <div v-if="selectedCategory" class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4">{{ selectedCategory }}</h2>
-                <MarkdownRenderer v-if="categoryDescription" :markdownContent="categoryDescription" />
+                <div class="prose !max-w-none">
+                    <MarkdownRenderer v-if="categoryDescription" :markdownContent="categoryDescription" />
+                </div>
             </div>
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
