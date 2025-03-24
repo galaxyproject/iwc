@@ -10,7 +10,7 @@ const handleFilterClick = (filter: string) => {
 </script>
 
 <template>
-    <div id="filters" class="mb-4">
+    <div id="filters">
         <TransitionGroup name="filter-transition" tag="div" class="flex flex-wrap items-center">
             <template v-for="(filter, index) in allFilters" :key="filter">
                 <span
