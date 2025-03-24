@@ -3,14 +3,14 @@ import { ref, computed, onMounted } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
 
-import MarkdownRenderer from '~/components/MarkdownRenderer.vue';
+import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
 const categoryDescription = ref<string | null>(null);
 
 async function handleFilterSelected(category: string) {
     selectedCategory.value = category;
     try {
-        const response = await fetch(`/category-descriptions/${category.toLowerCase().replace(/ /g, '-')}.md`);
+        const response = await fetch(`/category-descriptions/${category.toLowerCase().replace(/ /g, "-")}.md`);
         if (response.ok) {
             categoryDescription.value = await response.text();
         } else {
