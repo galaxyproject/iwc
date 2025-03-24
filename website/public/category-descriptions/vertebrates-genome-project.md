@@ -1,32 +1,3 @@
-# Vertebrate Genome Project in Galaxy
+A comprehensive suite of genomic workflows developed for generating reference-quality vertebrate genome sequences. The framework features specialized methods for high-quality genome assembly, haplotype phasing, and chromosome-scale scaffolding. The VGP pipeline offers flexible assembly trajectories based on available data types (PacBio HiFi solo, trio with parental Illumina, or HiFi with HiC phasing) with optional scaffolding using Bionano optical maps and/or Hi-C data. 
 
-Assembly and analysis workflows developed within the Vertebrates Genome Project framework. These 
-pipelines incorporate specialized methods for high-quality genome assembly, haplotype phasing, and 
-chromosome-scale scaffolding to generate reference-quality vertebrate genome sequences
-
-## VGP pipeline assembly trajectories
-
-The VGP pipeline comprises ten workflows depending on the data available for the genome assembly.
-
-Trajectories for contiging:
-
-- Pacbio HiFi: Solo Assembly
-- Pacbio HiFi + parental Illumina: Trio Assembly
-- Pacbio HiFi + HiC Data: Assembly with HiC phasing
-
-Scaffolding can be performed using Bionano optical maps and/or Hi-C data.
-
-## VGP pipeline workflows
-
-- Quality control and parameter estimation for Solo assembly. It provides a kmer coverage database and an estimation of parameters that will be useful in the genome assembly process.
-- Quality control and parameter estimation for Trio assembly.
-- Solo assembly with Hifiasm
-- Assembly with Hi-C phasing
-- Trio Assembly
-- Purging of duplications and overlap from the phased assembly
-- Scafolding using Bionano optical mapping (optional)
-- Scafolding using HiC data
-- Decontamination
-- Mitogenome assembly
-
-> Note: For more details about the workflows steps by steps, which parameters to use, and how to understand the results, read our VGP assembly pipeline tutorial
+The complete workflow encompasses quality control, parameter estimation, contig assembly, purging of duplications, scaffolding, decontamination, and mitogenome assembly—all optimized within the Galaxy workflow management system. A detailed tutorial is available for guidance on workflow parameters and result interpretation.
