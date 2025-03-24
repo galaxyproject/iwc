@@ -1,12 +1,41 @@
 # Changelog
 
-## [0.7.1] 2024-08-13
+## [0.7.5] - 2025-03-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0`
+
+## [0.7.4] - 2025-03-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy0`
+
+## [0.7.3] - 2025-02-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy2`
+
+## [0.7.2] - 2025-01-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy2`
+
+## [0.7.1] - 2024-08-13
 
 - Expose Busco parameters : 
   - Lineage database 
   - Lineage
 
-## [0.7] 2024-07-24
+## [0.7] - 2024-07-24
 
 ### Added
 
@@ -17,7 +46,7 @@
 - Fix bug where the columns of the assembly statistics didn't join properly.
 - Rename some outputs for clarity
 
-## [0.6] 2024-04-23
+## [0.6] - 2024-04-23
 
 ### Changed
 
@@ -25,7 +54,7 @@
 - Add Busco gff output
 - Unhide Merqury QV output
 
-## [0.5] 2024-04-22
+## [0.5] - 2024-04-22
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1`
@@ -35,12 +64,12 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/merqury/merqury/1.3+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/merqury/merqury/1.3+galaxy4`
 - `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.27+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy0`
 
-## [0.4] 2024-03-25
+## [0.4] - 2024-03-25
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.26+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.27+galaxy0`
 
-## [0.2] 2024-02-19
+## [0.2] - 2024-02-19
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.24+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.26+galaxy0`

@@ -4,20 +4,13 @@ import { useRoute } from "vue-router";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
+import { formatDate } from "~/utils/";
+import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
 
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-};
-
-// TODO: Add a component for authors.  For now, just have a computed that grabs names and joins them
 const authors = computed(() => {
     let authorLine = "";
     if (workflow.value?.authors) {
@@ -34,6 +27,8 @@ const links = [
     },
 ];
 
+const selectedInstance = ref("");
+
 const launchUrl = computed(() => {
     if (!workflow.value || !selectedInstance.value) return "";
     return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(workflow.value.trsID)}&trs_version=v${workflow.value.definition.release}&run_form=true`;
@@ -49,6 +44,12 @@ function testToRequestState() {
 function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
     return `https://dockstore.org/api/ga4gh/trs/v2/tools/${trs_id}/versions/${trs_version}`;
 }
+
+const dockstoreWorkflowPageUrl = computed(() => {
+    const repoPath = workflow.value?.trsID.substring("#workflow/".length);
+    const baseUrl = "https://dockstore.org/workflows/";
+    return baseUrl + repoPath;
+});
 
 async function createLandingPage() {
     const job = testToRequestState();
@@ -84,12 +85,12 @@ const tabs = computed(() => [
         content: workflow.value?.readme || "No README available.",
     },
     {
-        label: "Version History",
-        content: workflow.value?.changelog || "No CHANGELOG available.",
-    },
-    {
         label: "Diagram",
         content: workflow.value?.diagrams || "No diagram available",
+    },
+    {
+        label: "Version History",
+        content: workflow.value?.changelog || "No CHANGELOG available.",
     },
     {
         label: "Tools",
@@ -97,32 +98,12 @@ const tabs = computed(() => [
     },
 ]);
 
-/* Instance Selector -- factor out to a component */
-const selectedInstance = ref("");
-const instances = reactive([
-    { value: "http://localhost:8081", label: "local dev instance" },
-    { value: "https://usegalaxy.org", label: "usegalaxy.org" },
-    { value: "https://test.galaxyproject.org", label: "test.galaxyproject.org" },
-    { value: "https://usegalaxy.eu", label: "usegalaxy.eu" },
-]);
-
 const loading = ref(true);
 
 onBeforeMount(async () => {
-    // Shift to a store to handle this, as it breaks nuxt to use localStorage in setup but this is a quick hack
     await workflowStore.setWorkflow();
-    const savedInstance = localStorage.getItem("selectedInstance");
-    if (savedInstance) {
-        selectedInstance.value = savedInstance;
-    } else {
-        selectedInstance.value = instances[0].value;
-    }
     loading.value = false;
 });
-
-const onInstanceChange = (value: string) => {
-    localStorage.setItem("selectedInstance", value);
-};
 </script>
 
 <template>
@@ -133,7 +114,7 @@ const onInstanceChange = (value: string) => {
         </div>
     </div>
     <NuxtLayout v-else>
-        <template #sidebar>
+        <template #rightSidebar>
             <div v-if="workflow" class="mt-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4">{{ workflow.definition.annotation }}</p>
@@ -142,25 +123,31 @@ const onInstanceChange = (value: string) => {
                     <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
                         <Author :author="author" />
                     </li>
-                    <li><strong>Release:</strong> {{ workflow.definition.release }}</li>
-                    <li><strong>License:</strong> {{ workflow.definition.license }}</li>
-                    <li><strong>UniqueID:</strong> {{ workflow.definition.uuid }}</li>
+                    <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
+                    <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
+                    <li><strong>License: </strong>{{ workflow.definition.license }}</li>
+                    <li>
+                        <strong>TRS: </strong>
+                        <ULink :to="dockstoreWorkflowPageUrl" target="_blank" class="hover:underline">
+                            {{ workflow.trsID }}
+                            <UIcon name="i-heroicons-arrow-top-right-on-square" />
+                        </ULink>
+                    </li>
                 </ul>
-                <UButtonGroup class="mt-4" size="sm" orientation="vertical">
-                    <USelect
-                        v-model="selectedInstance"
-                        :options="instances"
-                        label="Select Galaxy Instance"
-                        @change="onInstanceChange" />
+                <h3 class="font-bold text-l mt-4">Running this workflow</h3>
+                <GalaxyInstanceSelector v-model="selectedInstance" />
+                <p class="my-2 text-sm font-medium">
+                    You can choose to run the workflow with sample data prefilled, or with your own data.
+                </p>
+                <UButtonGroup class="mt-4" size="sm">
                     <UButton
                         :to="launchUrl"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"
                         color="primary"
                         variant="solid"
-                        label="Launch at" />
+                        label="Run Workflow" />
                     <UButton
-                        class="mt-4"
                         @click="createLandingPage"
                         target="_blank"
                         icon="i-heroicons-rocket-launch"
@@ -171,7 +158,6 @@ const onInstanceChange = (value: string) => {
             </div>
         </template>
 
-        <!-- Right side workflow cards -->
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
@@ -200,7 +186,6 @@ const onInstanceChange = (value: string) => {
                                 </div>
                             </div>
                             <div v-else-if="item.preview" class="mt-6">
-                                <!-- placeholder, we need to add the linkage to construct this, and we need to handle security?-->
                                 <iframe
                                     title="Galaxy Workflow Embed"
                                     style="width: 100%; height: 700px; border: none"

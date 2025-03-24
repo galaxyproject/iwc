@@ -1,4 +1,4 @@
-# ChIP-seq paired-end Workflow
+# ChIP-seq Analysis: Paired-End Read Processing
 
 ## Inputs dataset
 

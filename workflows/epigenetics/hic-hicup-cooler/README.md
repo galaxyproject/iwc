@@ -1,4 +1,4 @@
-# Hi-C (hic_fastq_to_cool_hicup_cooler) and region capture Hi-C (chic_fastq_to_cool_hicup_cooler) Workflows
+# (Capture) Hi-C Processing: FASTQ to Balanced Cool Files
 
 This can also be used for Hi-ChIP experiments, in that case the output with `matrix with iced values` is ignored and the matrix to use is `matrix with raw values`.
 

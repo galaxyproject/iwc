@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3.4] 2024-09-24
+## [0.3.4] - 2024-09-24
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
@@ -9,17 +9,17 @@
 - `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.3+galaxy1`
 
-## [0.3.2] 2023-11-28
+## [0.3.2] - 2023-11-28
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.1.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.1`
 
-## [0.3.1] 2023-11-20
+## [0.3.1] - 2023-11-20
 
 - Fix author in dockstore
 
-## [0.3] 2022-10-13
+## [0.3] - 2022-10-13
 
 ### Changed
 
@@ -40,7 +40,7 @@ These changes should not have any effects on results except this one:
   frequencies (< 0.001). In the new version all values in the column will be
   reported consistently in regular floating point format.
 
-## [0.2] 2022-02-11
+## [0.2] - 2022-02-11
 
 ### Changed
 
@@ -78,7 +78,7 @@ These changes should not have any effects on results except this one:
 - Made sure only a single changeset revision of the text_processing tools is
   used in the workflow.
 
-## [0.1.3] 2022-02-04
+## [0.1.3] - 2022-02-04
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/4.3+t.galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/4.3.0`
@@ -86,12 +86,12 @@ These changes should not have any effects on results except this one:
 - `toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/4.2` was updated to `toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0`
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/1.5` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/1.6`
 
-## [0.1.2] 2021-12-13
+## [0.1.2] - 2021-12-13
 
 ### Added
 - Added GitHub Actions workflow. No functional changes.
 
-## [0.1.1] 2021-07-23
+## [0.1.1] - 2021-07-23
 
 ### Added
 

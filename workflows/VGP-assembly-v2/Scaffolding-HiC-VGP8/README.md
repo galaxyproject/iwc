@@ -9,21 +9,22 @@ Example of trajectory :
 
 ## Inputs
 
-1. Scaffolded assembly [fasta]
-2. Database for busco lineage (recommended: latest)
-3. Busco lineage (recommended: vertebrata)
-4. Concatenated HiC forward reads [fastq]
-5. Concatenated HiC reverse reads [fastq]
-6. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
-7. Estimated genome size [txt]
-8. Haplotype name 
+1. Scaffolded assembly [gfa]
+2. Name of the haplotype
+3. HiC reads paired collection [fastq]
+5. Trim Hi-C data? If `yes` Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy". 
+6. Database for busco lineage (recommended: latest)
+7. Busco lineage (recommended: vertebrata)
+8. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
+9. Estimated genome size [txt]
 
 
 ### Outputs
 
 1. Scaffolds in [fasta] and [gfa] format
-2. QC: Assembly statistics
-3. QC: Nx plot
-4. QC: Size plot
-5. QC: BUSCO report
-6. QC: Pretext Maps before and after scaffolding
+2. If you selected `yes` for Hi-C trimming, the trimmed collections of Hi-C reads
+3. QC: Assembly statistics
+4. QC: Nx plot
+5. QC: Size plot
+6. QC: BUSCO report
+7. QC: Pretext Maps before and after scaffolding

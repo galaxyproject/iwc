@@ -1,16 +1,23 @@
 # Changelog
 
-## [0.4.2] 2024-03-06
+## [0.4.3] - 2025-03-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.30.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.31.1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy4`
+
+## [0.4.2] - 2024-03-06
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.29.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_genomecoveragebed/2.30.0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.15.1+galaxy3`
 
-## [0.4.1] 2023-11-20
+## [0.4.1] - 2023-11-20
 
 - Fix author in dockstore
 
-## [0.4] 2022-10-21
+## [0.4] - 2022-10-21
 
 ### Fixed
 - Restored original functionality that was dropped accidentally in release 0.2:
@@ -39,7 +46,7 @@
 
 - Updated bcftools consensus to v1.15.1.
 
-## [0.3] 2022-02-02
+## [0.3] - 2022-02-02
 
 ### Fixed
 - Apply AF thresholds on unbiased AF values recalculated from DP4 and DP fields
@@ -72,12 +79,12 @@
   None of these updates are expected to impact the generated consensus
   sequences.
 
-## [0.2.2] 2021-12-13
+## [0.2.2] - 2021-12-13
 
 ### Added
 - Added GitHub Actions workflow. No functional changes.
 
-## [0.2.1] 2021-07-23
+## [0.2.1] - 2021-07-23
 
 ### Added
 

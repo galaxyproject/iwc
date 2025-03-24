@@ -1,4 +1,4 @@
-# RNA-seq Differential expression and filtering workflow
+# RNA-Seq Differential Expression Analysis with Visualization
 
 This workflow works only with an experimental setup containing exactly 2 conditions with at least 2 replicates per condition.
 

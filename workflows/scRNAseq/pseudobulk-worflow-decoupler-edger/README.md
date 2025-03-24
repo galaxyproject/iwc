@@ -1,4 +1,4 @@
-# Pseudobulk-edgeR workflows
+# Single-Cell Pseudobulk Differential Expression Analysis with edgeR
 
 This workflow uses the decoupler tool in Galaxy to generate pseudobulk counts from an annotated AnnData file obtained from scRNA-seq analysis. Following the pseudobulk step, differential expression genes (DEG) are calculated 
 using the edgeR tool. The workflow also includes data sanitation steps to ensure smooth operation of edgeR and minimizing potential issues. Additionally, a Volcano plot tool is used to visualize the results after the DEG 

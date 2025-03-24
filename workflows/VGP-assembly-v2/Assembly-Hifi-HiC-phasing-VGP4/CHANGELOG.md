@@ -1,16 +1,69 @@
 # Changelog
 
-## [0.2.2] 2024-08-07
+## [0.3.2] - 2025-03-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.20.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.24.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0`
+
+## [0.3.1] - 2025-03-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy0`
+
+## [0.3.0] - 2025-02-26
+
+### Changes
+
+- Output bin files from Hifiasm. Helpful for debugging
+- Output lighter gfas without sequences along with the regular gfas 
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3`
+
+## [0.2.4] - 2025-02-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.9+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy2`
+
+## [0.2.3] - 2025-01-13
+
+### Changes
+
+- Hi-C inputs are now entered as collections instead of single datasets
+- Add optional trimming of Hi-C reads
+- Add inputs annotations
+- Add validator for haplotype names: No blank spaces 
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.9+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.3+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.20.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.1.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0`
+
+## [0.2.2] - 2024-08-07
 
 - Expose parameter: Busco lineage database
 
-## [0.2.1] 2024-07-29
+## [0.2.1] - 2024-07-29
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.9+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.8+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.9+galaxy0`
 
-## [0.2] 2024-07-12
+## [0.2] - 2024-07-12
 
 ### Added 
 
@@ -21,21 +74,21 @@
 - Fix bug where the columns of the assembly statistics didn't join properly. 
   
 
-## [0.1.11] 2024-05-20
+## [0.1.11] - 2024-05-20
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy1`
 
 
 
-## [0.1.10] 2024-04-23
+## [0.1.10] - 2024-04-23
 
 ### Changed
 
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.8+galaxy0`
 
 
-## [0.1.9] 2024-04-19
+## [0.1.9] - 2024-04-19
 
 ### Manual Updates
 
@@ -51,7 +104,7 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/merqury/merqury/1.3+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/merqury/merqury/1.3+galaxy4`
 
 
-## [0.1.8] 2024-03-25
+## [0.1.8] - 2024-03-25
 
 ### Manual update
 
@@ -70,11 +123,11 @@
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.7+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.19.8+galaxy1`
 
-## [0.1.7] 2023-11-20
+## [0.1.7] - 2023-11-20
 
 - Fix author in dockstore
 
-## [0.1.5] 2023-11-15
+## [0.1.5] - 2023-11-15
 
 ### Added
 
@@ -83,7 +136,7 @@
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.4.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.5.0+galaxy0`
 
-## [0.1.4] 2023-11-08
+## [0.1.4] - 2023-11-08
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/4.4+galaxy0`

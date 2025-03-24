@@ -1,4 +1,4 @@
-# RNA-seq single-read Workflow
+# RNA-Seq Analysis: Single-End Read Processing and Quantification
 
 ## Inputs dataset
 

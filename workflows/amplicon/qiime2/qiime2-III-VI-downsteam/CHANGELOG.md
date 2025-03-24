@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2] 2024-11-04
+## [0.2] - 2024-11-04
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__sepp/qiime2__fragment_insertion__sepp/2023.5.0+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__fragment_insertion__sepp/qiime2__fragment_insertion__sepp/2024.10.0+q2galaxy.2024.10.0`
@@ -13,5 +13,4 @@
 - `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_group_significance/qiime2__diversity__alpha_group_significance/2023.5.1+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__alpha_group_significance/qiime2__diversity__alpha_group_significance/2024.10.0+q2galaxy.2024.10.0`
 - `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_group_significance/qiime2__diversity__beta_group_significance/2023.5.1+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__diversity__beta_group_significance/qiime2__diversity__beta_group_significance/2024.10.0+q2galaxy.2024.10.0`
 
-## [0.1] 2024-06-22
-First release.
+## [0.1] - 2024-06-22
