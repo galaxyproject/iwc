@@ -171,6 +171,16 @@ def find_and_load_compliant_workflows(directory):
                 workflow["categories"] = categories
                 workflow["collections"] = collections
 
+                doi_selection = dockstore_details.get("doiSelection")
+                concept_dois = dockstore_details.get("conceptDois")
+
+                if doi_selection and concept_dois and doi_selection in concept_dois:
+                    workflow["doi"] = concept_dois[doi_selection]["name"]
+                else:
+                    workflow["doi"] = None
+
+                print(f"DOI: {workflow['doi']}")
+
                 workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
                 if os.path.exists(workflow_test_path):
                     with open(workflow_test_path) as f:

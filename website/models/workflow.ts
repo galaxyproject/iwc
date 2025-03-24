@@ -21,6 +21,7 @@ export interface Workflow {
     trsID: string;
     categories: string[];
     collections: string[];
+    doi?: string;
 }
 
 // Define the interface for an author

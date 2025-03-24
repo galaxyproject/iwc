@@ -126,6 +126,7 @@ onBeforeMount(async () => {
                     <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
                     <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
                     <li><strong>License: </strong>{{ workflow.definition.license }}</li>
+                    <li v-if="workflow.doi"><strong>DOI: </strong>{{ workflow.doi }}</li>
                     <li>
                         <strong>TRS: </strong>
                         <ULink :to="dockstoreWorkflowPageUrl" target="_blank" class="hover:underline">
