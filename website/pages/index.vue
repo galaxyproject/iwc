@@ -1,11 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
+import * as yaml from 'yaml';
+
+interface CategoryDescriptions {
+  [key: string]: string;
+}
+
+const categoryDescriptions = ref<CategoryDescriptions>({});
+
+onMounted(() => {
+  fetch('/category-descriptions.yaml')
+    .then(response => response.text())
+    .then(text => {
+      categoryDescriptions.value = yaml.parse(text) as CategoryDescriptions;
+    });
+});
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
-//       Could use any other identifier instead of trsId that seems fit
 const POPULAR_WORKFLOW_TRS_IDS = [
     "#workflow/github.com/iwc-workflows/rnaseq-pe/main",
     "#workflow/github.com/iwc-workflows/chipseq-pe/main",
@@ -17,6 +31,7 @@ import Filters from "~/components/Filters.vue";
 const searchQuery = ref("");
 const selectedWorkflow = ref<Workflow | null>(null);
 const gridDiv = ref<HTMLDivElement | null>(null);
+const selectedCategory = ref<string | null>(null);
 
 const workflowStore = useWorkflowStore();
 
@@ -58,6 +73,10 @@ function selectWorkflow(workflow: Workflow) {
     selectedWorkflow.value = workflow;
     scrollToWorkflow(workflow);
 }
+
+function handleFilterSelected(category: string) {
+    selectedCategory.value = category;
+}
 </script>
 
 <template>
@@ -79,10 +98,14 @@ function selectWorkflow(workflow: Workflow) {
                         placeholder="Search pipelines"
                         class="w-full p-2 mb-2 border rounded-lg" />
                 </div>
-                <Filters />
+                <Filters @filter-selected="handleFilterSelected" />
             </div>
         </template>
         <template #content>
+            <div v-if="selectedCategory" class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">{{ selectedCategory }} Overview</h2>
+                <p v-if="categoryDescriptions[selectedCategory]">{{ categoryDescriptions[selectedCategory] }}</p>
+            </div>
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
                 <WorkflowCard
                     v-for="workflow in filteredWorkflows"

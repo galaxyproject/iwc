@@ -4,8 +4,11 @@ import { useWorkflowStore } from "~/stores/workflows";
 const store = useWorkflowStore();
 const allFilters = computed(() => store.allFilters);
 
+const emit = defineEmits(['filter-selected']);
+
 const handleFilterClick = (filter: string) => {
     store.toggleFilter(filter);
+    emit('filter-selected', filter);
 };
 </script>
 
