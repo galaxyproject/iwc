@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.4] - 2025-03-24
+- Change the **Text transformation** tool output to tabular format so that the header file format matches with the DESeq2 output format
+
 ## [0.3] - 2025-02-03
 
 ### Automatic update
