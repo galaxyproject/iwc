@@ -7,10 +7,12 @@ import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
 const categoryDescription = ref<string | null>(null);
 const selectedCategory = ref<string | null>(null);
+const isLoading = ref(false);
 
 const workflowStore = useWorkflowStore();
 
 async function loadCategoryDescription(category: string) {
+    isLoading.value = true;
     try {
         const response = await fetch(`/category-descriptions/${category.toLowerCase().replace(/ /g, "-")}.md`);
         if (response.ok) {
@@ -22,6 +24,8 @@ async function loadCategoryDescription(category: string) {
     } catch (error) {
         categoryDescription.value = null;
         console.error(`Error fetching description for ${category}:`, error);
+    } finally {
+        isLoading.value = false;
     }
 }
 
@@ -30,6 +34,7 @@ watch(
     (newFilters) => {
         if (newFilters.length === 1) {
             selectedCategory.value = newFilters[0];
+            categoryDescription.value = null;
             loadCategoryDescription(newFilters[0]);
         } else {
             selectedCategory.value = null;
@@ -119,7 +124,16 @@ function selectWorkflow(workflow: Workflow) {
             <div v-if="selectedCategory" class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold mb-4">{{ selectedCategory }}</h2>
                 <div class="prose !max-w-none">
-                    <MarkdownRenderer v-if="categoryDescription" :markdownContent="categoryDescription" />
+                    <Transition name="fade" mode="out-in">
+                        <div v-if="isLoading" key="loading" class="min-h-[50px] flex items-center justify-center">
+                            <span class="text-gray-500">Loading description...</span>
+                        </div>
+                        <MarkdownRenderer
+                            v-else-if="categoryDescription"
+                            key="content"
+                            :markdownContent="categoryDescription" />
+                        <div v-else key="empty" class="text-gray-500">No description available for this category.</div>
+                    </Transition>
                 </div>
             </div>
             <div id="workflows" ref="gridDiv" class="grid grid-cols-3 gap-4">
@@ -131,3 +145,15 @@ function selectWorkflow(workflow: Workflow) {
         </template>
     </NuxtLayout>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
