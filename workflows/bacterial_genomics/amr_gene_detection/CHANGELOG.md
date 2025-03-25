@@ -1,6 +1,11 @@
 # Changelog
 
-## [1.1.5] - 2024-10-21
+## [1.1.6] 2024-12-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.10.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy0`
+
+## [1.1.5] 2024-10-21
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1`
