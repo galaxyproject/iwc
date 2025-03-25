@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3] 2025-03-17
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/omark/omark/0.3.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/omark/omark/0.3.1+galaxy0`
+
 ## [0.2] - 2025-01-27
 
 ### Automatic update
