@@ -29,4 +29,3 @@ All results are consolidated into a single **MultiQC report** for easy analysis.
   - **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.  
 
 > **Note**: Merging reads can result in large input files, significantly increasing computational demands—especially during assembly and binning, which may require substantial RAM. Our tests with synthetic samples up to **50 GB** showed feasible performance. For larger datasets, we recommend limiting the approach to **individual or pooled MAGs generation**.  
-
