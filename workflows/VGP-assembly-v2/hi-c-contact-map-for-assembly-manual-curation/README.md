@@ -1,4 +1,4 @@
-# Hi-C Contact map generation for manual curation of genome assemblies : 2 haplotypes
+# Hi-C Contact map generation for manual curation of genome assemblies
 
 This workflow generates Hi-C contact maps for diploid genome assemblies in the Pretext format. It includes tracks for PacBio read coverage, Gaps, and telomeres. The Pretext files can be open in PretextView for the manual curation of genome assemblies. 
 
