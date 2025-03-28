@@ -6,6 +6,7 @@ import re
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
 
+OUTPUT_DIR = "website/public/data"
 
 def read_contents(path: str):
     try:
@@ -202,8 +203,50 @@ def write_to_json(data, filename):
     except Exception as e:
         print(f"Error writing to file {filename}: {e}")
 
+def create_safe_filename(trs_id):
+    """
+    Generate a safe filename from the TRS ID, keeping only the IWC-local portion.
+    For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes iwc-amplicon-dada2.json.
+    """
+    parts = trs_id.split("iwc-workflows/")
+    if len(parts) > 1:
+        safe_name = "iwc-" + parts[1].replace("/", "-")
+    else:
+        safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
+    return safe_name + ".json"
+
 
 if __name__ == "__main__":
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory("./workflows")
     workflow_data = find_and_load_compliant_workflows("./workflows")
+
+    index_data = []
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            # Create summary data for the index file
+            summary_data = {
+                "name": workflow["name"],
+                "trsID": workflow["trsID"],
+                "description": workflow.get("description", ""),
+                "readme": workflow["readme"],
+                "updated": workflow["updated"],
+                "categories": workflow["categories"],
+                "collections": workflow["collections"],
+            }
+            index_data.append(summary_data)
+
+            # Generate safe filename
+            safe_filename = create_safe_filename(workflow["trsID"])
+
+            # Write individual workflow file
+            filepath = os.path.join(OUTPUT_DIR, safe_filename)
+            print(f"Writing workflow to {filepath}")
+            write_to_json(workflow, filepath)
+
+    # Write index file
+    write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
+
+    # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
