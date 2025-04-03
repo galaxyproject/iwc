@@ -167,6 +167,7 @@ def find_and_load_compliant_workflows(directory):
                 dirname = os.path.dirname(workflow_path).split("/")[-1]
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
+                workflow["iwcID"] = create_safe_identifier(trsID)
 
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
@@ -222,19 +223,19 @@ def create_safe_identifier(trs_id):
     return safe_name.lower()
 
 
-def stage_workflow_file(source_path, trs_id):
+def stage_workflow_file(source_path, iwc_id):
     """
-    Copy a workflow .ga file to the output directory with a safe filename.
+    Copy a workflow .ga file to the output directory, filed by the iwcID
 
     Args:
         source_path: Path to the source .ga file
-        trs_id: TRS ID to generate the safe filename
+        iwc_id: iwc id to use as the safe filename
     """
     if not os.path.exists(source_path):
         print(f"Workflow file not found: {source_path}")
         return
 
-    safe_filename = f"{create_safe_identifier(trs_id)}.ga"
+    safe_filename = f"{iwc_id}.ga"
     dest_path = os.path.join(OUTPUT_DIR, safe_filename)
 
     try:
@@ -256,6 +257,7 @@ if __name__ == "__main__":
             summary_data = {
                 "name": workflow["name"],
                 "trsID": workflow["trsID"],
+                "iwcID": workflow["iwcID"],
                 "description": workflow.get("description", ""),
                 "readme": workflow["readme"],
                 "updated": workflow["updated"],
@@ -265,7 +267,7 @@ if __name__ == "__main__":
             index_data.append(summary_data)
 
             # Generate safe filename
-            safe_filename = f"{create_safe_identifier(workflow['trsID'])}.json"
+            safe_filename = f"{workflow['iwcID']}.json"
 
             # Write individual workflow file
             filepath = os.path.join(OUTPUT_DIR, safe_filename)
@@ -281,7 +283,7 @@ if __name__ == "__main__":
             workflow_path = os.path.join(
                 item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
-            stage_workflow_file(workflow_path, workflow["trsID"])
+            stage_workflow_file(workflow_path, workflow["iwcID"])
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
