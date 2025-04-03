@@ -63,7 +63,9 @@ function selectWorkflow(workflow: Workflow) {
 <template>
     <NuxtLayout>
         <template #hero>
-            <div class="flex bg-ebony-clay p-4 items-center" :style="{ 'flex-direction': 'column' }">
+            <div
+                class="flex bg-ebony-clay p-4 items-center workflow-background"
+                :style="{ 'flex-direction': 'column' }">
                 <h1 class="text-5xl my-8 text-white text-center font-bold">
                     Discover and run vetted analysis pipelines on Galaxy
                 </h1>
@@ -92,3 +94,15 @@ function selectWorkflow(workflow: Workflow) {
         </template>
     </NuxtLayout>
 </template>
+
+<style scoped>
+.workflow-background {
+    background-image:
+        linear-gradient(to bottom, rgba(44, 49, 67, 0), rgba(44, 49, 67, 1)), url("/workflow_background.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: overlay;
+    background-blend-mode: luminosity;
+}
+</style>
