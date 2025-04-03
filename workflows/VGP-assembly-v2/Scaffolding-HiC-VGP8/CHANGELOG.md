@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4] - 2025-04-03
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy4`
+
 ## [1.3] - 2025-03-27
 
 ### Changes
