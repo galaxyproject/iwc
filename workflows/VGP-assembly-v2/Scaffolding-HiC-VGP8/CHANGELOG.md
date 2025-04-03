@@ -4,6 +4,7 @@
 
 ### Changes 
 - Use the option `-5` in bwa-mem2 recommended for Hi-C data
+- Remove the `-a` option in bwa-mem2 
 - Output gff files from Busco
 
 ### Automatic update
