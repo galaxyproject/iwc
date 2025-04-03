@@ -40,7 +40,7 @@ export const useWorkflowStore = defineStore("workflow", () => {
     }
 
     const setWorkflow = () => {
-        workflow.value = allWorkflows.value.find((w) => w.iwcID === route.params.id) as Workflow;
+        workflow.value = allWorkflows.value.find((w) => w.iwcID === route.params.id || w.trsID === route.params.id) as Workflow;
     };
 
     return {
