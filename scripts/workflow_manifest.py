@@ -3,10 +3,12 @@ import json
 import yaml
 import requests
 import re
+import shutil
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
 
 OUTPUT_DIR = "website/public/data"
+
 
 def read_contents(path: str):
     try:
@@ -79,7 +81,9 @@ def extract_date_from_changelog(changelog_content):
 
     # Regular expression to match the date pattern in the first changelog entry
     # Looks for patterns like "## [0.13] 2025-01-27" and extracts the date
-    date_match = re.search(r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content)
+    date_match = re.search(
+        r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content
+    )
 
     if date_match:
         return date_match.group(1)
@@ -181,7 +185,6 @@ def find_and_load_compliant_workflows(directory):
                     print(f"DOI Missing: {trsID}")
                     workflow["doi"] = None
 
-
                 workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
                 if os.path.exists(workflow_test_path):
                     with open(workflow_test_path) as f:
@@ -203,21 +206,43 @@ def write_to_json(data, filename):
     except Exception as e:
         print(f"Error writing to file {filename}: {e}")
 
+
 def create_safe_filename(trs_id):
     """
-    Generate a safe filename from the TRS ID, keeping only the IWC-local portion.
-    For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes iwc-amplicon-dada2.json.
+    Generate a safe and pretty filename from the TRS ID, keeping only the IWC-local portion.
+    For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes amplicon-dada2
     """
     parts = trs_id.split("iwc-workflows/")
     if len(parts) > 1:
-        safe_name = "iwc-" + parts[1].replace("/", "-")
+        safe_name = parts[1].replace("/", "-")
     else:
         safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
-    return safe_name + ".json"
+    return safe_name
+
+
+def stage_workflow_file(source_path, trs_id):
+    """
+    Copy a workflow .ga file to the output directory with a safe filename.
+
+    Args:
+        source_path: Path to the source .ga file
+        trs_id: TRS ID to generate the safe filename
+    """
+    if not os.path.exists(source_path):
+        print(f"Workflow file not found: {source_path}")
+        return
+
+    safe_filename = f"{create_safe_filename(trs_id)}.ga"
+    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+
+    try:
+        shutil.copy2(source_path, dest_path)
+        print(f"Copied workflow file to {dest_path}")
+    except Exception as e:
+        print(f"Error copying workflow file {source_path} to {dest_path}: {e}")
 
 
 if __name__ == "__main__":
-
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory("./workflows")
     workflow_data = find_and_load_compliant_workflows("./workflows")
@@ -238,7 +263,7 @@ if __name__ == "__main__":
             index_data.append(summary_data)
 
             # Generate safe filename
-            safe_filename = create_safe_filename(workflow["trsID"])
+            safe_filename = f"{create_safe_filename(workflow["trsID"])}.json"
 
             # Write individual workflow file
             filepath = os.path.join(OUTPUT_DIR, safe_filename)
@@ -247,6 +272,14 @@ if __name__ == "__main__":
 
     # Write index file
     write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
+
+    # Stage .ga files for the website
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            workflow_path = os.path.join(
+                item["path"], workflow["primaryDescriptorPath"].lstrip("/")
+            )
+            stage_workflow_file(workflow_path, workflow["trsID"])
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
