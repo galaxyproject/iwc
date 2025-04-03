@@ -107,6 +107,10 @@ const loading = ref(true);
 onBeforeMount(async () => {
     await workflowStore.setWorkflow();
     loading.value = false;
+
+    if (workflow.value && route.params.id === workflow.value.trsID) {
+        window.history.pushState({}, '', `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
+    }
 });
 </script>
 
