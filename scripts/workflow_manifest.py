@@ -191,7 +191,7 @@ def find_and_load_compliant_workflows(directory):
                         tests = yaml.safe_load(f)
                     workflow["tests"] = tests
                 else:
-                    print(f"no test for {workflow_test_path}")
+                    print(f"Test Missing: {workflow_test_path}")
 
     return workflow_data
 
@@ -207,17 +207,19 @@ def write_to_json(data, filename):
         print(f"Error writing to file {filename}: {e}")
 
 
-def create_safe_filename(trs_id):
+def create_safe_identifier(trs_id):
     """
     Generate a safe and pretty filename from the TRS ID, keeping only the IWC-local portion.
     For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes amplicon-dada2
+
+    We will also lowercase the slug.
     """
     parts = trs_id.split("iwc-workflows/")
     if len(parts) > 1:
         safe_name = parts[1].replace("/", "-")
     else:
         safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
-    return safe_name
+    return safe_name.lower()
 
 
 def stage_workflow_file(source_path, trs_id):
@@ -232,7 +234,7 @@ def stage_workflow_file(source_path, trs_id):
         print(f"Workflow file not found: {source_path}")
         return
 
-    safe_filename = f"{create_safe_filename(trs_id)}.ga"
+    safe_filename = f"{create_safe_identifier(trs_id)}.ga"
     dest_path = os.path.join(OUTPUT_DIR, safe_filename)
 
     try:
@@ -263,7 +265,7 @@ if __name__ == "__main__":
             index_data.append(summary_data)
 
             # Generate safe filename
-            safe_filename = f"{create_safe_filename(workflow["trsID"])}.json"
+            safe_filename = f"{create_safe_identifier(workflow['trsID'])}.json"
 
             # Write individual workflow file
             filepath = os.path.join(OUTPUT_DIR, safe_filename)
