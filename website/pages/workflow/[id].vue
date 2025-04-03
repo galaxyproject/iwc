@@ -11,22 +11,6 @@ const route = useRoute();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
 
-const authors = computed(() => {
-    let authorLine = "";
-    if (workflow.value?.authors) {
-        authorLine = workflow.value.authors.map((author) => author.name).join(", ");
-    }
-    return authorLine;
-});
-
-const links = [
-    {
-        label: "Back to index",
-        icon: "i-heroicons-home",
-        to: "/",
-    },
-];
-
 const selectedInstance = ref("");
 
 const launchUrl = computed(() => {
