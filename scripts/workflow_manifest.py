@@ -258,7 +258,6 @@ if __name__ == "__main__":
                 "name": workflow["name"],
                 "trsID": workflow["trsID"],
                 "iwcID": workflow["iwcID"],
-                "description": workflow.get("description", ""),
                 "readme": workflow["readme"],
                 "updated": workflow["updated"],
                 "categories": workflow["categories"],
