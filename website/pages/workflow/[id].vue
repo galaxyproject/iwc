@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
@@ -99,11 +99,39 @@ function onTabChange(index: number) {
     const item = tabs.value[index];
     if (item) {
         const label = item.label.toLowerCase().replace(/\s+/g, "-");
-        window.location.hash = `#${label}`;
+        if (window.location.hash !== `#${label}`) {
+            // Only update if it's different to avoid unnecessary hashchange events
+            window.location.hash = `#${label}`;
+        }
     }
 }
 
+// Watch for changes to the tabs data
+watch(
+    () => tabs.value,
+    () => {
+        // After tabs are updated, check if we need to set a specific tab active
+        nextTick(() => {
+            setActiveTabFromHash();
+        });
+    },
+    { deep: true },
+);
+
 const loading = ref(true);
+const currentTabIndex = ref(0);
+
+// Function to set the active tab based on URL hash
+function setActiveTabFromHash() {
+    const hash = window.location.hash.slice(1); // Remove the # character
+    if (hash) {
+        // Find the tab index that matches the hash
+        const tabIndex = tabs.value.findIndex((tab) => tab.label.toLowerCase().replace(/\s+/g, "-") === hash);
+        if (tabIndex !== -1) {
+            currentTabIndex.value = tabIndex;
+        }
+    }
+}
 
 onBeforeMount(async () => {
     await workflowStore.setWorkflow();
@@ -112,6 +140,11 @@ onBeforeMount(async () => {
     if (workflow.value && route.params.id === workflow.value.trsID) {
         window.history.pushState({}, "", `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
     }
+
+    // After the page loads, set the active tab based on the hash
+    nextTick(() => {
+        setActiveTabFromHash();
+    });
 });
 </script>
 
@@ -177,7 +210,7 @@ onBeforeMount(async () => {
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
-                    <UTabs :items="tabs" @change="onTabChange" class="w-full">
+                    <UTabs :items="tabs" @change="onTabChange" v-model="currentTabIndex" class="w-full">
                         <template #default="{ item, index, selected }">
                             <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
                                 item.label
