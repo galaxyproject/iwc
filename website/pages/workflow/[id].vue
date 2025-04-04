@@ -67,7 +67,15 @@ const tools = computed(() => {
     return Array.from(new Set(toolIds));
 });
 
-const tabs = computed(() => [
+// Define interface for tab items
+interface TabItem {
+    label: string;
+    content?: string;
+    tools?: string[] | string;
+    preview?: boolean;
+}
+
+const tabs = computed<TabItem[]>(() => [
     {
         label: "About",
         content: workflow.value?.readme || "No README available.",
@@ -82,9 +90,18 @@ const tabs = computed(() => [
     },
     {
         label: "Tools",
-        tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
+        tools: tools.value || "This tab will show a nice listing of all the tools used in this workflow.",
     },
 ]);
+
+function onTabChange(index: number) {
+    // Set the hash in the URL to the current tab label for better navigation
+    const item = tabs.value[index];
+    if (item) {
+        const label = item.label.toLowerCase().replace(/\s+/g, "-");
+        window.location.hash = `#${label}`;
+    }
+}
 
 const loading = ref(true);
 
@@ -93,7 +110,7 @@ onBeforeMount(async () => {
     loading.value = false;
 
     if (workflow.value && route.params.id === workflow.value.trsID) {
-        window.history.pushState({}, '', `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
+        window.history.pushState({}, "", `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
     }
 });
 </script>
@@ -160,7 +177,7 @@ onBeforeMount(async () => {
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
-                    <UTabs :items="tabs" class="w-full">
+                    <UTabs :items="tabs" @change="onTabChange" class="w-full">
                         <template #default="{ item, index, selected }">
                             <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
                                 item.label
