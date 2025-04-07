@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0beta3] - 2025-04-07
+
+### Changes
+
+- Add option `-5` to bwa-mem2, recommemded for Hi-C data
+- Remove unecessary  `-a` option from bwa-mem2
+
 ## [1.0beta2] - 2025-03-28
 
 ### Changes
