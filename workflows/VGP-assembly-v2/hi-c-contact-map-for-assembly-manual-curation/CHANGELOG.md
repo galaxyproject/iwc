@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0beta4] - 2025-04-07
+
+### Changes
+
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MergeSamFiles/3.1.1.0` was replaced by `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.20+galaxy2`
+
 ## [1.0beta3] - 2025-04-07
 
 ### Changes
