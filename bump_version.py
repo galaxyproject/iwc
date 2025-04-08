@@ -92,6 +92,7 @@ class Renderer(MarkdownRenderer):
     """\
     A Markdown renderer that indents all lines in a paragraph.
     """
+
     def render_paragraph(self, element):
         new_line = False
         rendered = []
@@ -140,8 +141,9 @@ def get_wf_id(repo_dir):
     return ids[0]
 
 
-def update_changelog(changelog, md, version, msg, date=datetime.date.today(),
-                     entry_type="Changed"):
+def update_changelog(
+    changelog, md, version, msg, date=datetime.date.today(), entry_type="Changed"
+):
     with open(changelog, "rt") as f:
         tree = md.parse(f.read())
     date = date.strftime(DATE_FMT)
@@ -178,7 +180,7 @@ def update_workflow(workflow, version=None, bump=None):
             raise RuntimeError(f'{workflow}: "release" metadata entry is empty')
         version = vbump(old_version, bump=bump)
     # no json tools for the update (we'd get a huge diff due to whitespace change)
-    pattern = fr'"release":\s*"{old_version}"'
+    pattern = rf'"release":\s*"{old_version}"'
     repl = f'"release": "{version}"'
     with open(workflow, "wt") as f:
         f.write(re.sub(pattern, repl, txt, 1))
@@ -192,7 +194,9 @@ def find_repos(paths, exclude=()):
     Same as ``planemo ci_find_repos``.
     """
     ctx = PlanemoContext()
-    kwargs = dict(recursive=True, fail_fast=True, chunk_count=1, chunk=0, exclude=exclude)
+    kwargs = dict(
+        recursive=True, fail_fast=True, chunk_count=1, chunk=0, exclude=exclude
+    )
     raw_repos = [_.path for _ in find_raw_repositories(ctx, paths, **kwargs)]
     return [Path(_) for _ in filter_paths(ctx, raw_repos, path_type="repo", **kwargs)]
 
@@ -209,24 +213,56 @@ def main(args):
         wf_id = get_wf_id(repo)
         version = update_workflow(repo / wf_id, version=args.version, bump=args.bump)
         msg = f"Update for version {version}." if args.msg is None else args.msg
-        update_changelog(repo / "CHANGELOG.md", md, version, msg, date=args.date,
-                         entry_type=args.entry_type)
+        update_changelog(
+            repo / "CHANGELOG.md",
+            md,
+            version,
+            msg,
+            date=args.date,
+            entry_type=args.entry_type,
+        )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument("root", metavar="ROOT_DIR", help="top-level directory",
-                        nargs="*", default=[os.getcwd()])
-    parser.add_argument("--exclude", metavar="PATH", nargs="*", default=(),
-                        help="paths to exclude while searching for workflow repos")
-    parser.add_argument("-v", "--version", metavar="STRING",
-                        help="set new workflow version to this value (ignores '-b')")
+    parser.add_argument(
+        "root",
+        metavar="ROOT_DIR",
+        help="top-level directory",
+        nargs="*",
+        default=[os.getcwd()],
+    )
+    parser.add_argument(
+        "--exclude",
+        metavar="PATH",
+        nargs="*",
+        default=(),
+        help="paths to exclude while searching for workflow repos",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        metavar="STRING",
+        help="set new workflow version to this value (ignores '-b')",
+    )
     parser.add_argument("-m", "--msg", metavar="STRING", help="log message")
     parser.add_argument("-d", "--date", metavar="STRING", help="log date as YYYY-MM-DD")
-    parser.add_argument("-t", "--entry-type", metavar="|".join(ENTRY_TYPES),
-                        choices=ENTRY_TYPES, default="Changed", help="log entry type")
-    parser.add_argument("-b", "--bump", metavar=BUMP_METAVAR, choices=BUMP_CHOICES,
-                        default="MICRO", help="version part to bump")
+    parser.add_argument(
+        "-t",
+        "--entry-type",
+        metavar="|".join(ENTRY_TYPES),
+        choices=ENTRY_TYPES,
+        default="Changed",
+        help="log entry type",
+    )
+    parser.add_argument(
+        "-b",
+        "--bump",
+        metavar=BUMP_METAVAR,
+        choices=BUMP_CHOICES,
+        default="MICRO",
+        help="version part to bump",
+    )
     main(parser.parse_args())

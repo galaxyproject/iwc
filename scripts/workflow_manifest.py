@@ -3,8 +3,11 @@ import json
 import yaml
 import requests
 import re
+import shutil
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
+
+OUTPUT_DIR = "website/public/data"
 
 
 def read_contents(path: str):
@@ -78,7 +81,9 @@ def extract_date_from_changelog(changelog_content):
 
     # Regular expression to match the date pattern in the first changelog entry
     # Looks for patterns like "## [0.13] 2025-01-27" and extracts the date
-    date_match = re.search(r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content)
+    date_match = re.search(
+        r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content
+    )
 
     if date_match:
         return date_match.group(1)
@@ -162,6 +167,7 @@ def find_and_load_compliant_workflows(directory):
                 dirname = os.path.dirname(workflow_path).split("/")[-1]
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
+                workflow["iwcID"] = create_safe_identifier(trsID)
 
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
@@ -180,14 +186,13 @@ def find_and_load_compliant_workflows(directory):
                     print(f"DOI Missing: {trsID}")
                     workflow["doi"] = None
 
-
                 workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
                 if os.path.exists(workflow_test_path):
                     with open(workflow_test_path) as f:
                         tests = yaml.safe_load(f)
                     workflow["tests"] = tests
                 else:
-                    print(f"no test for {workflow_test_path}")
+                    print(f"Test Missing: {workflow_test_path}")
 
     return workflow_data
 
@@ -203,7 +208,81 @@ def write_to_json(data, filename):
         print(f"Error writing to file {filename}: {e}")
 
 
+def create_safe_identifier(trs_id):
+    """
+    Generate a safe and pretty filename from the TRS ID, keeping only the IWC-local portion.
+    For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes amplicon-dada2
+
+    We will also lowercase the slug.
+    """
+    parts = trs_id.split("iwc-workflows/")
+    if len(parts) > 1:
+        safe_name = parts[1].replace("/", "-")
+    else:
+        safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
+    return safe_name.lower()
+
+
+def stage_workflow_file(source_path, iwc_id):
+    """
+    Copy a workflow .ga file to the output directory, filed by the iwcID
+
+    Args:
+        source_path: Path to the source .ga file
+        iwc_id: iwc id to use as the safe filename
+    """
+    if not os.path.exists(source_path):
+        print(f"Workflow file not found: {source_path}")
+        return
+
+    safe_filename = f"{iwc_id}.ga"
+    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+
+    try:
+        shutil.copy2(source_path, dest_path)
+        print(f"Copied workflow file to {dest_path}")
+    except Exception as e:
+        print(f"Error copying workflow file {source_path} to {dest_path}: {e}")
+
+
 if __name__ == "__main__":
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory("./workflows")
     workflow_data = find_and_load_compliant_workflows("./workflows")
+
+    index_data = []
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            # Create summary data for the index file
+            summary_data = {
+                "name": workflow["name"],
+                "trsID": workflow["trsID"],
+                "iwcID": workflow["iwcID"],
+                "readme": workflow["readme"],
+                "updated": workflow["updated"],
+                "categories": workflow["categories"],
+                "collections": workflow["collections"],
+            }
+            index_data.append(summary_data)
+
+            # Generate safe filename
+            safe_filename = f"{workflow['iwcID']}.json"
+
+            # Write individual workflow file
+            filepath = os.path.join(OUTPUT_DIR, safe_filename)
+            print(f"Writing workflow to {filepath}")
+            write_to_json(workflow, filepath)
+
+    # Write index file
+    write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
+
+    # Stage .ga files for the website
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            workflow_path = os.path.join(
+                item["path"], workflow["primaryDescriptorPath"].lstrip("/")
+            )
+            stage_workflow_file(workflow_path, workflow["iwcID"])
+
+    # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")

@@ -11,7 +11,10 @@ DOCKSTORE_API_PARAMS = {"organization": "iwc-workflows"}
 GALAXIES_TO_UPDATE_CREDENTIALS = [
     {"url": "https://usegalaxy.org", "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG")},
     {"url": "https://usegalaxy.eu", "key": os.getenv("IWC_API_KEY_USEGALAXY_EU")},
-    {"url": "https://usegalaxy.org.au", "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG_AU")},
+    {
+        "url": "https://usegalaxy.org.au",
+        "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG_AU"),
+    },
 ]
 
 logging.getLogger().setLevel(logging.INFO)
