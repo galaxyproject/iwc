@@ -1,6 +1,6 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "This workflow constructs Metagenome-Assembled Genomes (MAGs) using SPAdes or MEGAHIT as assemblers, followed by binning with four different tools and refinement using DAS Tool. The resulting MAGs are dereplicated across the entire input sample set, then annotated and evaluated for quality.\nYou can provide pooled reads (for co-assembly/binning), individual read sets, or a combination of both. The input samples must consist of the original reads, which are used for abundance estimation. In all cases, reads should be trimmed, adapters removed, and cleaned of host or other contaminants before processing.",
+    "annotation": "This workflow constructs Metagenome-Assembled Genomes (MAGs) using SPAdes or MEGAHIT as assemblers, followed by binning with four different tools and refinement using Binette. The resulting MAGs are dereplicated across the entire input sample set, then annotated and evaluated for quality.\nYou can provide pooled reads (for co-assembly/binning), individual read sets, or a combination of both. The input samples must consist of the original reads, which are used for abundance estimation. In all cases, reads should be trimmed, adapters removed, and cleaned of host or other contaminants before processing.\n\nAttention: this workflow attempts to choose the required databases for the tools based on the availability on the server, please carefully check that the DBs you want to use are correctly chosen - in doubt use the latest versions available !\n",
     "comments": [],
     "creator": [
         {
@@ -32,7 +32,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "Metagenome-Assembled Genomes (MAGs) generation",
-    "release": "1.0",
+    "release": "0.1",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -57,7 +57,7 @@
                 "top": 608.549370542723
             },
             "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictions\": [\"MEGAHIT\", \"metaSPAdes\"], \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictions\": [\"MEGAHIT\", \"metaSPAdes\", \"Custom Assembly\"], \"parameter_type\": \"text\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
             "uuid": "1dfc26f7-8ba3-45f4-82db-27ae8eaf2715",
@@ -65,10 +65,37 @@
             "workflow_outputs": []
         },
         "1": {
-            "annotation": "Minimum length of contigs to output (only for MEGAHIT).",
+            "annotation": "This workflow allows using a custom assembly as input. If provided, select `custom assembly` as Assembler.\nProvide one assembly for each group of trimmed input reads.",
             "content_id": null,
             "errors": null,
             "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "This workflow allows using a custom assembly as input. If provided, select `custom assembly` as Assembler.\nProvide one assembly for each group of trimmed input reads.",
+                    "name": "Custom Assemblies"
+                }
+            ],
+            "label": "Custom Assemblies",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 200,
+                "top": 930
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": true, \"tag\": null, \"collection_type\": \"list\"}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "403b2894-c830-4c80-a2a0-97ad4e8da15e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Minimum length of contigs to output (only for MEGAHIT).",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
             "input_connections": {},
             "inputs": [
                 {
@@ -91,11 +118,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "2": {
+        "3": {
             "annotation": "CONCOCT requires the read length for coverage. Best use fastQC to estimate the mean value.",
             "content_id": null,
             "errors": null,
-            "id": 2,
+            "id": 3,
             "input_connections": {},
             "inputs": [
                 {
@@ -118,11 +145,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "3": {
+        "4": {
             "annotation": "Environment for the built-in model (SemiBin), options are: human_gut, dog_gut, ocean, soil, cat_gut, human_oral, mouse_gut, pig_gut, built_environment, wastewater, chicken_caecum, global",
             "content_id": null,
             "errors": null,
-            "id": 3,
+            "id": 4,
             "input_connections": {},
             "inputs": [
                 {
@@ -145,11 +172,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "4": {
+        "5": {
             "annotation": "Provide already quality controlled trimmed reads, this can also be read groups or groups and individual samples or a mix of both.",
             "content_id": null,
             "errors": null,
-            "id": 4,
+            "id": 5,
             "input_connections": {},
             "inputs": [
                 {
@@ -172,11 +199,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "5": {
+        "6": {
             "annotation": "These should be the reads from the samples to estimate MAGs abundance in the original samples.",
             "content_id": null,
             "errors": null,
-            "id": 5,
+            "id": 6,
             "input_connections": {},
             "inputs": [
                 {
@@ -199,11 +226,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "6": {
+        "7": {
             "annotation": "This weight is used for the scoring the bins. A low weight favor complete bins over low contaminated bins (--contamination_weight)",
             "content_id": null,
             "errors": null,
-            "id": 6,
+            "id": 7,
             "input_connections": {},
             "inputs": [
                 {
@@ -215,8 +242,8 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 3140,
-                "top": 290
+                "left": 3000,
+                "top": 160
             },
             "tool_id": null,
             "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
@@ -226,11 +253,38 @@
             "when": null,
             "workflow_outputs": []
         },
-        "7": {
+        "8": {
+            "annotation": "CheckM2 Reference Database for Binette ",
+            "content_id": null,
+            "errors": null,
+            "id": 8,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "CheckM2 Reference Database for Binette ",
+                    "name": "CheckM2 Database for Binette"
+                }
+            ],
+            "label": "CheckM2 Database for Binette",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 3060,
+                "top": 340
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "43c03566-28d6-4666-91b8-94282a4c545a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
             "annotation": "Minimum MAG completeness percentage for bin refinement (binette) and dereplication (drep)",
             "content_id": null,
             "errors": null,
-            "id": 7,
+            "id": 9,
             "input_connections": {},
             "inputs": [
                 {
@@ -253,11 +307,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "8": {
+        "10": {
             "annotation": "Maximum MAG contamination percentage for dereplication ",
             "content_id": null,
             "errors": null,
-            "id": 8,
+            "id": 10,
             "input_connections": {},
             "inputs": [
                 {
@@ -280,19 +334,19 @@
             "when": null,
             "workflow_outputs": []
         },
-        "9": {
+        "11": {
             "annotation": "Minimum MAG length for dereplication",
             "content_id": null,
             "errors": null,
-            "id": 9,
+            "id": 11,
             "input_connections": {},
             "inputs": [
                 {
                     "description": "Minimum MAG length for dereplication",
-                    "name": "Minimum MAG length "
+                    "name": "Minimum MAG length"
                 }
             ],
-            "label": "Minimum MAG length ",
+            "label": "Minimum MAG length",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -307,11 +361,38 @@
             "when": null,
             "workflow_outputs": []
         },
-        "10": {
+        "12": {
+            "annotation": "CheckM2 Reference Database for CheckM2 (dRep step)",
+            "content_id": null,
+            "errors": null,
+            "id": 12,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "CheckM2 Reference Database for CheckM2 (dRep step)",
+                    "name": "CheckM2 Database (dRep step)"
+                }
+            ],
+            "label": "CheckM2 Database (dRep step)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 3760,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "abb8b898-3f6e-46d8-a3b1-378caeaadc2e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
             "annotation": "ANI threshold to form secondary clusters of dereplication. An ANI value of \u226595-96% indicates genomes belong to the same species, an ANI of \u226598-99% suggests they are the same strain, and an ANI of \u226490-95% typically points to genomes from different genera.",
             "content_id": null,
             "errors": null,
-            "id": 10,
+            "id": 13,
             "input_connections": {},
             "inputs": [
                 {
@@ -334,11 +415,119 @@
             "when": null,
             "workflow_outputs": []
         },
-        "11": {
+        "14": {
+            "annotation": "CheckM2 Reference Database for CheckM2 (Bin step)",
+            "content_id": null,
+            "errors": null,
+            "id": 14,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "CheckM2 Reference Database for CheckM2 (Bin step)",
+                    "name": "CheckM2 Database (Bin step)"
+                }
+            ],
+            "label": "CheckM2 Database (Bin step)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 4300,
+                "top": 410
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "bb10700d-3822-4579-a0eb-2dcd56e088d6",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "15": {
+            "annotation": "GTDB-tk Database used for Bin Taxonomy  Classification",
+            "content_id": null,
+            "errors": null,
+            "id": 15,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "GTDB-tk Database used for Bin Taxonomy  Classification",
+                    "name": "GTDB-tk Database"
+                }
+            ],
+            "label": "GTDB-tk Database",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 4640,
+                "top": 250
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "159319ad-fd9a-4933-a57d-5ce534149c77",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "16": {
+            "annotation": "Bakta Database - ideally use the newest installed on the server",
+            "content_id": null,
+            "errors": null,
+            "id": 16,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Bakta Database - ideally use the newest installed on the server",
+                    "name": "Bakta Database"
+                }
+            ],
+            "label": "Bakta Database",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 4950,
+                "top": 280
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "ea03a61a-bfc0-4237-80fa-afee13a637f4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "17": {
+            "annotation": "AMRFinderPlus Database for Bakta - ideally use the newest installed in the server",
+            "content_id": null,
+            "errors": null,
+            "id": 17,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "AMRFinderPlus Database for Bakta - ideally use the newest installed in the server",
+                    "name": "AMRFinderPlus Database for Bakta"
+                }
+            ],
+            "label": "AMRFinderPlus Database for Bakta",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 5110,
+                "top": 450
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "b4109a4e-95ee-4667-9531-7492a31dcca4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "18": {
             "annotation": "Bakta can take a long time, but will give comprehensive genome annotation ",
             "content_id": null,
             "errors": null,
-            "id": 11,
+            "id": 18,
             "input_connections": {},
             "inputs": [
                 {
@@ -361,11 +550,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "12": {
+        "19": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 12,
+            "id": 19,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 0,
@@ -405,11 +594,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "13": {
+        "20": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 13,
+            "id": 20,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 0,
@@ -431,8 +620,8 @@
                 }
             ],
             "position": {
-                "left": 480,
-                "top": 688.5493705427231
+                "left": 370,
+                "top": 710
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
@@ -449,14 +638,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "14": {
+        "21": {
             "annotation": "",
             "content_id": "__UNZIP_COLLECTION__",
             "errors": null,
-            "id": 14,
+            "id": 21,
             "input_connections": {
                 "input": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 }
             },
@@ -474,8 +663,8 @@
                 }
             ],
             "position": {
-                "left": 1017.984103856345,
-                "top": 466.42578848522936
+                "left": 870,
+                "top": 370
             },
             "post_job_actions": {},
             "tool_id": "__UNZIP_COLLECTION__",
@@ -486,22 +675,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "15": {
+        "22": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/megahit/megahit/1.2.9+galaxy2",
             "errors": null,
-            "id": 15,
+            "id": 22,
             "input_connections": {
                 "input_option|batchmode|pair_input": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 },
                 "output_section|min_contig_len": {
-                    "id": 1,
+                    "id": 2,
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 12,
+                    "id": 19,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -538,18 +727,18 @@
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "16": {
+        "23": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/4.1.0+galaxy0",
             "errors": null,
-            "id": 16,
+            "id": 23,
             "input_connections": {
                 "singlePaired|input": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 13,
+                    "id": 20,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -599,25 +788,29 @@
                 "owner": "nml",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"additional_reads\": {\"selector\": \"false\", \"__current_case__\": 1}, \"arf\": {\"nanopore\": {\"__class__\": \"RuntimeValue\"}, \"pacbio\": {\"__class__\": \"RuntimeValue\"}}, \"kmer_cond\": {\"kmer_sel\": \"auto\", \"__current_case__\": 0}, \"library_number\": \"true\", \"mode_sel\": [\"--iontorrent\"], \"optional_output\": [\"ag\", \"ags\", \"cn\", \"cs\"], \"phred_offset\": \"auto\", \"singlePaired\": {\"sPaired\": \"paired_collection\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}, \"type_paired\": \"pe\", \"orientation\": \"fr\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"additional_reads\": {\"selector\": \"false\", \"__current_case__\": 1}, \"arf\": {\"nanopore\": {\"__class__\": \"RuntimeValue\"}, \"pacbio\": {\"__class__\": \"RuntimeValue\"}}, \"kmer_cond\": {\"kmer_sel\": \"auto\", \"__current_case__\": 0}, \"library_number\": \"true\", \"mode_sel\": null, \"optional_output\": [\"ag\", \"ags\", \"cn\", \"cs\"], \"phred_offset\": \"auto\", \"singlePaired\": {\"sPaired\": \"paired_collection\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}, \"type_paired\": \"pe\", \"orientation\": \"fr\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "4.1.0+galaxy0",
             "type": "tool",
             "uuid": "037059ba-65a6-4850-9837-d5694c3e29dc",
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "17": {
+        "24": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 17,
+            "id": 24,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 16,
+                    "id": 23,
                     "output_name": "out_cn"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 15,
+                    "id": 22,
+                    "output_name": "output"
+                },
+                "style_cond|type_cond|pick_from_2|value": {
+                    "id": 1,
                     "output_name": "output"
                 }
             },
@@ -642,29 +835,29 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 2, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "0.2.0",
             "type": "tool",
             "uuid": "d3cd2e48-dcd9-44ac-a4db-33020055b0e1",
             "when": null,
             "workflow_outputs": []
         },
-        "18": {
+        "25": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy0",
             "errors": null,
-            "id": 18,
+            "id": 25,
             "input_connections": {
                 "mode|in|inputs": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 },
                 "mode|reads|input_1": {
-                    "id": 14,
+                    "id": 21,
                     "output_name": "forward"
                 },
                 "mode|reads|input_2": {
-                    "id": 14,
+                    "id": 21,
                     "output_name": "reverse"
                 }
             },
@@ -726,18 +919,18 @@
                 }
             ]
         },
-        "19": {
+        "26": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1",
             "errors": null,
-            "id": 19,
+            "id": 26,
             "input_connections": {
                 "library|input_1": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 },
                 "reference_genome|own_file": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -788,14 +981,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "20": {
+        "27": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_cut_up_fasta/concoct_cut_up_fasta/1.1.0+galaxy2",
             "errors": null,
-            "id": 20,
+            "id": 27,
             "input_connections": {
                 "input_fasta": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -831,14 +1024,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "21": {
+        "28": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.5",
             "errors": null,
-            "id": 21,
+            "id": 28,
             "input_connections": {
                 "input1": {
-                    "id": 19,
+                    "id": 26,
                     "output_name": "output"
                 }
             },
@@ -870,22 +1063,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "22": {
+        "29": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.0.2+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.0.2+galaxy1",
             "errors": null,
-            "id": 22,
+            "id": 29,
             "input_connections": {
                 "mode|environment": {
-                    "id": 3,
+                    "id": 4,
                     "output_name": "output"
                 },
                 "mode|input_bam": {
-                    "id": 21,
+                    "id": 28,
                     "output_name": "output1"
                 },
                 "mode|input_fasta": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -940,32 +1133,32 @@
                     "output_name": "output_bins"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.0.2+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.0.2+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "99ff9221182c",
+                "changeset_revision": "b5a7583b8db0",
                 "name": "semibin",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"annot\": {\"ml_threshold\": null}, \"bin\": {\"max_node\": \"1.0\", \"max_edges\": \"200\", \"minfasta_kbs\": \"200\"}, \"extra_output\": [\"data\", \"coverage\"], \"min_len\": {\"method\": \"automatic\", \"__current_case__\": 0}, \"mode\": {\"select\": \"single\", \"__current_case__\": 0, \"input_fasta\": {\"__class__\": \"ConnectedValue\"}, \"input_bam\": {\"__class__\": \"ConnectedValue\"}, \"ref\": {\"select\": \"cached\", \"__current_case__\": 0, \"cached_db\": \"17102022\"}, \"environment\": {\"__class__\": \"ConnectedValue\"}}, \"orf_finder\": \"fast-naive\", \"random_seed\": \"0\", \"training\": {\"epoches\": \"20\", \"batch_size\": \"2048\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "2.0.2+galaxy0",
+            "tool_state": "{\"annot\": {\"ml_threshold\": null}, \"bin\": {\"max_node\": \"1.0\", \"max_edges\": \"200\", \"minfasta_kbs\": \"200\"}, \"extra_output\": [\"data\", \"coverage\"], \"min_len\": {\"method\": \"automatic\", \"__current_case__\": 0}, \"mode\": {\"select\": \"single\", \"__current_case__\": 0, \"input_fasta\": {\"__class__\": \"ConnectedValue\"}, \"input_bam\": {\"__class__\": \"ConnectedValue\"}, \"ref\": {\"select\": \"ml\", \"__current_case__\": 2}, \"environment\": {\"__class__\": \"ConnectedValue\"}}, \"orf_finder\": \"fast-naive\", \"random_seed\": \"0\", \"training\": {\"epoches\": \"20\", \"batch_size\": \"2048\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.0.2+galaxy1",
             "type": "tool",
             "uuid": "d8e18351-a803-4d06-b78c-5858a2fdcf24",
             "when": null,
             "workflow_outputs": []
         },
-        "23": {
+        "30": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_coverage_table/concoct_coverage_table/1.1.0+galaxy2",
             "errors": null,
-            "id": 23,
+            "id": 30,
             "input_connections": {
                 "bedfile": {
-                    "id": 20,
+                    "id": 27,
                     "output_name": "output_bed"
                 },
                 "mode|bamfile": {
-                    "id": 21,
+                    "id": 28,
                     "output_name": "output1"
                 }
             },
@@ -1002,14 +1195,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "24": {
+        "31": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.17+galaxy0",
             "errors": null,
-            "id": 24,
+            "id": 31,
             "input_connections": {
                 "mode|bam_indiv_input": {
-                    "id": 21,
+                    "id": 28,
                     "output_name": "output1"
                 }
             },
@@ -1046,14 +1239,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "25": {
+        "32": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
-            "id": 25,
+            "id": 32,
             "input_connections": {
                 "inputs": {
-                    "id": 22,
+                    "id": 29,
                     "output_name": "output_bins"
                 }
             },
@@ -1085,22 +1278,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "26": {
+        "33": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct/concoct/1.1.0+galaxy2",
             "errors": null,
-            "id": 26,
+            "id": 33,
             "input_connections": {
                 "advanced|read_length": {
-                    "id": 2,
+                    "id": 3,
                     "output_name": "output"
                 },
                 "composition_file": {
-                    "id": 20,
+                    "id": 27,
                     "output_name": "output_fasta"
                 },
                 "coverage_file": {
-                    "id": 23,
+                    "id": 30,
                     "output_name": "output"
                 }
             },
@@ -1145,18 +1338,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "27": {
+        "34": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/mbernt/maxbin2/maxbin2/2.2.7+galaxy6",
             "errors": null,
-            "id": 27,
+            "id": 34,
             "input_connections": {
                 "assembly|inputs|abund": {
-                    "id": 24,
+                    "id": 31,
                     "output_name": "outputDepth"
                 },
                 "contig": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -1224,18 +1417,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "28": {
+        "35": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.17+galaxy0",
             "errors": null,
-            "id": 28,
+            "id": 35,
             "input_connections": {
                 "advanced|base_coverage_depth_cond|abdFile": {
-                    "id": 24,
+                    "id": 31,
                     "output_name": "outputDepth"
                 },
                 "inFile": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -1291,14 +1484,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "29": {
+        "36": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_merge_cut_up_clustering/concoct_merge_cut_up_clustering/1.1.0+galaxy2",
             "errors": null,
-            "id": 29,
+            "id": 36,
             "input_connections": {
                 "cutup_clustering_result": {
-                    "id": 26,
+                    "id": 33,
                     "output_name": "output_clustering"
                 }
             },
@@ -1330,14 +1523,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "30": {
+        "37": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
-            "id": 30,
+            "id": 37,
             "input_connections": {
                 "inputs": {
-                    "id": 27,
+                    "id": 34,
                     "output_name": "bins"
                 }
             },
@@ -1369,14 +1562,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "31": {
+        "38": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
-            "id": 31,
+            "id": 38,
             "input_connections": {
                 "inputs": {
-                    "id": 28,
+                    "id": 35,
                     "output_name": "bins"
                 }
             },
@@ -1408,18 +1601,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "32": {
+        "39": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_extract_fasta_bins/concoct_extract_fasta_bins/1.1.0+galaxy2",
             "errors": null,
-            "id": 32,
+            "id": 39,
             "input_connections": {
                 "cluster_file": {
-                    "id": 29,
+                    "id": 36,
                     "output_name": "output"
                 },
                 "fasta_file": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 }
             },
@@ -1459,14 +1652,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "33": {
+        "40": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
-            "id": 33,
+            "id": 40,
             "input_connections": {
                 "inputs": {
-                    "id": 32,
+                    "id": 39,
                     "output_name": "bins"
                 }
             },
@@ -1498,26 +1691,26 @@
             "when": null,
             "workflow_outputs": []
         },
-        "34": {
+        "41": {
             "annotation": "",
             "content_id": "__BUILD_LIST__",
             "errors": null,
-            "id": 34,
+            "id": 41,
             "input_connections": {
                 "datasets_0|input": {
-                    "id": 33,
+                    "id": 40,
                     "output_name": "contigs2bin"
                 },
                 "datasets_1|input": {
-                    "id": 31,
+                    "id": 38,
                     "output_name": "contigs2bin"
                 },
                 "datasets_2|input": {
-                    "id": 30,
+                    "id": 37,
                     "output_name": "contigs2bin"
                 },
                 "datasets_3|input": {
-                    "id": 25,
+                    "id": 32,
                     "output_name": "contigs2bin"
                 }
             },
@@ -1543,30 +1736,38 @@
             "when": null,
             "workflow_outputs": []
         },
-        "35": {
+        "42": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.0.5+galaxy1",
             "errors": null,
-            "id": 35,
+            "id": 42,
             "input_connections": {
                 "contamination_weight": {
-                    "id": 6,
+                    "id": 7,
                     "output_name": "output"
                 },
                 "contig2bin_tables": {
-                    "id": 34,
+                    "id": 41,
                     "output_name": "output"
                 },
                 "contigs": {
-                    "id": 17,
+                    "id": 24,
                     "output_name": "data_param"
                 },
+                "database_type|datamanager": {
+                    "id": 8,
+                    "output_name": "output"
+                },
                 "min_completeness": {
-                    "id": 7,
+                    "id": 9,
                     "output_name": "output"
                 }
             },
             "inputs": [
+                {
+                    "description": "runtime parameter for tool Binette",
+                    "name": "database_type"
+                },
                 {
                     "description": "runtime parameter for tool Binette",
                     "name": "proteins"
@@ -1608,21 +1809,21 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"contamination_weight\": {\"__class__\": \"ConnectedValue\"}, \"contig2bin_tables\": {\"__class__\": \"ConnectedValue\"}, \"contigs\": {\"__class__\": \"ConnectedValue\"}, \"database_type\": {\"is_select\": \"cached\", \"__current_case__\": 1, \"datamanager\": \"1.0.2\"}, \"min_completeness\": {\"__class__\": \"ConnectedValue\"}, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"contamination_weight\": {\"__class__\": \"ConnectedValue\"}, \"contig2bin_tables\": {\"__class__\": \"ConnectedValue\"}, \"contigs\": {\"__class__\": \"ConnectedValue\"}, \"database_type\": {\"is_select\": \"cached\", \"__current_case__\": 1, \"datamanager\": {\"__class__\": \"ConnectedValue\"}}, \"min_completeness\": {\"__class__\": \"ConnectedValue\"}, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.0.5+galaxy1",
             "type": "tool",
             "uuid": "ff1c1822-eb69-4c57-a6d8-3603a54458ac",
             "when": null,
             "workflow_outputs": []
         },
-        "36": {
+        "43": {
             "annotation": "",
             "content_id": "__FLATTEN__",
             "errors": null,
-            "id": 36,
+            "id": 43,
             "input_connections": {
                 "input": {
-                    "id": 35,
+                    "id": 42,
                     "output_name": "bins"
                 }
             },
@@ -1656,14 +1857,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "37": {
+        "44": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.0.2+galaxy0",
             "errors": null,
-            "id": 37,
+            "id": 44,
             "input_connections": {
+                "database": {
+                    "id": 12,
+                    "output_name": "output"
+                },
                 "input": {
-                    "id": 36,
+                    "id": 43,
                     "output_name": "output"
                 }
             },
@@ -1696,21 +1901,21 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"database\": \"1.0.2\", \"genes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"model\": \"\", \"ttable\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"genes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"model\": \"\", \"ttable\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.0.2+galaxy0",
             "type": "tool",
             "uuid": "99ef6e13-40aa-4311-8f7b-f42c49d3901a",
             "when": null,
             "workflow_outputs": []
         },
-        "38": {
+        "45": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0",
             "errors": null,
-            "id": 38,
+            "id": 45,
             "input_connections": {
                 "infile": {
-                    "id": 37,
+                    "id": 44,
                     "output_name": "quality"
                 }
             },
@@ -1730,7 +1935,7 @@
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "3dc70b59608c",
+                "changeset_revision": "6073bb457ec0",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -1742,34 +1947,34 @@
             "when": null,
             "workflow_outputs": []
         },
-        "39": {
+        "46": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/drep_dereplicate/drep_dereplicate/3.5.0+galaxy1",
             "errors": null,
-            "id": 39,
+            "id": 46,
             "input_connections": {
                 "comp_clust|steps|S_ani": {
-                    "id": 10,
+                    "id": 13,
                     "output_name": "output"
                 },
                 "filter|completeness": {
-                    "id": 7,
-                    "output_name": "output"
-                },
-                "filter|contamination": {
-                    "id": 8,
-                    "output_name": "output"
-                },
-                "filter|length": {
                     "id": 9,
                     "output_name": "output"
                 },
+                "filter|contamination": {
+                    "id": 10,
+                    "output_name": "output"
+                },
+                "filter|length": {
+                    "id": 11,
+                    "output_name": "output"
+                },
                 "genomes": {
-                    "id": 36,
+                    "id": 43,
                     "output_name": "output"
                 },
                 "quality|genomeInfo": {
-                    "id": 38,
+                    "id": 45,
                     "output_name": "outfile"
                 }
             },
@@ -1867,14 +2072,18 @@
                 }
             ]
         },
-        "40": {
+        "47": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/2.4.0+galaxy0",
             "errors": null,
-            "id": 40,
+            "id": 47,
             "input_connections": {
+                "gtdbtk_db": {
+                    "id": 15,
+                    "output_name": "output"
+                },
                 "input": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 }
             },
@@ -1919,21 +2128,25 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"advanced\": {\"min_perc_aa\": \"10\", \"force\": false, \"min_af\": \"0.65\", \"output_process_log\": false}, \"gtdbtk_db\": \"full_database_release_220_downloaded_2024-10-28\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"advanced\": {\"min_perc_aa\": \"10\", \"force\": false, \"min_af\": \"0.65\", \"output_process_log\": false}, \"gtdbtk_db\": {\"__class__\": \"ConnectedValue\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "2.4.0+galaxy0",
             "type": "tool",
             "uuid": "3cfb72ed-53cb-4020-9326-95d8cb424017",
             "when": null,
             "workflow_outputs": []
         },
-        "41": {
+        "48": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.0.2+galaxy0",
             "errors": null,
-            "id": 41,
+            "id": 48,
             "input_connections": {
+                "database": {
+                    "id": 14,
+                    "output_name": "output"
+                },
                 "input": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 }
             },
@@ -1974,21 +2187,21 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"database\": \"1.0.2\", \"genes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"model\": \"\", \"ttable\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"genes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"model\": \"\", \"ttable\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.0.2+galaxy0",
             "type": "tool",
             "uuid": "594519a6-18c9-4fcb-94b7-3ef458dba6ca",
             "when": null,
             "workflow_outputs": []
         },
-        "42": {
+        "49": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/1.2.3+galaxy0",
             "errors": null,
-            "id": 42,
+            "id": 49,
             "input_connections": {
                 "bins|bins_coll": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 }
             },
@@ -2033,18 +2246,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "43": {
+        "50": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/coverm_genome/coverm_genome/0.7.0+galaxy0",
             "errors": null,
-            "id": 43,
+            "id": 50,
             "input_connections": {
                 "mapped|mode|genome|genomic|genome_fasta_files": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 },
                 "mapped|mode|read_type|paired_reads": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "output"
                 }
             },
@@ -2093,14 +2306,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "44": {
+        "51": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy0",
             "errors": null,
-            "id": 44,
+            "id": 51,
             "input_connections": {
                 "mode|in|inputs": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 }
             },
@@ -2152,18 +2365,26 @@
             "when": null,
             "workflow_outputs": []
         },
-        "45": {
+        "52": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy0",
             "errors": null,
-            "id": 45,
+            "id": 52,
             "input_connections": {
+                "input_option|amrfinder_db_select": {
+                    "id": 17,
+                    "output_name": "output"
+                },
+                "input_option|bakta_db_select": {
+                    "id": 16,
+                    "output_name": "output"
+                },
                 "input_option|input_file": {
-                    "id": 39,
+                    "id": 46,
                     "output_name": "dereplicated_genomes"
                 },
                 "when": {
-                    "id": 11,
+                    "id": 18,
                     "output_name": "output"
                 }
             },
@@ -2183,6 +2404,14 @@
                 {
                     "description": "runtime parameter for tool Bakta",
                     "name": "annotation"
+                },
+                {
+                    "description": "runtime parameter for tool Bakta",
+                    "name": "input_option"
+                },
+                {
+                    "description": "runtime parameter for tool Bakta",
+                    "name": "input_option"
                 },
                 {
                     "description": "runtime parameter for tool Bakta",
@@ -2233,21 +2462,21 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"annotation\": {\"complete\": false, \"prodigal\": {\"__class__\": \"RuntimeValue\"}, \"translation_table\": \"11\", \"keep_contig_headers\": false, \"replicons\": {\"__class__\": \"RuntimeValue\"}, \"compliant\": false, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"meta\": false, \"regions\": {\"__class__\": \"RuntimeValue\"}}, \"input_option\": {\"input_file\": {\"__class__\": \"RuntimeValue\"}, \"min_contig_length\": null, \"bakta_db_select\": \"V5.1_2024-01-19\", \"amrfinder_db_select\": \"amrfinderplus_V3.12_2024-05-02.2\"}, \"organism\": {\"genus\": null, \"species\": null, \"strain\": null, \"plasmid\": null}, \"output_files\": {\"output_selection\": [\"file_tsv\", \"file_gff3\", \"file_ffn\", \"file_plot\", \"sum_txt\"]}, \"workflow\": {\"skip_analysis\": null}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"annotation\": {\"complete\": false, \"prodigal\": {\"__class__\": \"RuntimeValue\"}, \"translation_table\": \"11\", \"keep_contig_headers\": false, \"replicons\": {\"__class__\": \"RuntimeValue\"}, \"compliant\": false, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"meta\": false, \"regions\": {\"__class__\": \"RuntimeValue\"}}, \"input_option\": {\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"min_contig_length\": null, \"bakta_db_select\": {\"__class__\": \"ConnectedValue\"}, \"amrfinder_db_select\": {\"__class__\": \"ConnectedValue\"}}, \"organism\": {\"genus\": null, \"species\": null, \"strain\": null, \"plasmid\": null}, \"output_files\": {\"output_selection\": [\"file_tsv\", \"file_gff3\", \"file_ffn\", \"file_plot\", \"sum_txt\"]}, \"workflow\": {\"skip_analysis\": null}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.9.4+galaxy0",
             "type": "tool",
             "uuid": "e2273008-a3ad-4e60-b4ae-ad3b216b8753",
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "46": {
+        "53": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
             "errors": null,
-            "id": 46,
+            "id": 53,
             "input_connections": {
                 "input_tabular": {
-                    "id": 43,
+                    "id": 50,
                     "output_name": "output"
                 }
             },
@@ -2279,34 +2508,34 @@
             "when": null,
             "workflow_outputs": []
         },
-        "47": {
+        "54": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3",
             "errors": null,
-            "id": 47,
+            "id": 54,
             "input_connections": {
                 "results_0|software_cond|input": {
-                    "id": 44,
+                    "id": 51,
                     "output_name": "report_tabular_meta"
                 },
                 "results_1|software_cond|input": {
-                    "id": 41,
+                    "id": 48,
                     "output_name": "quality"
                 },
                 "results_2|software_cond|input": {
-                    "id": 46,
+                    "id": 53,
                     "output_name": "tabular_output"
                 },
                 "results_3|software_cond|input": {
-                    "id": 40,
+                    "id": 47,
                     "output_name": "output_summary"
                 },
                 "results_4|software_cond|input": {
-                    "id": 45,
+                    "id": 52,
                     "output_name": "summary_txt"
                 },
                 "results_5|software_cond|input": {
-                    "id": 42,
+                    "id": 49,
                     "output_name": "results"
                 }
             },
@@ -2365,6 +2594,6 @@
     "tags": [
         "name:FAIRyMAGs"
     ],
-    "uuid": "bb3540d5-7680-4ba5-a6a0-4a028179f46f",
-    "version": 39
+    "uuid": "798905ee-4ba8-4a3d-a3df-2e4aebc2380a",
+    "version": 50
 }
