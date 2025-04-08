@@ -1,0 +1,258 @@
+{
+    "name": "main",
+    "subclass": "Galaxy",
+    "publish": true,
+    "primaryDescriptorPath": "/average-bigwig-between-replicates.ga",
+    "testParameterFiles": [
+        "/average-bigwig-between-replicates-tests.yml"
+    ],
+    "authors": [
+        {
+            "name": "Lucille Delisle",
+            "orcid": "0000-0002-1964-4960"
+        }
+    ],
+    "definition": {
+        "a_galaxy_workflow": "true",
+        "annotation": "Calculates average signal values across replicate BigWig files to generate a single consolidated track. Requires input file identifiers formatted as \"sample_name_replicateID\". The tool automatically groups files by sample name, computes the mean signal at each position, and outputs consolidated BigWig files named after the common sample prefix (without the replicate ID suffix).",
+        "creator": [
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0000-0002-1964-4960",
+                "name": "Lucille Delisle"
+            }
+        ],
+        "format-version": "0.1",
+        "license": "MIT",
+        "release": "0.2",
+        "name": "BigWig Replicates Averaging Workflow",
+        "steps": {
+            "0": {
+                "annotation": "We assume the identifiers are like:\nsample_name_replicateID",
+                "content_id": null,
+                "errors": null,
+                "id": 0,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "We assume the identifiers are like:\nsample_name_replicateID",
+                        "name": "Bigwig to average"
+                    }
+                ],
+                "label": "Bigwig to average",
+                "name": "Input dataset collection",
+                "outputs": [],
+                "position": {
+                    "left": 0,
+                    "top": 0.0
+                },
+                "tool_id": null,
+                "tool_state": "{\"optional\": false, \"tag\": \"\", \"collection_type\": \"list\"}",
+                "tool_version": null,
+                "type": "data_collection_input",
+                "uuid": "45d1d287-ea71-4817-afd2-8ad89aedac46",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "1": {
+                "annotation": "Bin size for normalized bigwig (usually 5bp is sufficient for RNA-seq and 50bp for ChIP/CUTandRUN/ATAC)",
+                "content_id": null,
+                "errors": null,
+                "id": 1,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "Bin size for normalized bigwig (usually 5bp is sufficient for RNA-seq and 50bp for ChIP/CUTandRUN/ATAC)",
+                        "name": "bin_size"
+                    }
+                ],
+                "label": "bin_size",
+                "name": "Input parameter",
+                "outputs": [],
+                "position": {
+                    "left": 16,
+                    "top": 125.0
+                },
+                "tool_id": null,
+                "tool_state": "{\"parameter_type\": \"integer\", \"optional\": false}",
+                "tool_version": null,
+                "type": "parameter_input",
+                "uuid": "ae41572a-bafb-40d4-8042-87f07552980f",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "2": {
+                "annotation": "",
+                "content_id": "__APPLY_RULES__",
+                "errors": null,
+                "id": 2,
+                "input_connections": {
+                    "input": {
+                        "id": 0,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": null,
+                "name": "Apply rules",
+                "outputs": [
+                    {
+                        "name": "output",
+                        "type": "input"
+                    }
+                ],
+                "position": {
+                    "left": 254,
+                    "top": 11.5
+                },
+                "post_job_actions": {
+                    "HideDatasetActionoutput": {
+                        "action_arguments": {},
+                        "action_type": "HideDatasetAction",
+                        "output_name": "output"
+                    }
+                },
+                "tool_id": "__APPLY_RULES__",
+                "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1, 2], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"expression\": \"^(.*)_([^_]*)$\", \"is_workflow\": false, \"replacement\": \"\\\\1\", \"target_column\": 0, \"type\": \"add_column_regex\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"expression\": \"^(.*)_([^_]*)$\", \"is_workflow\": false, \"replacement\": \"\\\\2\", \"target_column\": 0, \"type\": \"add_column_regex\", \"warn\": null}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "1.1.0",
+                "type": "tool",
+                "uuid": "5532681e-f2b3-415c-87e2-71d5eb982d62",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "3": {
+                "annotation": "",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0",
+                "errors": null,
+                "id": 3,
+                "input_connections": {
+                    "advancedOpt|binSize": {
+                        "id": 1,
+                        "output_name": "output"
+                    },
+                    "bigwigs": {
+                        "id": 2,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool bigwigAverage",
+                        "name": "advancedOpt"
+                    }
+                ],
+                "label": "average bigwigs from different replicates",
+                "name": "bigwigAverage",
+                "outputs": [
+                    {
+                        "name": "outFileName",
+                        "type": "bigwig"
+                    }
+                ],
+                "position": {
+                    "left": 474,
+                    "top": 11.5
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "4a53856a5b85",
+                    "name": "deeptools_bigwig_average",
+                    "owner": "bgruening",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"advancedOpt\": {\"showAdvancedOpt\": \"yes\", \"__current_case__\": 1, \"binSize\": {\"__class__\": \"ConnectedValue\"}, \"skipNAs\": false, \"scaleFactors\": \"1\", \"blackListFileName\": {\"__class__\": \"RuntimeValue\"}}, \"bigwigs\": {\"__class__\": \"ConnectedValue\"}, \"outFileFormat\": \"bigwig\", \"region\": \"\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "3.5.4+galaxy0",
+                "type": "tool",
+                "uuid": "f63daf4e-ce9f-4301-be74-e4c263b6e88b",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "average_bigwigs",
+                        "output_name": "outFileName",
+                        "uuid": "19023604-eee1-4099-b1c2-abe3de93b3f3"
+                    }
+                ]
+            }
+        },
+        "tags": [],
+        "uuid": "c6ed4b0e-d719-4997-9860-ba99488ec332",
+        "version": 6
+    },
+    "readme": "# BigWig Replicates Averaging Workflow\n\nThis workflow is very useful when you processed multiple samples in collections and you want to generate an average coverage per condition.\n\n## Inputs dataset\n\n- The workflow needs a single input which is a list of bigwigs (normalized). The identifiers of your bigwigs must be like:\n  - whatever_sample1_identificationOfReplicate1\n  - whatever_sample1_identificationOfReplicate2\n  - ...\n  - whatever_sample2_identificationOfReplicate1\n  - whatever_sample2_identificationOfReplicate2\n  - ...\n\n## Inputs values\n\n- bin_size: this is used when average of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs. I suggest 5bp for RNA-seq and 50bp for other applications.\n\n## Processing\n\n- The workflow will split identifiers between everything which is before the last underscore which will be the *sample* and everything which is after the last underscore which will be the *replicate identifier*. And restructure the collection as list:list:\n  - whatever_sample1:\n    - identificationOfReplicate1\n    - identificationOfReplicate2\n    - ...\n  - whatever_sample2:\n    - identificationOfReplicate1\n    - identificationOfReplicate2\n    - ---\n  - ...\n- Then it will average bigwigs into each inner list\n\n## Outputs\n\n- The output is a collection of bigwig datasets like:\n  - whatever_sample1\n  - whatever_sample2\n  - ...\n",
+    "changelog": "# Changelog\n\n## [0.2] - 2023-09-27\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0`\n\n## [0.1] - 2023-09-22\nFirst release.\n",
+    "diagrams": "# Workflow diagrams\n\n## BigWig Replicates Averaging Workflow\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Bigwig to average\"]@{ shape: docs }\n1[\"\u2139\ufe0f bin_size\"]@{ shape: lean-l }\n2[\"Apply rules\"]@{ shape: process }\n0 --> 2\n3[\"average bigwigs from different replicates\"]@{ shape: process }\n1 --> 3\n2 --> 3\n```\n",
+    "updated": "2023-09-27T00:00:00",
+    "trsID": "#workflow/github.com/iwc-workflows/average-bigwig-between-replicates/main",
+    "iwcID": "average-bigwig-between-replicates-main",
+    "dockstore_id": 23760,
+    "categories": [],
+    "collections": [
+        "Epigenetics",
+        "Transcriptomics"
+    ],
+    "doi": "10.5281/zenodo.15078852",
+    "tests": [
+        {
+            "doc": "Test outline for average-bigwig-between-replicates.ga",
+            "job": {
+                "Bigwig to average": {
+                    "class": "Collection",
+                    "collection_type": "list",
+                    "elements": [
+                        {
+                            "identifier": "ATAC_HH19_PT_rep1",
+                            "class": "File",
+                            "location": "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSM6152756&format=file&file=GSM6152756%5FATAC%5FHH19%5FPT%5Frep1%2Ebigwig",
+                            "filetype": "bigwig"
+                        },
+                        {
+                            "identifier": "ATAC_HH19_PT_rep2",
+                            "class": "File",
+                            "location": "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSM6152757&format=file&file=GSM6152757%5FATAC%5FHH19%5FPT%5Frep2%2Ebigwig",
+                            "filetype": "bigwig"
+                        },
+                        {
+                            "identifier": "ATAC_HH35_DS_rep1",
+                            "class": "File",
+                            "location": "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSM6152758&format=file&file=GSM6152758%5FATAC%5FHH35%5FDS%5Frep1%2Ebigwig",
+                            "filetype": "bigwig"
+                        },
+                        {
+                            "identifier": "ATAC_HH35_DS_rep2",
+                            "class": "File",
+                            "location": "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSM6152759&format=file&file=GSM6152759%5FATAC%5FHH35%5FDS%5Frep2%2Ebigwig",
+                            "filetype": "bigwig"
+                        }
+                    ]
+                },
+                "bin_size": 50
+            },
+            "outputs": {
+                "average_bigwigs": {
+                    "attributes": {
+                        "collection_type": "list"
+                    },
+                    "element_tests": {
+                        "ATAC_HH19_PT": {
+                            "asserts": {
+                                "has_size": {
+                                    "value": 140203524,
+                                    "delta": 10000000
+                                }
+                            }
+                        },
+                        "ATAC_HH35_DS": {
+                            "asserts": {
+                                "has_size": {
+                                    "value": 124599299,
+                                    "delta": 10000000
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
