@@ -1,6 +1,7 @@
 # Metagenome-Assembled Genomes (MAGs) Generation  
 
 This workflow generates Metagenome-Assembled Genomes (MAGs) from paired short reads.  
+Dereplicated MAGs for the complete input sample set are reported.
 
 ## Workflow Logic  
 
@@ -9,7 +10,7 @@ For binning, it utilizes four different tools: **MetaBAT2, MaxBin2, SemiBin, and
 
 ## MAGs Annotation and Quality Control  
 
-After binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics**. The following processing steps are then performed:  
+After binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:  
 
 - **Annotation** with Bakta  
 - **Taxonomic Assignment** using GTDB-Tk  
