@@ -21,11 +21,12 @@ All results are consolidated into a single **MultiQC report** for easy analysis.
 
 ## Input Requirements  
 
-- **Quality-Controlled Reads**: Input reads must be quality-filtered, with host reads removed.  
-- **Trimmed Sample Paired Reads**: Quality-trimmed reads from individual samples, used solely for abundance estimation.  
-- **Trimmed Grouped Paired Reads**: These can be grouped based on the desired MAGs generation approach:  
-  - **Individual MAGs Generation**: Use the same input as `Trimmed Sample Paired Reads` to generate MAGs per sample.  
-  - **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all sample reads for a fully pooled MAGs approach.  
+Input reads must be quality-filtered, with host reads removed. 
+
+- **Trimmed reads**: Quality-trimmed reads from individual samples, used solely for abundance estimation.  
+- **Trimmed reads from grouped samples**: These reads need to be grouped based on the desired MAGs generation approach:  
+  - **Individual MAGs Generation**: Use the same input as `Sample-wise Trimmed Paired Reads` to generate MAGs per sample.  
+  - **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all reads input one file for a fully pooled MAGs approach.  
   - **Grouped MAGs Generation (Co-assembly/Binning)**: Merge samples based on predefined groups.  
   - **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.  
 
