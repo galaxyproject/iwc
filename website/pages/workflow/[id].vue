@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
@@ -10,22 +10,6 @@ import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 const route = useRoute();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
-
-const authors = computed(() => {
-    let authorLine = "";
-    if (workflow.value?.authors) {
-        authorLine = workflow.value.authors.map((author) => author.name).join(", ");
-    }
-    return authorLine;
-});
-
-const links = [
-    {
-        label: "Back to index",
-        icon: "i-heroicons-home",
-        to: "/",
-    },
-];
 
 const selectedInstance = ref("");
 
@@ -83,7 +67,15 @@ const tools = computed(() => {
     return Array.from(new Set(toolIds));
 });
 
-const tabs = computed(() => [
+// Define interface for tab items
+interface TabItem {
+    label: string;
+    content?: string;
+    tools?: string[] | string;
+    preview?: boolean;
+}
+
+const tabs = computed<TabItem[]>(() => [
     {
         label: "About",
         content: workflow.value?.readme || "No README available.",
@@ -98,15 +90,61 @@ const tabs = computed(() => [
     },
     {
         label: "Tools",
-        tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
+        tools: tools.value || "This tab will show a nice listing of all the tools used in this workflow.",
     },
 ]);
 
+function onTabChange(index: number) {
+    // Set the hash in the URL to the current tab label for better navigation
+    const item = tabs.value[index];
+    if (item) {
+        const label = item.label.toLowerCase().replace(/\s+/g, "-");
+        if (window.location.hash !== `#${label}`) {
+            // Only update if it's different to avoid unnecessary hashchange events
+            window.location.hash = `#${label}`;
+        }
+    }
+}
+
+// Watch for changes to the tabs data
+watch(
+    () => tabs.value,
+    () => {
+        // After tabs are updated, check if we need to set a specific tab active
+        nextTick(() => {
+            setActiveTabFromHash();
+        });
+    },
+    { deep: true },
+);
+
 const loading = ref(true);
+const currentTabIndex = ref(0);
+
+// Function to set the active tab based on URL hash
+function setActiveTabFromHash() {
+    const hash = window.location.hash.slice(1); // Remove the # character
+    if (hash) {
+        // Find the tab index that matches the hash
+        const tabIndex = tabs.value.findIndex((tab) => tab.label.toLowerCase().replace(/\s+/g, "-") === hash);
+        if (tabIndex !== -1) {
+            currentTabIndex.value = tabIndex;
+        }
+    }
+}
 
 onBeforeMount(async () => {
     await workflowStore.setWorkflow();
     loading.value = false;
+
+    if (workflow.value && route.params.id === workflow.value.trsID) {
+        window.history.pushState({}, "", `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
+    }
+
+    // After the page loads, set the active tab based on the hash
+    nextTick(() => {
+        setActiveTabFromHash();
+    });
 });
 </script>
 
@@ -172,7 +210,7 @@ onBeforeMount(async () => {
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
-                    <UTabs :items="tabs" class="w-full">
+                    <UTabs :items="tabs" @change="onTabChange" v-model="currentTabIndex" class="w-full">
                         <template #default="{ item, index, selected }">
                             <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
                                 item.label
@@ -208,7 +246,7 @@ onBeforeMount(async () => {
             </div>
             <div v-else class="max-w-3xl mx-auto py-8">
                 <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-                <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
+                <p>Workflow with iwcID {{ route.params.id }} could not be found.</p>
             </div>
         </template>
     </NuxtLayout>
