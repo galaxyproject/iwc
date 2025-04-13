@@ -190,11 +190,65 @@ def find_and_load_compliant_workflows(directory):
                 if os.path.exists(workflow_test_path):
                     with open(workflow_test_path) as f:
                         tests = yaml.safe_load(f)
+                    # Process test dictionary to replace path keys with location keys
+                    if tests:
+                        for test in tests:
+                            for input_item in test["job"].values():
+                                path_to_location(input_item, root)
                     workflow["tests"] = tests
                 else:
                     print(f"Test Missing: {workflow_test_path}")
 
     return workflow_data
+
+
+def path_to_location(input_item, root):
+    if isinstance(input_item, dict):
+        if input_item.get("class") == "File":
+            if "path" in input_item:
+                if "://" in input_item["path"]:
+                    # If the path is a URL, use it directly
+                    input_item["location"] = input_item["path"]
+                else:
+                    # Create location URL from path for downloading files
+                    relative_path = os.path.join(root.replace("./", ""), input_item["path"].lstrip("/"))
+                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{relative_path}"
+                    del input_item["path"]
+            if "filetype" not in input_item:
+                # Add filetype if not present
+                # TODO: fix up the tests instead of guessing!
+                location = input_item["location"]
+                if "fastq.gz" in location:
+                    filetype = "fastqsanger.gz"
+                elif "fastq" in location:
+                    filetype = "fastqsanger"
+                elif "fasta.gz" in location:
+                    filetype = "fasta.gz"
+                elif "fasta" in location:
+                    filetype = "fasta"
+                elif "bam" in location:
+                    filetype = "bam"
+                elif "vcf" in location:
+                    filetype = "vcf"
+                elif "tabular" in location:
+                    filetype = "tabular"
+                elif "txt" in location:
+                    filetype = "txt"
+                elif "tsv" in location:
+                    filetype = "tabular"
+                elif "csv" in location:
+                    filetype = "csv"
+                elif "bed" in location:
+                    filetype = "bed"
+                else:
+                    filetype = "auto"
+                    print("Unknown filetype for", location)
+                input_item["filetype"] = filetype
+        else:
+            if input_item.get("class") == "Collection":
+                # If it's a directory, we can recursively call this function
+                for element in input_item["elements"]:
+                    path_to_location(element, root)
 
 
 def write_to_json(data, filename):
