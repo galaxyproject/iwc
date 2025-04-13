@@ -26,7 +26,7 @@ round,channel,marker_name
     - For an example phenotype workflow, see our [tutorial](https://training.galaxyproject.org/training-material/topics/imaging/tutorials/multiplex-tissue-imaging-TMA/tutorial.html) and the [Scimap documentation](https://scimap-doc.readthedocs.io/en/latest/tutorials/scimap-tutorial-cell-phenotyping/).
 
 
-## Inputs values
+## Input values
 
 All input values have been preset in the workflow and are optimized for cyclic immunofluorescence images captured using a Rarecyte slide scanner. Some important assumptions are made:
 
