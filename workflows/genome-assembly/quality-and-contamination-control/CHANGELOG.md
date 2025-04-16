@@ -9,6 +9,11 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.2+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0`
 
+### Manual update
+- Changes output name/tag for Tooldistillator
+- Fixes syntax and parameter errors
+- With Fastp 0.24.0 we can now only select the input Paired Collection: so the Zip and Unzip collection tools have been added to the workflow
+
 ## [1.1.6] - 2024-11-18
 
 ### Automatic update
