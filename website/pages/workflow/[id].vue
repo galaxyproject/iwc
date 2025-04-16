@@ -8,6 +8,7 @@ import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
+const appConfig = useAppConfig();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
 
@@ -65,6 +66,10 @@ const tools = computed(() => {
         .map((step) => step.tool_id)
         .filter((id): id is string => id !== null && id !== undefined);
     return Array.from(new Set(toolIds));
+});
+
+const workflowName = computed(() => {
+    return workflow.value?.definition?.name || "Workflow Details";
 });
 
 // Define interface for tab items
@@ -145,6 +150,16 @@ onBeforeMount(async () => {
     nextTick(() => {
         setActiveTabFromHash();
     });
+});
+
+useHead({
+    title: computed(() => `${workflowName.value} | ${appConfig.site.name}`),
+    meta: [
+        {
+            name: "description",
+            content: `Workflow ${workflowName.value}`,
+        },
+    ],
 });
 </script>
 
