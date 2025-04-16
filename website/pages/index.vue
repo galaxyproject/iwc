@@ -102,7 +102,6 @@ const filteredWorkflows = computed(() => {
         return sortedWorkflows.value.filter(matchesSelectedFilters);
     } else {
         const searchResults = fuse.value.search(searchQuery.value.trim());
-        console.log(searchResults)
         const fuzzyMatches = searchResults.map(result => result.item);
         return fuzzyMatches.filter(matchesSelectedFilters);
     }
