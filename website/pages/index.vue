@@ -5,6 +5,8 @@ import { useWorkflowStore } from "~/stores/workflows";
 
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
+import Fuse from "fuse.js";
+
 const categoryDescription = ref<string | null>(null);
 const selectedCategory = ref<string | null>(null);
 const isLoading = ref(false);
@@ -68,15 +70,44 @@ const sortedWorkflows = computed(() =>
     allWorkflows.value.sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
 );
 
-const filteredWorkflows = computed(() =>
-    sortedWorkflows.value.filter((workflow) => {
-        const matchesSearch = workflow.definition.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchesFilters =
-            !workflowStore.selectedFilters.length ||
-            workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter));
-        return matchesSearch && matchesFilters;
-    }),
-);
+// Define a fuse instance for fuzzy searching
+const fuseOptions = {
+    keys: [
+        {
+            name:"definition.name", 
+            weight:0.7
+        }, 
+       {
+            name:"definition.annotation", 
+            weight:0.3
+       },
+       {
+            name:"definition.tags", 
+            weight:0.1
+       }
+    ],
+    threshold: 0.3,
+}
+
+const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
+
+const filteredWorkflows = computed(() => {
+
+    const matchesSelectedFilters = (workflow: Workflow): boolean => {
+        return !workflowStore.selectedFilters.length || 
+        workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter));
+    };
+
+    if (!searchQuery.value) {
+        return sortedWorkflows.value.filter(matchesSelectedFilters);
+    } else {
+        const searchResults = fuse.value.search(searchQuery.value.trim());
+        console.log(searchResults)
+        const fuzzyMatches = searchResults.map(result => result.item);
+        return fuzzyMatches.filter(matchesSelectedFilters);
+    }
+
+});
 
 function scrollToGrid() {
     gridDiv.value?.scrollIntoView({ behavior: "smooth" });
