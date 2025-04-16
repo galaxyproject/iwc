@@ -68,6 +68,10 @@ const tools = computed(() => {
     return Array.from(new Set(toolIds));
 });
 
+const workflowName = computed(() => {
+    return workflow.value?.definition?.name || "Workflow Details";
+});
+
 // Define interface for tab items
 interface TabItem {
     label: string;
@@ -148,23 +152,12 @@ onBeforeMount(async () => {
     });
 });
 
-function getFirstLine(markdown: string) {
-    if (typeof markdown !== 'string') return '';
-    /* Normalize line endings and split */
-    const lines = markdown.replace(/\r\n/g, '\n').split('\n');
-    /* Remove Markdownn's Header syntax */
-    if (lines[0].substring(0, 2) === '# ') {
-        lines[0] = lines[0].substring(2);
-    }
-    return lines[0].trim();
-}
-
 useHead({
-    title: `${getFirstLine(tabs.value[currentTabIndex.value].content)} | ${appConfig.site.name}`,
+    title: computed(() => `${workflowName.value} | ${appConfig.site.name}`),
     meta: [
         {
             name: "description",
-            content: `Workflow ${getFirstLine(tabs.value[currentTabIndex.value].content)}`,
+            content: `Workflow ${workflowName.value}`,
         },
     ],
 });
