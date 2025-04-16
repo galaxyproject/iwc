@@ -88,10 +88,10 @@ const tabs = computed<TabItem[]>(() => [
         label: "Version History",
         content: workflow.value?.changelog || "No CHANGELOG available.",
     },
-    {
-        label: "Tools",
-        tools: tools.value || "This tab will show a nice listing of all the tools used in this workflow.",
-    },
+    // {
+    //     label: "Tools",
+    //     tools: tools.value || "This tab will show a nice listing of all the tools used in this workflow.",
+    // },
 ]);
 
 function onTabChange(index: number) {
