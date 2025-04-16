@@ -1,7 +1,19 @@
 <script setup>
-const pageName = "Galaxy IWC - Workflow Library";
+const appConfig = useAppConfig();
+const pageName = `${appConfig.site.name} - Workflow Library`;
+
 useHead({
     title: pageName,
+    meta: [
+        {
+            name: "description",
+            content: pageName,
+        },
+        {
+            name: "keywords",
+            content: appConfig.site.keywords.join(', '),
+        },
+    ],
 });
 </script>
 

@@ -8,6 +8,7 @@ import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
+const appConfig = useAppConfig();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
 
@@ -145,6 +146,27 @@ onBeforeMount(async () => {
     nextTick(() => {
         setActiveTabFromHash();
     });
+});
+
+function getFirstLine(markdown: string) {
+    if (typeof markdown !== 'string') return '';
+    /* Normalize line endings and split */
+    const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+    /* Remove Markdownn's Header syntax */
+    if (lines[0].substring(0, 2) === '# ') {
+        lines[0] = lines[0].substring(2);
+    }
+    return lines[0].trim();
+}
+
+useHead({
+    title: `${getFirstLine(tabs.value[currentTabIndex.value].content)} | ${appConfig.site.name}`,
+    meta: [
+        {
+            name: "description",
+            content: `Workflow ${getFirstLine(tabs.value[currentTabIndex.value].content)}`,
+        },
+    ],
 });
 </script>
 
