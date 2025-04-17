@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.8] - 2025-04-15
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0`
+
+### Manual update
+- Changes output name/tag for Tooldistillator
+- Fixes syntax and parameter errors
+
 ## [1.1.7] - 2024-10-21
 
 ### Automatic update

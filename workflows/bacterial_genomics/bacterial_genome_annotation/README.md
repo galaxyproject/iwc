@@ -1,4 +1,4 @@
-# Bacterial genome annotation workflow (v1.0)
+# Bacterial genome annotation workflow (v1.1.8)
 
 This workflow uses assembled bacterial genome fasta files (but can be any fasta file) and executes the following steps:
 1. Genomic annotation
