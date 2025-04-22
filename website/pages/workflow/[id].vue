@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useHead } from "#imports";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
@@ -11,6 +12,44 @@ const route = useRoute();
 const appConfig = useAppConfig();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
+
+const authors = computed(() => {
+    let authorLine = "";
+    if (workflow.value?.authors) {
+        authorLine = workflow.value.authors.map((author) => author.name).join(", ");
+    }
+    return authorLine;
+});
+
+// Generate meta tags for SEO and social media previews
+useHead(() => {
+    if (!workflow.value) return {};
+
+    return {
+        title: workflow.value.definition.name,
+        meta: [
+            { name: "description", content: workflow.value.definition.annotation || "Galaxy workflow" },
+            // Open Graph / Facebook
+            { property: "og:title", content: workflow.value.definition.name },
+            { property: "og:description", content: workflow.value.definition.annotation || "Galaxy workflow" },
+            { property: "og:image", content: "/iwc_logo.png" },
+            { property: "og:type", content: "website" },
+            // Twitter
+            { name: "twitter:card", content: "summary" },
+            { name: "twitter:title", content: workflow.value.definition.name },
+            { name: "twitter:description", content: workflow.value.definition.annotation || "Galaxy workflow" },
+            { name: "twitter:image", content: "/iwc_logo.png" },
+        ],
+    };
+});
+
+const links = [
+    {
+        label: "Back to index",
+        icon: "i-heroicons-home",
+        to: "/",
+    },
+];
 
 const selectedInstance = ref("");
 

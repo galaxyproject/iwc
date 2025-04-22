@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
+import { useHead } from "#imports";
 
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
@@ -63,6 +64,28 @@ const gridDiv = ref<HTMLDivElement | null>(null);
 const allWorkflows = computed(() => workflowStore.allWorkflows);
 const allCategories = computed(() => workflowStore.allCategories);
 const allTags = computed(() => workflowStore.allTags);
+
+// Add meta tags for SEO and social media sharing, with fixed image URL that doesn't depend on window
+useHead({
+    title: "Intergalactic Workflow Commission",
+    meta: [
+        {
+            name: "description",
+            content:
+                "Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly and reliably",
+        },
+        // Open Graph / Facebook
+        { property: "og:title", content: "Intergalactic Workflow Commission" },
+        { property: "og:description", content: "Discover and run vetted analysis pipelines on Galaxy" },
+        { property: "og:image", content: "/iwc_logo.png" },
+        { property: "og:type", content: "website" },
+        // Twitter
+        { name: "twitter:card", content: "summary" },
+        { name: "twitter:title", content: "Intergalactic Workflow Commission" },
+        { name: "twitter:description", content: "Discover and run vetted analysis pipelines on Galaxy" },
+        { name: "twitter:image", content: "/iwc_logo.png" },
+    ],
+});
 
 // Sort workflows descending by workflow.updated
 
