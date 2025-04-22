@@ -1,4 +1,4 @@
-name: PR Preview
+name: PR Test
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - 'website/**'
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
+          
       - name: Install NPM Dependencies
         run: npm install
         working-directory: ./website
@@ -38,36 +38,19 @@ jobs:
       - name: Build Nuxt 3 Static Site
         run: npm run generate
         working-directory: ./website
-
-      - name: Deploy to Publication Branch
-        uses: peaceiris/actions-gh-pages@v3
+        
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+        working-directory: ./website
+        
+      - name: Run E2E Tests
+        run: npm run e2e
+        working-directory: ./website
+        
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./website/.output/public
-          publish_branch: gh-pages
-          destination_dir: __preview/pr-${{ github.event.pull_request.number }}
-
-      - name: Create or Update PR Comment with Preview Link
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          message: |
-            ### Preview
-            [View Preview](https://galaxyproject.github.io/iwc/__preview/pr-${{ github.event.pull_request.number }}/)
-
-  cleanup:
-    if: >
-      github.event.pull_request.merged == true ||
-      github.event.pull_request.state == 'closed'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Publication Branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-
-      - name: Remove Preview Directory
-        run: |
-          git rm -rf __preview/pr-${{ github.event.pull_request.number }}
-          git commit -m "Remove preview for PR #${{ github.event.pull_request.number }}"
-          git push origin gh-pages
+          name: playwright-report
+          path: ./website/playwright-report
+          retention-days: 30
