@@ -46,14 +46,6 @@ useSeoMeta({
     twitterImage: `${baseUrl}/iwc_logo.png`,
 });
 
-const links = [
-    {
-        label: "Back to index",
-        icon: "i-heroicons-home",
-        to: "/",
-    },
-];
-
 const selectedInstance = ref("");
 
 const launchUrl = computed(() => {
