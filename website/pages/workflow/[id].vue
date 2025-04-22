@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
@@ -21,25 +21,31 @@ const authors = computed(() => {
     return authorLine;
 });
 
-// Generate meta tags for SEO and social media previews
-useHead(() => {
-    if (!workflow.value) return {};
+const workflowName = computed(() => {
+    return workflow.value?.definition?.name || "Workflow Details";
+});
 
+// Generate SEO meta tags for the workflow detail page
+// This replaces both previous useHead calls with a single reactive useSeoMeta implementation
+useSeoMeta(() => {
+    if (!workflow.value) {
+        return {
+            title: 'Workflow Details | ' + appConfig.site.name,
+            description: 'Galaxy workflow details'
+        };
+    }
+    
     return {
-        title: workflow.value.definition.name,
-        meta: [
-            { name: "description", content: workflow.value.definition.annotation || "Galaxy workflow" },
-            // Open Graph / Facebook
-            { property: "og:title", content: workflow.value.definition.name },
-            { property: "og:description", content: workflow.value.definition.annotation || "Galaxy workflow" },
-            { property: "og:image", content: "/iwc_logo.png" },
-            { property: "og:type", content: "website" },
-            // Twitter
-            { name: "twitter:card", content: "summary" },
-            { name: "twitter:title", content: workflow.value.definition.name },
-            { name: "twitter:description", content: workflow.value.definition.annotation || "Galaxy workflow" },
-            { name: "twitter:image", content: "/iwc_logo.png" },
-        ],
+        title: `${workflowName.value} | ${appConfig.site.name}`,
+        description: workflow.value.definition.annotation || "Galaxy workflow",
+        ogTitle: workflowName.value,
+        ogDescription: workflow.value.definition.annotation || "Galaxy workflow",
+        ogImage: '/iwc_logo.png',
+        ogType: 'website',
+        twitterCard: 'summary',
+        twitterTitle: workflowName.value,
+        twitterDescription: workflow.value.definition.annotation || "Galaxy workflow",
+        twitterImage: '/iwc_logo.png'
     };
 });
 
@@ -105,10 +111,6 @@ const tools = computed(() => {
         .map((step) => step.tool_id)
         .filter((id): id is string => id !== null && id !== undefined);
     return Array.from(new Set(toolIds));
-});
-
-const workflowName = computed(() => {
-    return workflow.value?.definition?.name || "Workflow Details";
 });
 
 // Define interface for tab items
@@ -189,16 +191,6 @@ onBeforeMount(async () => {
     nextTick(() => {
         setActiveTabFromHash();
     });
-});
-
-useHead({
-    title: computed(() => `${workflowName.value} | ${appConfig.site.name}`),
-    meta: [
-        {
-            name: "description",
-            content: `Workflow ${workflowName.value}`,
-        },
-    ],
 });
 </script>
 
