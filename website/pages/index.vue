@@ -2,24 +2,29 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
-import { useSeoMeta } from "#imports";
+import { useSeoMeta, useRuntimeConfig } from "#imports";
 
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
 import Fuse from "fuse.js";
 
+// Get the public runtime config to access the app URL
+const config = useRuntimeConfig().public;
+const baseUrl = config.appUrl || (process.client ? window.location.origin : "https://iwc.galaxyproject.org");
+
 // Add SEO meta tags using the specialized useSeoMeta composable
 useSeoMeta({
-    title: 'Intergalactic Workflow Commission',
-    description: 'Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly and reliably',
-    ogTitle: 'Intergalactic Workflow Commission',
-    ogDescription: 'Discover and run vetted analysis pipelines on Galaxy',
-    ogImage: '/iwc_logo.png',
-    ogType: 'website',
-    twitterCard: 'summary',
-    twitterTitle: 'Intergalactic Workflow Commission',
-    twitterDescription: 'Discover and run vetted analysis pipelines on Galaxy',
-    twitterImage: '/iwc_logo.png'
+    title: "Intergalactic Workflow Commission",
+    description:
+        "Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly and reliably",
+    ogTitle: "Intergalactic Workflow Commission",
+    ogDescription: "Discover and run vetted analysis pipelines on Galaxy",
+    ogImage: `${baseUrl}/iwc_logo.png`,
+    ogType: "website",
+    twitterCard: "summary",
+    twitterTitle: "Intergalactic Workflow Commission",
+    twitterDescription: "Discover and run vetted analysis pipelines on Galaxy",
+    twitterImage: `${baseUrl}/iwc_logo.png`,
 });
 
 const categoryDescription = ref<string | null>(null);
@@ -89,38 +94,38 @@ const sortedWorkflows = computed(() =>
 const fuseOptions = {
     keys: [
         {
-            name:"definition.name", 
-            weight:0.7
-        }, 
-       {
-            name:"definition.annotation", 
-            weight:0.3
-       },
-       {
-            name:"definition.tags", 
-            weight:0.1
-       }
+            name: "definition.name",
+            weight: 0.7,
+        },
+        {
+            name: "definition.annotation",
+            weight: 0.3,
+        },
+        {
+            name: "definition.tags",
+            weight: 0.1,
+        },
     ],
     threshold: 0.3,
-}
+};
 
 const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
 
 const filteredWorkflows = computed(() => {
-
     const matchesSelectedFilters = (workflow: Workflow): boolean => {
-        return !workflowStore.selectedFilters.length || 
-        workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter));
+        return (
+            !workflowStore.selectedFilters.length ||
+            workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter))
+        );
     };
 
     if (!searchQuery.value) {
         return sortedWorkflows.value.filter(matchesSelectedFilters);
     } else {
         const searchResults = fuse.value.search(searchQuery.value.trim());
-        const fuzzyMatches = searchResults.map(result => result.item);
+        const fuzzyMatches = searchResults.map((result) => result.item);
         return fuzzyMatches.filter(matchesSelectedFilters);
     }
-
 });
 
 function scrollToGrid() {

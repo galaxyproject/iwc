@@ -23,5 +23,13 @@ export default defineNuxtConfig({
         },
     },
 
+    // Add runtime configuration for the application URL
+    runtimeConfig: {
+        public: {
+            // Default base URL for production
+            appUrl: process.env.APP_URL || "https://iwc.galaxyproject.org",
+        },
+    },
+
     compatibilityDate: "2025-03-03",
 });

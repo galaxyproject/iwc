@@ -11,7 +11,7 @@ useHead({
         },
         {
             name: "keywords",
-            content: appConfig.site.keywords.join(', '),
+            content: appConfig.site.keywords.join(", "),
         },
     ],
 });

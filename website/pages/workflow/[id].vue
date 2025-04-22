@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useSeoMeta } from "#imports";
+import { useSeoMeta, useRuntimeConfig } from "#imports";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
@@ -12,6 +12,10 @@ const route = useRoute();
 const appConfig = useAppConfig();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
+
+// Get the public runtime config to access the app URL
+const config = useRuntimeConfig().public;
+const baseUrl = config.appUrl || (process.client ? window.location.origin : "https://iwc.galaxyproject.org");
 
 const authors = computed(() => {
     let authorLine = "";
@@ -28,16 +32,18 @@ const workflowName = computed(() => {
 // Generate SEO meta tags for the workflow detail page
 // Using computed properties for reactive SEO meta
 useSeoMeta({
-    title: computed(() => workflow.value ? `${workflowName.value} | ${appConfig.site.name}` : 'Workflow Details | ' + appConfig.site.name),
+    title: computed(() =>
+        workflow.value ? `${workflowName.value} | ${appConfig.site.name}` : "Workflow Details | " + appConfig.site.name,
+    ),
     description: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
     ogTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
     ogDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
-    ogImage: '/iwc_logo.png',
-    ogType: 'website',
-    twitterCard: 'summary',
+    ogImage: `${baseUrl}/iwc_logo.png`,
+    ogType: "website",
+    twitterCard: "summary",
     twitterTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
     twitterDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
-    twitterImage: '/iwc_logo.png'
+    twitterImage: `${baseUrl}/iwc_logo.png`,
 });
 
 const links = [
