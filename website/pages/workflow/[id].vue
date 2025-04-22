@@ -26,27 +26,18 @@ const workflowName = computed(() => {
 });
 
 // Generate SEO meta tags for the workflow detail page
-// This replaces both previous useHead calls with a single reactive useSeoMeta implementation
-useSeoMeta(() => {
-    if (!workflow.value) {
-        return {
-            title: 'Workflow Details | ' + appConfig.site.name,
-            description: 'Galaxy workflow details'
-        };
-    }
-    
-    return {
-        title: `${workflowName.value} | ${appConfig.site.name}`,
-        description: workflow.value.definition.annotation || "Galaxy workflow",
-        ogTitle: workflowName.value,
-        ogDescription: workflow.value.definition.annotation || "Galaxy workflow",
-        ogImage: '/iwc_logo.png',
-        ogType: 'website',
-        twitterCard: 'summary',
-        twitterTitle: workflowName.value,
-        twitterDescription: workflow.value.definition.annotation || "Galaxy workflow",
-        twitterImage: '/iwc_logo.png'
-    };
+// Using computed properties for reactive SEO meta
+useSeoMeta({
+    title: computed(() => workflow.value ? `${workflowName.value} | ${appConfig.site.name}` : 'Workflow Details | ' + appConfig.site.name),
+    description: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    ogTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
+    ogDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    ogImage: '/iwc_logo.png',
+    ogType: 'website',
+    twitterCard: 'summary',
+    twitterTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
+    twitterDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    twitterImage: '/iwc_logo.png'
 });
 
 const links = [
