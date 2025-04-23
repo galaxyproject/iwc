@@ -370,9 +370,9 @@ onBeforeMount(async () => {
 
                                         <div class="mb-6">
                                             <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
-                                            <p class="mb-2 text-sm">Download the workflow .ga file from Dockstore:</p>
+                                            <p class="mb-2 text-sm">Download the workflow .ga file:</p>
                                             <pre
-                                                class="p-3 rounded overflow-x-auto"><code>curl -o workflow.ga "https://dockstore.org/api/ga4gh/trs/v2/tools/{{ workflow?.trsID }}/versions/v{{ workflow?.definition.release }}/plain-GA4GH/descriptor"</code></pre>
+                                                class="p-3 rounded overflow-x-auto"><code>curl -o "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga"</code></pre>
                                         </div>
 
                                         <div class="mb-6">
