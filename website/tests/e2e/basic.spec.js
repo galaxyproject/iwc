@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test("Homepage loads correctly", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle(/IWC/);
+    await expect(page).toHaveTitle(/Intergalactic Workflow Commission/);
     await expect(page.locator("body")).toContainText("Galaxy IWC - Workflow Library");
 });
 
