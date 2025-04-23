@@ -74,38 +74,38 @@ const sortedWorkflows = computed(() =>
 const fuseOptions = {
     keys: [
         {
-            name:"definition.name", 
-            weight:0.7
-        }, 
-       {
-            name:"definition.annotation", 
-            weight:0.3
-       },
-       {
-            name:"definition.tags", 
-            weight:0.1
-       }
+            name: "definition.name",
+            weight: 0.7,
+        },
+        {
+            name: "definition.annotation",
+            weight: 0.3,
+        },
+        {
+            name: "definition.tags",
+            weight: 0.1,
+        },
     ],
     threshold: 0.3,
-}
+};
 
 const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
 
 const filteredWorkflows = computed(() => {
-
     const matchesSelectedFilters = (workflow: Workflow): boolean => {
-        return !workflowStore.selectedFilters.length || 
-        workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter));
+        return (
+            !workflowStore.selectedFilters.length ||
+            workflowStore.selectedFilters.every((filter) => workflow.collections.includes(filter))
+        );
     };
 
     if (!searchQuery.value) {
         return sortedWorkflows.value.filter(matchesSelectedFilters);
     } else {
         const searchResults = fuse.value.search(searchQuery.value.trim());
-        const fuzzyMatches = searchResults.map(result => result.item);
+        const fuzzyMatches = searchResults.map((result) => result.item);
         return fuzzyMatches.filter(matchesSelectedFilters);
     }
-
 });
 
 function scrollToGrid() {
