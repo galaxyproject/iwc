@@ -51,7 +51,8 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
                     "trs_server": "dockstore",
                     "trs_tool_id": versioned_dockstore_wf["id"].split(":")[0],
                     "trs_version_id": versioned_dockstore_wf["name"],
-                    "importable": True,  # we have to set this here due to https://github.com/galaxyproject/galaxy/issues/10683
+                    "importable": True,
+                    "published": True,
                 }
                 trs_import = gi.make_post_request(
                     f"{gi.url}/workflows", payload=payload
@@ -69,6 +70,7 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
                         + " (release "  # include release in the name otherwise the user can't find it
                         + versioned_dockstore_wf["id"].split(":")[-1]
                         + ")",
+                        importable=True,
                         published=True,
                     )
                     newly_installed_wf_trs_ids.append(
