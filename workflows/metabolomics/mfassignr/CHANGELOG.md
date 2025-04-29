@@ -4,18 +4,3 @@
 
 ### Added
 - Initial version of the Molecular Formula Assignment and Recalibration Workflow.
-
-### Changed
-- N/A
-
-### Deprecated
-- N/A
-
-### Removed
-- N/A
-
-### Fixed
-- N/A
-
-### Security
-- N/A
