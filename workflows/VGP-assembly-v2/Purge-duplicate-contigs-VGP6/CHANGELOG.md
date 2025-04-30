@@ -2,8 +2,14 @@
 
 ## [0.9] - 2025-04-07
 
+### Changes 
+
+- Add busco QC for alternate/hap2 assembly
+- Change tags for coherence with other workflows of the suite
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1`
+
 
 ## [0.8] - 2025-03-17
 
