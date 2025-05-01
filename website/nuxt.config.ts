@@ -17,6 +17,17 @@ export default defineNuxtConfig({
     app: {
         head: {
             link: [{ rel: "icon", type: "image/png", href: "/iwc_logo_white.png" }],
+            htmlAttrs: {
+                lang: "en",
+            },
+        },
+    },
+
+    // Add runtime configuration for the application URL
+    runtimeConfig: {
+        public: {
+            // Default base URL for production
+            appUrl: process.env.APP_URL || "https://iwc.galaxyproject.org",
         },
     },
 

@@ -1,10 +1,29 @@
+<script setup>
+const appConfig = useAppConfig();
+const pageName = `${appConfig.site.name} - Workflow Library`;
+
+useHead({
+    title: pageName,
+    meta: [
+        {
+            name: "description",
+            content: pageName,
+        },
+        {
+            name: "keywords",
+            content: appConfig.site.keywords.join(", "),
+        },
+    ],
+});
+</script>
+
 <template>
     <header class="py-2 px-6 bg-ebony-clay text-white">
         <div class="flex">
             <div class="flex flex-grow space-x-2">
                 <NuxtLink to="/" class="flex items-center space-x-2 hover:text-hokey-pokey">
                     <img src="/iwc_logo_white.png" alt="IWC Logo" width="64" height="64" />
-                    <span class="text-xl font-semibold px-4"> Galaxy IWC - Workflow Library </span>
+                    <span class="text-xl font-semibold px-4"> {{ pageName }} </span>
                 </NuxtLink>
             </div>
             <div class="flex items-center space-x-8">
