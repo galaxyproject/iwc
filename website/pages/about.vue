@@ -129,6 +129,30 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import { useSeoMeta, useRuntimeConfig } from "#imports";
+
+// Get the public runtime config to access the app URL
+const config = useRuntimeConfig().public;
+const baseUrl = config.appUrl || (process.client ? window.location.origin : "https://workflows.galaxyproject.org");
+
+// Add SEO meta tags using the useSeoMeta composable
+useSeoMeta({
+    title: "About the Galaxy Workflows Library",
+    description:
+        "Learn about the IWC curated collection of peer-reviewed, ready-to-use Galaxy workflows for scientific analysis",
+    ogTitle: "About the Galaxy Workflows Library",
+    ogDescription:
+        "Discover a curated collection of ready-to-use, peer-reviewed Galaxy workflows for scientific analysis",
+    ogImage: `${baseUrl}/iwc_logo.png`,
+    ogType: "website",
+    twitterCard: "summary",
+    twitterTitle: "About the Galaxy Workflows Library",
+    twitterDescription:
+        "Discover a curated collection of ready-to-use, peer-reviewed Galaxy workflows for scientific analysis",
+    twitterImage: `${baseUrl}/iwc_logo.png`,
+});
+
 const features = [
     {
         icon: "uil:check-circle",

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4] - 2025-04-03
+
+### Changes 
+- Use the option `-5` in bwa-mem2 recommended for Hi-C data
+- Remove the `-a` option in bwa-mem2 
+- Output gff files from Busco
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy4`
+
 ## [1.3] - 2025-03-27
 
 ### Changes
