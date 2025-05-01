@@ -37,7 +37,6 @@ GH_WF = "wftest.yml"
 # PyGithub does not have support for enabling workflows and is probably dead
 # https://github.com/PyGithub/PyGithub/issues/2178
 class GHClient:
-
     def __init__(self, token=GH_API_TOKEN):
         if not token:
             raise RuntimeError(
@@ -46,10 +45,12 @@ class GHClient:
             )
         self.base_url = GH_API_URL
         self.session = requests.Session()
-        self.session.headers.update({
-            "Accept": "application/vnd.github+json",
-            "Authorization": f"token {token}",
-        })
+        self.session.headers.update(
+            {
+                "Accept": "application/vnd.github+json",
+                "Authorization": f"token {token}",
+            }
+        )
 
     def request(self, method, endpoint):
         r = self.session.request(method, self.base_url + endpoint)
