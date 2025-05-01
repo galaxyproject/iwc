@@ -11,7 +11,10 @@ DOCKSTORE_API_PARAMS = {"organization": "iwc-workflows"}
 GALAXIES_TO_UPDATE_CREDENTIALS = [
     {"url": "https://usegalaxy.org", "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG")},
     {"url": "https://usegalaxy.eu", "key": os.getenv("IWC_API_KEY_USEGALAXY_EU")},
-    {"url": "https://usegalaxy.org.au", "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG_AU")},
+    {
+        "url": "https://usegalaxy.org.au",
+        "key": os.getenv("IWC_API_KEY_USEGALAXY_ORG_AU"),
+    },
 ]
 
 logging.getLogger().setLevel(logging.INFO)
@@ -48,7 +51,8 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
                     "trs_server": "dockstore",
                     "trs_tool_id": versioned_dockstore_wf["id"].split(":")[0],
                     "trs_version_id": versioned_dockstore_wf["name"],
-                    "importable": True,  # we have to set this here due to https://github.com/galaxyproject/galaxy/issues/10683
+                    "importable": True,
+                    "published": True,
                 }
                 trs_import = gi.make_post_request(
                     f"{gi.url}/workflows", payload=payload
@@ -66,6 +70,7 @@ for galaxy_credentials in GALAXIES_TO_UPDATE_CREDENTIALS:
                         + " (release "  # include release in the name otherwise the user can't find it
                         + versioned_dockstore_wf["id"].split(":")[-1]
                         + ")",
+                        importable=True,
                         published=True,
                     )
                     newly_installed_wf_trs_ids.append(
