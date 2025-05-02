@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.4] - 2025-05-02
+
+### Changes
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1` was replaced by `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0` due to issues with the latest version
+
+
 ## [0.9.3] - 2025-04-07
 
 ### Automatic update
