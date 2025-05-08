@@ -7,9 +7,12 @@
 Aaron Kolbecher, in the course of his Master thesis, discovered several
 edge-cases in which the previous version of the workflow would fail. The
 corresponding fixes listed below make the workflow much more robust and ready
-for use in high-throughput scenarioss.
+for use in high-throughput scenarios.
 
 - Added processing logic for handling diverse VAPOR failures.
+
+  Note: As a limitation of the new logic elements in the "References per segment"
+  collection can no longer contain colons (`:`) in their identifiers.
 
 - Improved subtyping report to handle cases of undetermined HA and/or NA subtypes.
 
