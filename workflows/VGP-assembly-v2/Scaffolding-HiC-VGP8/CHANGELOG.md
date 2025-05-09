@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6] - 2025-05-09
+
+### Changes
+
+- Fix bug in the previous release where busco parameters were not connecting properly
+- Fix bug where the graph reconciliation where not using the right gfa input, causing to loose some graph informations.  
+
 ## [1.5] - 2025-04-14
 
 ### Automatic update
