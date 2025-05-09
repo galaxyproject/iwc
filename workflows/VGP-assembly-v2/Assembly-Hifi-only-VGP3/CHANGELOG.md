@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.10] - 2025-05-09
+
+### Changes
+- Fix bug in the previous release where busco parameters were not connecting properly
+
 ## [0.2.9] - 2025-04-07
 
 ### Automatic update
