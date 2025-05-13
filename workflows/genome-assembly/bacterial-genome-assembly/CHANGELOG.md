@@ -1,10 +1,17 @@
 # Changelog
 
-## [1.1.6] - 2025-04-14
+## [1.1.6] - 2025-05-14
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.2+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0`
+
+### Manual update
+- Changes output name/tag for Tooldistillator
+- Fixes syntax and parameter errors
+- Changes QUAST parameters: --min-contig `0` and --contig-thresholds `0,200,500,1000`
+- Adds Checkm2
+
 
 ## [1.1.5] - 2024-11-18
 
