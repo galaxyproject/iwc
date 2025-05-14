@@ -24,7 +24,8 @@ Generate phased assembly based on PacBio Hifi Reads using HiC data from the same
 3. Trimmed Hi-C reads collection
 4. QC: MultiQC report for HiFi reads trimming
 5. QC: BUSCO report for both assemblies
-6. QC: Merqury report for both assemblies
-7. QC: Assembly statistics for both assemblies
-8. QC: Nx plot for both assemblies
-9.  QC: Size plot for both assemblies
+6. QC: Compleasm report for both assemblies
+7. QC: Merqury report for both assemblies
+8. QC: Assembly statistics for both assemblies
+9. QC: Nx plot for both assemblies
+10. QC: Size plot for both assemblies
