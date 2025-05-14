@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.8] - 2025-05-14
+## [0.8.0] - 2025-05-14
 
 ### Changes
 - Add Compleasm for QC
