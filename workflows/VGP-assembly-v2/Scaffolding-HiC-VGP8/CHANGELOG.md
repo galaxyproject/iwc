@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6] - 2025-05-13
+
+### Changes
+
+- Fix bug in the previous release where busco parameters were not connecting properly
+- Fix bug where the graph reconciliation where not using the right gfa input, causing to loose some graph informations.  
+- Add some workflow parameters to the workflow report
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+
 ## [1.5] - 2025-04-14
 
 ### Automatic update
