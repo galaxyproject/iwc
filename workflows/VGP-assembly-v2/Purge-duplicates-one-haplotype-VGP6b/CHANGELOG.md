@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.7] - 2025-05-12
+
+### Changes
+- Fix Busco Bug
+- Add workflow parameters to the workflow report
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+
 ## [0.7.6] - 2025-04-07
 
 ### Automatic update
