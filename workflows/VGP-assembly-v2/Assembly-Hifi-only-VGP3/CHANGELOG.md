@@ -1,9 +1,17 @@
 # Changelog
 
+
 ## [0.2.10] - 2025-05-12
+
+### Cahnges
+- Add workflow inputs to workflow report
+- Fix Busco bug
+- Now output gfas without sequences 
+
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+
 
 ## [0.2.9] - 2025-04-07
 
