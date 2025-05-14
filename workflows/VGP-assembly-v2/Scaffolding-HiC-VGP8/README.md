@@ -28,4 +28,5 @@ Example of VGP trajectory :
 4. QC: Nx plot.
 5. QC: Size plot.
 6. QC: BUSCO report.
-7. QC: Pretext Maps before and after scaffolding.
+7. QC: Compleasm report.
+8. QC: Pretext Maps before and after scaffolding.
