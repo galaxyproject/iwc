@@ -23,7 +23,8 @@ Generate assembly based on PacBio Hifi Reads.
 2. Alternate assembly
 3. QC: Bandage image for the raw unitigs
 4. QC: BUSCO report for both assemblies
-5. QC: Merqury report for both assemblies
-6. QC: Assembly statistics for both assemblies
-7. QC: Nx plot for both assemblies
-8. QC: Size plot for both assemblie
+5. QC: Compleasm report for both assemblies
+6. QC: Merqury report for both assemblies
+7. QC: Assembly statistics for both assemblies
+8. QC: Nx plot for both assemblies
+9. QC: Size plot for both assemblie
