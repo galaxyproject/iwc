@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [0.1.6] - 2025-04-30
+
+### Changes
+
+- Add workflow report
+
 ## [0.1.5] - 2024-12-03
 
 - `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl/meryl/1.3+galaxy6` was updated to `https://usegalaxy.org/root?tool_id=toolshed.g2.bx.psu.edu/repos/iuc/meryl_count_kmers/meryl_count_kmers/1.3+galaxy7`

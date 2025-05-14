@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useSeoMeta, useRuntimeConfig } from "#imports";
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
@@ -8,8 +9,13 @@ import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
 
 const route = useRoute();
+const appConfig = useAppConfig();
 const workflowStore = useWorkflowStore();
 const workflow = computed(() => workflowStore.workflow);
+
+// Get the public runtime config to access the app URL
+const config = useRuntimeConfig().public;
+const baseUrl = config.appUrl || (process.client ? window.location.origin : "https://iwc.galaxyproject.org");
 
 const authors = computed(() => {
     let authorLine = "";
@@ -19,13 +25,26 @@ const authors = computed(() => {
     return authorLine;
 });
 
-const links = [
-    {
-        label: "Back to index",
-        icon: "i-heroicons-home",
-        to: "/",
-    },
-];
+const workflowName = computed(() => {
+    return workflow.value?.definition?.name || "Workflow Details";
+});
+
+// Generate SEO meta tags for the workflow detail page
+// Using computed properties for reactive SEO meta
+useSeoMeta({
+    title: computed(() =>
+        workflow.value ? `${workflowName.value} | ${appConfig.site.name}` : "Workflow Details | " + appConfig.site.name,
+    ),
+    description: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    ogTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
+    ogDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    ogImage: `${baseUrl}/iwc_logo.png`,
+    ogType: "website",
+    twitterCard: "summary",
+    twitterTitle: computed(() => workflow.value?.definition?.name || "Workflow Details"),
+    twitterDescription: computed(() => workflow.value?.definition.annotation || "Galaxy workflow"),
+    twitterImage: `${baseUrl}/iwc_logo.png`,
+});
 
 const selectedInstance = ref("");
 
@@ -83,7 +102,15 @@ const tools = computed(() => {
     return Array.from(new Set(toolIds));
 });
 
-const tabs = computed(() => [
+// Define interface for tab items
+interface TabItem {
+    label: string;
+    content?: string;
+    tools?: string[] | string;
+    preview?: boolean;
+}
+
+const tabs = computed<TabItem[]>(() => [
     {
         label: "About",
         content: workflow.value?.readme || "No README available.",
@@ -96,17 +123,63 @@ const tabs = computed(() => [
         label: "Version History",
         content: workflow.value?.changelog || "No CHANGELOG available.",
     },
-    {
-        label: "Tools",
-        tools: tools || "This tab will show a nice listing of all the tools used in this workflow.",
-    },
+    // {
+    //     label: "Tools",
+    //     tools: tools.value || "This tab will show a nice listing of all the tools used in this workflow.",
+    // },
 ]);
 
+function onTabChange(index: number) {
+    // Set the hash in the URL to the current tab label for better navigation
+    const item = tabs.value[index];
+    if (item) {
+        const label = item.label.toLowerCase().replace(/\s+/g, "-");
+        if (window.location.hash !== `#${label}`) {
+            // Only update if it's different to avoid unnecessary hashchange events
+            window.location.hash = `#${label}`;
+        }
+    }
+}
+
+// Watch for changes to the tabs data
+watch(
+    () => tabs.value,
+    () => {
+        // After tabs are updated, check if we need to set a specific tab active
+        nextTick(() => {
+            setActiveTabFromHash();
+        });
+    },
+    { deep: true },
+);
+
 const loading = ref(true);
+const currentTabIndex = ref(0);
+
+// Function to set the active tab based on URL hash
+function setActiveTabFromHash() {
+    const hash = window.location.hash.slice(1); // Remove the # character
+    if (hash) {
+        // Find the tab index that matches the hash
+        const tabIndex = tabs.value.findIndex((tab) => tab.label.toLowerCase().replace(/\s+/g, "-") === hash);
+        if (tabIndex !== -1) {
+            currentTabIndex.value = tabIndex;
+        }
+    }
+}
 
 onBeforeMount(async () => {
     await workflowStore.setWorkflow();
     loading.value = false;
+
+    if (workflow.value && route.params.id === workflow.value.trsID) {
+        window.history.pushState({}, "", `/workflow/${encodeURIComponent(workflow.value.iwcID)}/`);
+    }
+
+    // After the page loads, set the active tab based on the hash
+    nextTick(() => {
+        setActiveTabFromHash();
+    });
 });
 </script>
 
@@ -172,7 +245,7 @@ onBeforeMount(async () => {
         <template #content>
             <div v-if="workflow" class="mx-auto">
                 <div class="p-4 mb-6">
-                    <UTabs :items="tabs" class="w-full">
+                    <UTabs :items="tabs" @change="onTabChange" v-model="currentTabIndex" class="w-full">
                         <template #default="{ item, index, selected }">
                             <span class="truncate" :class="[selected && 'text-primary-500 dark:text-primary-400']">{{
                                 item.label
@@ -208,7 +281,7 @@ onBeforeMount(async () => {
             </div>
             <div v-else class="max-w-3xl mx-auto py-8">
                 <h1 class="text-3xl font-bold mb-4">Workflow not found</h1>
-                <p>Workflow with identifier {{ route.params.id }} could not be found.</p>
+                <p>Workflow with iwcID {{ route.params.id }} could not be found.</p>
             </div>
         </template>
     </NuxtLayout>

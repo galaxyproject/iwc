@@ -26,7 +26,7 @@ defineProps<{
         }"
         :class="compact ? 'bg-white bg-opacity-90 backdrop-blur-sm rounded-lg' : ''">
         <template #header>
-            <ULink :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">
+            <ULink :to="`/workflow/${encodeURIComponent(workflow.iwcID)}/`">
                 <h2 :class="`font-bold hover:underline ${compact ? 'text-lg' : 'text-xl mb-2'}`">
                     {{ workflow.definition.name }}
                 </h2>

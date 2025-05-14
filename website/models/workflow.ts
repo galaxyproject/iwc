@@ -19,6 +19,7 @@ export interface Workflow {
     updated: string;
     diagrams: string;
     trsID: string;
+    iwcID: string;
     categories: string[];
     collections: string[];
     doi?: string;

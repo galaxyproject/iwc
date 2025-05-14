@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.4] - 2025-05-12
+
+### Changes
+- Fix Busco bug
+- Add workflow parameters to the workflow report
+- Hi-C reads input is now a paired collection
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+  
+## [0.3.3] - 2025-04-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.24.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.25.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1`
+
 ## [0.3.2] - 2025-03-17
 
 ### Automatic update

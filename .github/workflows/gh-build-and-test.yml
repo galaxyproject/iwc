@@ -1,0 +1,56 @@
+name: PR Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'website/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run generate_manifest.py
+        run: python ./scripts/workflow_manifest.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install NPM Dependencies
+        run: npm install
+        working-directory: ./website
+
+      - name: Build Nuxt 3 Static Site
+        run: npm run generate
+        working-directory: ./website
+        
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+        working-directory: ./website
+        
+      - name: Run E2E Tests
+        run: npm run e2e
+        working-directory: ./website
+        
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: ./website/playwright-report
+          retention-days: 30

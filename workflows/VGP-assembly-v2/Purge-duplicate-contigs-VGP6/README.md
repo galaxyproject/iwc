@@ -1,6 +1,6 @@
 # Purge Duplicate Contigs
 
-Purge contigs marked as duplicates by purge_dups (could be haplotypic duplication or overlap duplication)
+Purge contigs marked as duplicates by purge_dups (could be haplotypic duplication or overlap duplication). The contigs are purged from the first assembly (hap1, pri...), added to the second assembly (hp2, alt... ), then the 2nd assembly is purged as well. If you think only one of the assemblies needs purging, use the VGP6b workflow. 
 This workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5)
 
 ## Inputs
