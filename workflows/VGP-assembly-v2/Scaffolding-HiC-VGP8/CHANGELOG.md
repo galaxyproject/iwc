@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [1.7] - 2025-05-14
+
+### Changes
+- Add compleasm outputs
+- Change tags for export workflow compatibility
+
 ## [1.6] - 2025-05-13
 
 ### Changes
