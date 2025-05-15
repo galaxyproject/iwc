@@ -9,7 +9,9 @@
 ### Manual update
 - Changes output name/tag for Tooldistillator
 - Fixes syntax and parameter errors
-- Changes QUAST parameters: --min-contig `0` and --contig-thresholds `0,200,500,1000`
+- Changes QUAST parameters: 
+   - Minimum contig size from `500` to `0` to include all contigs (≥ 0 bp) in the statistics
+   - Contig size thresholds from `0,1000` to `0,200,500,1000` to provide more detailed statistics (number of contigs and total length) across multiple contig size ranges
 - Adds Checkm2 to predict the completeness and contamination
 
 
