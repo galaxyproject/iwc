@@ -1,9 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2025-05-14
+
+### Changes
+- Add Compleasm QC
 
 ## [0.2.10] - 2025-05-12
 
-### Cahnges
+### Changes
 - Add workflow inputs to workflow report
 - Fix Busco bug
 - Now output gfas without sequences 
