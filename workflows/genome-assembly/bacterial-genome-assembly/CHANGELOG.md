@@ -10,7 +10,7 @@
 - Changes output name/tag for Tooldistillator
 - Fixes syntax and parameter errors
 - Changes QUAST parameters: --min-contig `0` and --contig-thresholds `0,200,500,1000`
-- Adds Checkm2
+- Adds Checkm2 to predict the completeness and contamination
 
 
 ## [1.1.5] - 2024-11-18
