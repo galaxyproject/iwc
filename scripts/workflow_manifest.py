@@ -6,6 +6,7 @@ import re
 import shutil
 from urllib.parse import quote_plus
 from create_mermaid import walk_directory
+from planemo.galaxy.workflows import job_template
 
 OUTPUT_DIR = "website/public/data"
 
@@ -27,7 +28,6 @@ def get_dockstore_details(trsID):
     # Query the top-level details of the workflow
     url_details = f"https://dockstore.org/api/workflows/path/workflow/{encoded_id}/published?include=validations%2Cauthors%2Cmetrics&subclass=BIOWORKFLOW&versionName=main"
     response = requests.get(url_details)
-
     details = None
     categories = []
     collections = []
@@ -90,6 +90,17 @@ def extract_date_from_changelog(changelog_content):
     return None
 
 
+def process_test_file(workflow_test_path, root):
+    with open(workflow_test_path) as f:
+        tests = yaml.safe_load(f)
+    # Process test dictionary to replace path keys with location keys
+    if tests:
+        for test in tests:
+            for input_item in test["job"].values():
+                path_to_location(input_item, root)
+    return tests
+
+
 def find_and_load_compliant_workflows(directory):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
@@ -138,6 +149,7 @@ def find_and_load_compliant_workflows(directory):
                 try:
                     with open(workflow_path) as f:
                         workflow["definition"] = json.load(f)
+                    workflow['workflow_job_input'] = job_template(workflow_path)
                 except Exception as e:
                     print(
                         f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
@@ -186,19 +198,25 @@ def find_and_load_compliant_workflows(directory):
                     print(f"DOI Missing: {trsID}")
                     workflow["doi"] = None
 
-                workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
-                if os.path.exists(workflow_test_path):
-                    with open(workflow_test_path) as f:
-                        tests = yaml.safe_load(f)
-                    # Process test dictionary to replace path keys with location keys
-                    if tests:
-                        for test in tests:
-                            for input_item in test["job"].values():
-                                path_to_location(input_item, root)
-                    workflow["tests"] = tests
+                if not "testParameterFiles" in workflow:
+                    print(f"{root}/.dockstore does not contain testParameterFiles. Looking for file...")
+                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    if not os.path.exists(workflow_test_path):
+                        workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-test.yml"
+                    if os.path.exists(workflow_test_path):
+                        print(f"file found at {workflow_test_path}")
+                        workflow["tests"] = process_test_file(workflow_test_path, root)
+                    else:
+                        print(f"Test Missing: {workflow_test_path}")
                 else:
-                    print(f"Test Missing: {workflow_test_path}")
-
+                    tests = []
+                    for test in workflow["testParameterFiles"]:
+                        workflow_test_path = os.path.join(root, test.lstrip("/"))
+                        if os.path.exists(workflow_test_path):
+                            tests += process_test_file(workflow_test_path, root)
+                        else:
+                            raise Exception(f"Listed test file doesn't exist: {test}")
+                    workflow["tests"] = tests
     return workflow_data
 
 
@@ -299,6 +317,26 @@ def stage_workflow_file(source_path, iwc_id):
         print(f"Error copying workflow file {source_path} to {dest_path}: {e}")
 
 
+def stage_workflow_test_file(test_data, iwc_id):
+    """
+    Copy a workflow -test.yml file to the output directory, filed by the iwcID
+
+    Args:
+        test_data: test dict data
+        iwc_id: iwc id to use as the safe filename
+    """
+
+    safe_filename = f"{iwc_id}-tests.yml"
+    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+
+    if test_data is None or len(test_data) == 0:
+        print(f"Not test data found for workflow {iwc_id}.ga")
+        return
+
+    with open(dest_path, "w") as test_yaml:
+        yaml.dump(test_data, test_yaml, default_flow_style=False)
+
+
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory("./workflows")
@@ -330,13 +368,14 @@ if __name__ == "__main__":
     # Write index file
     write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
 
-    # Stage .ga files for the website
+    # Stage .ga and test.yml files for the website
     for item in workflow_data:
         for workflow in item["workflows"]:
             workflow_path = os.path.join(
                 item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
             stage_workflow_file(workflow_path, workflow["iwcID"])
+            stage_workflow_test_file(workflow.get('tests', None), workflow["iwcID"])
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
