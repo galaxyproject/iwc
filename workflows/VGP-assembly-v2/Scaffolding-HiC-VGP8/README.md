@@ -10,7 +10,7 @@ Example of VGP trajectory :
 
 ## Inputs
 
-1. Scaffolded assembly [gfa]
+1. Genome assembly [gfa]
 2. Name of the haplotype (Will be added to scaffold names: e.g. `>scaffold_01_hap1`)
 3. HiC reads paired collection [fastq]
 5. Trim Hi-C data? If `yes`, trim five bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy" and the reads haven't been trimmed before. 

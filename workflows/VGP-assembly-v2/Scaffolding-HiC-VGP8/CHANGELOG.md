@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.1] - 2025-05-16
+
+### Changes
+- Add format constraint on gfa input
 
 ## [1.7] - 2025-05-14
 
