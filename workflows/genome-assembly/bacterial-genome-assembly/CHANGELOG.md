@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.6] - 2025-05-14
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0`
+
+### Manual update
+- Changes output name/tag for Tooldistillator
+- Fixes syntax and parameter errors
+- Changes QUAST parameters: 
+   - Minimum contig size from `500` to `0` to include all contigs (≥ 0 bp) in the statistics
+   - Contig size thresholds from `0,1000` to `0,200,500,1000` to provide more detailed statistics (number of contigs and total length) across multiple contig size ranges
+- Adds Checkm2 to predict the completeness and contamination
+
+
 ## [1.1.5] - 2024-11-18
 
 ### Automatic update
