@@ -1,12 +1,14 @@
 # Assembly of Mitochondrial DNA from PacBio HiFi reads
 
-Generate mitochondrial assembly based on PacBio Hifi Reads.
+Generate mitochondrial assembly based on PacBio HiFi reads. Part of the VGP suite, it can be run at any time independently of the other workflows. This workflow uses MitoHiFi and a mitochondrial reference to assemble the mitochondrial genome from PacBio reads. You do not need to provide the reference yourself, only the Latin name of the species.
+
 
 ## Inputs
 
-1. Hifi long reads [fastq]
-2. Latin name of a related Species
-3. Email adress required for NCBI database query 
+1. Name of the Species
+2. Name of the Assembly
+3. Hifi long reads [fastq]
+4. Email adress required for NCBI database query 
 
 ## Outputs
 

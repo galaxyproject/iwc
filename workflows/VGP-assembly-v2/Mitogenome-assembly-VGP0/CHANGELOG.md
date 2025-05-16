@@ -4,7 +4,8 @@
 ## [0.2.1] - 2025-05-16
 
 ### Changes
-- Add tags for export
+- Add Tags for export
+- Add Workflow report
 
 ## [0.2] - 2025-05-12
 
