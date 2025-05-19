@@ -7,6 +7,7 @@ import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
+import { stringify } from 'yaml'
 
 const route = useRoute();
 const appConfig = useAppConfig();
@@ -100,6 +101,15 @@ const tools = computed(() => {
         .map((step) => step.tool_id)
         .filter((id): id is string => id !== null && id !== undefined);
     return Array.from(new Set(toolIds));
+});
+
+const workflow_job_input = computed(() => {
+    const config_init_command = `planemo workflow_job_init ${ workflow?.value?.iwcID }.ga -o ${ workflow?.value?.iwcID }-job.yml`;
+    if (!workflow.value || !workflow.value || !workflow.value.workflow_job_input) {
+        return `# config file: ${ workflow?.value?.iwcID }_job.yml file\n${ config_init_command }`;
+    } else {
+        return `# config file: ${ workflow?.value?.iwcID }_job.yml\n# command: ${ config_init_command }\n${stringify(workflow.value.workflow_job_input)}`;
+    }
 });
 
 // Define interface for tab items
@@ -372,37 +382,34 @@ onBeforeMount(async () => {
                                             <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
                                             <p class="mb-2 text-sm">Download the workflow .ga file:</p>
                                             <pre
-                                                class="p-3 rounded overflow-x-auto"><code>curl -o "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga"</code></pre>
+                                                class="p-3 rounded overflow-x-auto"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga" -o {{ workflow?.iwcID }}.ga</code></pre>
                                         </div>
 
                                         <div class="mb-6">
                                             <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
                                             <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
                                             <pre
-                                                class="p-3 rounded overflow-x-auto"><code>planemo test workflow.ga</code></pre>
+                                                class="p-3 rounded overflow-x-auto"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}-tests.yml" -o {{ workflow?.iwcID }}-tests.yml
+planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                         </div>
 
-                                        <div>
+                                        <div class="mb-6">
                                             <h4 class="text-lg font-medium mb-2">
-                                                Step 4: Run the workflow with your data
+                                                Step 4: Create workflow job file
                                             </h4>
-                                            <p class="mb-2 text-sm">Create a job file with your input parameters:</p>
-                                            <pre class="p-3 rounded overflow-x-auto"><code>{
-  "inputs": {
-    "input1": {
-      "class": "File",
-      "location": "/path/to/your/input1.file"
-    },
-    "input2": {
-      "class": "File", 
-      "location": "/path/to/your/input2.file"
-    }
-    // Add more inputs as needed
-  }
-}</code></pre>
+                                            <p class="mb-2 text-sm">Create a workflow job file with your input parameters and update the values to match your environment and run:</p>
+                                            <pre class="p-3 rounded overflow-x-auto"><code>{{ workflow_job_input }}</code></pre>
+                                        </div>
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">
+                                                Step 5: Run the workflow with your data
+                                            </h4>
                                             <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
                                             <pre
-                                                class="p-3 rounded overflow-x-auto"><code>planemo run workflow.ga job.json</code></pre>
+                                                class="p-3 rounded overflow-x-auto"><code>planemo run {{ workflow?.iwcID }}.ga {{ workflow?.iwcID }}-job.yml \
+    --output_directory . \
+    --download_outputs \
+    --output_json output.json </code></pre>
                                         </div>
                                     </div>
 
