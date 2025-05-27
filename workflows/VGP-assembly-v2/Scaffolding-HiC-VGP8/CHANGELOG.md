@@ -1,9 +1,11 @@
 # Changelog
 
-## [1.7.1] - 2025-05-16
+## [1.8] - 2025-05-27
 
 ### Changes
 - Add format constraint on gfa input
+- Add Samtools stats on Hi-C alignments to QC
+- Improve sorting of bed files outputs
 
 ## [1.7] - 2025-05-14
 
