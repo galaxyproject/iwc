@@ -27,4 +27,4 @@ This workflow uses assembled bacterial genome fasta files (but can be any fasta 
     - Virulence gene identification:
         - Gene identification in tabular format
 2. Aggregating outputs:
-    - JSON file with information about the outputs of **staramr**, **AMRFinderPlus**, **ABRicate**
+    - JSON file with information about the outputs of **StarAMR**, **AMRFinderPlus**, **ABRicate**
