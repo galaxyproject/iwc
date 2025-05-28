@@ -7,12 +7,12 @@ This workflow produces a Meryl database and Genomescope outputs that will be use
 1. The name of the species being assembled
 2. The Name of the assembly
 3. A collection of Hifi long reads in FASTQ format
-4. k*-mer length
+4. *k*-mer length
 5. Ploidy
 
 ### Outputs
 
--   Meryl Database of kmer counts
+-   Meryl Database of *k*-mer counts
 -   GenomeScope
     -   Linear plot
     -   Log plot
