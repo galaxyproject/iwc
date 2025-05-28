@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5] - 2025-05-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_coverage/samtools_coverage/1.15.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_coverage/samtools_coverage/1.20+galaxy3`
+
 ## [0.1.4] - 2025-03-10
 
 ### Automatic update
