@@ -1,5 +1,12 @@
 # Changelog
 
+
+## [0.2] - 2025-05-16
+
+### Changes
+- Add RDeval to evaluate PacBio HiFi reads quality
+- Now compute the homozygous read coverage and the estimated genome size in this workflow
+
 ## [0.1.9] - 2024-12-17
 ### Added
 - Annotation for workflow describing its function
