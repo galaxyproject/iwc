@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.3] - 2025-06-02
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11a+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11b+galaxy0`
+
 ## [0.6.2] - 2025-03-10
 
 ### Automatic update
