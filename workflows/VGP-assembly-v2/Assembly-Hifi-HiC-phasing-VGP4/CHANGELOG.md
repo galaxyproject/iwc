@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.7] - 2025-06-02
+
+### Changes
+- Fix bug where the compleasm analysis run on hap2 was using hap1 as input
+- Fix duplicated lines in the assembly statistics output
+
 ## [0.3.6] - 2025-05-19
 
 ### Automatic update
