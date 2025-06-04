@@ -7,7 +7,7 @@ import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
-import { stringify } from 'yaml'
+import { stringify } from "yaml";
 
 const route = useRoute();
 const appConfig = useAppConfig();
@@ -104,11 +104,11 @@ const tools = computed(() => {
 });
 
 const workflow_job_input = computed(() => {
-    const config_init_command = `planemo workflow_job_init ${ workflow?.value?.iwcID }.ga -o ${ workflow?.value?.iwcID }-job.yml`;
+    const config_init_command = `planemo workflow_job_init ${workflow?.value?.iwcID}.ga -o ${workflow?.value?.iwcID}-job.yml`;
     if (!workflow.value || !workflow.value || !workflow.value.workflow_job_input) {
-        return `# config file: ${ workflow?.value?.iwcID }_job.yml file\n${ config_init_command }`;
+        return `# config file: ${workflow?.value?.iwcID}_job.yml file\n${config_init_command}`;
     } else {
-        return `# config file: ${ workflow?.value?.iwcID }_job.yml\n# command: ${ config_init_command }\n${stringify(workflow.value.workflow_job_input)}`;
+        return `# config file: ${workflow?.value?.iwcID}_job.yml\n# command: ${config_init_command}\n${stringify(workflow.value.workflow_job_input)}`;
     }
 });
 
@@ -394,11 +394,13 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                         </div>
 
                                         <div class="mb-6">
-                                            <h4 class="text-lg font-medium mb-2">
-                                                Step 4: Create workflow job file
-                                            </h4>
-                                            <p class="mb-2 text-sm">Create a workflow job file with your input parameters and update the values to match your environment and run:</p>
-                                            <pre class="p-3 rounded overflow-x-auto"><code>{{ workflow_job_input }}</code></pre>
+                                            <h4 class="text-lg font-medium mb-2">Step 4: Create workflow job file</h4>
+                                            <p class="mb-2 text-sm">
+                                                Create a workflow job file with your input parameters and update the
+                                                values to match your environment and run:
+                                            </p>
+                                            <pre
+                                                class="p-3 rounded overflow-x-auto"><code>{{ workflow_job_input }}</code></pre>
                                         </div>
                                         <div class="mb-6">
                                             <h4 class="text-lg font-medium mb-2">

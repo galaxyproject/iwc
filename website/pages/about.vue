@@ -7,9 +7,9 @@
         </h1>
 
         <p class="text-lg text-gray-700 leading-relaxed mb-6">
-            The Galaxy Workflows Library is a curated collection of ready-to-use, open-source analysis workflows
-            designed to help researchers make progress quickly and reliably. Each workflow comes with sample datasets,
-            clear documentation, and links to training materials to streamline learning and application.
+            The Galaxy Workflow Library is a curated collection of ready-to-use, open-source analysis workflows designed
+            to help researchers make progress quickly and reliably. Each workflow comes with sample datasets, clear
+            documentation, and links to training materials to streamline learning and application.
         </p>
 
         <p class="text-lg text-gray-700 leading-relaxed mb-10">
@@ -76,9 +76,9 @@
                 <div class="md:w-1/2">
                     <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center">Join the community</h2>
                     <p class="text-lg text-gray-700 mb-4">
-                        The Galaxy Workflows Library is an open, collaborative project, and we welcome contributions
-                        from the community. Whether you want to enhance existing workflows, report issues, or contribute
-                        new pipelines, your input is invaluable.
+                        The Galaxy Workflow Library is an open, collaborative project, and we welcome contributions from
+                        the community. Whether you want to enhance existing workflows, report issues, or contribute new
+                        workflows, your input is invaluable.
                     </p>
                     <p class="text-lg text-gray-700">
                         Have questions or feedback? Connect via
@@ -138,16 +138,16 @@ const baseUrl = config.appUrl || (process.client ? window.location.origin : "htt
 
 // Add SEO meta tags using the useSeoMeta composable
 useSeoMeta({
-    title: "About the Galaxy Workflows Library",
+    title: "About the Galaxy Workflow Library",
     description:
         "Learn about the IWC curated collection of peer-reviewed, ready-to-use Galaxy workflows for scientific analysis",
-    ogTitle: "About the Galaxy Workflows Library",
+    ogTitle: "About the Galaxy Workflow Library",
     ogDescription:
         "Discover a curated collection of ready-to-use, peer-reviewed Galaxy workflows for scientific analysis",
     ogImage: `${baseUrl}/iwc_logo.png`,
     ogType: "website",
     twitterCard: "summary",
-    twitterTitle: "About the Galaxy Workflows Library",
+    twitterTitle: "About the Galaxy Workflow Library",
     twitterDescription:
         "Discover a curated collection of ready-to-use, peer-reviewed Galaxy workflows for scientific analysis",
     twitterImage: `${baseUrl}/iwc_logo.png`,
