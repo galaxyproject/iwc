@@ -657,6 +657,28 @@
         "uuid": "3a5d60ec-2b30-47cf-a351-7b85df8af9e3",
         "version": 4
     },
+    "workflow_job_input": {
+        "Quantified Peptides": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "MaxQuant Protein Groups": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "MaxQuant Evidence": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Annotation": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Comparison Matrix": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        }
+    },
     "readme": "# Clinical Metaproteomics 5: Data Interpretation\nData interpretation can provide meaningful insights about quantitative proteomic data. Here, MaxQuant data will be interpreted using MSstats by applying a rigorous statistical framework to understand data distribution and variability. Systematic variations are accounted for using subsequent normalization. Users can define the experimental design used by MSstats, such as sample groups and conditions, to perform statistical analysis. The MSstats output provides valuable information about differential protein expression across various conditions, estimates of fold changes, and associated p-values, which aids in the identification of biologically significant proteins. Furthermore, MSstats enables quality control and data visualization, enhancing our ability to draw meaningful conclusions from large-scale proteomic datasets and expands our understanding of complex biological processes.\n\nIn this current workflow, we perform taxonomic and functional annotations using Unipept and statistical analysis using MSstatsTMT. A GTN has been developed for this workflow.\n[https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-5-data-interpretation/tutorial.html](https://training.galaxyproject.org/training-material/topics/proteomics/tutorials/clinical-mp-5-data-interpretation/tutorial.html).\n\n## Input datasets\n\n### Input tabular files\n- `Annotation.tabular`\n- `Comparison_Matrix.tabular`\n- `MaxQuant_Evidence.tabular`\n- `MaxQuant_Protein_Groups.tabular`\n- `Quantified-Peptides.tabular`\n\n## Input Values\n\nFor Unipept:\n- Unipept application: peptinfo: Tryptic peptides and associated EC and GO terms and lowest common ancestor taxonomy\n- Match input peptides by: Match to the full input peptide\n\nFor MSstatsTMT:\n- Generate separate plots for microbial and human proteins\n\n## Processing\n- Perform taxonomic and functional annotations for quantified microbial peptides using Unipept.\n- Select microbial and human protein groups to perform statistical analysis using MSstatsTMT.\n",
     "changelog": "# Changelog\n\n## [0.1] - 2024-11-19\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## Clinical Metaproteomics Data Interpretation\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Quantified Peptides\"]@{ shape: doc }\n1[\"\u2139\ufe0f MaxQuant Protein Groups\"]@{ shape: doc }\n2[\"\u2139\ufe0f MaxQuant Evidence\"]@{ shape: doc }\n3[\"\u2139\ufe0f Annotation\"]@{ shape: doc }\n4[\"\u2139\ufe0f Comparison Matrix\"]@{ shape: doc }\n5[\"Unipept\"]@{ shape: process }\n0 --> 5\n6[\"Microbial Proteins\"]@{ shape: process }\n1 --> 6\n7[\"Select\"]@{ shape: process }\n1 --> 7\n8[\"MSstatsTMT_for_microbial_proteins\"]@{ shape: process }\n4 --> 8\n3 --> 8\n2 --> 8\n6 --> 8\n9[\"Human Proteins\"]@{ shape: process }\n7 --> 9\n10[\"MSstatsTMT_for_human_proteins\"]@{ shape: process }\n4 --> 10\n3 --> 10\n2 --> 10\n9 --> 10\n```\n",
@@ -669,5 +691,123 @@
         "Proteomics",
         "Metaproteomics"
     ],
-    "doi": "10.5281/zenodo.15078879"
+    "doi": "10.5281/zenodo.15078879",
+    "tests": [
+        {
+            "doc": "Test outline for WF5_Data_Interpretation_Worklow",
+            "job": {
+                "Quantified Peptides": {
+                    "class": "File",
+                    "filetype": "tabular",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/proteomics/clinicalmp/clinicalmp-data-interpretation/test-data/Quantified_Peptides.tabular"
+                },
+                "MaxQuant Protein Groups": {
+                    "class": "File",
+                    "filetype": "tabular",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/proteomics/clinicalmp/clinicalmp-data-interpretation/test-data/MaxQuant_Protein_Groups.tabular"
+                },
+                "MaxQuant Evidence": {
+                    "class": "File",
+                    "filetype": "tabular",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/proteomics/clinicalmp/clinicalmp-data-interpretation/test-data/MaxQuant_Evidence.tabular"
+                },
+                "Annotation": {
+                    "class": "File",
+                    "filetype": "tabular",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/proteomics/clinicalmp/clinicalmp-data-interpretation/test-data/Annotation.tabular"
+                },
+                "Comparison Matrix": {
+                    "class": "File",
+                    "filetype": "tabular",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/proteomics/clinicalmp/clinicalmp-data-interpretation/test-data/Comparison_Matrix.tabular"
+                }
+            },
+            "outputs": {
+                "Human Proteins": {
+                    "path": "test-data/Human_Proteins.tabular"
+                },
+                "Microbial Proteins": {
+                    "path": "test-data/Microbial_Proteins.tabular"
+                },
+                "Microbial Taxonomy Tree": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "id"
+                        }
+                    ]
+                },
+                "Microbial EC Proteins Tree": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "id"
+                        }
+                    ]
+                },
+                "Microbial EC Terms Output": {
+                    "asserts": {
+                        "has_n_columns": {
+                            "n": 5
+                        }
+                    }
+                },
+                "Microbial GO Terms Output": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "GO:"
+                        }
+                    ]
+                },
+                "Microbial InterPro Outputs": {
+                    "asserts": {
+                        "has_n_columns": {
+                            "n": 6
+                        }
+                    }
+                },
+                "Unipept peptinfo": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "peptide\ttotal_protein_count\tec_numbers"
+                        }
+                    ]
+                },
+                "Microbial Proteins Volcano Plot": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "PDF"
+                        }
+                    ]
+                },
+                "Microbial Proteins Comparison Plot": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "PDF"
+                        }
+                    ]
+                },
+                "Human Proteins Volcano Plot": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "PDF"
+                        }
+                    ]
+                },
+                "Human Proteins Comparison Plot": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "PDF"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
 }

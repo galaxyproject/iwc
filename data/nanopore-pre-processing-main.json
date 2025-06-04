@@ -1916,6 +1916,20 @@
         "uuid": "0b976704-e1e0-4cc3-9e75-38bda67c01ff",
         "version": 190
     },
+    "workflow_job_input": {
+        "host_reference_genome": "todo_param_value",
+        "collection_of_all_samples": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        }
+    },
     "readme": "# Nanopore Preprocessing\n\nBefore starting any analysis, it is always a good idea to assess the quality of your input data and to discard poor-quality base content by trimming and filtering reads.\n\nGenerally, we are not interested in the host sequences, but rather only those originating from the pathogen itself. It is important to get rid of all host sequences and to only retain sequences that might include a pathogen, both in order to speed up further steps and to avoid host sequences compromising the analysis.\n\n## Input Datasets\n\n- Collection of sequenced Nanopore reads of all samples to be analysed in a `fastqsanger` or `fastqsanger.gz` format.\n\n## Output Datasets\n\n- Collection of Pre-Processed Sequenced reads of all samples, ready for further analysis with the other workflows, in a `fastqsanger` or `fastqsanger.gz` format.\n\n- Tables indicating total number of reads before and after host sequences trimming, and the host sequences percentages found in each sample.\n\nIf you're unsure how to use this workflows, or if you want to see it in action with test datasets, it is included in our detailed training material for foodborne pathogen detection and tracking. You can find step-by-step instructions and practical examples in the following [GTN tutorial](https://training.galaxyproject.org/training-material/topics/microbiome/tutorials/pathogen-detection-from-nanopore-foodborne-data/tutorial.html)\n",
     "changelog": "# Changelog\n\n## [0.1] - 2024-04-25\n\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## Nanopore Preprocessing\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f samples_profile\"]@{ shape: lean-l }\n1[\"\u2139\ufe0f host_reference_genome\"]@{ shape: lean-l }\n2[\"\u2139\ufe0f collection_of_all_samples\"]@{ shape: docs }\n3[\"Porechop\"]@{ shape: process }\n2 --> 3\n4[\"NanoPlot\"]@{ shape: process }\n2 --> 4\n5[\"FastQC\"]@{ shape: process }\n2 --> 5\n6[\"fastp\"]@{ shape: process }\n3 --> 6\n7[\"MultiQC\"]@{ shape: process }\n5 --> 7\n8[\"Map with minimap2\"]@{ shape: process }\n0 --> 8\n6 --> 8\n1 --> 8\n9[\"NanoPlot\"]@{ shape: process }\n6 --> 9\n10[\"FastQC\"]@{ shape: process }\n6 --> 10\n11[\"Split BAM by reads mapping status\"]@{ shape: process }\n8 --> 11\n12[\"Select\"]@{ shape: process }\n10 --> 12\n13[\"Samtools fastx\"]@{ shape: process }\n11 --> 13\n14[\"Samtools fastx\"]@{ shape: process }\n11 --> 14\n15[\"Collapse Collection\"]@{ shape: process }\n12 --> 15\n16[\"Filter failed datasets\"]@{ shape: process }\n13 --> 16\n17[\"Kraken2\"]@{ shape: process }\n14 --> 17\n18[\"Cut\"]@{ shape: process }\n15 --> 18\n19[\"FastQC\"]@{ shape: process }\n16 --> 19\n20[\"Krakentools: Extract Kraken Reads By ID\"]@{ shape: process }\n6 --> 20\n17 --> 20\n17 --> 20\n21[\"Select\"]@{ shape: process }\n19 --> 21\n22[\"Collapse Collection\"]@{ shape: process }\n21 --> 22\n23[\"Cut\"]@{ shape: process }\n22 --> 23\n24[\"Column join\"]@{ shape: process }\n18 --> 24\n23 --> 24\n25[\"Compute\"]@{ shape: process }\n24 --> 25\n26[\"Column Regex Find And Replace\"]@{ shape: process }\n25 --> 26\n27[\"MultiQC\"]@{ shape: process }\n10 --> 27\n26 --> 27\n```\n",

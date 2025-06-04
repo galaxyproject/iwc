@@ -1,0 +1,52 @@
+- doc: Test outline for scrna-seq-fastq-to-matrix-10x-v3.ga
+  job:
+    Barcode Size is same size of the Read: false
+    cellranger_barcodes_3M-february-2018.txt:
+      class: File
+      filetype: tabular
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/scRNAseq/fastq-to-matrix-10x/test-data/all_cell_barcodes_both_versions.txt
+    fastq PE collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/10412836/files/GEX_R1.fastqsanger.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/10412836/files/GEX_R2.fastqsanger.gz
+        identifier: subsample
+        type: paired
+    gtf:
+      class: File
+      decompress: true
+      filetype: gtf
+      location: https://zenodo.org/record/6457007/files/Drosophila_melanogaster.BDGP6.32.109_UCSC.gtf.gz
+    reference genome: dm6
+  outputs:
+    'MultiQC on input dataset(s): Webpage':
+      asserts:
+        has_text_matching:
+          expression: <span class="val">33.[0-9]<span class=['"]mqc_small_space['"]>
+    Seurat input for gene expression (filtered):
+      attributes:
+        collection_type: list:list
+      element_tests:
+        subsample:
+          elements:
+            barcodes:
+              asserts:
+                has_line:
+                  line: CACATGATCATAAGGA
+            genes:
+              asserts:
+                has_line:
+                  line: "FBgn0250732\tgfzf"
+            matrix:
+              asserts:
+                has_line:
+                  line: 23932 3 1171

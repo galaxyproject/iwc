@@ -467,6 +467,24 @@
         "uuid": "ac8ef6cb-1621-4b73-9362-8a460ef3c3a2",
         "version": 1
     },
+    "workflow_job_input": {
+        "Input gtf": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "BAM collection": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        },
+        "strandedness": "todo_param_value"
+    },
     "readme": "# BREW3R\n\n![BREW3R logo](https://raw.githubusercontent.com/lldelisle/BREW3R/main/images/logo.png)\n\nBREW3R stands for **B**ulk **R**NA-seq **E**vidence-based **W**orkflow for **3**' UTR **R**eannotation. \n\nThis workflow enables extending an existing gtf downloaded on a public website, like Ensembl, Genecode or UCSC, using *de novo* gene annotation with StringTie on full length bulk RNA-seq.\n\nBREW3R highly relies on a R package called BREW3R.r available on [bioconductor](https://bioconductor.org/packages/release/bioc/html/BREW3R.r.html).\n\n## Input datasets\n\n- The workflow requires an input gtf file which will be extended.\n- As well as a collection of BAM files.\n\n## Input values\n\n- strandedness: Must be one of `stranded - forward`, `stranded - reverse` and `unstranded`. For stranded libraries, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence.\n- minimum coverage: Minimum reads per bp coverage to consider for assembly in each de novo assembly (for each BAM file). Default: 10\n- minimum FPKM for merge: Minimum FPKM value for a transcript to be included into the merged de novo assembly.\n\n## Processing\n\n- StringTie is called once per input BAM file to compute de novo assembly.\n- StringTie is called to merge all outputs of previous steps.\n- BREW3R.r is run with the default parameters on the input gtf to extend and the output of StringTie. If the library was unstranded all merged transcripts without orientation that overlaps exons of both strands are not used for the extension.\n",
     "changelog": "# Changelog\n\n## [0.2] - 2024-10-07\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/1.0.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/brew3r_r/brew3r_r/1.0.2+galaxy1`\n\n## [0.1] - 2024-06-17\n\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## BREW3R\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Input gtf\"]@{ shape: doc }\n1[\"\u2139\ufe0f BAM collection\"]@{ shape: docs }\n2[\"\u2139\ufe0f strandedness\"]@{ shape: lean-l }\n3[\"\u2139\ufe0f minimum coverage\"]@{ shape: lean-l }\n4[\"\u2139\ufe0f minimum FPKM for merge\"]@{ shape: lean-l }\n5[\"Map parameter value\"]@{ shape: process }\n2 --> 5\n6[\"Unstranded\"]@{ shape: process }\n2 --> 6\n7[\"assembl with StringTie\"]@{ shape: process }\n3 --> 7\n3 --> 7\n1 --> 7\n5 --> 7\n8[\"merge assembled transcripts\"]@{ shape: process }\n7 --> 8\n4 --> 8\n9[\"BREW3R.r\"]@{ shape: process }\n6 --> 9\n0 --> 9\n8 --> 9\n```\n",

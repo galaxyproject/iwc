@@ -1153,6 +1153,35 @@
         "uuid": "15d188a7-b028-4cf7-bb5d-13858e1f6e78",
         "version": 15
     },
+    "workflow_job_input": {
+        "Counts from changed condition": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        },
+        "Counts from reference condition": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        },
+        "Count files have header": "todo_param_value",
+        "Gene Annotaton": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        }
+    },
     "readme": "# RNA-Seq Differential Expression Analysis with Visualization\n\nThis workflow works only with an experimental setup containing exactly 2 conditions with at least 2 replicates per condition.\n\n## Inputs dataset\n\n- Counts from changed condition: Counts from experimental condition or changed condition. For eg. counts from treatment or knockdown samples.\n- Counts from reference condition: Counts from reference condition or base condition. For eg. counts from untreated or wildtype samples.\n- Gene Annotaton: The same GTF file used for mapping and quantification. It is used to annotate the DESeq2 results table. Ideally, the GTF file should contain `gene_id`, `gene_biotype` and `gene_name` attributes.\n\n## Inputs values\n\n- Count files have header: Indicate whether your input count files have a header line. Usually, count files generated from featureCounts tool have a header line whereas count files from RNA-STAR do not have.\n- Adjusted p-value threshold: All the genes with an adjusted p-value less than this value are considered as differentially expressed. With a value of 0.05, expect 5% of false positives in the differentially expressed genes list. If empty, a default value of 0.05 is used.\n- log2 fold change threshold: All the genes with an absolute fold change (regarless of up or down regulation) more than this value are selected. A log2 FC of 3 equals to an absolute fold change of 8 (2\u00b3). If empty, a default value of 1.0 is used.\n\n## Processing\n\n- The workflow uses DESeq2 for performing differential expression analysis. In addition to the results table, it also produces normalized counts table.\n- The results table is annotated with gene positions, biotypes, gene symbols.\n- The annotated results table is further filtered with the input adjusted p-value and log2 fold change thresholds.\n- A valcano plot is generated with top 10 significantly differentially expressed genes.\n- A heatmap of log trasformed normalized counts and another heatmap of Z-scores is generated.\n",
     "changelog": "# Changelog\n\n## [0.4] - 2025-03-24\n- Change the **Text transformation** tool output to tabular format so that the header file format matches with the DESeq2 output format\n\n## [0.3] - 2025-02-03\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/0.0.6` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/0.0.7`\n\n## [0.2] - 2024-11-18\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.7+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy0`\n- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.1.3.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.2.0+galaxy1`\n\n## [0.1] - 2024-10-25\n\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## RNA-Seq Differential Expression Analysis with Visualization\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Counts from changed condition\"]@{ shape: docs }\n1[\"\u2139\ufe0f Counts from reference condition\"]@{ shape: docs }\n2[\"\u2139\ufe0f Count files have header\"]@{ shape: lean-l }\n3[\"\u2139\ufe0f Gene Annotaton\"]@{ shape: doc }\n4[\"\u2139\ufe0f Adjusted p-value threshold\"]@{ shape: lean-l }\n5[\"DE table header\"]@{ shape: process }\n6[\"\u2139\ufe0f log2 fold change threshold\"]@{ shape: lean-l }\n7[\"Pick parameter value\"]@{ shape: process }\n4 --> 7\n8[\"Text transformation\"]@{ shape: process }\n5 --> 8\n9[\"Pick parameter value\"]@{ shape: process }\n6 --> 9\n10[\"Differential Analysis\"]@{ shape: process }\n2 --> 10\n7 --> 10\n0 --> 10\n1 --> 10\n11[\"Compose text parameter value\"]@{ shape: process }\n7 --> 11\n12[\"Compose text parameter value\"]@{ shape: process }\n9 --> 12\n13[\"Annotate DESeq2/DEXSeq output tables\"]@{ shape: process }\n3 --> 13\n10 --> 13\n14[\"Text reformatting\"]@{ shape: process }\n10 --> 14\n15[\"Annotate DESeq2 table\"]@{ shape: process }\n8 --> 15\n13 --> 15\n16[\"Parse parameter value\"]@{ shape: process }\n14 --> 16\n17[\"Filter with p-adj threshold\"]@{ shape: process }\n11 --> 17\n15 --> 17\n18[\"Generate Valcanot plot of DE genes\"]@{ shape: process }\n15 --> 18\n9 --> 18\n7 --> 18\n19[\"Compose text parameter value\"]@{ shape: process }\n16 --> 19\n20[\"Filter with log2 FC threshold\"]@{ shape: process }\n12 --> 20\n17 --> 20\n21[\"Join two Datasets\"]@{ shape: process }\n10 --> 21\n20 --> 21\n22[\"Cut\"]@{ shape: process }\n19 --> 22\n21 --> 22\n23[\"Generate Heatmap of counts\"]@{ shape: process }\n22 --> 23\n24[\"Generate Heatmap of Z-scores\"]@{ shape: process }\n22 --> 24\n```\n",

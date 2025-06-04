@@ -1,0 +1,40 @@
+- doc: Test outline for QIIME2-Ia:-Demultiplexing-(single-end)
+  job:
+    Barcodes:
+      class: File
+      filetype: fastqsanger.gz
+      location: https://data.qiime2.org/2024.2/tutorials/moving-pictures/emp-single-end-sequences/barcodes.fastq.gz
+    Metadata:
+      class: File
+      filetype: tabular
+      location: https://data.qiime2.org/2024.2/tutorials/moving-pictures/sample_metadata.tsv
+    Metadata parameter: barcode-sequence
+    Reverse complement barcodes: false
+    Sequences:
+      class: File
+      filetype: fastqsanger.gz
+      location: https://data.qiime2.org/2024.2/tutorials/moving-pictures/emp-single-end-sequences/sequences.fastq.gz
+  outputs:
+    Demultiplexed single-end data:
+      asserts:
+      - has_size:
+          delta: 1M
+          value: 20M
+      - has_archive_member:
+          n: 34
+          path: .*data/L[0-9]S[0-9]{1,3}_[0-9]{1,2}_L001_R1_001\.fastq\.gz
+      - has_archive_member:
+          asserts:
+          - has_text:
+              text: 'phred-offset: 33'
+          path: .*/data/metadata.yml
+      - has_archive_member:
+          asserts:
+          - has_text:
+              text: 'uuid:'
+          - has_text:
+              text: 'type: SampleData[SequencesWithQuality]'
+          - has_text:
+              text: 'format: SingleLanePerSampleSingleEndFastqDirFmt'
+          n: 1
+          path: ^[^/]*/metadata.yaml

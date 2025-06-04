@@ -1,0 +1,109 @@
+- doc: Test outline for scrna-seq-fastq-to-matrix-10X-cellplex.ga
+  job:
+    Barcode Size is same size of the Read: false
+    Number of expected cells: 500
+    cellranger_barcodes_3M-february-2018.txt:
+      class: File
+      filetype: tabular
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/scRNAseq/fastq-to-matrix-10x/test-data/all_cell_barcodes_both_versions.txt
+    fastq PE collection CMO:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/10412836/files/CMO_R1.fastqsanger.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/10412836/files/CMO_R2.fastqsanger.gz
+        identifier: subsample
+        type: paired
+    fastq PE collection GEX:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/10412836/files/GEX_R1.fastqsanger.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/10412836/files/GEX_R2.fastqsanger.gz
+        identifier: subsample
+        type: paired
+    gtf:
+      class: File
+      decompress: true
+      filetype: gtf
+      location: https://zenodo.org/record/6457007/files/Drosophila_melanogaster.BDGP6.32.109_UCSC.gtf.gz
+    reference genome: dm6
+    sample name and CMO sequence collection:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        filetype: csv
+        identifier: subsample
+        location: https://zenodo.org/records/10229382/files/CMO.csv
+  outputs:
+    CITE-seq-Count report:
+      attributes:
+        collection_type: list
+      element_tests:
+        subsample:
+          asserts:
+          - line: 'CITE-seq-Count Version: 1.4.4'
+            that: has_line
+          - line: 'Reads processed: 116993'
+            that: has_line
+          - line: 'Percentage mapped: 99'
+            that: has_line
+          - line: 'Percentage unmapped: 1'
+            that: has_line
+    MultiQC_STARsolo:
+      asserts:
+        has_text_matching:
+          expression: <span class="val">33.[0-9]<span class=['"]mqc_small_space['"]>
+    Seurat input for CMO (UMI):
+      attributes:
+        collection_type: list:list
+      element_tests:
+        subsample:
+          elements:
+            barcodes:
+              asserts:
+                has_line:
+                  line: CACATGATCATAAGGA
+            genes:
+              asserts:
+                has_line:
+                  line: mESC.rep1-CGCGATATGGTCGGA
+            matrix:
+              asserts:
+                has_line:
+                  line: 8 1218 2289
+    Seurat input for gene expression (filtered):
+      attributes:
+        collection_type: list:list
+      element_tests:
+        subsample:
+          elements:
+            barcodes:
+              asserts:
+                has_line:
+                  line: CACATGATCATAAGGA
+            genes:
+              asserts:
+                has_line:
+                  line: "FBgn0250732\tgfzf"
+            matrix:
+              asserts:
+                has_line:
+                  line: 23932 3 1171

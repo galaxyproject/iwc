@@ -1,0 +1,83 @@
+- doc: Test outline for RNAseq_SR
+  job:
+    Collection of FASTQ files:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        filetype: fastqsanger
+        identifier: SRR5085167
+        location: https://zenodo.org/records/13987631/files/SRR5085167_forward.fastqsanger.gz
+    Compute Cufflinks FPKM: true
+    Compute StringTie FPKM: true
+    Forward adapter: AGATCGGAAGAG
+    GTF file of annotation:
+      class: File
+      filetype: gtf
+      location: https://zenodo.org/records/13987631/files/Saccharomyces_cerevisiae.R64-1-1.113.gtf
+    GTF with regions to exclude from FPKM normalization with Cufflinks: null
+    Generate additional QC reports: true
+    Reference genome: sacCer3
+    Strandedness: stranded - forward
+    Use featureCounts for generating count tables: true
+  outputs:
+    Counts Table:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W\t1775"
+    Gene Abundance Estimates from StringTie:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_text_matching:
+              expression: "YAL038W\tCDC19\tchrI\t\\+\t71786\t73288\t57.[0-9]*\t3575.[0-9]*\t\
+                3084.[0-9]*"
+    Genes Expression from Cufflinks:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W\t-\t-\tYAL038W\tCDC19\t-\tchrI:71785-73288\t-\t-\t3375.85\t\
+                3161.36\t3590.33\tOK"
+    Mapped Reads:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_size:
+              delta: 3000000
+              value: 31570787
+    MultiQC stats:
+      asserts:
+        has_text_matching:
+          expression: "SRR5085167\t0.11[0-9]*\t18.3[0-9]*\t69.6[0-9]*\t0.3[0-9]*\t\
+            0.3[0-9]*\t94.62\t0.12[0-9]*\t34.43\t0.2[0-9]*\t28.[0-9]*\t90.[0-9]*\t\
+            16.[0-9]*\t0.36[0-9]*\t43.[0-9]*\t91.[0-9]*\t70.[0-9]*\t36.[0-9]*\t46.0\t\
+            75.0\t75\t27.27[0-9]*\t0.39[0-9]*"
+    Stranded Coverage:
+      element_tests:
+        SRR5085167_forward:
+          asserts:
+            has_size:
+              delta: 50000
+              value: 555489
+        SRR5085167_reverse:
+          asserts:
+            has_size:
+              delta: 50000
+              value: 526952
+    Transcripts Expression from Cufflinks:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W_mRNA\t-\t-\tYAL038W\tCDC19\t-\tchrI:71785-73288\t1503\t\
+                57.5601\t3375.85\t3161.36\t3590.33\tOK"
+    Unstranded Coverage:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_size:
+              delta: 90000
+              value: 978542

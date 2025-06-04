@@ -926,6 +926,29 @@
         "uuid": "87be9418-f744-42b6-8ac8-01dae7998e4f",
         "version": 3
     },
+    "workflow_job_input": {
+        "BUSCO lineage": "todo_param_value",
+        "Genome sequence": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Genome assembly": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Protein sequences": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Augustus training": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "SNAP training": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        }
+    },
     "readme": "# Genome annotation workflow with Maker\n\nThis workflow allows for genome annotation using Maker and evaluates the quality of the annotation with BUSCO and genome annotation statistics. The annotation can then be improved, standardized, and visualized with additional tools.\n\n**Maker** is a genome model prediction software that uses ab initio predictors (SANP and Augustus) to improve its predictions. Maker is capable of annotating both prokaryotes and eukaryotes. It works by aligning as much evidence as possible along the genome sequence, then reconciling all these signals to determine likely genetic structures.\n\n## Workflow Steps\n\n- Annotation with Maker: Maker uses the genome sequence, protein evidence, ab-initio predictions, and ESTs to produce the annotation.\n- Quality Evaluation:\n    - Run Fasta Statistics to assess genome assembly quality.\n    - Use BUSCO to evaluate annotation completeness.\n- Annotation Statistics: Analyze the annotation using Genome Annotation Statistics, producing graphical and textual summaries.\n- Sequence Extraction: Extract predicted protein sequences using GFFRead for downstream analysis.\n- Improve Gene Names: Standardize gene names using Map annotation ids for better readability.\n- Visualization: Load the genome sequence and annotation into JBrowse for interactive browsing.\n\n## Input data\nThe following input files are required for the workflow:\n- Genome sequence (FASTA format): The genome to be annotated. Used by Maker, Fasta Statistics, and BUSCO.\n- Protein sequences (FASTA format): Evidence to assist annotation in Maker.\n- EST evidences (FASTA format): Alignments used as evidence by Maker.\n- Ab-initio gene predictions: Supplementary data for Maker to refine annotations.\n\n\n## Output Data\nThe workflow generates the following outputs:\n- Annotation file (GFF3): Contains the final consensus gene models produced by Maker.\n- Genome statistics: A tabular file summarizing contig sizes and base content, produced by Fasta Statistics.\n- BUSCO results: Assess the completeness of the annotation and include:\n    - A summary of results.\n    - A table of all searched BUSCO genes with their status.\n    - A table of missing BUSCO genes.\n- Annotation statistics: Summary and graphical analyses of the annotation, produced by Genome Annotation Statistics.\n- Protein sequences (FASTA): Predicted from the annotation using GFFRead.\n- Renamed GFF annotation file: Contains standardized gene names, produced by Map annotation ids.\n- Genome browser visualization (HTML): An interactive genome view produced by JBrowse.",
     "changelog": "# Changelog\n\n## [0.1] - 2025-03-06\n\nInitial version of the genome annotation workflow with maker.",
     "diagrams": "# Workflow diagrams\n\n## Genome annotation with Maker\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f BUSCO lineage\"]@{ shape: lean-l }\n1[\"\u2139\ufe0f Genome sequence\"]@{ shape: doc }\n2[\"\u2139\ufe0f Genome assembly\"]@{ shape: doc }\n3[\"\u2139\ufe0f Protein sequences\"]@{ shape: doc }\n4[\"\u2139\ufe0f Augustus training\"]@{ shape: doc }\n5[\"\u2139\ufe0f SNAP training\"]@{ shape: doc }\n6[\" Fasta Statistics \"]@{ shape: process }\n1 --> 6\n7[\"BUSCO on the genome sequences\"]@{ shape: process }\n1 --> 7\n0 --> 7\n8[\"Maker\"]@{ shape: process }\n4 --> 8\n5 --> 8\n2 --> 8\n1 --> 8\n3 --> 8\n9[\"GFFRead\"]@{ shape: process }\n8 --> 9\n1 --> 9\n10[\"Genome annotation statistics\"]@{ shape: process }\n8 --> 10\n1 --> 10\n11[\"Map annotation ids\"]@{ shape: process }\n8 --> 11\n12[\"BUSCO on the predicted protein sequences\"]@{ shape: process }\n9 --> 12\n0 --> 12\n13[\"JBrowse\"]@{ shape: process }\n1 --> 13\n11 --> 13\n```\n",
@@ -935,5 +958,212 @@
     "dockstore_id": 31169,
     "categories": [],
     "collections": [],
-    "doi": "10.5281/zenodo.15078841"
+    "doi": "10.5281/zenodo.15078841",
+    "tests": [
+        {
+            "doc": "Test outline for Genome_annotation_with_maker_short.ga",
+            "job": {
+                "Genome sequence": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/13987091/files/S_pombe_chrIII_genome.fasta",
+                    "filetype": "fasta"
+                },
+                "Genome assembly": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/13987091/files/S_pombe_trinity_assembly.fasta",
+                    "filetype": "fasta"
+                },
+                "Protein sequences": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/13987091/files/Swissprot_no_S_pombe.fasta",
+                    "filetype": "fasta"
+                },
+                "Augustus training": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/13987091/files/augustus_training.tar.gz.augustus",
+                    "filetype": "augustus"
+                },
+                "SNAP training": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/13987091/files/snap_training.snaphmm",
+                    "filetype": "snaphmm"
+                },
+                "BUSCO lineage": "fungi_odb10"
+            },
+            "outputs": {
+                "fasta stats genome": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 32,
+                                "delta": 5
+                            }
+                        }
+                    ]
+                },
+                "busco sum genome": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 36,
+                                "delta": 10
+                            }
+                        }
+                    ]
+                },
+                "busco table genome": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 761,
+                                "delta": 10
+                            }
+                        }
+                    ]
+                },
+                "busco missing genome": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 656,
+                                "delta": 10
+                            }
+                        }
+                    ]
+                },
+                "gffread exons": {
+                    "asserts": [
+                        {
+                            "has_text": {
+                                "text": "ATGTCtTTCAGTTTCCTGTCAATCCTGTGGCTAGCTACTTCTTACGTGGATTCTCAAGACCAGGGAGTAg"
+                            }
+                        }
+                    ]
+                },
+                "maker gff": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 6253,
+                                "delta": 10
+                            }
+                        },
+                        {
+                            "has_text": {
+                                "text": "NC_003421.2"
+                            }
+                        }
+                    ]
+                },
+                "maker evidences": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 76060,
+                                "delta": 20
+                            }
+                        },
+                        {
+                            "has_text": {
+                                "text": "NC_003421.2"
+                            }
+                        }
+                    ]
+                },
+                "maker full": {
+                    "asserts": [
+                        {
+                            "has_text": {
+                                "text": "NC_003421.2"
+                            }
+                        }
+                    ]
+                },
+                "summary genome": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 27
+                            }
+                        }
+                    ]
+                },
+                "graphs genome": {
+                    "location": "https://zenodo.org/records/14276084/files/Genome_annotation_statistics_graphs.pdf?download=1",
+                    "compare": "sim_size",
+                    "delta": 30000
+                },
+                "renamed gff3": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 6253,
+                                "delta": 10
+                            }
+                        },
+                        {
+                            "has_text": {
+                                "text": "##gff-version 3"
+                            }
+                        }
+                    ]
+                },
+                "id map": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 1720,
+                                "delta": 10
+                            }
+                        }
+                    ]
+                },
+                "busco missing predicted proteins": {
+                    "asserts": [
+                        {
+                            "has_text": {
+                                "text": "106281at4751"
+                            }
+                        }
+                    ]
+                },
+                "busco sum predicted proteins": {
+                    "asserts": [
+                        {
+                            "has_n_lines": {
+                                "n": 20
+                            }
+                        },
+                        {
+                            "has_text": {
+                                "text": "BUSCO version is: 5.7.1"
+                            }
+                        }
+                    ]
+                },
+                "busco table predicted proteins": {
+                    "asserts": [
+                        {
+                            "has_text": {
+                                "text": "BUSCO version is: 5.7.1"
+                            }
+                        }
+                    ]
+                },
+                "busco image predicted proteins": {
+                    "compare": "sim_size",
+                    "delta": 30000
+                },
+                "busco gff predicted proteins": {
+                    "asserts": [
+                        {
+                            "has_text": {
+                                "text": "MetaEuk"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
 }

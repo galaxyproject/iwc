@@ -796,6 +796,27 @@
         "uuid": "d5b4eace-d876-4999-bad3-14c1cb02b0c9",
         "version": 5
     },
+    "workflow_job_input": {
+        "Paired Collection": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        },
+        "Annotation GTF": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Genome fasta": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        }
+    },
     "readme": "# Haploid variant calling for whole genome sequencing paired end data\n\nThis workflow uses Illumina or Element read data to discover variants (short nucleotide polymorphisms, SNPs, and small indels) in haploid genomes with multiple genomic sequences (contigs, scaffolds, or chromosomes).\n\n## Inputs dataset\n\n- The workflow needs a list of paired end fastq files\n- A GTF containtaing the Gene annotation for the selected haploid genome\n- A fasta file for the haploid genome to call variants against\n\n## Outputs\n\n- Tab-delimited summary of annotated variants\n- Report summarizing the quality of input data and mapping results\n\n## Processing\n\n- The workflow will remove adapters using fastp\n- The filtered reads are aligned with bwa-mem.\n- Only properly aligned mate pairs are retained, PCR duplicates are removed.\n- Alignments are re-aligned using lofreq viterbi and variants are called with lofreq call.\n- Variants are annotated with snpeff eff\n",
     "changelog": "# Changelog\n\n\n## [0.1] - 2024-10-29\n\n- Initial version of Paired end variant calling in haploid system workflow\n",
     "diagrams": "# Workflow diagrams\n\n## Paired end variant calling in haploid system\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Paired Collection\"]@{ shape: docs }\n1[\"\u2139\ufe0f Annotation GTF\"]@{ shape: doc }\n2[\"\u2139\ufe0f Genome fasta\"]@{ shape: doc }\n3[\"fastp\"]@{ shape: process }\n0 --> 3\n4[\"SnpEff build:\"]@{ shape: process }\n1 --> 4\n2 --> 4\n5[\"Map with BWA-MEM\"]@{ shape: process }\n3 --> 5\n2 --> 5\n6[\"Samtools view\"]@{ shape: process }\n5 --> 6\n7[\"Samtools stats\"]@{ shape: process }\n6 --> 7\n8[\"MarkDuplicates\"]@{ shape: process }\n6 --> 8\n9[\"MultiQC\"]@{ shape: process }\n3 --> 9\n7 --> 9\n8 --> 9\n10[\"Realign reads\"]@{ shape: process }\n8 --> 10\n2 --> 10\n11[\"Call variants\"]@{ shape: process }\n10 --> 11\n2 --> 11\n12[\"Text reformatting\"]@{ shape: process }\n11 --> 12\n13[\"SnpEff eff:\"]@{ shape: process }\n12 --> 13\n4 --> 13\n14[\"SnpSift Extract Fields\"]@{ shape: process }\n13 --> 14\n15[\"Collapse Collection\"]@{ shape: process }\n14 --> 15\n```\n",

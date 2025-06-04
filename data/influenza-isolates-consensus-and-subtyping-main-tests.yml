@@ -1,0 +1,106 @@
+- doc: Test outline for influenza-isolate-subtyping.ga
+  job:
+    References per segment collection:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        filetype: fasta
+        identifier: ref_4_ha
+        location: https://zenodo.org/records/14628364/files/ref_4_ha.fasta
+      - class: File
+        filetype: fasta
+        identifier: ref_6_na
+        location: https://zenodo.org/records/14628364/files/ref_6_na.fasta
+    Sequenced paired-end data:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/14628364/files/SRR24839074_1.fastq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/14628364/files/SRR24839074_2.fastq.gz
+        identifier: SRR24839074
+        type: paired
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/14628364/files/SRR6674560_1.fastq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/14628364/files/SRR6674560_2.fastq.gz
+        identifier: SRR6674560
+        type: paired
+  outputs:
+    Per-sample consensus sequences:
+      element_tests:
+        SRR6674560:
+          elements:
+            HA:
+              asserts:
+                has_text:
+                  text: '>Consensus_HA_threshold_0.7_quality_20'
+            NA:
+              asserts:
+                has_text:
+                  text: '>Consensus_NA_threshold_0.7_quality_20'
+    Per-segment consensus sequences with samples combined:
+      element_tests:
+        HA:
+          asserts:
+            has_text:
+              text: '>SRR24839074|HA'
+        NA:
+          asserts:
+            has_text:
+              text: '>SRR24839074|NA'
+    Snipit plots per segment:
+      element_tests:
+        HA:
+          asserts:
+            has_size:
+              delta: 10000
+              value: 961300
+        NA:
+          asserts:
+            has_size:
+              delta: 10000
+              value: 809800
+    Subtyping results:
+      asserts:
+        has_n_columns:
+          n: 2
+        has_n_lines:
+          n: 2
+        has_text:
+          text: "SRR24839074\tH5N1"
+    fastp reports:
+      element_tests:
+        SRR6674560:
+          asserts:
+            has_text:
+              text: <tr><td class='col1'>total reads:</td><td class='col2'>345.266000
+                K</td></tr>
+    successful VAPOR runs - closest references:
+      element_tests:
+        SRR6674560:
+          elements:
+            ref_4_ha:
+              asserts:
+                has_text:
+                  text: "0.9841269841269841\t12026563.0\t1701\t7070.289829512052\t\
+                    60505\t>HA|A/Texas/50/2012|A/H3N2|KJ942616.1"
+            ref_6_na:
+              asserts:
+                has_text:
+                  text: "0.9929078014184397\t6935928.0\t1410\t4919.097872340426\t\
+                    34376\t>NA|A/Texas/50/2012|A/H3N2|KJ942618.1"

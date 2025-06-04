@@ -1,0 +1,95 @@
+- doc: Test outline for ChIPseq_PE
+  job:
+    PE fastq input:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read1.fastq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read2.fastq.gz
+        identifier: wt_H3K4me3
+        type: paired
+    adapter_forward: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+    adapter_reverse: GATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+    effective_genome_size: 1870000000
+    normalize_profile: true
+    reference_genome: mm10
+  outputs:
+    MACS2 narrowPeak:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines:
+              n: 11
+    MACS2 peaks:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: '# effective genome size = 1.87e+09'
+            that: has_text
+          - text: '# fragment size is determined as 201 bps'
+            that: has_text
+          - text: '# fragments after filtering in treatment: 41724'
+            that: has_text
+    MACS2 report:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: '# effective genome size = 1.87e+09'
+            that: has_text
+          - text: '# fragment size is determined as 201 bps'
+            that: has_text
+          - text: '# fragments after filtering in treatment: 41724'
+            that: has_text
+    MACS2 summits:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines:
+              n: 11
+    'MultiQC on input dataset(s): Stats':
+      asserts:
+        has_line:
+          line: "Sample\tmacs2-d\tmacs2-treatment_redundant_rate\tmacs2-peak_count\t\
+            bowtie_2_hisat2-overall_alignment_rate\tcutadapt-percent_trimmed"
+        has_text_matching:
+          expression: "wt_H3K4me3\t201.0\t0.0\t11\t98.[0-9]*\t10.[0-9]*"
+    MultiQC webpage:
+      asserts:
+      - text: wt_H3K4me3
+        that: has_text
+      - text: <a href="#cutadapt_filtered_reads" class="nav-l2">Filtered Reads</a>
+        that: has_text
+      - text: <a href="#bowtie2" class="nav-l1">Bowtie 2 / HiSAT2</a>
+        that: has_text
+    coverage from MACS2:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_size:
+              delta: 10000
+              value: 556477
+    filtered BAM:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_size:
+              delta: 200000
+              value: 5008461
+    mapping stats:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: 1292 (2.79%) aligned concordantly 0 times
+            that: has_text
+          - text: 39329 (84.93%) aligned concordantly exactly 1 time
+            that: has_text
+          - text: 5686 (12.28%) aligned concordantly >1 times
+            that: has_text

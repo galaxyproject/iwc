@@ -1,0 +1,44 @@
+- doc: Test outline for QIIME2-Ib:-Demultiplexing-(paired-end)
+  job:
+    Barcodes:
+      class: File
+      filetype: fastqsanger.gz
+      location: https://data.qiime2.org/2024.2/tutorials/atacama-soils/10p/barcodes.fastq.gz
+    Forward sequences:
+      class: File
+      filetype: fastqsanger.gz
+      location: https://data.qiime2.org/2024.2/tutorials/atacama-soils/10p/forward.fastq.gz
+    Metadata:
+      class: File
+      filetype: tabular
+      location: https://data.qiime2.org/2024.2/tutorials/atacama-soils/sample_metadata.tsv
+    Metadata parameter: barcode-sequence
+    Reverse complement of barcodes needed?: true
+    Reverse sequences:
+      class: File
+      filetype: fastqsanger.gz
+      location: https://data.qiime2.org/2024.2/tutorials/atacama-soils/10p/reverse.fastq.gz
+  outputs:
+    Demultiplexed paired-end output:
+      asserts:
+      - has_size:
+          delta: 4M
+          value: 95M
+      - has_archive_member:
+          n: 150
+          path: .*data/[A-Z]{3}[0-9]+(\.[0-9])?\.[0-9]_[0-9]{1,2}_L001_R[12]_001\.fastq\.gz
+      - has_archive_member:
+          asserts:
+          - has_text:
+              text: 'phred-offset: 33'
+          path: .*/data/metadata.yml
+      - has_archive_member:
+          asserts:
+          - has_text:
+              text: 'uuid:'
+          - has_text:
+              text: SampleData[PairedEndSequencesWithQuality]
+          - has_text:
+              text: 'format: SingleLanePerSamplePairedEndFastqDirFmt'
+          n: 1
+          path: ^[^/]*/metadata.yaml

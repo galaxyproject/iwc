@@ -1,0 +1,86 @@
+- doc: Test outline for ChIPseq_SR
+  job:
+    SR fastq input:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        filetype: fastqsanger.gz
+        identifier: wt_H3K4me3
+        location: https://zenodo.org/record/1324070/files/wt_H3K4me3_read1.fastq.gz
+    adapter_forward: GATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+    effective_genome_size: 1870000000
+    normalize_profile: true
+    reference_genome: mm10
+  outputs:
+    MACS2 narrowPeak:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines:
+              n: 4
+    MACS2 peaks:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: '# effective genome size = 1.87e+09'
+            that: has_text
+          - text: '# d = 200'
+            that: has_text
+          - text: '# tags after filtering in treatment: 44038'
+            that: has_text
+    MACS2 report:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: '# effective genome size = 1.87e+09'
+            that: has_text
+          - text: '# d = 200'
+            that: has_text
+          - text: '# tags after filtering in treatment: 44038'
+            that: has_text
+    MACS2 summits:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_n_lines:
+              n: 4
+    'MultiQC on input dataset(s): Stats':
+      asserts:
+        has_line:
+          line: "Sample\tmacs2-d\tmacs2-treatment_redundant_rate\tmacs2-peak_count\t\
+            bowtie_2_hisat2-overall_alignment_rate\tcutadapt-percent_trimmed"
+        has_text_matching:
+          expression: "wt_H3K4me3\t200.0\t0.0\t4\t98.[0-9]*\t4.6[0-9]*"
+    MultiQC webpage:
+      asserts:
+      - text: wt_H3K4me3
+        that: has_text
+      - text: <a href="#cutadapt_filtered_reads" class="nav-l2">Filtered Reads</a>
+        that: has_text
+      - text: <a href="#bowtie2" class="nav-l1">Bowtie 2 / HiSAT2</a>
+        that: has_text
+    coverage from MACS2:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_size:
+              delta: 10000
+              value: 559925
+    filtered BAM:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+            has_size:
+              delta: 200000
+              value: 2547967
+    mapping stats:
+      element_tests:
+        wt_H3K4me3:
+          asserts:
+          - text: '49251 reads; of these:'
+            that: has_text
+          - text: 43525 (88.37%) aligned exactly 1 time
+            that: has_text
+          - text: 98.37% overall alignment rate
+            that: has_text

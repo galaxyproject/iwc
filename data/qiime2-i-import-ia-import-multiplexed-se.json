@@ -431,6 +431,22 @@
         "uuid": "951c418e-f57e-491d-af38-f2c44c6089ce",
         "version": 45
     },
+    "workflow_job_input": {
+        "Sequences": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Barcodes": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Metadata": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Metadata parameter": "todo_param_value",
+        "Reverse complement barcodes": "todo_param_value"
+    },
     "readme": "# QIIME2 import workflows\n\n\n## Available workflows\n\nImport of fastqsanger.gz data into QIIME artifact files.\n\nAvailable for:\n\n- paired / single end data\n- demultiplexed / multiplexed data (the former according to the EMP protocol)\n\nFor data that is multiplexed with another protocol the Galaxy cutadapt tool can be use.\n\n## Inputs\n\n- Single end or paired end reads in fastq format.\n- For demultiplexed data all datasets must be in a single (flat) collection\n  (also paired data).\n\n### Demultiplexed data\n\n- Demultiplexed data must follow the naming scheme `.+_.+_R[12]_001\\.fastq\\.gz`.\n  Any lane information (in the form of `L[0-9][0-9][0-9]_`) in the dataset names\n  is automatically removed.\n\n### Mulmultiplexed data\n\n- Multiplexed data in a single or two fastq.gz dataset(s)\n- Barcodes as fastq.gz file\n- Metadata (a table describing the samples) and a metadata parameter (the name of the column that contains the barcode sequences)\n- A boolean determining if there reverse complement of the barcode sequences shoul dbe used\n\n## Processing\n\nFor demultiplexed data\n\n1. Lane information is removed from the collection identifiers (using `Extract element identifiers`, `Regex Find And Replace` and `Relabel identifiers`)\n2. Import of sequence data using `qiime2 tools import` with `Casava One Eight Laneless Per Sample Directory Format`\n3. Prepare visualisation dataset with `qiime2 demux summarize`\n\nFor multiplexed data\n\n1. Import sequences and metadata with `qiime2 tools import` as `EMP Paired End Directory Format` and `Immutable Metadata Format`, resp.\n2. Demultiplex the sequences with `qiime2 demux emp-paired`/`paired` (using sequences and metadata information)\n3. Prepare visualisation dataset with `qiime2 demux summarize`\n\n\n## Outputs\n\n- Sequence data in `qza` format\n- A corresponding qiime visualization file in `qzv` format\n\n## TODOs\n\n- The import workflows for multiplexed data currently first convert the metadata into qza and require the user to enter a column as free text. If Galaxy allows for data-column workflow parameters this step can be removed.",
     "changelog": "# Changelog\n\n## [0.3] - 2024-11-04\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/2023.5.0+dist.h193f7cc9.3` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/2024.10.0+dist.h3d8a7e27`\n- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/2023.5.0+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/2024.10.0+q2galaxy.2024.10.0`\n- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/2023.5.0+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/2024.10.0+q2galaxy.2024.10.0`\n- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/2023.5.0+q2galaxy.2023.5.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/2024.10.0+q2galaxy.2024.10.0`\n\n## [0.2] - 2024-05-23\nFix dockstore.yml and test.\n\n## [0.1] - 2024-04-08\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## QIIME2 Ia: multiplexed data (single-end)\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Sequences\"]@{ shape: doc }\n1[\"\u2139\ufe0f Barcodes\"]@{ shape: doc }\n2[\"\u2139\ufe0f Metadata\"]@{ shape: doc }\n3[\"\u2139\ufe0f Metadata parameter\"]@{ shape: lean-l }\n4[\"\u2139\ufe0f Reverse complement barcodes\"]@{ shape: lean-l }\n5[\"Input files\"]@{ shape: process }\n1 --> 5\n0 --> 5\n6[\"Metadata as artifact\"]@{ shape: process }\n2 --> 6\n7[\"Demultiplex single-end data\"]@{ shape: process }\n4 --> 7\n3 --> 7\n6 --> 7\n5 --> 7\n8[\"Summarize demultiplexed output\"]@{ shape: process }\n7 --> 8\n```\n",

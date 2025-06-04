@@ -1,0 +1,97 @@
+- doc: Test outline for RNAseq_PE
+  job:
+    Collection paired FASTQ files:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger
+          identifier: forward
+          location: https://zenodo.org/records/13987631/files/SRR5085167_forward.fastqsanger.gz
+        - class: File
+          filetype: fastqsanger
+          identifier: reverse
+          location: https://zenodo.org/records/13987631/files/SRR5085167_reverse.fastqsanger.gz
+        identifier: SRR5085167
+        type: paired
+    Compute Cufflinks FPKM: true
+    Compute StringTie FPKM: true
+    Forward adapter: AGATCGGAAGAG
+    GTF file of annotation:
+      class: File
+      filetype: gtf
+      location: https://zenodo.org/records/13987631/files/Saccharomyces_cerevisiae.R64-1-1.113.gtf
+    GTF with regions to exclude from FPKM normalization with Cufflinks: null
+    Generate additional QC reports: true
+    Reference genome: sacCer3
+    Reverse adapter: GATCGTCGGACT
+    Strandedness: stranded - forward
+    Use featureCounts for generating count tables: true
+  outputs:
+    Counts Table:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W\t1591"
+    Gene Abundance Estimates from StringTie:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_text_matching:
+              expression: "YAL038W\tCDC19\tchrI\t\\+\t71786\t73288\t92.5[0-9]*\t3273.9[0-9]*\t\
+                3900.[0-9]*"
+    Genes Expression from Cufflinks:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W\t-\t-\tYAL038W\tCDC19\t-\tchrI:71785-73288\t-\t-\t3437.1\t\
+                3211.44\t3662.76\tOK"
+    Mapped Reads:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_size:
+              delta: 2500000
+              value: 56913572
+    MultiQC stats:
+      asserts:
+      - expression: "SRR5085167\t0.10[0-9]*\t16.45[0-9]*\t43.38[0-9]*\t0.32[0-9]*\t\
+          0.30[0-9]*\t93.75\t0.11[0-9]*\t34.29\t0.19[0-9]*\t17.6[0-9]*\t91.8[0-9]*\t\
+          30.0[0-9]*\t0.64[0-9]*\t43.5[0-9]*\t81.0[0-9]*\t72.6[0-9]*\t"
+        that: has_text_matching
+      - expression: "SRR5085167_forward\t*36.33[0-9]*\t46.0\t75.0\t75\t27.27[0-9]*\t\
+          0.39[0-9]*"
+        that: has_text_matching
+      - expression: "SRR5085167_reverse\t*35.31[0-9]*\t46.0\t75.0\t75\t45.45[0-9]*\t\
+          0.39[0-9]*"
+        that: has_text_matching
+    Stranded Coverage:
+      element_tests:
+        SRR5085167_forward:
+          asserts:
+            has_size:
+              delta: 30000
+              value: 635210
+        SRR5085167_reverse:
+          asserts:
+            has_size:
+              delta: 30000
+              value: 618578
+    Transcripts Expression from Cufflinks:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_line:
+              line: "YAL038W_mRNA\t-\t-\tYAL038W\tCDC19\t-\tchrI:71785-73288\t1503\t\
+                102.837\t3437.1\t3211.44\t3662.76\tOK"
+    Unstranded Coverage:
+      element_tests:
+        SRR5085167:
+          asserts:
+            has_size:
+              delta: 50000
+              value: 1140004

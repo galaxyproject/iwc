@@ -545,6 +545,17 @@
         "uuid": "68d6270a-bfd1-452a-abc9-4a314e13af85",
         "version": 9
     },
+    "workflow_job_input": {
+        "Assembly to be polished": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "long reads": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "minimap setting (for long reads) ": "todo_param_value"
+    },
     "readme": "# Assembly polishing with Racon workflow\n\n## Inputs\n\n- Sequencing reads in format: fastq, fastq.gz, fastqsanger.gz or fastqsanger\n- Genome assembly to be polished, in fasta format\n\n## What does the workflow do\n\n- After long reads have been assembled into a genome (contigs), this can be polished with the same long reads. \n- This workflow uses the tool minimap2 to map the long reads back to the assembly, and then uses Racon to make polishes. \n- This is repeated a further 3 times. \n\nIn more detail:\n\n- minimap2 : long reads are mapped to assembly => overlaps.paf.\n- overaps, long reads, assembly => Racon => polished assembly 1\n- using polished assembly 1 as input; repeat minimap2 + racon => polished assembly 2\n- using polished assembly 2 as input, repeat minimap2 + racon => polished assembly 3\n- using polished assembly 3 as input, repeat minimap2 + racon => polished assembly 4\n\n## Settings\n\n- Run as-is or change parameters at runtime.\n- For the input at \"minimap settings for long reads\", enter (map-pb) for PacBio reads, (map-hifi) for PacBio HiFi reads, or (map-ont) for Oxford Nanopore reads.\n\n## Outputs\n\nThere is one output: the polished assembly in fasta format. \n\n",
     "changelog": "# Changelog\n\n## [0.1] - 2023-07-15\nFirst release.\n",
     "diagrams": "# Workflow diagrams\n\n## Assembly polishing with long reads\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Assembly to be polished\"]@{ shape: doc }\n1[\"\u2139\ufe0f long reads\"]@{ shape: doc }\n2[\"\u2139\ufe0f minimap setting (for long reads) \"]@{ shape: lean-l }\n3[\"Minimap2: map long reads to assembly\"]@{ shape: process }\n2 --> 3\n1 --> 3\n0 --> 3\n4[\"Racon: polish 1\"]@{ shape: process }\n0 --> 4\n3 --> 4\n1 --> 4\n5[\"Minimap2: map long reads to polished assembly 1\"]@{ shape: process }\n2 --> 5\n1 --> 5\n4 --> 5\n6[\"Racon: polish 2\"]@{ shape: process }\n4 --> 6\n5 --> 6\n1 --> 6\n7[\"Minimap2: map long reads to polished assembly 2\"]@{ shape: process }\n2 --> 7\n1 --> 7\n6 --> 7\n8[\"Racon: polish 3\"]@{ shape: process }\n6 --> 8\n7 --> 8\n1 --> 8\n9[\"Minimap2: map long reads to polished assembly 3\"]@{ shape: process }\n2 --> 9\n1 --> 9\n8 --> 9\n10[\"Racon: polish 4\"]@{ shape: process }\n8 --> 10\n9 --> 10\n1 --> 10\n```\n",

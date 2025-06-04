@@ -1,0 +1,63 @@
+- doc: Test outline for Hi-C_fastqToPairs_hicup
+  job:
+    No fill-in: 'false'
+    PE fastq input:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger
+          identifier: forward
+          location: https://github.com/bgruening/galaxytools/raw/master/tools/hicup/test-data/dataset1.fastq
+        - class: File
+          filetype: fastqsanger
+          identifier: reverse
+          location: https://github.com/bgruening/galaxytools/raw/master/tools/hicup/test-data/dataset2.fastq
+        identifier: test_dataset
+        type: paired
+    Restriction enzyme: A^AGCTT,HindIII
+    genome name: hg19
+    minimum MAPQ: 30
+  outputs:
+    HiCUP report (HTML):
+      element_tests:
+        test_dataset:
+          asserts:
+            has_size:
+              delta: 4000000
+              value: 4602173
+    HiCUP report (tabular):
+      element_tests:
+        test_dataset:
+          asserts:
+            has_text:
+              text: "\t99742\t99742\t92512\t92628\t7230\t7114\t22.45\t22.63\t2658\t\
+                2476\t73431\t72142\t17767\t18475\t5886\t6649\t57671\t57671\t39966\t\
+                1652\t17997\t20317\t17705\t481\t2432\t13452\t1340\t0\t0\t39962\t1652\t\
+                17996\t20314\t57.82\t69.30\t99.99\t50.83\t40.07"
+    valid pairs in juicebox format:
+      element_tests:
+        test_dataset:
+          asserts:
+          - line: "1\t1\tchr10\t100023987\t28055\t1\tchr10\t101500419\t28474\t42\t\
+              42"
+            that: has_line
+          - line: "2\t1\tchr10\t100091500\t28079\t1\tchr10\t122245984\t34516\t38\t\
+              42"
+            that: has_line
+          - line: "3\t0\tchr10\t100127492\t28094\t1\tchr10\t50864290\t13489\t0\t42"
+            that: has_line
+    valid pairs in juicebox format MAPQ filtered:
+      element_tests:
+        test_dataset:
+          asserts:
+          - line: "1\t1\tchr10\t100023987\t28055\t1\tchr10\t101500419\t28474\t42\t\
+              42"
+            that: has_line
+          - line: "2\t1\tchr10\t100091500\t28079\t1\tchr10\t122245984\t34516\t38\t\
+              42"
+            that: has_line
+          - text: "3\t0\tchr10\t100127492\t28094\t1\tchr10\t50864290\t13489\t0\t42"
+            that: not_has_text
