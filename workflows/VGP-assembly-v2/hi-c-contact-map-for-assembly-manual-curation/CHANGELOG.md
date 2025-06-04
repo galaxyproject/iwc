@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0beta6] - 2025-05-12
+
+### Changes
+- Add a track showing the Gaps in read coverage
+
+
 ## [1.0beta5] - 2025-05-12
 
 ### Automatic update
