@@ -7,6 +7,7 @@ import Author from "~/components/Author.vue";
 import { useWorkflowStore } from "~/stores/workflows";
 import { formatDate } from "~/utils/";
 import GalaxyInstanceSelector from "~/components/GalaxyInstanceSelector.vue";
+import { stringify } from 'yaml'
 
 const route = useRoute();
 const appConfig = useAppConfig();
@@ -102,6 +103,15 @@ const tools = computed(() => {
     return Array.from(new Set(toolIds));
 });
 
+const workflow_job_input = computed(() => {
+    const config_init_command = `planemo workflow_job_init ${ workflow?.value?.iwcID }.ga -o ${ workflow?.value?.iwcID }-job.yml`;
+    if (!workflow.value || !workflow.value || !workflow.value.workflow_job_input) {
+        return `# config file: ${ workflow?.value?.iwcID }_job.yml file\n${ config_init_command }`;
+    } else {
+        return `# config file: ${ workflow?.value?.iwcID }_job.yml\n# command: ${ config_init_command }\n${stringify(workflow.value.workflow_job_input)}`;
+    }
+});
+
 // Define interface for tab items
 interface TabItem {
     label: string;
@@ -122,6 +132,10 @@ const tabs = computed<TabItem[]>(() => [
     {
         label: "Version History",
         content: workflow.value?.changelog || "No CHANGELOG available.",
+    },
+    {
+        label: "How to Run",
+        // No content property as we'll use a custom template for this tab
     },
     // {
     //     label: "Tools",
@@ -274,6 +288,170 @@ onBeforeMount(async () => {
                                     title="Galaxy Workflow Embed"
                                     style="width: 100%; height: 700px; border: none"
                                     src="https://usegalaxy.org/published/workflow?id=a63d3ee4a2a4a20b&embed=true&buttons=true&about=false&heading=false&minimap=true&zoom_controls=true&initialX=-20&initialY=-20&zoom=1"></iframe>
+                            </div>
+                            <div v-else-if="item.label === 'How to Run'" class="mt-6">
+                                <div class="prose dark:prose-invert !max-w-none">
+                                    <h2>How to Run This Workflow</h2>
+                                    <p>
+                                        There are multiple ways to run this workflow. Choose the method that suits your
+                                        needs:
+                                    </p>
+
+                                    <div class="bg-ebony-clay-100 p-6 rounded-lg mb-8">
+                                        <h3 class="text-xl font-bold mb-4">Run in Galaxy</h3>
+                                        <p class="mb-4">
+                                            The easiest way to run this workflow is directly in a Galaxy instance:
+                                        </p>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">Step 1: Select a Galaxy instance</h4>
+                                            <GalaxyInstanceSelector v-model="selectedInstance" class="mb-4" />
+                                            <div
+                                                v-if="selectedInstance"
+                                                class="text-sm text-gray-600 dark:text-gray-400">
+                                                Selected instance:
+                                                <span class="font-medium">{{ selectedInstance }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">Step 2: Choose how to run</h4>
+                                            <div class="grid md:grid-cols-2 gap-6">
+                                                <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+                                                    <h5 class="font-bold mb-2">Run with your own data</h5>
+                                                    <p class="text-sm mb-4">
+                                                        Import the workflow and fill in your own input parameters and
+                                                        datasets.
+                                                    </p>
+                                                    <UButton
+                                                        :to="launchUrl"
+                                                        target="_blank"
+                                                        icon="i-heroicons-rocket-launch"
+                                                        color="primary"
+                                                        variant="solid"
+                                                        label="Run Workflow" />
+                                                </div>
+
+                                                <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+                                                    <h5 class="font-bold mb-2">Run with example data</h5>
+                                                    <p class="text-sm mb-4">
+                                                        Import the workflow with example datasets pre-filled, ready to
+                                                        launch.
+                                                    </p>
+                                                    <UButton
+                                                        @click="createLandingPage"
+                                                        target="_blank"
+                                                        icon="i-heroicons-rocket-launch"
+                                                        color="primary"
+                                                        variant="solid"
+                                                        label="Run with example data" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                v-if="!selectedInstance"
+                                                class="mt-3 text-sm text-amber-600 dark:text-amber-400">
+                                                <UIcon name="i-heroicons-exclamation-triangle" class="inline mr-1" />
+                                                Please select a Galaxy instance first
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg">
+                                        <h3 class="text-xl font-bold mb-4">Run with Planemo CLI</h3>
+                                        <p class="mb-4">
+                                            For advanced users and developers, you can run this workflow using the
+                                            <a
+                                                href="https://planemo.readthedocs.io/"
+                                                target="_blank"
+                                                class="text-primary-500 hover:underline"
+                                                >Planemo</a
+                                            >
+                                            command-line tool:
+                                        </p>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">Step 1: Install Planemo</h4>
+                                            <p class="mb-2 text-sm">
+                                                If you haven't already, install Planemo using pip:
+                                            </p>
+                                            <pre
+                                                class="p-3 rounded overflow-x-auto"><code>pip install planemo</code></pre>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
+                                            <p class="mb-2 text-sm">Download the workflow .ga file:</p>
+                                            <pre
+                                                class="p-3 rounded overflow-x-auto"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga" -o {{ workflow?.iwcID }}.ga</code></pre>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
+                                            <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
+                                            <pre
+                                                class="p-3 rounded overflow-x-auto"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}-tests.yml" -o {{ workflow?.iwcID }}-tests.yml
+planemo test {{ workflow?.iwcID }}.ga</code></pre>
+                                        </div>
+
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">
+                                                Step 4: Create workflow job file
+                                            </h4>
+                                            <p class="mb-2 text-sm">Create a workflow job file with your input parameters and update the values to match your environment and run:</p>
+                                            <pre class="p-3 rounded overflow-x-auto"><code>{{ workflow_job_input }}</code></pre>
+                                        </div>
+                                        <div class="mb-6">
+                                            <h4 class="text-lg font-medium mb-2">
+                                                Step 5: Run the workflow with your data
+                                            </h4>
+                                            <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
+                                            <pre
+                                                class="p-3 rounded overflow-x-auto"><code>planemo run {{ workflow?.iwcID }}.ga {{ workflow?.iwcID }}-job.yml \
+    --output_directory . \
+    --download_outputs \
+    --output_json output.json </code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-8">
+                                        <h3 class="text-xl font-bold mb-4">Additional Resources</h3>
+                                        <ul>
+                                            <li class="mb-2">
+                                                <a
+                                                    :href="dockstoreWorkflowPageUrl"
+                                                    target="_blank"
+                                                    class="text-primary-500 hover:underline">
+                                                    View this workflow on Dockstore
+                                                    <UIcon
+                                                        name="i-heroicons-arrow-top-right-on-square"
+                                                        class="inline" />
+                                                </a>
+                                            </li>
+                                            <li v-if="workflow.doi" class="mb-2">
+                                                <a
+                                                    :href="doiResolverUrl"
+                                                    target="_blank"
+                                                    class="text-primary-500 hover:underline">
+                                                    Cite this workflow (DOI: {{ workflow.doi }})
+                                                    <UIcon
+                                                        name="i-heroicons-arrow-top-right-on-square"
+                                                        class="inline" />
+                                                </a>
+                                            </li>
+                                            <li class="mb-2">
+                                                <a
+                                                    href="https://training.galaxyproject.org"
+                                                    target="_blank"
+                                                    class="text-primary-500 hover:underline">
+                                                    Galaxy Training Materials
+                                                    <UIcon
+                                                        name="i-heroicons-arrow-top-right-on-square"
+                                                        class="inline" />
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </UTabs>
