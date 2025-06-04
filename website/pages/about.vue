@@ -78,7 +78,7 @@
                     <p class="text-lg text-gray-700 mb-4">
                         The Galaxy Workflows Library is an open, collaborative project, and we welcome contributions
                         from the community. Whether you want to enhance existing workflows, report issues, or contribute
-                        new pipelines, your input is invaluable.
+                        new workflows, your input is invaluable.
                     </p>
                     <p class="text-lg text-gray-700">
                         Have questions or feedback? Connect via

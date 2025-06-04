@@ -164,7 +164,7 @@ function selectWorkflow(workflow: Workflow) {
                     <input
                         v-model="searchQuery"
                         type="text"
-                        placeholder="Search pipelines"
+                        placeholder="Search workflows"
                         class="w-full p-2 mb-2 border rounded-lg" />
                 </div>
                 <Filters />
