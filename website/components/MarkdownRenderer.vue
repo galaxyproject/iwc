@@ -100,28 +100,57 @@ function renderMermaidDiagrams() {
                     const svg = content.querySelector("svg");
                     if (svg) {
                         svg.style.cursor = "grab";
-                        svg.style.transition = "transform 0.2s ease";
+                        svg.style.transformOrigin = "0 0";
 
                         function updateTransform() {
                             svg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
                         }
 
-                        // Button controls
-                        zoomInBtn.addEventListener("click", () => {
-                            scale = Math.min(scale * 1.2, 5);
+                        let lastMouseX = content.offsetWidth / 2;
+                        let lastMouseY = content.offsetHeight / 2;
+
+                        content.addEventListener("mousemove", (e) => {
+                            if (!isDragging) {
+                                const rect = content.getBoundingClientRect();
+                                lastMouseX = e.clientX - rect.left;
+                                lastMouseY = e.clientY - rect.top;
+                            }
+                        });
+
+                        function zoomToPoint(newScale, mouseX, mouseY) {
+                            const oldScale = scale;
+                            const scaleDiff = newScale / oldScale;
+
+                            const newOriginX = mouseX - (mouseX - originX) * scaleDiff;
+                            const newOriginY = mouseY - (mouseY - originY) * scaleDiff;
+
+                            scale = newScale;
+                            originX = newOriginX;
+                            originY = newOriginY;
                             updateTransform();
+                        }
+
+                        zoomInBtn.addEventListener("click", () => {
+                            svg.style.transition = "transform 0.2s ease";
+                            const newScale = Math.min(scale * 1.2, 5);
+                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
                         zoomOutBtn.addEventListener("click", () => {
-                            scale = Math.max(scale / 1.2, 0.1);
-                            updateTransform();
+                            svg.style.transition = "transform 0.2s ease";
+                            const newScale = Math.max(scale / 1.2, 0.1);
+                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
                         resetBtn.addEventListener("click", () => {
+                            svg.style.transition = "transform 0.3s ease";
                             scale = 1;
                             originX = 0;
                             originY = 0;
                             updateTransform();
+                            setTimeout(() => (svg.style.transition = "none"), 300);
                         });
 
                         fullscreenBtn.addEventListener("click", () => {
@@ -141,17 +170,13 @@ function renderMermaidDiagrams() {
                             const mouseX = e.clientX - rect.left;
                             const mouseY = e.clientY - rect.top;
 
-                            const oldScale = scale;
-                            scale = e.deltaY > 0 ? Math.max(scale / 1.1, 0.1) : Math.min(scale * 1.1, 5);
+                            const zoomFactor = 1.02;
+                            const newScale =
+                                e.deltaY > 0 ? Math.max(scale / zoomFactor, 0.1) : Math.min(scale * zoomFactor, 5);
 
-                            // Zoom toward mouse position
-                            originX += (mouseX - originX) * (oldScale / scale - 1);
-                            originY += (mouseY - originY) * (oldScale / scale - 1);
-
-                            updateTransform();
+                            zoomToPoint(newScale, mouseX, mouseY);
                         });
 
-                        // Drag to pan
                         svg.addEventListener("mousedown", (e) => {
                             isDragging = true;
                             startX = e.clientX - originX;
