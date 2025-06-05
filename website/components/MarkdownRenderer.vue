@@ -46,14 +46,14 @@ function renderMermaidDiagrams() {
             try {
                 const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
                 mermaid.render(id, code).then((value) => {
-                    // Create a container with zoom and scroll functionality
+                    // Create container with zoom controls
                     const container = document.createElement("div");
                     container.className = "mermaid-zoom-container";
 
-                    // Create control buttons
                     const controls = document.createElement("div");
                     controls.className = "mermaid-zoom-controls";
 
+                    // Create buttons
                     const zoomInBtn = document.createElement("button");
                     zoomInBtn.textContent = "+";
                     zoomInBtn.className = "mermaid-zoom-btn";
@@ -79,7 +79,6 @@ function renderMermaidDiagrams() {
                     controls.appendChild(resetBtn);
                     controls.appendChild(fullscreenBtn);
 
-                    // Create scrollable content area
                     const content = document.createElement("div");
                     content.className = "mermaid-zoom-content";
                     content.innerHTML = value.svg;
@@ -90,7 +89,7 @@ function renderMermaidDiagrams() {
                     parent.appendChild(container);
                     parent.classList.add("not-prose");
 
-                    // Add zoom and pan functionality
+                    // Zoom functionality
                     let scale = 1;
                     let originX = 0;
                     let originY = 0;
@@ -107,7 +106,7 @@ function renderMermaidDiagrams() {
                             svg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
                         }
 
-                        // Zoom controls
+                        // Button controls
                         zoomInBtn.addEventListener("click", () => {
                             scale = Math.min(scale * 1.2, 5);
                             updateTransform();
@@ -145,14 +144,14 @@ function renderMermaidDiagrams() {
                             const oldScale = scale;
                             scale = e.deltaY > 0 ? Math.max(scale / 1.1, 0.1) : Math.min(scale * 1.1, 5);
 
-                            // Adjust origin to zoom towards mouse position
+                            // Zoom toward mouse position
                             originX += (mouseX - originX) * (oldScale / scale - 1);
                             originY += (mouseY - originY) * (oldScale / scale - 1);
 
                             updateTransform();
                         });
 
-                        // Mouse drag pan
+                        // Drag to pan
                         svg.addEventListener("mousedown", (e) => {
                             isDragging = true;
                             startX = e.clientX - originX;
@@ -176,7 +175,7 @@ function renderMermaidDiagrams() {
                             }
                         });
 
-                        // Touch support for mobile
+                        // Touch support
                         let initialDistance = 0;
                         let initialScale = 1;
 
