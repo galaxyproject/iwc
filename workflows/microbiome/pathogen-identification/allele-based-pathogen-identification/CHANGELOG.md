@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5] - 2025-06-09
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_coverage/samtools_coverage/1.15.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_coverage/samtools_coverage/1.20+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_head_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_head_tool/9.5+galaxy2`
+
 ## [0.1.4] - 2025-03-10
 
 ### Automatic update
