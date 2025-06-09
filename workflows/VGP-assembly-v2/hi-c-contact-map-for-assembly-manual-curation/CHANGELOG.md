@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0beta6] - 2025-05-12
+## [1.0beta6] - 2025-06-09
 
 ### Changes
 - Add a track showing the Gaps in read coverage
