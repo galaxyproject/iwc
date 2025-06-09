@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9] - 2025-06-09
+
+### Changes
+- Now ouput merged alignment statistics
+
+
 ## [1.8] - 2025-05-27
 
 ### Changes
