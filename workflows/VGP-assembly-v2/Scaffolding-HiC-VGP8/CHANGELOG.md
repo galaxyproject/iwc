@@ -5,7 +5,9 @@
 ### Changes
 
 - Now ouput merged alignment statistics
-- Add MAPQ filtering of Hi-C alignments 
+- Add MAPQ filtering of Hi-C alignments
+- Set minimum score to output in alignments by BWA-MEM2 to default:30
+
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0`
