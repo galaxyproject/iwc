@@ -1,0 +1,1 @@
+import{s as t,c as r,a as e,b as s}from"./PyDarycg.js";import{_ as i}from"./zF2AUuY7.js";import"./B-Sru6fx.js";import"./DzFwy02R.js";var _={parser:s,db:e,renderer:r,styles:t,init:i(a=>{a.state||(a.state={}),a.state.arrowMarkerAbsolute=a.arrowMarkerAbsolute,e.clear()},"init")};export{_ as diagram};
