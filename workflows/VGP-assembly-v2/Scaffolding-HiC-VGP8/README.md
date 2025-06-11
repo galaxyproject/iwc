@@ -14,6 +14,7 @@ Example of VGP trajectory :
 2. Haplotype being scaffolded (Will be added to scaffold names: e.g. `>scaffold_01_H1`)
 3. HiC reads paired collection [fastq]
 5. Trim Hi-C data? If `yes`, trim five bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy" and the reads haven't been trimmed before. 
+6. Minimum Mapping Quality [int] (Default:20). Minimum mapping quality for Hi-C alignments. Set to 0 if you want no filtering.  
 6. Database for busco lineage (recommended: latest)
 7. Busco lineage (recommended for VGP data: vertebrata)
 8. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
