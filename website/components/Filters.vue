@@ -17,7 +17,13 @@ const secondRowFilters = computed(() => {
 });
 
 const handleFilterClick = (filter: string) => {
-    store.toggleFilter(filter);
+    // If we're on the main page, use the existing filter toggle behavior
+    if (useRoute().path === "/") {
+        store.toggleFilter(filter);
+    } else {
+        // If we're on a different page, navigate to the collection page
+        navigateTo(`/collection/${store.collectionToSlug(filter)}`);
+    }
 };
 </script>
 

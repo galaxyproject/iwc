@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
-import { useSeoMeta, useRuntimeConfig } from "#imports";
+import { useSeoMeta, useRuntimeConfig, useRoute, useRouter } from "#imports";
 
 import MarkdownRenderer from "~/components/MarkdownRenderer.vue";
 
@@ -31,6 +31,8 @@ const categoryDescription = ref<string | null>(null);
 const selectedCategory = ref<string | null>(null);
 const isLoading = ref(false);
 
+const route = useRoute();
+const router = useRouter();
 const workflowStore = useWorkflowStore();
 
 async function loadCategoryDescription(category: string) {
@@ -51,6 +53,21 @@ async function loadCategoryDescription(category: string) {
     }
 }
 
+// Watch for URL query changes and update filters accordingly
+watch(
+    () => route.query.filter,
+    (newFilter) => {
+        if (newFilter && typeof newFilter === "string") {
+            if (workflowStore.allFilters.includes(newFilter) && !workflowStore.selectedFilters.includes(newFilter)) {
+                workflowStore.selectedFilters = [newFilter];
+            }
+        } else {
+            workflowStore.selectedFilters = [];
+        }
+    },
+    { immediate: true },
+);
+
 watch(
     () => workflowStore.selectedFilters,
     (newFilters) => {
@@ -65,6 +82,11 @@ watch(
     },
     { immediate: true },
 );
+
+// Initialize filters from URL on mount
+onMounted(() => {
+    workflowStore.setFilterFromUrl();
+});
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,
 //       but this should ideally be fetched from somewhere, or provided in a yml etc.
