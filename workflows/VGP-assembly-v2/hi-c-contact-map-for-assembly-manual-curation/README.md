@@ -13,8 +13,9 @@ This workflow generates Hi-C contact maps for diploid genome assemblies in the P
 6. **Haplotype 2 suffix** This suffix will be added to haplotype 2 scaffold names if you selected to add suffixes to the scaffold names.
 7. **Hi-C reads**  [fastq] Paired Collection containing the Hi-D data
 8. **Do you want to trim the Hi-C data?** If *yes*, remove 5bp at the end of Hi-C reads. Use with Arima Hi-C data if the Hi-C map looks "noisy".
-9.  **Telomere repeat to suit species** Expected value of the repeated sequences in the telomeres. Default value [CCCTAA] is suited to vertebrates.
-10. **PacBio reads** [fastq] Collection of PacBio reads.
+9. **Minimum Mapping Score** Minimum mapping score to keep for Hi-C alignments in the filtered PretextMap. Set to 0 to keep all mapped reads. Default: 20 .
+10. **Telomere repeat to suit species** Expected value of the repeated sequences in the telomeres. Default value [CCCTAA] is suited to vertebrates.
+11. **PacBio reads** [fastq] Collection of PacBio reads.
 
 
 ## Outputs
@@ -25,6 +26,7 @@ This workflow generates Hi-C contact maps for diploid genome assemblies in the P
 4. Telomeres track [bedgraph]
 5. Gap track [bedgraph] 
 6. Coverage track [bigwig]
-7. Pretext Map without tracks [pretext]
-8. Pretext Map with tracks [pretext]
-9. Pretext Snapshot image of the Hi-C contact map [png]
+7. Gaps in coverage track [bedgraph]
+7. Pretext Map without tracks [pretext], filtered and unfiltered.
+8. Pretext Map with tracks [pretext], filtered and unfiltered.
+9. Pretext Snapshot image of the Hi-C contact map [png], filtered and unfiltered.

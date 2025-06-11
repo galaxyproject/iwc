@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0beta6] - 2025-06-09
+
+### Changes
+- Add a track showing the Gaps in read coverage
+- Add MAPQ filtering for Hi-C alignment (Now outputs both filtered and unfiltered PretextMap)
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0`
+
+
 ## [1.0beta5] - 2025-05-12
 
 ### Automatic update
