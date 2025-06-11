@@ -4,7 +4,7 @@
 
 ### Changes
 - Add a track showing the Gaps in read coverage
-- Add MAPQ filtering for Hi-C alignment (Now output both filtered and unfiltered PretextMap)
+- Add MAPQ filtering for Hi-C alignment (Now outputs both filtered and unfiltered PretextMap)
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2`
