@@ -4,7 +4,7 @@
 
 ### Changes
 
-- Now ouput merged alignment statistics
+- Now ouputs merged alignment statistics
 - Add MAPQ filtering of Hi-C alignments
 - Set minimum score to output in alignments by BWA-MEM2 to default:30
 
