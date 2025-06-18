@@ -1,4 +1,4 @@
-# AMR gene detection workflow in an assembled bacterial genome (v1.1.6)
+# AMR gene detection workflow in an assembled bacterial genome
 
 This workflow uses assembled bacterial genome fasta files (but can be any fasta file) and executes the following steps:
 1. Genomic detection
