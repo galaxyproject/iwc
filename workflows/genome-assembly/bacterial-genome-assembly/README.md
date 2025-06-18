@@ -1,4 +1,4 @@
-# Bacterial genome assembly workflow for paired end data (v1.1.6)
+# Bacterial genome assembly workflow for paired end data
 
 This workflow uses paired-end illumina trimmed reads fastq(.gz) files and executes the following steps:
 1. Assembly raw reads to a final contig fasta file 
