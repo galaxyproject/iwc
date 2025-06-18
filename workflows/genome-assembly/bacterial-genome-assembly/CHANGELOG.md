@@ -7,7 +7,7 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.3+galaxy0`
 
 ### Manual update
-- Changes QUAST parameter Minimum contig size from `0` to `200` to include all contigs (≥ 200 bp) in the statistics. CheckM2 already has statistics for contigs ≥ 0 bp
+- Changes QUAST parameter Minimum contig size from `0` to `200` to exclude small contigs (< 200 bp) in the statistics. CheckM2 already has statistics for all contigs (≥ 0 bp)
 
 ## [1.1.6] - 2025-05-14
 
