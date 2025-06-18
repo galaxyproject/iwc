@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.9] - 2025-06-16
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.26.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.3+galaxy0`
+
+### Manual update
+- Changes datatype output (fastqsanger.gz) in Zip collection
+
 ## [1.1.8] - 2025-05-05
 
 ### Automatic update
