@@ -133,14 +133,18 @@ function renderMermaidDiagrams() {
                         zoomInBtn.addEventListener("click", () => {
                             svg.style.transition = "transform 0.2s ease";
                             const newScale = Math.min(scale * 1.2, 5);
-                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            const centerX = content.offsetWidth / 2;
+                            const centerY = content.offsetHeight / 2;
+                            zoomToPoint(newScale, centerX, centerY);
                             setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
                         zoomOutBtn.addEventListener("click", () => {
                             svg.style.transition = "transform 0.2s ease";
                             const newScale = Math.max(scale / 1.2, 0.1);
-                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            const centerX = content.offsetWidth / 2;
+                            const centerY = content.offsetHeight / 2;
+                            zoomToPoint(newScale, centerX, centerY);
                             setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
