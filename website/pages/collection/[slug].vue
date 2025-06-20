@@ -124,9 +124,7 @@ if (process.client && collectionWorkflows.value.length === 0) {
             <div class="flex bg-ebony-clay p-4 items-center" :style="{ 'flex-direction': 'column' }">
                 <h1 class="text-4xl my-8 text-white text-center font-bold">{{ collectionName }} Workflows</h1>
                 <h2 class="text-lg text-white text-center font-semibold mb-8">
-                    Discover {{ collectionWorkflows.length }} workflow{{
-                        collectionWorkflows.length !== 1 ? "s" : ""
-                    }}
+                    Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }}
                     in this collection
                 </h2>
 
