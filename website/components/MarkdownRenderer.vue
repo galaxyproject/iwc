@@ -174,7 +174,11 @@ function renderMermaidDiagrams() {
                             const mouseX = e.clientX - rect.left;
                             const mouseY = e.clientY - rect.top;
 
-                            const zoomFactor = 1.02;
+                            // Detect if this is likely a trackpad (fine-grained) vs mouse wheel (coarse)
+                            // Trackpads typically have smaller deltaY values and more frequent events
+                            const isTrackpad = Math.abs(e.deltaY) < 50;
+                            const zoomFactor = isTrackpad ? 1.01 : 1.1;
+
                             const newScale =
                                 e.deltaY > 0 ? Math.max(scale / zoomFactor, 0.1) : Math.min(scale * zoomFactor, 5);
 
