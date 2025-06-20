@@ -48,6 +48,24 @@ const allInstances = computed(() => {
     return combined;
 });
 
+// Check if an instance is custom (not in defaults)
+const isCustomInstance = (instance: string) => {
+    return !defaultInstances.includes(instance);
+};
+
+// Delete a custom instance
+const deleteCustomInstance = (instance: string) => {
+    const index = customInstances.value.indexOf(instance);
+    if (index > -1) {
+        customInstances.value.splice(index, 1);
+
+        // If the deleted instance was selected, switch to the first default
+        if (selectedInstance.value === instance) {
+            selectedInstance.value = defaultInstances[0];
+        }
+    }
+};
+
 // Initialize selected instance
 const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
 const internalQuery = ref("");
@@ -110,6 +128,22 @@ watch(selectedInstance, (newVal, oldVal) => {
             searchable-placeholder="Select or enter a custom Galaxy instance URL"
             show-create-option-when="always"
             creatable>
+            <template #option="{ option }">
+                <div class="flex items-center justify-between w-full">
+                    <span class="truncate">{{ option }}</span>
+                    <UButton
+                        v-if="isCustomInstance(option)"
+                        icon="i-heroicons-trash-20-solid"
+                        size="2xs"
+                        color="gray"
+                        variant="ghost"
+                        :padded="false"
+                        class="ml-2"
+                        @click.stop.prevent="deleteCustomInstance(option)"
+                        @mousedown.stop.prevent="deleteCustomInstance(option)"
+                        aria-label="Delete custom instance" />
+                </div>
+            </template>
             <template #option-create="{ option }">
                 <span>Create "{{ internalQuery }}"</span>
             </template>
