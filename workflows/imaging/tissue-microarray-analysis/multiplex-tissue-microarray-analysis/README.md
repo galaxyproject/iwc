@@ -1,5 +1,7 @@
 # Multiplex tissue image processing and analysis with Galaxy-ME
 
+Use this workflow when you have pre-registered OME-TIFF images that are ready for analysis (no preprocessing needed).
+
 ## Overview
 
 This workflow processing and analyzes multiple multiplex tissue imaging datasets by

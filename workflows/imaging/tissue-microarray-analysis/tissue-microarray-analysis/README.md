@@ -1,5 +1,7 @@
 # End-to-End Tissue Microarray Image Analysis with Galaxy-ME
 
+Use this workflow when you have raw, unprocessed cycle images that need full preprocessing before analysis.
+
 ## Input datasets
 
 - Collection of raw cycle images (TIFF/OME-TIFF): Ensure that the list is ordered in cycle order (ex: cycle_1.tiff, cycle_2.tiff, etc.)
