@@ -133,14 +133,18 @@ function renderMermaidDiagrams() {
                         zoomInBtn.addEventListener("click", () => {
                             svg.style.transition = "transform 0.2s ease";
                             const newScale = Math.min(scale * 1.2, 5);
-                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            const centerX = content.offsetWidth / 2;
+                            const centerY = content.offsetHeight / 2;
+                            zoomToPoint(newScale, centerX, centerY);
                             setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
                         zoomOutBtn.addEventListener("click", () => {
                             svg.style.transition = "transform 0.2s ease";
                             const newScale = Math.max(scale / 1.2, 0.1);
-                            zoomToPoint(newScale, lastMouseX, lastMouseY);
+                            const centerX = content.offsetWidth / 2;
+                            const centerY = content.offsetHeight / 2;
+                            zoomToPoint(newScale, centerX, centerY);
                             setTimeout(() => (svg.style.transition = "none"), 200);
                         });
 
@@ -170,7 +174,11 @@ function renderMermaidDiagrams() {
                             const mouseX = e.clientX - rect.left;
                             const mouseY = e.clientY - rect.top;
 
-                            const zoomFactor = 1.02;
+                            // Detect if this is likely a trackpad (fine-grained) vs mouse wheel (coarse)
+                            // Trackpads typically have smaller deltaY values and more frequent events
+                            const isTrackpad = Math.abs(e.deltaY) < 50;
+                            const zoomFactor = isTrackpad ? 1.01 : 1.1;
+
                             const newScale =
                                 e.deltaY > 0 ? Math.max(scale / zoomFactor, 0.1) : Math.min(scale * zoomFactor, 5);
 
