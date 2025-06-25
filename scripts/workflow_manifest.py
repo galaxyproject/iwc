@@ -238,6 +238,8 @@ def path_to_location(input_item, root):
                 location = input_item["location"]
                 if "fastq.gz" in location:
                     filetype = "fastqsanger.gz"
+                elif "fastqsanger.gz" in location:
+                    filetype = "fastqsanger.gz"
                 elif "fastq" in location:
                     filetype = "fastqsanger"
                 elif "fasta.gz" in location:
