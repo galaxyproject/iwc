@@ -1,9 +1,9 @@
-# AMR gene detection workflow in an assembled bacterial genome (v1.0)
+# AMR gene detection workflow in an assembled bacterial genome
 
 This workflow uses assembled bacterial genome fasta files (but can be any fasta file) and executes the following steps:
 1. Genomic detection
     - Antimicrobial resistance gene identification:
-        - **staramr** to blast against ResFinder and PlasmidFinder database
+        - **StarAMR** to blast against ResFinder, PointFinder and PlasmidFinder database
         - **AMRFinderPlus** to find antimicrobial resistance genes and point mutations 
     - Virulence gene identification:
         - **ABRicate** with VFDB_A database
@@ -27,4 +27,4 @@ This workflow uses assembled bacterial genome fasta files (but can be any fasta 
     - Virulence gene identification:
         - Gene identification in tabular format
 2. Aggregating outputs:
-    - JSON file with information about the outputs of **staramr**, **AMRFinderPlus**, **ABRicate**
+    - JSON file with information about the outputs of **StarAMR**, **AMRFinderPlus**, **ABRicate**
