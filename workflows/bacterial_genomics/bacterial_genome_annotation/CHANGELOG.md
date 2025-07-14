@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.10] - 2025-07-14
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/isescan/isescan/1.7.2.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/isescan/isescan/1.7.3+galaxy0`
+
 ## [1.1.9] - 2025-06-09
 
 ### Automatic update
