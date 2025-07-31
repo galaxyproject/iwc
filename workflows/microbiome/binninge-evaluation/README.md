@@ -1,4 +1,4 @@
-# FAIRyMAGs Taxonomic Binning Evaluation Workflow
+# FAIRyMAGs Binning Evaluation Workflow
 
 This workflow bin paired short reads to generates Metagenome-Assembled Genomes (MAGs) and classified them afterwards.
 **CAMI AMBER** will evaluate the binning of the MAGs.
