@@ -9,8 +9,7 @@
 
 ## Manual update
 
-- Split the taxonomic database so that there are separate databases for Kraken and Bracken.
-- Change the workflow name, certain output labels, datasets name, and tags to adapt the workflow specifically to raw reads.
+- Changing the workflow name to indicate the specificity of raw reads
 
 ## [1.1.9] - 2025-06-16
 
