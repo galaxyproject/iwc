@@ -17,9 +17,10 @@ It uses:
 ## Input datasets
 
 - **Paired collection of sequencing data**: a list of pairs of sequencing datasets, one fw-/rv-reads pair per sequenced isolate
-- **Fasta reference genome**: this must be provided as a list of FASTA datasets, one for each Influenza genome segment to analyze. Each of these datasets should contain all reference sequences of the corresponding segment that you wish to use in the analysis.
-- **Reference annotation**:
-- **Primer scheme** (optional):
+- **Fasta reference genome**: a suitable reference genome for your virus provided in FASTA format
+- **Reference annotation**: genome annotations of the reference sequence in GTF format. **Please make sure it is matching your reference genome sequence!**
+- **Primer scheme** (optional): If provided, indicates ampliconic data and will trigger primer trimming and removal of reads that extend beyond amplicon boundaries.
+  **Please make sure the scheme matches your reference sequence and that the format of the dataset is set to bed!**
 
 ## Input parameters
 
@@ -43,3 +44,33 @@ It uses:
 - **Combined consensus genomes for all samples**: the consensus sequences of all samples concatenated in multi-Fasta format
 - **Quality control report**: report of quality control results from fastp, samtools stats (on the results of mapping with bwa-mem) and Qualimap BamQC (on the filtered mapped reads) aggregated with MultiQC
 
+## Known issues and limitations
+
+- Non-matching reference genome sequence, genome annotation and/or primer scheme
+
+  It is critical for analysis results that the sequence assumed in the genome annotation and, if provided, in the primer scheme input is the same as the reference sequence. Violation of this condition can lead to failures of the workflow run at the SnpEff build or ivar trim (for ampliconic data) steps, but can also cause misannotations of variant effects, wrong primer trimming or inappropriate read elimination before variant calling and consensus building in seemingly successful workflow runs.
+
+- Failing pimer trimming for ampliconic data
+
+  This is usually caused by one of the following issues with your **primer scheme input**:
+
+  - The format of the primer scheme dataset in your history is not set to **bed**, but to e.g. *interval*.
+
+    You either selected the wrong format when uploading the data, or you had Galaxy autodetect the format and it wasn't recognized as bed.
+    Please change the dataset format manually in this case and rerun the WF.
+
+  - The primer scheme might not be fully parseable by Galaxy's ivar trim wrapper.
+
+    In particular, the tool applies the regular expression pattern:
+    `.*_(?P<amplicon_number>\d+).*_(?P<primer_orientation>L(?:EFT)?|R(?:IGHT)?)` to the primer names in column 4 of the primer scheme to deduce amplicon names and primer orientation. This means that it will be able to parse primer names like the following correctly:
+    ``nCoV-2019_1_LEFT`` (parsed as forward primer of amplicon 1), ``400_2_out_R`` (parsed as reverse primer of amplicon 2), ``QIAseq_163-2_LEFT`` (parsed as forward primer of amplicon 163) or `177e6ebb_0_LEFT_0` (parsed as one of several alternative forward primers of amplicon 177e6ebb),
+    but more exotic names might fail parsing.
+
+    If parsing of the primer names is the issue, then you need to edit the names on column 4 of your primer scheme file to pass the regular expression pattern.
+
+- Failure to annotate all translation products in complex viral genes
+
+  This generic workflow can currently, at the annotation step, not handle all ways in which your virus may produce several translation products from a single viral gene. Alternative translation products resulting from ribosomal slippage or polymerase stuttering will, for example, not be annotated in the *SnpEff-annotated variants* and the *Combined variant report for all samples* outputs of the workflow.
+  For other translation products stemming from, for example, the use of alternative start codons or alternative ribosomal entry points, successful annotation will depend on the details of how those products are represented in your *Reference annotation* input.
+
+  When running the workflow for the first time with a new *Reference annotation*, always check carefully the predicted effects on genes, transcripts and proteins in the *SnpEff-annotated variants* and the *Combined variant report for all samples* outputs to understand virus and annotation-file specific problems and limitations before basing your interpretation on those reports.
