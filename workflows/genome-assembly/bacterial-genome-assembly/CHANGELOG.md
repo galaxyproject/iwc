@@ -2,7 +2,7 @@
 
 ## [1.1.9] - 2025-08-11
 
-### Manual update
+### Removed
 
 - Remove quality and contamination control part, this part have been moved to another workflow (quality-and-contamination-control-post-assembly)
 - Removal of refseqmasher because, within the context of ABRomics, the results were not useful for the majority of users.
