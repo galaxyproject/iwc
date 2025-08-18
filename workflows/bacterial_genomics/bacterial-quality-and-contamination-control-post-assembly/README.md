@@ -1,4 +1,4 @@
-# Quality and Contamination control post assembly workflow
+# Bacterial quality and Contamination control post assembly workflow
 
 This workflow uses paired-end illumina fastq(.gz) files and executes the following steps:
 
