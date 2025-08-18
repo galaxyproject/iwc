@@ -1,0 +1,128 @@
+- doc: Test outline for pe-illumina-simple-virus-calling-and-consensus.ga without
+    provided primer scheme (non-ampliconic mode)
+  job:
+    Fasta reference genome:
+      class: File
+      filetype: fasta
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/virology/generic-non-segmented-viral-variant-calling/test-data/measles.fa
+    Paired collection of sequencing data:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R1.fq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R2.fq.gz
+        identifier: SRR30155677_region_filtered
+        type: paired
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R1.fq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R2.fq.gz
+        identifier: SRR30155702_subsampled
+        type: paired
+    Reference annotation:
+      class: File
+      filetype: gtf
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/virology/generic-non-segmented-viral-variant-calling/test-data/measles.gtf
+  outputs:
+    Combined consensus genomes for all samples:
+      asserts:
+      - line: '>SRR30155677_region_filtered'
+        n: 1
+        that: has_line
+      - line: '>SRR30155702_subsampled'
+        n: 1
+        that: has_line
+      - text: NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNGGATAAAGTACACCCAACAAAGAAGGGTAGTTGGTGAATTTAGATTG
+        that: has_text
+      - text: CCTMCAATCGGGCGAGCATTTGGGTCCYTRCCCTTAGGTGTTGGTAGAT
+        that: has_text
+    Combined variant report for all samples:
+      asserts:
+      - line: "Sample\tCHROM\tPOS\tREF\tALT\tQUAL\tDP\tAF\tDP4\tANN[*].EFFECT\tANN[*].IMPACT\t\
+          ANN[*].GENE\tANN[*].HGVS_C\tANN[*].HGVS_P"
+        n: 1
+        that: has_line
+      - n: 599
+        text: "SRR30155702_subsampled\tAB016162.1\t"
+        that: has_text
+- doc: Test outline for pe-illumina-simple-virus-calling-and-consensus.ga with primer
+    scheme (ampliconic mode)
+  job:
+    Fasta reference genome:
+      class: File
+      filetype: fasta
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/virology/generic-non-segmented-viral-variant-calling/test-data/measles.fa
+    Paired collection of sequencing data:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R1.fq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R2.fq.gz
+        identifier: SRR30155677_region_filtered
+        type: paired
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R1.fq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R2.fq.gz
+        identifier: SRR30155702_subsampled
+        type: paired
+    Primer scheme (optional):
+      class: File
+      filetype: bed
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/virology/generic-non-segmented-viral-variant-calling/test-data/measles_primer_scheme.bed
+    Reference annotation:
+      class: File
+      filetype: gtf
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/virology/generic-non-segmented-viral-variant-calling/test-data/measles.gtf
+  outputs:
+    Combined consensus genomes for all samples:
+      asserts:
+      - line: '>SRR30155677_region_filtered'
+        n: 1
+        that: has_line
+      - line: '>SRR30155702_subsampled'
+        n: 1
+        that: has_line
+      - text: NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNACACCCGGGAACAAACCTAGGATTGCCGAAATGATAT
+        that: has_text
+      - text: CCTMCAATCGGGCGAGCATTTGGGTCCYTRCCCTTAGGTGTTGGTAGAT
+        that: not_has_text
+      - text: CCACYAGCYATCCCAATCTGAGTCCTCCTCGTGGRACCCCCGAGGACCAACCCYCA
+        that: has_text
+    Combined variant report for all samples:
+      asserts:
+      - line: "Sample\tCHROM\tPOS\tREF\tALT\tQUAL\tDP\tAF\tDP4\tANN[*].EFFECT\tANN[*].IMPACT\t\
+          ANN[*].GENE\tANN[*].HGVS_C\tANN[*].HGVS_P"
+        n: 1
+        that: has_line
+      - n: 498
+        text: "SRR30155702_subsampled\tAB016162.1\t"
+        that: has_text
