@@ -2,7 +2,7 @@
 
 This workflow uses paired-end illumina fastq(.gz) files and executes the following steps:
 
-1. Genome assembly quality
+1. Genome assembly quality control
    - **Quast** to assess genome quality
    - **Checkm2** to predict the completeness and contamination in an assembly
 2. Taxonomic assignment on contigs
