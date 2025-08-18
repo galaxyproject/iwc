@@ -5,7 +5,7 @@
 ### Removed
 
 - Remove quality and contamination control part, this part have been moved to another workflow (quality-and-contamination-control-post-assembly)
-- Removal of refseqmasher because, within the context of ABRomics, the results were not useful for the majority of users.
+- Removal of refseqmasher because the results were no longer useful in this workflow, but similar information can be obtained in another workflow with Kraken2 (quality-and-contamination-control-post-assembly)
 
 ## [1.1.8] - 2025-07-21
 
