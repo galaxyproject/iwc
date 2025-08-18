@@ -5,7 +5,7 @@ This workflow uses paired-end illumina fastq(.gz) files and executes the followi
 1. Genome assembly quality
    - **Quast** to assess genome quality
    - **Checkm2** to predict the completeness and contamination in an assembly
-2. Taxonomic assignation on contigs
+2. Taxonomic assignment on contigs
    - **Kraken2** assignation
    - **Bracken** to re-estimate abundance to the species level
    - **Recentrifuge** to make a krona chart
