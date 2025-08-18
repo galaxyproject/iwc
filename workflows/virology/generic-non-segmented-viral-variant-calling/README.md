@@ -24,14 +24,14 @@ It uses:
 
 ## Input parameters
 
-- **Supporting read fraction to call variant**: This sets the lower threshold for the fraction of variannt-supporting reads needed at a site to call that variant.
+- **Supporting read fraction to call variant**: This sets the lower threshold for the fraction of variant-supporting reads needed at a site to call that variant.
 
   The value can be set to a floating point number between 0.05 (very sensitive calling) and 0.25 (more noise-resistant calling, the default).
 
   This setting also affects the frequency threshold used for consensus building, which will be set to 0.95 minus the configured value, i.e. with the default setting of 0.25, the most frequent bases at each site will be added up until their combined fraction reaches 0.95 - 0.25 = 0.7 and the IUPAC ambiguity code representing all contributing bases will be used in the consensus.
   With a setting of 0.05, bases will be added up until they reach a combined fraction of 0.95 - 0.05 = 0.9, i.e. IUPAC ambiguity codes will get incorporated with a higher chance.
   In summary, with a higher setting of this parameter the workflow will generate less (but more reliable) variant calls and a cleaner consensus with less ambiguity codes.
- 
+
   **Minimum quality score to consider base for variant calling**: The workflow default for this parameter is 20 and it will be applied to both variant calling and consensus building.
 
 ## Outputs:
