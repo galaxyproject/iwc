@@ -7,9 +7,9 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.0+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1`
 
-## Manual update
+### Changed
 
-- Changing the workflow name to indicate the specificity of raw reads
+- Change the workflow name to indicate that inputs are raw reads
 
 ## [1.1.9] - 2025-06-16
 
