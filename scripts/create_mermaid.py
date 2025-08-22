@@ -34,7 +34,7 @@ def step_to_mermaid_item(
     return f"{step_label_anchor}{shape}"
 
 
-def workflow_to_mermaid_diagrams(workflow, workflows = None):
+def workflow_to_mermaid_diagrams(workflow, workflows=None):
     """
     Converts a Galaxy workflow JSON to a Mermaid flowchart diagram.
 
@@ -51,7 +51,10 @@ def workflow_to_mermaid_diagrams(workflow, workflows = None):
 
     # Create a mapping of step IDs to their labels
     id_step_labels = {
-        int(step["id"]): step.get("label") or step["name"] or step["content_id"] or step["id"]
+        int(step["id"]): step.get("label")
+        or step["name"]
+        or step["content_id"]
+        or step["id"]
         for step in workflow["steps"].values()
     }
 
@@ -59,14 +62,14 @@ def workflow_to_mermaid_diagrams(workflow, workflows = None):
     for step_id, step in workflow["steps"].items():
         step_label = id_step_labels.get(int(step_id))
         mermaid_diagram.append(
-            f'{step_id}{step_to_mermaid_item(step["type"], step_label)}'
+            f"{step_id}{step_to_mermaid_item(step['type'], step_label)}"
         )
         for input_connection in step.get("input_connections", {}).values():
             if not isinstance(input_connection, list):
                 input_connection = [input_connection]
             for ic in input_connection:
                 mermaid_diagram.append(f"{ic['id']} --> {step_id}")
-        
+
         if step["type"] == "subworkflow":
             workflow_to_mermaid_diagrams(step["subworkflow"], workflows=workflows)
 
@@ -86,7 +89,11 @@ def walk_directory(directory):
                 with open(file_path, "r") as f:
                     workflow_data = ordered_load(f)
                 if workflow_data.get("class") == "GalaxyWorkflow":
-                    workflow_data = python_to_workflow(workflow_data, galaxy_interface=None, workflow_directory=os.path.dirname(file_path))
+                    workflow_data = python_to_workflow(
+                        workflow_data,
+                        galaxy_interface=None,
+                        workflow_directory=os.path.dirname(file_path),
+                    )
                 mermaid_diagrams = workflow_to_mermaid_diagrams(workflow_data)
 
                 markdown_items = ["# Workflow diagrams\n"]

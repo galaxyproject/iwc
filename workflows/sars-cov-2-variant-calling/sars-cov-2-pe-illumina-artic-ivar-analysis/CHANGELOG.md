@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1] - 2025-04-28
+
+### Added
+- Added testParameterFiles entry to .dockstore.yml
+
 ## [0.3] - 2022-11-22
 
 - update all tools:

@@ -1,16 +1,18 @@
 # VGP Workflow #1
 
-This workflow produces a Meryl database and Genomescope outputs that will be used to determine parameters for following workflows, and assess the quality of genome assemblies. Specifically, it provides information about the genomic complexity, such as the genome size and levels of heterozygosity and repeat content, as well about the data quality.
+This workflow produces a Meryl database and Genomescope outputs that will be used to determine parameters for following workflows, and assess the quality of genome assemblies. Specifically, it provides information about the genomic complexity, such as the genome size and levels of heterozygosity and repeat content, as well about the data quality. It also provides statistics on the PacBio Hifi reads. 
 
 ### Inputs
 
--   A collection of Hifi long reads in FASTQ format
--   *k*-mer length
--   Ploidy
+1. The name of the species being assembled
+2. The Name of the assembly
+3. A collection of Hifi long reads in FASTQ format
+4. *k*-mer length
+5. Ploidy
 
 ### Outputs
 
--   Meryl Database of kmer counts
+-   Meryl Database of *k*-mer counts
 -   GenomeScope
     -   Linear plot
     -   Log plot
@@ -19,5 +21,9 @@ This workflow produces a Meryl database and Genomescope outputs that will be use
     -   Summary
     -   Model
     -   Model parameteres
+- RDeval for PacBio Hifi Reads QC
+    -   Reads statistics
+    -   HTML report
+  
 
  ![image](https://github.com/galaxyproject/iwc/assets/4291636/565238fc-f8a9-46ac-8b31-6276410fa436)

@@ -1,7 +1,7 @@
 # Purge Duplicate Contigs
 
-Purge contigs marked as duplicates by purge_dups in a single haplotype(could be haplotypic duplication or overlap duplication)
-This workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5)
+Purge contigs marked as duplicates by purge_dups in a single haplotype (could be haplotypic duplication or overlap duplication). If you think the purged contigs might belong to the other haplotype, use the workflow VGP6 instead. 
+This workflow is the 6th workflow of the VGP pipeline. It is meant to be run after one of the contigging steps (Workflow 3, 4, or 5).
 
 ## Inputs
 
@@ -19,9 +19,9 @@ This workflow is the 6th workflow of the VGP pipeline. It is meant to be run aft
 
 ## Outputs
 
-1. Haplotype 1 purged assembly (Fasta and gfa)
-2. Haplotype 2 purged assembly (Fasta and gfa)
-3. QC: BUSCO report for both assemblies
+1. Purged assembly (Fasta and gfa)
+2. QC: BUSCO report for the purged assembly
+3. QC: Compleasm report for the purged assembly
 4. QC: Merqury report for both assemblies
 5. QC: Assembly statistics for both assemblies
 6. QC: Nx plot for both assemblies

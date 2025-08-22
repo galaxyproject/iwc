@@ -1,5 +1,55 @@
 # Changelog
 
+## [0.3.9] - 2025-07-14
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0`
+
+## [0.3.8] - 2025-06-09
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2`
+
+## [0.3.7] - 2025-06-02
+
+### Changes
+- Fix bug where the compleasm analysis run on hap2 was using hap1 as input
+- Fix duplicated lines in the assembly statistics output
+
+## [0.3.6] - 2025-05-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.4.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.5.1+galaxy2`
+
+## [0.3.5] - 2025-05-14
+
+### Changes
+- Add Compleasm for QC
+
+## [0.3.4] - 2025-05-12
+
+### Changes
+- Fix Busco bug
+- Add workflow parameters to the workflow report
+- Hi-C reads input is now a paired collection
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+  
+## [0.3.3] - 2025-04-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.24.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/hifiasm/hifiasm/0.25.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1`
+
 ## [0.3.2] - 2025-03-17
 
 ### Automatic update

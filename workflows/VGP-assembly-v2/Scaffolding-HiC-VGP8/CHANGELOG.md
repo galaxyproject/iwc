@@ -1,5 +1,61 @@
 # Changelog
 
+## [2.0] - 2025-06-09
+
+### Changes
+
+- Now ouputs merged alignment statistics
+- Add MAPQ filtering of Hi-C alignments
+- Set minimum score to output in alignments by BWA-MEM2 to default:30
+
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy2`
+
+
+## [1.8] - 2025-05-27
+
+### Changes
+- Add format constraint on gfa input
+- Add Samtools stats on Hi-C alignments to QC
+- Remove alignment in bed format output
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.4.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.5.1+galaxy2`
+
+
+## [1.7] - 2025-05-14
+
+### Changes
+- Add compleasm outputs
+- Change tags for export workflow compatibility
+
+## [1.6] - 2025-05-13
+
+### Changes
+
+- Fix bug in the previous release where busco parameters were not connecting properly
+- Fix bug where the graph reconciliation where not using the right gfa input, causing to loose some graph informations.  
+- Add some workflow parameters to the workflow report
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+
+## [1.5] - 2025-04-14
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1`
+
+## [1.4] - 2025-04-03
+
+### Changes 
+- Use the option `-5` in bwa-mem2 recommended for Hi-C data
+- Remove the `-a` option in bwa-mem2 
+- Output gff files from Busco
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy4`
+
 ## [1.3] - 2025-03-27
 
 ### Changes

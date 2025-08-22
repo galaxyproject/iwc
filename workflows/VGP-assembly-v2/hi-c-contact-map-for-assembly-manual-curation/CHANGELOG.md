@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.0beta6] - 2025-06-09
+
+### Changes
+- Add a track showing the Gaps in read coverage
+- Add MAPQ filtering for Hi-C alignment (Now outputs both filtered and unfiltered PretextMap)
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0`
+
+
+## [1.0beta5] - 2025-05-12
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.10+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0`
+
+## [1.0beta4] - 2025-04-07
+
+### Changes
+
+- `toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MergeSamFiles/3.1.1.0` was replaced by `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.20+galaxy2`
+
+## [1.0beta3] - 2025-04-07
+
+### Changes
+
+- Add option `-5` to bwa-mem2, recommemded for Hi-C data
+- Remove unecessary  `-a` option from bwa-mem2
+
 ## [1.0beta2] - 2025-03-28
 
 ### Changes

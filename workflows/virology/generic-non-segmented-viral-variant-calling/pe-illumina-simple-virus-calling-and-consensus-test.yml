@@ -1,0 +1,133 @@
+- doc: Test outline for pe-illumina-simple-virus-calling-and-consensus.ga without provided primer scheme (non-ampliconic mode)
+  job:
+    Paired collection of sequencing data:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: SRR30155677_region_filtered
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R1.fq.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R2.fq.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: SRR30155702_subsampled
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R1.fq.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R2.fq.gz
+          filetype: fastqsanger.gz
+    Fasta reference genome:
+      class: File
+      path: test-data/measles.fa
+      filetype: fasta
+    Reference annotation:
+      class: File
+      path: test-data/measles.gtf
+      filetype: gtf
+  outputs:
+    Combined consensus genomes for all samples:
+      asserts:
+        - that: "has_line"
+          line: ">SRR30155677_region_filtered"
+          n: 1
+        - that: "has_line"
+          line: ">SRR30155702_subsampled"
+          n: 1
+        - that: "has_text"
+          # the region-filtered reads produce Ns outside the region
+          text: "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNGGATAAAGTACACCCAACAAAGAAGGGTAGTTGGTGAATTTAGATTG"
+        - that: "has_text"
+          # SRR30155702 is a sample mix that results in a consensus sequence with IUPAC ambiguity codes
+          text: "CCTMCAATCGGGCGAGCATTTGGGTCCYTRCCCTTAGGTGTTGGTAGAT"
+    Combined variant report for all samples:
+      asserts:
+        - that: "has_line"
+          line: "Sample\tCHROM\tPOS\tREF\tALT\tQUAL\tDP\tAF\tDP4\tANN[*].EFFECT\tANN[*].IMPACT\tANN[*].GENE\tANN[*].HGVS_C\tANN[*].HGVS_P"
+          n: 1
+        - that: "has_text"
+          text: "SRR30155677_region_filtered\tAB016162.1\t"
+          n: 43
+          text: "SRR30155702_subsampled\tAB016162.1\t"
+          n: 599
+- doc: Test outline for pe-illumina-simple-virus-calling-and-consensus.ga with primer scheme (ampliconic mode)
+  job:
+    Paired collection of sequencing data:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: SRR30155677_region_filtered
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R1.fq.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155677_region_filtered_R2.fq.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: SRR30155702_subsampled
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R1.fq.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/16495208/files/SRR30155702_subsampled_R2.fq.gz
+          filetype: fastqsanger.gz
+    Fasta reference genome:
+      class: File
+      path: test-data/measles.fa
+      filetype: fasta
+    Reference annotation:
+      class: File
+      path: test-data/measles.gtf
+      filetype: gtf
+    Primer scheme (optional):
+      class: File
+      path: test-data/measles_primer_scheme.bed
+      filetype: bed
+  outputs:
+    Combined consensus genomes for all samples:
+      asserts:
+        - that: "has_line"
+          line: ">SRR30155677_region_filtered"
+          n: 1
+        - that: "has_line"
+          line: ">SRR30155702_subsampled"
+          n: 1
+        - that: "has_text"
+          # the region-filtered reads produce Ns outside the region
+          text: "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNACACCCGGGAACAAACCTAGGATTGCCGAAATGATAT"
+        - that: "not_has_text"
+          # in the non-ampliconic input test data, lots of reads extend beyond assumed amplicon boundaries and get discarded
+          text: "CCTMCAATCGGGCGAGCATTTGGGTCCYTRCCCTTAGGTGTTGGTAGAT"
+        - that: "has_text"
+          # SRR30155702 is a sample mix that results in a consensus sequence with IUPAC ambiguity codes
+          text: "CCACYAGCYATCCCAATCTGAGTCCTCCTCGTGGRACCCCCGAGGACCAACCCYCA"
+    Combined variant report for all samples:
+      asserts:
+        - that: "has_line"
+          line: "Sample\tCHROM\tPOS\tREF\tALT\tQUAL\tDP\tAF\tDP4\tANN[*].EFFECT\tANN[*].IMPACT\tANN[*].GENE\tANN[*].HGVS_C\tANN[*].HGVS_P"
+          n: 1
+        - that: "has_text"
+          text: "SRR30155677_region_filtered\tAB016162.1\t"
+          n: 39
+          text: "SRR30155702_subsampled\tAB016162.1\t"
+          n: 498

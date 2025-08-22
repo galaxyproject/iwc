@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import type { Workflow } from "~/models/workflow";
 import { formatDate } from "~/utils/";
+import { useWorkflowStore } from "~/stores/workflows";
 
 defineProps<{
     workflow: Workflow;
     compact?: boolean;
 }>();
+
+const workflowStore = useWorkflowStore();
+
+const navigateToCollection = (collection: string) => {
+    navigateTo(`/collection/${workflowStore.collectionToSlug(collection)}`);
+};
 </script>
 <template>
     <UCard
@@ -26,7 +33,7 @@ defineProps<{
         }"
         :class="compact ? 'bg-white bg-opacity-90 backdrop-blur-sm rounded-lg' : ''">
         <template #header>
-            <ULink :to="`/workflow/${encodeURIComponent(workflow.trsID)}/`">
+            <ULink :to="`/workflow/${encodeURIComponent(workflow.iwcID)}/`">
                 <h2 :class="`font-bold hover:underline ${compact ? 'text-lg' : 'text-xl mb-2'}`">
                     {{ workflow.definition.name }}
                 </h2>
@@ -39,7 +46,12 @@ defineProps<{
             </p>
 
             <div v-if="workflow.collections && workflow.collections.length > 0 && !compact">
-                <UBadge v-for="collection in workflow.collections" :key="collection" class="mr-2 mb-2" variant="solid">
+                <UBadge
+                    v-for="collection in workflow.collections"
+                    :key="collection"
+                    class="mr-2 mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+                    variant="solid"
+                    @click="navigateToCollection(collection)">
                     {{ collection }}
                 </UBadge>
             </div>
@@ -47,8 +59,9 @@ defineProps<{
                 <UBadge
                     v-for="collection in workflow.collections.slice(0, 2)"
                     :key="collection"
-                    class="mr-1 mb-1"
-                    variant="solid">
+                    class="mr-1 mb-1 cursor-pointer hover:opacity-80 transition-opacity"
+                    variant="solid"
+                    @click="navigateToCollection(collection)">
                     {{ collection }}
                 </UBadge>
                 <UBadge v-if="workflow.collections.length > 2" variant="solid" class="mr-1 mb-1">

@@ -1,0 +1,1115 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "Perform background subtraction, nuclear segmentation, feature quantification, cellular phenotyping, spatial analysis, and interactive visualization of registered TMA core multiplex tissue images",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "0000-0002-6942-2469",
+            "name": "Cameron Watson"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "Multiplex Tissue Microarray Analysis",
+    "readme": "# Multiplex tissue image processing and analysis with Galaxy-ME\n\n## Overview\n\nThis workflow processing and analyzes multiple multiplex tissue imaging datasets by\n\n1. Performing **background subtraction, nuclear segmentation, and feature extraction**\n2. Performing hierarchical, GMM-based **cell phenotyping** \n3. Analyzing **multi-sample cell type composition**\n4. Quantifying the **spatial arrangment of cell types** in the tissues\n5. Exploring the original images with all downstream associated data using **interactive dashboards**\n\n## Input datasets\n\n- Collection of registered OME-TIFF images\n- Markers file (CSV) for background subtraction\n\n    - Example markers file:\n\n```\nmarker_name,background,exposure,remove\nDNA_1,,,\nControl_A488,,,TRUE\nControl_A555,,,TRUE\nControl_A647,,,TRUE\nDNA_2,,,TRUE\nRNA_Pol_II_CTD,Control_A488,,\npERK,Control_A555,,\np53,Control_A647,,\n...\n```\n\n\n- Phenotype workflow and manual gate files (CSV): A comma-separated Scimap phenotyping file that maps hierarchical cell phenotypes to markers, and a manual gates file that maps markers to manually-determined thresholds\n\n    - For examples, see our [tutorial](https://training.galaxyproject.org/training-material/topics/imaging/tutorials/multiplex-tissue-imaging-TMA/tutorial.html) and the [Scimap documentation](https://scimap-doc.readthedocs.io/en/latest/tutorials/scimap-tutorial-cell-phenotyping/).\n\n## Inputs values\n\nAll input values have been preset in the workflow and are optimized for cyclic immunofluorescence images captured using a Rarecyte slide scanner. Some important assumptions are made: \n\n- Channel used for nuclear segmentation (Mesmer): `0`\n- Image resolution (microns per pixel): `0.65`\n\nThe workflow should be imported and edited if these values are not suitable for your datasets. \n\n## Processing\n\nFor more detailed information, see our [tutorial on the Galaxy Training Network](https://training.galaxyproject.org/training-material/topics/imaging/tutorials/multiplex-tissue-imaging-TMA/tutorial.html)\n\n- Nuclear segmentation is performed using **Mesmer**, producing a nuclear mask in TIFF format for each core image\n- Cell/nuclear features (mean marker intensities, spatial coordinates, and morphological measurements) are quantified using **MCQUANT**, producing a CSV table of cells (rows) x features (columns)\n- The quantification table is converted to anndata format (h5ad), a common datatype used by most single-cell and spatial analysis packages\n- Automated cell phenotyping is performed using **Scimap** (see *Warning* section about GMM-based phenotyping)\n- **Scimap** and **Squidpy** are used for spatial analysis\n- Finally, **Vitessce** dashboards combine interactive image viewing with linked single-cell analysis components to allow for integrated initial data exploration\n\n## Tool developers' documentation\n\n- [MCMICRO](https://mcmicro.org/)\n    - Basic Illumination\n    - ASHLAR\n    - UNetCoreograph\n    - MCQuant\n- [Mesmer](https://deepcell.readthedocs.io/en/master/)\n- [Scimap](https://scimap-doc.readthedocs.io/en/latest/)\n- [Vitessce](https://vitessce.io/)\n\n\n## Tool references\n\n- Greenwald, N. F., G. Miller, E. Moen, A. Kong, A. Kagel et al., 2021 Whole-cell segmentation of tissue images with human-level performance using large-scale data annotation and deep learning. Nature Biotechnology 40: 555\u2013565. 10.1038/s41587-021-01094-0\n- Schapiro, D., A. Sokolov, C. Yapp, Y.-A. Chen, J. L. Muhlich et al., 2021 MCMICRO: a scalable, modular image-processing pipeline for multiplexed tissue imaging. Nature Methods 19: 311\u2013315. 10.1038/s41592-021-01308-y\n- Virshup, I., S. Rybakov, F. J. Theis, P. Angerer, and F. A. Wolf, 2021 anndata: Annotated data. 10.1101/2021.12.16.473007\n- Palla, G., H. Spitzer, M. Klein, D. Fischer, A. C. Schaar et al., 2022 Squidpy: a scalable framework for spatial omics analysis. Nature Methods 19: 171\u2013178. 10.1038/s41592-021-01358-2\n- Nirmal, A. J., and P. K. Sorger, 2024 SCIMAP: A Python Toolkit for Integrated Spatial Analysis of Multiplexed Imaging Data. Journal of Open Source Software 9: 6604. 10.21105/joss.06604",
+    "release": "0.1.1",
+    "report": {
+        "markdown": "## Multi-sample analysis\n\n### Multi-sample cell type composition\n\nA barplot depicting the relative abundance of cell types across the tissue samples. Cells were classified using Scimap's hierarchical gating tool. Cells may be classified as \"Unknown\" if key lineage markers are missing from the dataset's protein panel or from the phenotyping workflow. Manually adjusting gates may also help improve cell typing. \n\n```galaxy\nhistory_dataset_display(output=\"Multisample barplot\")\n```\n\n\n### Multi-sample spatial distribution of cell types\n\nA spatial scatterplot of the X and Y centroids of every cell in the tissue with color representing cell type. The scale bar is automatically generated using the physical resolution of the instrument, which is a parameter of the Galaxy tool and can be edited in the workflow if necessary. \n\n```galaxy\nhistory_dataset_display(output=\"Spatial Scatterplot Montage\")\n```\n\n##  Single sample analysis\n### Quantification of Cell type interactions\n\nA matrix quantifying the number of interactions between cell types within a user-specified radius of each cell. This parameter can be changed in the workflow to suit a particular dataset's needs, but is currently set to facilitate a 30 micrometer radius for images with a physical resolution of 0.65 micrometers per pixel. The X and Y axes are the same with the query cell type on the Y axis with rows normalized to 1. \n\n```galaxy\nhistory_dataset_as_image(output=\"Spatial Interaction Montage\")\n```\n\n### Interactive image exploration\n\nA Vitessce dashboard. The Spatial component shows the actual multiplex tissue image. Marker selection, intensity range manipulation, and cell mask overlays can be controlled in the Spatial Layers component. The intensity distribution among cell types can be explored by selecting a protein from the Gene List component, and will generate a violin plot in the Expression by Cell Sets component, and annotate the UMAP and cell mask by the mean protein intensity. All components can be rearranged, resized, or removed to facilitate easier viewing. \n\n```galaxy\nvisualization(visualization_id=vitessce, output=\"Vitessce Dashboard\")\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "Collection of registered OME-TIFF images",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Collection of registered OME-TIFF images",
+                    "name": "Registered Images"
+                }
+            ],
+            "label": "Registered Images",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 480.9770202636719
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"ome.tiff\"], \"tag\": \"\", \"collection_type\": \"list\", \"fields\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "6484e16f-a546-4d6d-802b-7d49ddf9d8cc",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "File specifying marker names and autofluorescence channels to subtract",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "File specifying marker names and autofluorescence channels to subtract",
+                    "name": "Markers File"
+                }
+            ],
+            "label": "Markers File",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 711.9926452636719
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": \"\"}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "a74fa446-8ad9-4689-82fd-dfce67a42e08",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "CSV with log1p intensity manual gates per marker. Markers not specified will be GMM auto thresholded",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "CSV with log1p intensity manual gates per marker. Markers not specified will be GMM auto thresholded",
+                    "name": "Manual Gates"
+                }
+            ],
+            "label": "Manual Gates",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 1113,
+                "top": 309.4770202636719
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": true, \"format\": [\"csv\"], \"tag\": \"\"}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "5776a434-779b-438e-a3d1-04eef92e4904",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Scimap phenotype workflow",
+            "content_id": null,
+            "errors": null,
+            "id": 3,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Scimap phenotype workflow",
+                    "name": "Phenotype workflow"
+                }
+            ],
+            "label": "Phenotype workflow",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 1113.03125,
+                "top": 414.9613952636719
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"csv\"], \"tag\": \"\"}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "86ba7a1d-67a9-43d5-a892-b856b99af468",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input_collection": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Extract element identifiers",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "txt"
+                }
+            ],
+            "position": {
+                "left": 1632.302001953125,
+                "top": 591.2395935058594
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+            "tool_shed_repository": {
+                "changeset_revision": "d3c07d270a50",
+                "name": "collection_element_identifiers",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "0.0.2",
+            "type": "tool",
+            "uuid": "318e8981-56a8-4a60-9884-e7060b57df7a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/backsub/backsub/0.4.1+galaxy0",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "markers": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "root": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Background subtraction",
+            "outputs": [
+                {
+                    "name": "image_output",
+                    "type": "ome.tiff"
+                },
+                {
+                    "name": "marker_output",
+                    "type": "csv"
+                }
+            ],
+            "position": {
+                "left": 283.765625,
+                "top": 594.7604064941406
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/backsub/backsub/0.4.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "bf9f98a7f936",
+                "name": "backsub",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"adv\": {\"pixel_size\": null, \"tile_size\": null}, \"markers\": {\"__class__\": \"ConnectedValue\"}, \"root\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "0.4.1+galaxy0",
+            "type": "tool",
+            "uuid": "371507f6-d4c7-4f52-9490-8f227aa8e554",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Background subtracted images",
+                    "output_name": "image_output",
+                    "uuid": "05af0345-5107-45d3-84e7-ac774a176771"
+                },
+                {
+                    "label": "Background subtracted markers",
+                    "output_name": "marker_output",
+                    "uuid": "35586ef1-2e0c-4b45-a3cd-a93060d4a921"
+                }
+            ]
+        },
+        "6": {
+            "annotation": "",
+            "content_id": "Show beginning1",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input": {
+                    "id": 4,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Select first",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1608.8373413085938,
+                "top": 760.4457702636719
+            },
+            "post_job_actions": {
+                "HideDatasetActionout_file1": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "Show beginning1",
+            "tool_state": "{\"header\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"lineNum\": \"1\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "2c538a69-724c-4554-a798-9719c9235098",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/mesmer/mesmer/0.12.3+galaxy3",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "image": {
+                    "id": 5,
+                    "output_name": "image_output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Perform segmentation of multiplexed tissue data",
+            "outputs": [
+                {
+                    "name": "mask",
+                    "type": "tiff"
+                }
+            ],
+            "position": {
+                "left": 533.9999389648438,
+                "top": 292.1708068847656
+            },
+            "post_job_actions": {
+                "RenameDatasetActionmask": {
+                    "action_arguments": {
+                        "newname": "Segmented Multiplexed Mask"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "mask"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/mesmer/mesmer/0.12.3+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "2675ff99a53b",
+                "name": "mesmer",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"compartment_select\": {\"compartment\": \"nuclear\", \"__current_case__\": 0, \"nuclear_options\": {\"pixel_expansion\": null, \"maxima_threshold\": \"0.1\", \"adv_options\": {\"maxima_smooth\": \"0\", \"interior_threshold\": \"0.2\", \"interior_smooth\": \"2\", \"small_objects_threshold\": \"15\", \"fill_holes_threshold\": \"15\", \"radius\": \"1\"}}}, \"image\": {\"__class__\": \"ConnectedValue\"}, \"image_mpp\": \"0.65\", \"nuclear_channels\": \"0\", \"squeeze\": true, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "0.12.3+galaxy3",
+            "type": "tool",
+            "uuid": "37293292-6525-45af-a1ed-91acb0167eb0",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Segmented Multiplexed Mask",
+                    "output_name": "mask",
+                    "uuid": "0339b5c7-b92c-48ea-b866-632c946a9bdf"
+                }
+            ]
+        },
+        "8": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/perssond/quantification/quantification/1.6.0+galaxy0",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "channel_names": {
+                    "id": 5,
+                    "output_name": "marker_output"
+                },
+                "image": {
+                    "id": 5,
+                    "output_name": "image_output"
+                },
+                "primary_mask": {
+                    "id": 7,
+                    "output_name": "mask"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool MCQUANT",
+                    "name": "supp_mask"
+                }
+            ],
+            "label": null,
+            "name": "MCQUANT",
+            "outputs": [
+                {
+                    "name": "cellmask",
+                    "type": "csv"
+                },
+                {
+                    "name": "suppmask",
+                    "type": "csv"
+                }
+            ],
+            "position": {
+                "left": 834.03125,
+                "top": 485.9770202636719
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/perssond/quantification/quantification/1.6.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "e11d5fafd0cc",
+                "name": "quantification",
+                "owner": "perssond",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"channel_names\": {\"__class__\": \"ConnectedValue\"}, \"image\": {\"__class__\": \"ConnectedValue\"}, \"intensity_props\": \"\", \"mask_props\": \"\", \"primary_mask\": {\"__class__\": \"ConnectedValue\"}, \"supp_mask\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.6.0+galaxy0",
+            "type": "tool",
+            "uuid": "9436ee28-4a4f-4227-98ae-2e00c30891cf",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Primary Mask Quantification",
+                    "output_name": "cellmask",
+                    "uuid": "861c4a98-5450-420c-aa9a-2c879387fd7a"
+                }
+            ]
+        },
+        "9": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/2.1.0+galaxy3",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "image_path": {
+                    "id": 8,
+                    "output_name": "cellmask"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Convert McMicro Output to Anndata",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "h5ad"
+                }
+            ],
+            "position": {
+                "left": 1112.015625,
+                "top": 545.9770202636719
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_mcmicro_to_anndata/scimap_mcmicro_to_anndata/2.1.0+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "b1ead1b7e0aa",
+                "name": "scimap_mcmicro_to_anndata",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"drop_markers\": \"\", \"image_path\": {\"__class__\": \"ConnectedValue\"}, \"options\": {\"remove_dna\": true, \"remove_string_from_name\": \"\", \"log\": false, \"random_sample\": null, \"CellId\": \"CellID\", \"unique_CellId\": false, \"split\": \"X_centroid\", \"custom_imageid\": \"\", \"min_cells\": null}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.1.0+galaxy3",
+            "type": "tool",
+            "uuid": "46bbd9d9-0573-4e35-afe1-5bcc7b3580e8",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "10": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_phenotyping/scimap_phenotyping/2.1.0+galaxy3",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "anndata": {
+                    "id": 9,
+                    "output_name": "outfile"
+                },
+                "gating_workflow": {
+                    "id": 3,
+                    "output_name": "output"
+                },
+                "manual_gates": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Single Cell Phenotyping",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "h5ad"
+                }
+            ],
+            "position": {
+                "left": 1387.578125,
+                "top": 385.96881103515625
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_phenotyping/scimap_phenotyping/2.1.0+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "37dc4f51e827",
+                "name": "scimap_phenotyping",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"anndata\": {\"__class__\": \"ConnectedValue\"}, \"gating_workflow\": {\"__class__\": \"ConnectedValue\"}, \"log\": true, \"manual_gates\": {\"__class__\": \"ConnectedValue\"}, \"random_state\": \"0\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.1.0+galaxy3",
+            "type": "tool",
+            "uuid": "20b0b004-70e4-4bd6-befd-841a16c429b7",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "phenotyped adata",
+                    "output_name": "output",
+                    "uuid": "753e98d5-d4d7-4114-b01c-211fafd71021"
+                }
+            ]
+        },
+        "11": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ebi-gxa/anndata_ops/anndata_ops/1.9.3+galaxy0",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "input_obj_file": {
+                    "id": 10,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "AnnData Operations",
+            "outputs": [
+                {
+                    "name": "output_h5ad",
+                    "type": "h5ad"
+                }
+            ],
+            "position": {
+                "left": 1568.6874389648438,
+                "top": 3.458343505859375
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_h5ad": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_h5ad"
+                },
+                "RenameDatasetActionoutput_h5ad": {
+                    "action_arguments": {
+                        "newname": "Phenotyped adata"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output_h5ad"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ebi-gxa/anndata_ops/anndata_ops/1.9.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "a4774b7b2e85",
+                "name": "anndata_ops",
+                "owner": "ebi-gxa",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"add_cell_metadata\": {\"default\": false, \"__current_case__\": 1}, \"copy_adata_to_raw\": false, \"copy_e\": {\"default\": false, \"__current_case__\": 1}, \"copy_l\": {\"default\": false, \"__current_case__\": 1}, \"copy_o\": {\"default\": false, \"__current_case__\": 1}, \"copy_r\": {\"default\": false, \"__current_case__\": 1}, \"copy_u\": {\"default\": false, \"__current_case__\": 1}, \"copy_x\": {\"default\": false, \"__current_case__\": 1}, \"field_unique\": \"\", \"gene_flags\": [], \"gene_symbols_field\": \"index\", \"input_obj_file\": {\"__class__\": \"ConnectedValue\"}, \"modifications\": [{\"__index__\": 0, \"from_obs\": \"CellID\", \"to_obs\": \"CellID_col\", \"keep_original\": false, \"make_unique\": false}], \"output_format\": \"anndata_h5ad\", \"sanitize_varm\": false, \"split_on_obs\": {\"default\": false, \"__current_case__\": 1}, \"swap_layer_to_x\": {\"default\": false, \"__current_case__\": 1}, \"top_genes\": \"50\", \"var_modifications\": [], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.9.3+galaxy0",
+            "type": "tool",
+            "uuid": "e62c368d-d7db-45d8-a54d-661e0a914ee0",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "",
+            "content_id": "__EXTRACT_DATASET__",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "input": {
+                    "id": 11,
+                    "output_name": "output_h5ad"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Extract dataset",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "data"
+                }
+            ],
+            "position": {
+                "left": 1970.2470157372454,
+                "top": 275.2570644579839
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutput": {
+                    "action_arguments": {
+                        "newtype": "h5ad"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "output"
+                },
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__EXTRACT_DATASET__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"which\": {\"which_dataset\": \"first\", \"__current_case__\": 0}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "aaf93d18-bbad-4bd9-bd5f-97a2a2cb74db",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
+            "annotation": "",
+            "content_id": "__FILTER_FROM_FILE__",
+            "errors": null,
+            "id": 13,
+            "input_connections": {
+                "how|filter_source": {
+                    "id": 6,
+                    "output_name": "out_file1"
+                },
+                "input": {
+                    "id": 11,
+                    "output_name": "output_h5ad"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter collection",
+                    "name": "how"
+                }
+            ],
+            "label": null,
+            "name": "Filter collection",
+            "outputs": [
+                {
+                    "name": "output_filtered",
+                    "type": "input"
+                },
+                {
+                    "name": "output_discarded",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1966.03125,
+                "top": 455.9770202636719
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_discarded": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_discarded"
+                },
+                "HideDatasetActionoutput_filtered": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_filtered"
+                }
+            },
+            "tool_id": "__FILTER_FROM_FILE__",
+            "tool_state": "{\"how\": {\"how_filter\": \"remove_if_present\", \"__current_case__\": 1, \"filter_source\": {\"__class__\": \"ConnectedValue\"}}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "f19e4dfa-458f-4432-beaa-d9613cc34847",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "14": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_scatter/squidpy_scatter/1.5.0+galaxy2",
+            "errors": null,
+            "id": 14,
+            "input_connections": {
+                "anndata": {
+                    "id": 11,
+                    "output_name": "output_h5ad"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Create spatial scatterplot",
+            "outputs": [
+                {
+                    "name": "output_plot",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 2244.03125,
+                "top": 18.977020263671875
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_scatter/squidpy_scatter/1.5.0+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "b84c324b58bd",
+                "name": "squidpy_scatter",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"aesthetic_opts\": {\"size\": \"3\", \"alpha\": \"1.0\", \"cmap\": \"viridis\", \"colorbar\": true, \"scalebar_dx\": \"0.65\", \"scalebar_units\": \"um\", \"title\": \"\", \"figsize\": \"\", \"dpi\": \"300\"}, \"anndata\": {\"__class__\": \"ConnectedValue\"}, \"color\": \"phenotype\", \"legend_opts\": {\"legend_loc\": \"right margin\", \"legend_fontsize\": \"8\", \"legend_fontweight\": \"bold\", \"legend_fontoutline\": null, \"legend_na\": true}, \"plot_opts\": {\"groups\": \"\", \"use_raw\": false, \"crop_coord\": \"\"}, \"x_coord\": \"X_centroid\", \"y_coord\": \"Y_centroid\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.5.0+galaxy2",
+            "type": "tool",
+            "uuid": "61b97858-519e-4dab-b651-28bd9e3beb37",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Squidpy Spatial Scatterplots",
+                    "output_name": "output_plot",
+                    "uuid": "3f98dc2b-3b28-4239-97db-06aa6ce3cf17"
+                }
+            ]
+        },
+        "15": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/3.5.1+galaxy2",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
+                "do_phenotyping|anndata": {
+                    "id": 11,
+                    "output_name": "output_h5ad"
+                },
+                "image": {
+                    "id": 5,
+                    "output_name": "image_output"
+                },
+                "masks": {
+                    "id": 7,
+                    "output_name": "mask"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Vitessce",
+                    "name": "do_phenotyping"
+                }
+            ],
+            "label": null,
+            "name": "Vitessce",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "html"
+                },
+                {
+                    "name": "vitessce_config",
+                    "type": "json"
+                }
+            ],
+            "position": {
+                "left": 2025.2124633789062,
+                "top": 978.3520202636719
+            },
+            "post_job_actions": {
+                "HideDatasetActionvitessce_config": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "vitessce_config"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/vitessce_spatial/vitessce_spatial/3.5.1+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "70c8be4d59e9",
+                "name": "vitessce_spatial",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"do_phenotyping\": {\"phenotyping_choice\": \"add_h5ad\", \"__current_case__\": 1, \"anndata\": {\"__class__\": \"ConnectedValue\"}, \"scatterplot_embeddings\": {\"embedding\": \"umap\", \"__current_case__\": 0, \"options\": {\"n_neighbors\": \"30\", \"n_pcs\": \"10\", \"knn\": true, \"random_state\": \"0\"}}, \"phenotype_factory\": {\"phenotype_mode\": \"choices\", \"__current_case__\": 0, \"phenotypes\": [\"phenotype\"]}}, \"image\": {\"__class__\": \"ConnectedValue\"}, \"masks\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "3.5.1+galaxy2",
+            "type": "tool",
+            "uuid": "eb7209e4-90b5-4aac-af74-e70e5e4c2339",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Vitessce HTML",
+                    "output_name": "output",
+                    "uuid": "42bb625d-8a7b-4038-bf92-fca811c98052"
+                }
+            ]
+        },
+        "16": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_spatial/squidpy_spatial/1.5.0+galaxy2",
+            "errors": null,
+            "id": 16,
+            "input_connections": {
+                "anndata": {
+                    "id": 11,
+                    "output_name": "output_h5ad"
+                }
+            },
+            "inputs": [],
+            "label": "Create spatial neighbors",
+            "name": "Analyze and visualize spatial multi-omics data",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "h5ad"
+                }
+            ],
+            "position": {
+                "left": 2244.03125,
+                "top": 210.99264526367188
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_spatial/squidpy_spatial/1.5.0+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "2a5036c29889",
+                "name": "squidpy_spatial",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"analyses\": {\"selected_tool\": \"spatial_neighbors\", \"__current_case__\": 0, \"options\": {\"spatial_key\": \"spatial\", \"coord_type\": \"generic\", \"n_neighs\": \"6\", \"radius\": \"46\", \"delaunay\": false, \"n_rings\": \"1\", \"transform\": \"none\", \"set_diag\": false, \"key_added\": \"spatial\"}}, \"anndata\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.5.0+galaxy2",
+            "type": "tool",
+            "uuid": "5151fba1-a146-4f60-b107-4acfd0a0442e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "17": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy1",
+            "errors": null,
+            "id": 17,
+            "input_connections": {
+                "input": {
+                    "id": 12,
+                    "output_name": "output"
+                },
+                "manipulate|other_adatas": {
+                    "id": 13,
+                    "output_name": "output_filtered"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Manipulate AnnData",
+                    "name": "manipulate"
+                }
+            ],
+            "label": "Merge anndata files",
+            "name": "Manipulate AnnData",
+            "outputs": [
+                {
+                    "name": "anndata",
+                    "type": "h5ad"
+                }
+            ],
+            "position": {
+                "left": 2244.03125,
+                "top": 423.8280944824219
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "be1fdce914c6",
+                "name": "anndata_manipulate",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"manipulate\": {\"function\": \"concatenate\", \"__current_case__\": 0, \"other_adatas\": {\"__class__\": \"ConnectedValue\"}, \"join\": \"inner\", \"batch_key\": \"batch\", \"uns_merge\": \"None\", \"index_unique\": \"-\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "0.10.9+galaxy1",
+            "type": "tool",
+            "uuid": "60036c99-1c64-4c2b-96dd-cce602766e92",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Merged anndata",
+                    "output_name": "anndata",
+                    "uuid": "2656930d-577b-489c-872f-92e2ca4352b9"
+                }
+            ]
+        },
+        "18": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.45+galaxy0",
+            "errors": null,
+            "id": 18,
+            "input_connections": {
+                "input": {
+                    "id": 14,
+                    "output_name": "output_plot"
+                }
+            },
+            "inputs": [],
+            "label": "Create Scatterplot Montage",
+            "name": "Image Montage",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 2715.677001953125,
+                "top": 0
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Spatial Scatterplot Montage"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.45+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "601575b847c0",
+                "name": "graphicsmagick_image_montage",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"width\": \"2\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.3.45+galaxy0",
+            "type": "tool",
+            "uuid": "ecabaf86-d5a6-4cc4-9409-72822264e559",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Spatial Scatterplot Montage",
+                    "output_name": "output",
+                    "uuid": "dc0f5d6a-3d12-4eca-855c-656754d5de22"
+                }
+            ]
+        },
+        "19": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2",
+            "errors": null,
+            "id": 19,
+            "input_connections": {
+                "infile": {
+                    "id": 15,
+                    "output_name": "vitessce_config"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Replace",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2357.307069326321,
+                "top": 902.2059289792224
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutfile": {
+                    "action_arguments": {
+                        "newtype": "vitessce.json"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "c41d78ae5fee",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"find_and_replace\": [{\"__index__\": 0, \"find_pattern\": \"display?filename=\", \"replace_pattern\": \"extra_files/raw/\", \"is_regex\": false, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}], \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "9.5+galaxy2",
+            "type": "tool",
+            "uuid": "a0e365ff-9cb6-4772-b441-eaaf9b346777",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Vitessce Dashboard",
+                    "output_name": "outfile",
+                    "uuid": "6910ccfe-45e1-46a8-8ef0-98c34ffec295"
+                }
+            ]
+        },
+        "20": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_spatial/squidpy_spatial/1.5.0+galaxy2",
+            "errors": null,
+            "id": 20,
+            "input_connections": {
+                "anndata": {
+                    "id": 16,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Compute interaction matrix for clusters",
+            "name": "Analyze and visualize spatial multi-omics data",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "h5ad"
+                },
+                {
+                    "name": "output_plot",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 2523.03125,
+                "top": 242.97702026367188
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/squidpy_spatial/squidpy_spatial/1.5.0+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "2a5036c29889",
+                "name": "squidpy_spatial",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"analyses\": {\"selected_tool\": \"interaction_matrix\", \"__current_case__\": 4, \"cluster_key\": \"phenotype\", \"options\": {\"connectivity_key\": \"\", \"normalized\": true, \"weights\": false}, \"plotting_options\": {\"annotate\": false, \"method\": \"none\", \"title\": \"\", \"cmap\": \"viridis\", \"palette\": \"\", \"figsize\": \"\", \"dpi\": \"300\"}}, \"anndata\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.5.0+galaxy2",
+            "type": "tool",
+            "uuid": "2f4e29ce-953e-4cc2-aa43-2130fced8027",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Interaction Matrix Plot",
+                    "output_name": "output_plot",
+                    "uuid": "8d1a2a99-1da6-40da-99c1-fd2cb6d50211"
+                },
+                {
+                    "label": "Interaction Matrix Anndata",
+                    "output_name": "output",
+                    "uuid": "b6f89398-197a-4554-9598-756650603f5d"
+                }
+            ]
+        },
+        "21": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_plotting/scimap_plotting/2.1.0+galaxy3",
+            "errors": null,
+            "id": 21,
+            "input_connections": {
+                "anndata": {
+                    "id": 17,
+                    "output_name": "anndata"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Spatial plotting functions",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 2522.03125,
+                "top": 525.9770202636719
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Final multisample barplot for report"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/goeckslab/scimap_plotting/scimap_plotting/2.1.0+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "05a8d9dea3df",
+                "name": "scimap_plotting",
+                "owner": "goeckslab",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"analyses\": {\"selected_tool\": \"stacked_barplot\", \"__current_case__\": 0, \"x_axis\": \"imageid\", \"y_axis\": \"phenotype\", \"method\": \"percent\", \"options\": {\"subset_xaxis\": \"\", \"subset_yaxis\": \"\", \"order_xaxis\": \"\", \"order_yaxis\": \"\", \"matplotlib_cmap\": \"Set1\"}}, \"anndata\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.1.0+galaxy3",
+            "type": "tool",
+            "uuid": "2197507f-7e65-47ed-84ec-476369f114ff",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Multisample barplot",
+                    "output_name": "output",
+                    "uuid": "2b2f0135-4550-489f-abc2-8040b68ea81d"
+                }
+            ]
+        },
+        "22": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.45+galaxy0",
+            "errors": null,
+            "id": 22,
+            "input_connections": {
+                "input": {
+                    "id": 20,
+                    "output_name": "output_plot"
+                }
+            },
+            "inputs": [],
+            "label": "Create Spatial Interaction Montage",
+            "name": "Image Montage",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 2869.197998046875,
+                "top": 238.10415649414062
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Spatial Interaction Montage"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.45+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "601575b847c0",
+                "name": "graphicsmagick_image_montage",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"width\": \"2\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.3.45+galaxy0",
+            "type": "tool",
+            "uuid": "6862e2b1-a5c2-4748-ac99-6c7973c80726",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Spatial Interaction Montage",
+                    "output_name": "output",
+                    "uuid": "aa19fdb1-9236-4ce5-8054-63f2b3b99e06"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "eeedc263-2a29-4651-9b2b-007bf5d3cf4b",
+    "version": 3
+}
