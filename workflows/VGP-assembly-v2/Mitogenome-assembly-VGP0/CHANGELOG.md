@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.2] - 2025-08-25
+
+### Changes
+- Expose Genetic Code parameter for MitoHiFi
+
 ## [0.2.1] - 2025-05-16
 
 ### Changes
