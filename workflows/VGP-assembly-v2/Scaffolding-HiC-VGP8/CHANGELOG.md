@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [2.1] - 2025-08-25
+
+### Changes
+- Better management of collections when there is only one pair of hi-C data
+
 ## [2.0] - 2025-06-09
 
 ### Changes
