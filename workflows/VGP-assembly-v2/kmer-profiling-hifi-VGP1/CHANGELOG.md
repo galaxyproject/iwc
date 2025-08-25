@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.4] - 2025-07-14
+## [0.4] - 2025-08-25
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy5`
