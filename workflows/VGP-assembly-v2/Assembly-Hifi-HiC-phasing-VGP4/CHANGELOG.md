@@ -1,5 +1,13 @@
 # Changelog
 
+
+## [0.3.10] - 2025-08-22
+
+### Changes
+- Improve management of collections with single elements
+- Default minimum mapping value is now 10.
+
+
 ## [0.3.9] - 2025-07-14
 
 ### Automatic update
