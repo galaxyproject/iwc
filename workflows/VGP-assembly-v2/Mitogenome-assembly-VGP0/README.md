@@ -9,6 +9,7 @@ Generate mitochondrial assembly based on PacBio HiFi reads. Part of the VGP suit
 2. Name of the Assembly
 3. Hifi long reads [fastq]
 4. Email adress required for NCBI database query 
+5. Organism genetic code following NCBI table (for mitogenome annotation)
 
 ## Outputs
 
