@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0b7] - 2025-08-11
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.2.1+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.20+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.21+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_telo/1.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_telo/1.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy0`
+
 ## [1.0beta6] - 2025-06-09
 
 ### Changes
