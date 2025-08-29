@@ -1,7 +1,13 @@
 # Changelog
 
 
-## [0.3.10] - 2025-08-22
+## [0.3.11] - 2025-08-28
+
+### Changes
+- Fix bug appearing in version 0.3.10 where only the first hi-C pair of reads was used for phasing.
+
+
+## [0.3.10] - 2025-08-22 (Broken, do not use)
 
 ### Changes
 - Improve management of collections with single elements
