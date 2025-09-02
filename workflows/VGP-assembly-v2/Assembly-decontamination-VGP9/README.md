@@ -7,6 +7,8 @@ Decontamination (foreign contaminants and mitochondrial sequences) of genome ass
 - Genome assembly [fasta]
 - The NCBI taxonomic identifier of your species (e.g. `9606` for humans) 
 - Your species binomial name (e.g. Homo Sapiens)
+- The assembly name (e.g. Hg19)
+- The haplotype being decontaminated
 - Maximum length of sequence to consider for mitochondrial scaffolds:. Select `0` to use all the scaffolds. Change this setting if you have particularly long scaffolds that cause BLAST to fail. 
 
 ### Ouput

@@ -6,7 +6,7 @@
 ## Major Update
 
 - Replace Kraken with the NCBI FCS-Gx tool suite
-
+- Improve workflow report with assembly informations (Assembly ID and haplotype)
 
 
 ## [0.8] - 2025-08-25
