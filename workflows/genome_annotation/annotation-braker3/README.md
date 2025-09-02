@@ -1,6 +1,6 @@
 # Genome annotation workflow with Braker3
 
-This workflow allows for genome annotation using Braker3 and evaluates the quality of the annotation with BUSCO and genome annotation statistics. The annotation can then be improved, standardized, and visualized with additional tools.
+This workflow allows annotation of a eukaryotic genome using Braker3 and evaluates the quality of the annotation using BUSCO and genome annotation statistics. The annotation can then be improved, normalized, and visualized using additional tools.
 
 **Braker3** is an automated bioinformatics tool that uses RNA-seq and protein data to annotate genomes. It integrates GeneMark-ETP and AUGUSTUS software to predict genes with a high degree of precision. By combining the results of these two tools, Braker3 generates a final file containing gene annotations with strong extrinsic support (i.e. based on external experimental data).
 
@@ -15,7 +15,7 @@ This workflow allows for genome annotation using Braker3 and evaluates the quali
 
 ## Input data
 The following input files are required for the workflow:
-- Genome sequence (FASTA format): The genome to be annotated. Used by Braker3, Fasta Statistics, and BUSCO.
+- Soft Masked genome sequence (FASTA format): The genome to be annotated. Used by Braker3, Fasta Statistics, and BUSCO.
 - Protein sequences (FASTA format): Evidence to assist annotation in Braker3.
 - Alignments from RNA-seq (BAM format): Alignments used as evidence by Braker3.
 
