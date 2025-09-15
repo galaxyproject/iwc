@@ -4,7 +4,7 @@
 
 ### Manual update
 
-- `toolshed.g2.bx.psu.edu/repos/nml/staramr/staramr_search/0.10.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/nml/staramr/staramr_search/0.10.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy3`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.0+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/0.9.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1`
 - Adds 2 input parameters : StarAMR database and species selection (PointFinder)
