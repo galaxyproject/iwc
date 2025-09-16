@@ -1,0 +1,85 @@
+- doc: Test outline for bacterial_quality_and_contamination_control_post_assembly.ga
+  job:
+    Input sequence contigs FASTA:
+      class: File
+      location: https://zenodo.org/records/16779020/files/E-coli3_S194.fasta
+      filetype: fasta
+    Select a NCBI taxonomy database: "2022-03-08"
+    Select a taxonomy database: k2_minusb_20210517
+    Fasta boolean: true
+    Fastq boolean: false
+  outputs:
+    Quast tabular report for FASTA files:
+      asserts:
+        has_text:
+          text: "# contigs (>= 500 bp)"
+        has_n_columns:
+          n: 2         
+    Bracken tabular report:
+      asserts:
+        has_text:
+          text: "Escherichia coli"
+        has_n_columns:
+          n: 7
+    Bracken Kraken tabular report:
+      asserts:
+        has_text:
+          text: "Escherichia coli"
+        has_n_columns:
+          n: 6
+    Kraken2 sequence assignation:
+      asserts:
+        has_text:
+          text: "contig00001"
+        has_text:
+          text: "contig00359"          
+    Kraken2 tabular report:
+      asserts:
+        has_text:
+          text: "Escherichia fergusonii"
+        has_n_columns:
+          n: 6
+    Recentrifuge data tabular report:
+      asserts:
+        has_text:
+          text: "Escherichia coli O145"
+        has_n_columns:
+          n: 6
+    Recentrifuge tabular statistics report:
+      asserts:
+        has_text:
+          text: "input_dir/kraken_report"
+        has_n_columns:
+          n: 2
+    Checkm2 tabular report:
+      asserts:
+        has_text:
+          text: "Completeness_General"
+        has_n_columns:
+          n: 15
+    Checkm2 diamond files:
+      element_tests:
+        DIAMOND_RESULTS:
+          asserts:
+            has_text:
+              text: "UniRef100_B1IY62~K00116"
+            has_n_columns:
+              n: 12
+    Checkm2 protein files:
+      element_tests:
+        E-coli3_S194.fasta:
+          asserts:
+            has_text:
+              text: ">contig00001_1"
+            has_text:
+              text: ">contig00358_1"
+    Tooldistillator summarize control:
+      asserts:
+        - that: has_text
+          text: "quast_report"
+        - that: has_text
+          text: "ncbi_taxonomic_id"
+        - that: has_text
+          text: "kraken2_report"
+        - that: has_text
+          text: "checkm2_report"

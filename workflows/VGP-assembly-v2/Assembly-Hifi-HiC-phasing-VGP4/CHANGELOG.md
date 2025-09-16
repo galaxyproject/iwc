@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.3.12] - 2025-09-01
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0`
+
+
+## [0.3.11] - 2025-08-28
+
+### Changes
+- Fix bug appearing in version 0.3.10 where only the first hi-C pair of reads was used for phasing.
+
+
+## [0.3.10] - 2025-08-22 (Broken, do not use)
+
+### Changes
+- Improve management of collections with single elements
+- Default minimum mapping value is now 10.
+
+
+## [0.3.9] - 2025-07-14
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0`
+
 ## [0.3.8] - 2025-06-09
 
 ### Automatic update
