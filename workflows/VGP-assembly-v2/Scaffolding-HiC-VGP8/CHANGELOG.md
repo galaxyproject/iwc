@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.3] - 2025-09-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy3`
+
 ## [2.2] - 2025-09-01
 
 ### Automatic update
