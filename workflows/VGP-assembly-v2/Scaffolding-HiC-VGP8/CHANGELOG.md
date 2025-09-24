@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [3.0] - 2025-09-24
+
+### Changes
+- Now remove duplicated Hi-C reads
+- Duplication statistics
+- Improved report
+
+
 ## [2.2] - 2025-09-01
 
 ### Automatic update
