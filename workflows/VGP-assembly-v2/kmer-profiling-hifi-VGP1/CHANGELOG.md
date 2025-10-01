@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5] - 2025-10-01
+
+# Changes
+
+- Add Mash QC 
+
 ## [0.4] - 2025-08-25
 
 ### Automatic update
