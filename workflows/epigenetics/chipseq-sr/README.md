@@ -14,7 +14,7 @@
 
 ## Processing
 
-- The workflow will remove illumina adapters and filter out any read smaller than 15bp after adapter removal. All reads with too much low quality bases will be discarded.
+- The workflow will remove illumina adapters and filter out any read smaller than 15bp after adapter removal. All reads with too many low quality bases will be discarded.
 - The filtered reads are mapped with bowtie2 with default parameters.
 - The BAM is filtered to keep only MAPQ30.
 - The peaks are called with MACS2 with a fixed extension of 200bp which at the same time generates a coverage file (normalized or not).
