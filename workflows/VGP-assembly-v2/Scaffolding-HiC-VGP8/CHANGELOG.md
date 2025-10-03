@@ -1,9 +1,27 @@
 # Changelog
 
 
+## [3.1] - 2025-09-26
+
+### Changes
+
+- Duplications and alignments statistics now applied to alignements before filtering
+- Add duplications statistics on scaffold alignments
+- Remove BUSCO for QC, replaced by Compleasm
+
+
+### Updates
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/1.1.3+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/1.1.3+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3`
+
+
+
 ## [3.0] - 2025-09-24
 
 ### Changes
+
 - Now remove duplicated Hi-C reads
 - Duplication statistics
 - Improved report
