@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.16] - 2025-09-29
+## [1.0] - 2025-10-03
+
+### Tool change
+
+- The workflow now uses fastp instead of cutadapt.
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0`
