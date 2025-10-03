@@ -9,13 +9,14 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 
 ## Inputs values
 
-- reference_genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (dbkeys table)
-- effective_genome_size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
-- bin_size: this is used when normalization of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs.
+- Percentage of bad quality bases per read: fastp will discard any read which has more than this percentage of bases with a quality below 30. This depends on your read length.
+- Reference genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (dbkeys table)
+- Effective genome size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
+- Bin size: this is used when normalization of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs.
 
 ## Processing
 
-- The workflow will remove nextera adapters and low quality bases and filter out any read smaller than 15bp.
+- The workflow will remove nextera adapters using read overlap and filter out any read smaller than 15bp after adapter removal. All reads with too many low quality bases will be discarded.
 - The filtered reads are mapped with bowtie2 allowing dovetail and fragment length up to 1kb.
 - The BAM is filtered to keep only MAPQ30, concordant pairs and pairs outside of the mitochondria.
 - The PCR duplicates are removed with Picard (only from version 0.8).
