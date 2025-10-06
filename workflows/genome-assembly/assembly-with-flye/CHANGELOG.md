@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] - 2025-10-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy1`
+
 ## [0.3] - 2025-05-19
 
 ### Automatic update
