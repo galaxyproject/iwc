@@ -23,11 +23,7 @@ All results are consolidated into a single **MultiQC report** for easy analysis.
 
 Input reads must be quality-filtered, with host reads removed. 
 
-- **Trimmed reads**: Quality-trimmed reads from individual samples, used solely for abundance estimation.  
-- **Trimmed reads from grouped samples**: These reads need to be grouped based on the desired MAGs generation approach:  
-  - **Individual MAGs Generation**: Use the same input as `Sample-wise Trimmed Paired Reads` to generate MAGs per sample.  
-  - **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all reads input one file for a fully pooled MAGs approach.  
-  - **Grouped MAGs Generation (Co-assembly/Binning)**: Merge samples based on predefined groups.  
-  - **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.  
+* **Trimmed reads**: Quality-trimmed reads from individual samples.
+* **Metadata for grouped assembly/binning**: A two-column, tab-separated metadata file. The first column should contain the sample names matching those in the **Trimmed reads** input, and the second column should specify the group indicating how samples are to be grouped for assembly and binning. If no file is provided, individual assemblies are performed. To perform a full co-assembly, assign all samples to the same group.
 
 > **Note**: Merging reads can result in large input files, significantly increasing computational demands—especially during assembly and binning, which may require substantial RAM. Our tests with synthetic samples up to **50 GB** showed feasible performance. For larger datasets, we recommend limiting the approach to **individual or pooled MAGs generation**.  
