@@ -7,6 +7,7 @@
 * **metaSPAdes** now supports running in single-assembly mode when individual samples are submitted. Previously, it always performed co-assembly, which is the default tool setting.
 * Grouping for grouped assemblies is now handled in the main workflow through a metadata sample sheet (`Metadata for grouped assembly/binning`). If no sample sheet is provided, individual assemblies are performed by default.
 * All tools have been updated to their latest versions.
+* Workflow annotations.
 
 ## [0.3] - 2025-06-09
 
