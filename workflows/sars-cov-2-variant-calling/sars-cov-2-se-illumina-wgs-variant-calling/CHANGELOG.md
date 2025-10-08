@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.7] - 2025-10-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0`
+
 ## [0.1.6] - 2025-03-10
 
 ### Automatic update
