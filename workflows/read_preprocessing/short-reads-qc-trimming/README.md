@@ -1,8 +1,8 @@
-# Raw reads quality control and trimming
+# Short-reads quality control and trimming
 
 Before starting any analysis, it is always a good idea to assess the quality of the input data and to discard poor-quality base content by trimming and filtering reads.
 
-This workflow takes paired-end Illumina fastq(.gz) files and executes the following steps:
+This workflow takes paired-end Illumina (**short-reads**) fastq(.gz) files and executes the following steps:
 1. Quality control and trimming using **fastp**
 2. Aggregation of the quality control reports using **MultiQC**
 
