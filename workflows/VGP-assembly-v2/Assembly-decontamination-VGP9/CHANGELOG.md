@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1] - 2025-10-8
+
+## Changes
+
+- Fix bug that happened when adaptors were found in the assembly but none in the middle of the sequence.
 
 ## [1.0] - 2025-08-29
 
