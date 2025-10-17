@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { type Workflow } from "~/models/workflow";
 import { useWorkflowStore } from "~/stores/workflows";
 import { useSeoMeta, useRuntimeConfig, useRoute, useRouter } from "#imports";
@@ -86,6 +86,13 @@ watch(
 // Initialize filters from URL on mount
 onMounted(() => {
     workflowStore.setFilterFromUrl();
+    // Auto-scroll to results if there are URL filters
+    if (route.query.filter) {
+        // Use nextTick to ensure DOM is updated before scrolling
+        nextTick(() => {
+            scrollToGrid();
+        });
+    }
 });
 
 // TODO: As an initial implementation, we are explicitly defining trsIds here,

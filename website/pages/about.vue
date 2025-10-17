@@ -1,5 +1,7 @@
 <template>
-    <div class="container mx-auto py-16 px-6 text-center max-w-6xl overflow-auto">
+    <NuxtLayout>
+        <template #content>
+            <div class="container mx-auto py-16 px-6 text-center max-w-6xl overflow-auto">
         <!-- Hero Section -->
         <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">
             Automate your analysis from<br />
@@ -125,7 +127,9 @@
             class="inline-block bg-ebony-clay hover:bg-bay-of-many text-white font-medium py-3 px-6 rounded-lg transition duration-300 mt-8 mb-8">
             Browse the library »
         </NuxtLink>
-    </div>
+            </div>
+        </template>
+    </NuxtLayout>
 </template>
 
 <script setup lang="ts">
