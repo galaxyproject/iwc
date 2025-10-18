@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { useWorkflowStore } from "~/stores/workflows";
+import { computed } from 'vue';
+import { useStore } from '@nanostores/vue';
+import { workflowCollections } from '../stores/workflowStore';
+import WorkflowCard from './WorkflowCard.vue';
 
 // TODO: Could use any other identifier instead of trsId that seems fit
 
@@ -8,10 +11,13 @@ const props = defineProps<{
     workflowTrsIds: string[];
 }>();
 
-const workflowStore = useWorkflowStore();
+const collections = useStore(workflowCollections);
 
 const workflows = computed(() => {
-    return props.workflowTrsIds?.map((trsID) => workflowStore.getWorkflowByTrsId(trsID));
+    const allWorkflows = collections.value.flatMap((collection) => collection.workflows);
+    return props.workflowTrsIds?.map((trsID) => {
+        return allWorkflows.find((w) => w.trsID === trsID);
+    }).filter(Boolean);
 });
 </script>
 
