@@ -26,7 +26,7 @@ const navigateToCollection = (collection: string) => {
         :class="[
             'flex flex-col',
             compact
-                ? 'h-[18rem] hover:shadow-lg transition-shadow bg-white bg-opacity-90 backdrop-blur-sm'
+                ? 'h-[18rem] hover:shadow-lg transition-shadow bg-white'
                 : 'mb-6 hover:shadow-lg transition-shadow',
         ]"
     >
