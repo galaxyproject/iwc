@@ -5,6 +5,7 @@ import type { Workflow } from '../models/workflow';
 import MarkdownRenderer from './MarkdownRenderer.vue';
 import Author from './Author.vue';
 import GalaxyInstanceSelector from './GalaxyInstanceSelector.vue';
+import Button from './ui/Button.vue';
 import { formatDate } from '../utils';
 
 const props = defineProps<{
@@ -194,13 +195,9 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow and fill in your own input parameters and datasets.
                                         </p>
-                                        <a
-                                            :href="launchUrl"
-                                            target="_blank"
-                                            class="inline-block px-4 py-2 bg-bay-of-many-700 text-white rounded hover:bg-bay-of-many-800"
-                                        >
+                                        <Button as="a" :href="launchUrl" target="_blank">
                                             🚀 Run Workflow
-                                        </a>
+                                        </Button>
                                     </div>
 
                                     <div class="border border-gray-300 rounded-lg p-4">
@@ -208,12 +205,9 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <button
-                                            @click="createLandingPage"
-                                            class="px-4 py-2 bg-bay-of-many-700 text-white rounded hover:bg-bay-of-many-800"
-                                        >
+                                        <Button @click="createLandingPage">
                                             🚀 Run with example data
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                                 <div v-if="!selectedInstance" class="mt-3 text-sm text-amber-600">
@@ -337,19 +331,12 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                     You can choose to run the workflow with sample data prefilled, or with your own data.
                 </p>
                 <div class="mt-4 flex flex-col gap-2">
-                    <a
-                        :href="launchUrl"
-                        target="_blank"
-                        class="inline-block px-4 py-2 bg-bay-of-many-700 text-white text-center rounded hover:bg-bay-of-many-800"
-                    >
+                    <Button as="a" :href="launchUrl" target="_blank" class="w-full">
                         🚀 Run Workflow
-                    </a>
-                    <button
-                        @click="createLandingPage"
-                        class="px-4 py-2 bg-bay-of-many-700 text-white rounded hover:bg-bay-of-many-800"
-                    >
+                    </Button>
+                    <Button @click="createLandingPage" class="w-full">
                         🚀 Run with example data
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
