@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import IWCHeader from '../../components/IWCHeader.astro';
+import CollectionContent from '../../components/CollectionContent.vue';
+import { loadManifest, getAllCollections } from '../../utils/manifest';
+
+export async function getStaticPaths() {
+    const collections = await loadManifest();
+    const allCollections = getAllCollections(collections);
+
+    return allCollections.map((collection) => {
+        const slug = collection.toLowerCase().replace(/ /g, '-');
+        return {
+            params: { slug },
+            props: { collectionName: collection },
+        };
+    });
+}
+
+const { slug } = Astro.params;
+const { collectionName } = Astro.props;
+
+const baseUrl = 'https://iwc.galaxyproject.org';
+---
+
+<BaseLayout
+    title={`${collectionName} - Intergalactic Workflow Commission`}
+    description={`Discover ${collectionName} workflows - Ready-to-use, open-source pipelines with sample data and training materials`}
+>
+    <IWCHeader slot="header" />
+
+    <div slot="hero">
+        <div class="flex bg-ebony-clay p-4 items-center" style="flex-direction: column">
+            <h1 class="text-4xl my-8 text-white text-center font-bold">{collectionName} Workflows</h1>
+
+            <div class="mt-4">
+                <a href="/" class="text-white hover:text-gray-300 underline"> ← Back to all workflows </a>
+            </div>
+        </div>
+    </div>
+
+    <CollectionContent slot="content" collectionName={collectionName} client:load />
+</BaseLayout>
