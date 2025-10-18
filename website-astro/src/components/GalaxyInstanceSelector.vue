@@ -7,6 +7,11 @@
 
 import { ref, computed, onMounted, watch } from 'vue';
 import { useStorage } from '@vueuse/core';
+import Select from './ui/Select.vue';
+import SelectTrigger from './ui/SelectTrigger.vue';
+import SelectValue from './ui/SelectValue.vue';
+import SelectContent from './ui/SelectContent.vue';
+import SelectItem from './ui/SelectItem.vue';
 
 // Default instance list - never modified
 const defaultInstances = [
@@ -123,14 +128,16 @@ function addCustomInstance() {
             </p>
         </div>
 
-        <select
-            v-model="selectedInstance"
-            class="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-900"
-        >
-            <option v-for="instance in allInstances" :key="instance" :value="instance">
-                {{ instance }}
-            </option>
-        </select>
+        <Select v-model="selectedInstance">
+            <SelectTrigger class="w-full">
+                <SelectValue placeholder="Select a Galaxy instance" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem v-for="instance in allInstances" :key="instance" :value="instance">
+                    {{ instance }}
+                </SelectItem>
+            </SelectContent>
+        </Select>
 
         <div class="mt-2 flex gap-2">
             <button

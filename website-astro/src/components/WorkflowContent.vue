@@ -6,6 +6,10 @@ import MarkdownRenderer from './MarkdownRenderer.vue';
 import Author from './Author.vue';
 import GalaxyInstanceSelector from './GalaxyInstanceSelector.vue';
 import Button from './ui/Button.vue';
+import Tabs from './ui/Tabs.vue';
+import TabsList from './ui/TabsList.vue';
+import TabsTrigger from './ui/TabsTrigger.vue';
+import TabsContent from './ui/TabsContent.vue';
 import { formatDate } from '../utils';
 
 const props = defineProps<{
@@ -13,7 +17,7 @@ const props = defineProps<{
 }>();
 
 const selectedInstance = ref('');
-const currentTabIndex = ref(0);
+const currentTab = ref('about');
 
 const launchUrl = computed(() => {
     if (!selectedInstance.value) return '';
@@ -83,40 +87,39 @@ const workflow_job_input = computed(() => {
 
 // Define interface for tab items
 interface TabItem {
+    value: string;
     label: string;
     content?: string;
-    tools?: string[] | string;
-    preview?: boolean;
 }
 
 const tabs = computed<TabItem[]>(() => [
     {
+        value: 'about',
         label: 'About',
         content: props.workflow?.readme || 'No README available.',
     },
     {
+        value: 'diagram',
         label: 'Diagram',
         content: props.workflow?.diagrams || 'No diagram available',
     },
     {
+        value: 'version-history',
         label: 'Version History',
         content: props.workflow?.changelog || 'No CHANGELOG available.',
     },
     {
+        value: 'how-to-run',
         label: 'How to Run',
         // No content property as we'll use a custom template for this tab
     },
 ]);
 
-function onTabChange(index: number) {
-    currentTabIndex.value = index;
-    // Set the hash in the URL to the current tab label for better navigation
-    const item = tabs.value[index];
-    if (item) {
-        const label = item.label.toLowerCase().replace(/\s+/g, '-');
-        if (window.location.hash !== `#${label}`) {
-            window.location.hash = `#${label}`;
-        }
+function onTabChange(value: string) {
+    currentTab.value = value;
+    // Set the hash in the URL for better navigation
+    if (window.location.hash !== `#${value}`) {
+        window.location.hash = `#${value}`;
     }
 }
 
@@ -124,10 +127,10 @@ function onTabChange(index: number) {
 function setActiveTabFromHash() {
     const hash = window.location.hash.slice(1); // Remove the # character
     if (hash) {
-        // Find the tab index that matches the hash
-        const tabIndex = tabs.value.findIndex((tab) => tab.label.toLowerCase().replace(/\s+/g, '-') === hash);
-        if (tabIndex !== -1) {
-            currentTabIndex.value = tabIndex;
+        // Find the tab value that matches the hash
+        const tab = tabs.value.find((t) => t.value === hash);
+        if (tab) {
+            currentTab.value = tab.value;
         }
     }
 }
@@ -144,34 +147,31 @@ onMounted(() => {
         <!-- Main content area -->
         <div class="flex-1">
             <div class="p-4 mb-6">
-                <!-- Tabs -->
-                <div class="border-b border-gray-200 mb-4">
-                    <nav class="flex gap-2" aria-label="Tabs">
-                        <button
-                            v-for="(tab, index) in tabs"
-                            :key="index"
-                            @click="onTabChange(index)"
-                            :class="[
-                                'px-4 py-2 font-medium text-sm border-b-2 transition-colors',
-                                currentTabIndex === index
-                                    ? 'border-bay-of-many-700 text-bay-of-many-700'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                            ]"
-                        >
+                <Tabs v-model="currentTab" @update:modelValue="onTabChange">
+                    <!-- Tab List -->
+                    <TabsList class="mb-4">
+                        <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">
                             {{ tab.label }}
-                        </button>
-                    </nav>
-                </div>
+                        </TabsTrigger>
+                    </TabsList>
 
-                <!-- Tab content -->
-                <div class="mt-6">
-                    <!-- About, Diagram, Version History tabs -->
-                    <div v-if="tabs[currentTabIndex].content" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs[currentTabIndex].content!" />
-                    </div>
+                    <!-- About Tab -->
+                    <TabsContent value="about" class="prose !max-w-none">
+                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'about')?.content || ''" />
+                    </TabsContent>
 
-                    <!-- How to Run tab -->
-                    <div v-else-if="tabs[currentTabIndex].label === 'How to Run'" class="prose !max-w-none">
+                    <!-- Diagram Tab -->
+                    <TabsContent value="diagram" class="prose !max-w-none">
+                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'diagram')?.content || ''" />
+                    </TabsContent>
+
+                    <!-- Version History Tab -->
+                    <TabsContent value="version-history" class="prose !max-w-none">
+                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'version-history')?.content || ''" />
+                    </TabsContent>
+
+                    <!-- How to Run Tab -->
+                    <TabsContent value="how-to-run" class="prose !max-w-none">
                         <h2>How to Run This Workflow</h2>
                         <p>There are multiple ways to run this workflow. Choose the method that suits your needs:</p>
 
@@ -294,8 +294,8 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                </div>
+                    </TabsContent>
+                </Tabs>
             </div>
         </div>
 
