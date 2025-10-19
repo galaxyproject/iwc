@@ -100,8 +100,5 @@ interface WorkflowOutput {
     uuid: string;
 }
 
-// Import the JSON data
-import workflowManifest from "../public/workflow_manifest.json";
-
-// Type the imported data as an array of WorkflowCollection
-export const workflowCollections: WorkflowCollection[] = workflowManifest as WorkflowCollection[];
+// Note: Workflow data is loaded dynamically via fetch in workflowStore.ts
+// No static import needed here to avoid build issues with the symlinked JSON file

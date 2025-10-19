@@ -20,7 +20,7 @@ export async function loadManifest(): Promise<WorkflowCollection[]> {
       const response = await fetch('/workflow_manifest.json');
       manifestData = await response.json();
     }
-    return manifestData;
+    return manifestData || [];
   } catch (error) {
     console.error('Failed to load manifest:', error);
     return [];
