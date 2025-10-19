@@ -49,9 +49,25 @@ function renderMermaidDiagrams() {
         const parent = element.parentElement;
         const code = element.textContent || '';
         if (parent) {
+            // Hide the code block and show loading indicator
+            element.style.display = 'none';
+
+            // Create loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'mermaid-loading';
+            loadingDiv.innerHTML = `
+                <div class="mermaid-loading-spinner"></div>
+                <p class="mermaid-loading-text">Rendering diagram...</p>
+            `;
+            parent.insertBefore(loadingDiv, element);
+
             try {
                 const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
                 mermaid.render(id, code).then((value) => {
+                    // Remove loading indicator
+                    if (loadingDiv.parentElement) {
+                        loadingDiv.remove();
+                    }
                     // Create container with zoom controls
                     const container = document.createElement('div');
                     container.className = 'mermaid-zoom-container';
@@ -259,9 +275,29 @@ function renderMermaidDiagrams() {
                             isDragging = false;
                         });
                     }
+                }).catch((e) => {
+                    console.error('Mermaid rendering error:', e);
+                    // Remove loading indicator on error
+                    if (loadingDiv.parentElement) {
+                        loadingDiv.remove();
+                    }
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'mermaid-error';
+                    errorDiv.textContent = 'Failed to render diagram';
+                    parent.appendChild(errorDiv);
                 });
             } catch (e) {
                 console.error('Mermaid rendering error:', e);
+                // Remove loading indicator on error
+                if (loadingDiv.parentElement) {
+                    loadingDiv.remove();
+                }
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mermaid-error';
+                errorDiv.textContent = 'Failed to render diagram';
+                parent.appendChild(errorDiv);
             }
         }
     });
@@ -273,6 +309,51 @@ function renderMermaidDiagrams() {
 </template>
 
 <style scoped>
+/* Loading indicator styles */
+:deep(.mermaid-loading) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #fff;
+    margin: 1rem 0;
+}
+
+:deep(.mermaid-loading-spinner) {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #d97706;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+:deep(.mermaid-loading-text) {
+    margin-top: 1rem;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error message styles */
+:deep(.mermaid-error) {
+    padding: 1rem;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #991b1b;
+    margin: 1rem 0;
+    text-align: center;
+}
+
 :deep(.mermaid-zoom-container) {
     position: relative;
     border: 1px solid #e5e7eb;
