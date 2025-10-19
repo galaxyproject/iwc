@@ -15,24 +15,40 @@ const props = defineProps<Props>();
         v-bind="props"
         :class="
             cn(
-                'mt-6',
+                'mt-6 tab-content-transition',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bay-of-many-700 focus-visible:ring-offset-2',
                 props.class
             )
         "
     >
-        <Transition
-            enter-active-class="transition-all duration-150 ease-out"
-            enter-from-class="opacity-0 translate-y-2"
-            enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-100 ease-in"
-            leave-from-class="opacity-100 translate-y-0"
-            leave-to-class="opacity-0 -translate-y-2"
-            mode="out-in"
-        >
-            <div :key="props.value">
-                <slot />
-            </div>
-        </Transition>
+        <slot />
     </TabsContent>
 </template>
+
+<style scoped>
+.tab-content-transition[data-state='active'] {
+    animation: fade-in 150ms ease-out;
+}
+
+.tab-content-transition[data-state='inactive'] {
+    animation: fade-out 100ms ease-in;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+</style>
