@@ -316,9 +316,9 @@ function renderMermaidDiagrams() {
     align-items: center;
     justify-content: center;
     padding: 3rem;
-    border: 1px solid #e5e7eb;
+    border: none;
     border-radius: 8px;
-    background: #fff;
+    background: transparent;
     margin: 1rem 0;
 }
 
@@ -358,7 +358,7 @@ function renderMermaidDiagrams() {
     position: relative;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    background: #fff;
+    background: transparent;
     margin: 1rem 0;
     overflow: hidden;
 }
@@ -438,7 +438,7 @@ function renderMermaidDiagrams() {
 /* Dark mode support */
 :deep(.dark .mermaid-zoom-container) {
     border-color: #374151;
-    background: #1f2937;
+    background: transparent;
 }
 
 :deep(.dark .mermaid-zoom-controls) {
