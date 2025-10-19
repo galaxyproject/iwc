@@ -8,10 +8,16 @@ interface Props extends TabsRootProps {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
-    <TabsRoot v-bind="props" :class="cn('w-full', props.class)">
+    <TabsRoot
+        :modelValue="props.modelValue"
+        @update:modelValue="emit('update:modelValue', $event)"
+        :defaultValue="props.defaultValue"
+        :class="cn('w-full', props.class)"
+    >
         <slot />
     </TabsRoot>
 </template>
