@@ -85,6 +85,12 @@ const filteredInstances = computed(() => {
     return allInstances.value.filter(instance => instance.toLowerCase().includes(search));
 });
 
+// Check if search term exactly matches an existing instance
+const isExactMatch = computed(() => {
+    if (!searchTerm.value) return false;
+    return allInstances.value.some(instance => instance.toLowerCase() === searchTerm.value.toLowerCase());
+});
+
 onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
@@ -144,9 +150,9 @@ watch(selectedInstance, (newVal, oldVal) => {
             </ComboboxAnchor>
 
             <ComboboxContent class="max-h-60 overflow-auto">
-                <!-- Show "Create" option when searchTerm doesn't match any existing instances -->
+                <!-- Show "Create" option when searchTerm doesn't exactly match any existing instance -->
                 <ComboboxItem
-                    v-if="searchTerm && filteredInstances.length === 0"
+                    v-if="searchTerm && !isExactMatch"
                     :value="searchTerm"
                     class="cursor-pointer"
                 >
@@ -175,8 +181,8 @@ watch(selectedInstance, (newVal, oldVal) => {
                     </div>
                 </ComboboxItem>
 
-                <!-- Show empty state only when there's no search term -->
-                <ComboboxEmpty v-if="!searchTerm">
+                <!-- Show empty state only when there's no search term and no instances -->
+                <ComboboxEmpty v-if="!searchTerm && allInstances.length === 0">
                     <div class="py-2">
                         <p class="text-sm text-gray-500">
                             Type to search or enter a custom Galaxy instance URL
