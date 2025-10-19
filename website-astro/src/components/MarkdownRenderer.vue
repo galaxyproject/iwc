@@ -309,6 +309,20 @@ function renderMermaidDiagrams() {
 </template>
 
 <style scoped>
+/* Hide mermaid code blocks before JavaScript processes them */
+:deep(pre:has(.language-mermaid)) {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 1rem 0 !important;
+}
+
+:deep(.language-mermaid) {
+    background: transparent !important;
+    color: transparent !important;
+    display: none !important;
+}
+
 /* Loading indicator styles */
 :deep(.mermaid-loading) {
     display: flex;
@@ -416,7 +430,7 @@ function renderMermaidDiagrams() {
 
 :deep(.mermaid-zoom-content) {
     width: 100%;
-    height: 400px;
+    height: 600px;
     overflow: hidden;
     position: relative;
     display: flex;
