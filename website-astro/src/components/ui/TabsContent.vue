@@ -21,6 +21,18 @@ const props = defineProps<Props>();
             )
         "
     >
-        <slot />
+        <Transition
+            enter-active-class="transition-all duration-150 ease-out"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition-all duration-100 ease-in"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-2"
+            mode="out-in"
+        >
+            <div :key="props.value">
+                <slot />
+            </div>
+        </Transition>
     </TabsContent>
 </template>
