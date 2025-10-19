@@ -172,7 +172,7 @@ onMounted(() => {
 
                     <!-- How to Run Tab -->
                     <TabsContent value="how-to-run" class="prose !max-w-none">
-                        <h2>How to Run This Workflow</h2>
+                        <h1>How to Run This Workflow</h1>
                         <p>There are multiple ways to run this workflow. Choose the method that suits your needs:</p>
 
                         <div class="bg-gray-50 p-6 rounded-lg mb-8 not-prose">
