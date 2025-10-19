@@ -1,0 +1,137 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "IWC Logo Galaxy IWC - Workflow Library" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img "IWC Logo" [ref=e8]
+          - generic [ref=e9]: Galaxy IWC - Workflow Library
+        - generic [ref=e10]:
+          - link "About" [ref=e11] [cursor=pointer]:
+            - /url: /about
+          - link "Contribute" [ref=e12] [cursor=pointer]:
+            - /url: https://github.com/galaxyproject/iwc/blob/main/workflows/README.md#adding-workflows
+          - link "GitHub" [ref=e13] [cursor=pointer]:
+            - /url: https://github.com/galaxyproject/iwc/
+            - text: GitHub
+    - main [ref=e15]:
+      - generic [ref=e17]:
+        - generic [ref=e21]:
+          - tablist [ref=e22]:
+            - tab "About" [selected] [ref=e25] [cursor=pointer]:
+              - generic [ref=e26]: About
+            - tab "Diagram" [ref=e27] [cursor=pointer]:
+              - generic [ref=e28]: Diagram
+            - tab "Version History" [ref=e29] [cursor=pointer]:
+              - generic [ref=e30]: Version History
+            - tab "How to Run" [ref=e31] [cursor=pointer]:
+              - generic [ref=e32]: How to Run
+          - generic [ref=e33]:
+            - tabpanel "About" [ref=e34]:
+              - generic [ref=e37]:
+                - 'heading "RNA-Seq Analysis: Paired-End Read Processing and Quantification" [level=1] [ref=e38]'
+                - heading "Inputs dataset" [level=2] [ref=e39]
+                - list [ref=e40]:
+                  - listitem [ref=e41]:
+                    - paragraph [ref=e42]: "Collection paired FASTQ files: The workflow needs a list of dataset pairs of fastqsanger."
+                  - listitem [ref=e43]:
+                    - paragraph [ref=e44]: "GTF file of annotation: A gtf file with genes annotation."
+                  - listitem [ref=e45]:
+                    - paragraph [ref=e46]: "GTF with regions to exclude from FPKM normalization with Cufflinks: Optional, but recommended. A gtf file with regions to exclude from normalization in Cufflinks."
+                    - list [ref=e47]:
+                      - listitem [ref=e48]: "For instance a gtf that masks chrM for the mm10 genome:"
+                - code [ref=e50]: chrM chrM_gene exon 0 16299 . + . gene_id "chrM_gene_plus"; transcript_id "chrM_tx_plus"; exon_id "chrM_ex_plus"; chrM chrM_gene exon 0 16299 . - . gene_id "chrM_gene_minus"; transcript_id "chrM_tx_minus"; exon_id "chrM_ex_minus";
+                - heading "Inputs values" [level=2] [ref=e51]
+                - list [ref=e52]:
+                  - listitem [ref=e53]: "Forward and Reverse adapter (optional): By default, fastp will try to overlap both reads and will only use these sequences if R1/R2 are found not overlapped. Their sequences depends on the library preparation. Usually classical Illumina RNA libraries is Truseq and ISML (relatively new Illumina library) is Nextera."
+                  - listitem [ref=e54]: "Generate additional QC reports: whether to compute additional QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes."
+                  - listitem [ref=e55]: "Reference genome: this field will be adapted to the genomes available for STAR."
+                  - listitem [ref=e56]: "Strandedness: For stranded RNA, reverse means that the first read in a pair is complementary to the coding sequence, forward means that the first read in a pair is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie."
+                  - listitem [ref=e57]: "Use featureCounts for generating count tables: Whether to use count tables from featureCounts instead of from STAR."
+                  - listitem [ref=e58]: "Compute Cufflinks FPKM: Whether you want to get FPKM with Cufflinks (pretty long)."
+                  - listitem [ref=e59]: "Compute StringTie FPKM: Whether you want to get FPKM/TPM etc... with StringTie."
+                - heading "Processing" [level=2] [ref=e60]
+                - list [ref=e61]:
+                  - listitem [ref=e62]: The workflow will remove adapters and low quality bases and filter out any read smaller than 15bp.
+                  - listitem [ref=e63]: The filtered reads are mapped with STAR with ENCODE parameters (for long RNA-seq but I use it for short also). STAR is also used to count reads per gene and generate strand-specific normalized coverage (on uniquely mapped reads).
+                  - listitem [ref=e64]: Optionally featureCounts is used to generate count files when this option enabled.
+                  - listitem [ref=e65]: Optionally FastQC, Picard, read_distribution, geneBody_coverage, samtools idxstats, Picard are run to get additional QC.
+                  - listitem [ref=e66]: A multiQC is run to have an overview of the QC. This can also be used to get the strandedness.
+                  - listitem [ref=e67]: FPKM values for genes and transcripts are computed with cufflinks using correction for multi-mapped reads (this step is optionnal).
+                  - listitem [ref=e68]: FPKM/TPM values for genes are computed with StringTie (this step is optional).
+                  - listitem [ref=e69]: The BAM is filtered to keep only uniquely mapped reads (tag NH:i:1).
+                  - listitem [ref=e70]: Unstranded coverage is computed with bedtools and normalized to the number of million uniquely mapped reads.
+                  - listitem [ref=e71]: The three coverage files are converted to bigwig.
+                - heading "Warning" [level=3] [ref=e72]
+                - list [ref=e73]:
+                  - listitem [ref=e74]:
+                    - text: "The coverage stranded output depends on the strandedness of the library:"
+                    - list [ref=e75]:
+                      - listitem [ref=e76]: If you have an unstranded library, stranded coverages are useless
+                      - listitem [ref=e77]: If you have a forward stranded library, the label matches the orientation of the first read in pairs.
+                      - listitem [ref=e78]: If you have a reverse stranded library, the label matches the orientation of the second read in pairs.
+            - text: "💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right 💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right 💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right 💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right 💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ```` ````"
+        - generic [ref=e80]:
+          - 'heading "RNA-Seq Analysis: Paired-End Read Processing and Quantification" [level=2] [ref=e81]'
+          - paragraph [ref=e82]: "Complete RNA-Seq analysis for paired-end data: Processes raw FASTQ data through adapter and bad quality removal (fastp), alignment with STAR using ENCODE parameters, gene quantification via multiple methods (STAR and featureCounts), and expression calculation (FPKM with Cufflinks/StringTie, normalized coverage with bedtools). Produces count tables, normalized expression values, and genomic coverage tracks. Supports stranded and unstranded libraries, generating both HTSeq-compatible counts and normalized measures for downstream analysis."
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - strong [ref=e85]: "Author(s):"
+            - listitem [ref=e86]:
+              - link "Lucille Delisle" [ref=e88] [cursor=pointer]:
+                - /url: https://orcid.org/0000-0002-1964-4960
+            - listitem [ref=e89]:
+              - link "Pavankumar Videm" [ref=e91] [cursor=pointer]:
+                - /url: https://orcid.org/0000-0002-5192-126X
+            - listitem [ref=e92]:
+              - strong [ref=e93]: "Release:"
+              - text: "1.2"
+            - listitem [ref=e94]:
+              - strong [ref=e95]: "Updated:"
+              - text: Jan 27, 2025
+            - listitem [ref=e96]:
+              - strong [ref=e97]: "License:"
+              - text: MIT
+            - listitem [ref=e98]:
+              - strong [ref=e99]: "DOI:"
+              - link "10.5281/zenodo.8354569" [ref=e100] [cursor=pointer]:
+                - /url: https://doi.org/10.5281/zenodo.8354569
+                - text: 10.5281/zenodo.8354569
+            - listitem [ref=e102]:
+              - strong [ref=e103]: "TRS:"
+              - link "#workflow/github.com/iwc-workflows/rnaseq-pe/main" [ref=e104] [cursor=pointer]:
+                - /url: https://dockstore.org/workflows/github.com/iwc-workflows/rnaseq-pe/main
+                - text: "#workflow/github.com/iwc-workflows/rnaseq-pe/main"
+          - heading "Running this workflow" [level=3] [ref=e106]
+          - generic [ref=e107]:
+            - paragraph [ref=e109]: Select or enter a Galaxy instance URL in the field below to launch this workflow on that instance.
+            - button "https://usegalaxy.org" [ref=e111] [cursor=pointer]:
+              - button "https://usegalaxy.org" [ref=e112]:
+                - generic [ref=e113]: https://usegalaxy.org
+          - paragraph [ref=e114]: You can choose to run the workflow with sample data prefilled, or with your own data.
+          - generic [ref=e115]:
+            - link "Run Workflow" [ref=e116] [cursor=pointer]:
+              - /url: https://usegalaxy.org/workflows/trs_import?trs_server=dockstore.org&trs_id=%23workflow%2Fgithub.com%2Fiwc-workflows%2Frnaseq-pe%2Fmain&trs_version=v1.2&run_form=true
+              - generic [ref=e118]: Run Workflow
+            - button "Run with example data" [ref=e119] [cursor=pointer]:
+              - generic [ref=e121]: Run with example data
+  - generic:
+    - img
+  - generic:
+    - generic:
+      - generic:
+        - button "Go to parent" [disabled]
+        - button "Open in editor"
+        - button "Close"
+  - generic [ref=e122]:
+    - button "Toggle Nuxt DevTools" [ref=e123] [cursor=pointer]:
+      - img [ref=e124]
+    - generic "Page load time" [ref=e127]:
+      - generic [ref=e128]: "10"
+      - generic [ref=e129]: ms
+    - button "Toggle Component Inspector" [ref=e131] [cursor=pointer]:
+      - img [ref=e132]
+```
