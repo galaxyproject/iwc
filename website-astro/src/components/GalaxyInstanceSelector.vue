@@ -7,11 +7,12 @@
 
 import { ref, computed, onMounted, watch } from 'vue';
 import { useStorage } from '@vueuse/core';
-import Select from './ui/Select.vue';
-import SelectTrigger from './ui/SelectTrigger.vue';
-import SelectValue from './ui/SelectValue.vue';
-import SelectContent from './ui/SelectContent.vue';
-import SelectItem from './ui/SelectItem.vue';
+import Combobox from './ui/Combobox.vue';
+import ComboboxAnchor from './ui/ComboboxAnchor.vue';
+import ComboboxInput from './ui/ComboboxInput.vue';
+import ComboboxContent from './ui/ComboboxContent.vue';
+import ComboboxItem from './ui/ComboboxItem.vue';
+import ComboboxEmpty from './ui/ComboboxEmpty.vue';
 
 // Default instance list - never modified
 const defaultInstances = [
@@ -73,8 +74,16 @@ const deleteCustomInstance = (instance: string) => {
 
 // Initialize selected instance
 const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
-const showCustomInput = ref(false);
-const customInstanceInput = ref('');
+const searchTerm = ref('');
+
+// Filter instances based on search term
+const filteredInstances = computed(() => {
+    if (!searchTerm.value) {
+        return allInstances.value;
+    }
+    const search = searchTerm.value.toLowerCase();
+    return allInstances.value.filter(instance => instance.toLowerCase().includes(search));
+});
 
 onMounted(() => {
     if (!props.modelValue) {
@@ -101,6 +110,14 @@ watch(selectedInstance, (newVal, oldVal) => {
         // Handle both string values and objects with value property
         const instanceUrl = typeof newVal === 'string' ? newVal : newVal;
 
+        // If the newval isn't in the list of all instances, add it to the custom list
+        if (!allInstances.value.some((def) => def === instanceUrl)) {
+            if (!customInstances.value.some((custom) => custom === instanceUrl)) {
+                customInstances.value.push(instanceUrl);
+                searchTerm.value = ''; // Clear the search after creation
+            }
+        }
+
         // Update the last selected instance in storage
         lastSelectedInstance.value = instanceUrl;
         // Emit the changes
@@ -108,16 +125,6 @@ watch(selectedInstance, (newVal, oldVal) => {
         emit('change', instanceUrl);
     }
 });
-
-function addCustomInstance() {
-    const url = customInstanceInput.value.trim();
-    if (url && !allInstances.value.includes(url)) {
-        customInstances.value.push(url);
-        selectedInstance.value = url;
-        customInstanceInput.value = '';
-        showCustomInput.value = false;
-    }
-}
 </script>
 
 <template>
@@ -128,68 +135,56 @@ function addCustomInstance() {
             </p>
         </div>
 
-        <Select v-model="selectedInstance">
-            <SelectTrigger class="w-full">
-                <SelectValue placeholder="Select a Galaxy instance" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem v-for="instance in allInstances" :key="instance" :value="instance">
-                    {{ instance }}
-                </SelectItem>
-            </SelectContent>
-        </Select>
-
-        <div class="mt-2 flex gap-2">
-            <button
-                v-if="!showCustomInput"
-                @click="showCustomInput = true"
-                class="text-sm text-blue-600 hover:text-blue-800"
-            >
-                + Add custom instance
-            </button>
-
-            <div v-if="showCustomInput" class="flex gap-2 w-full">
-                <input
-                    v-model="customInstanceInput"
-                    type="url"
-                    placeholder="https://your-galaxy-instance.org"
-                    class="flex-1 p-2 border border-gray-300 rounded-lg text-sm"
-                    @keyup.enter="addCustomInstance"
+        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm">
+            <ComboboxAnchor class="w-full">
+                <ComboboxInput
+                    placeholder="Select or type a Galaxy instance URL"
+                    class="w-full"
                 />
-                <button
-                    @click="addCustomInstance"
-                    class="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
-                >
-                    Add
-                </button>
-                <button
-                    @click="showCustomInput = false; customInstanceInput = ''"
-                    class="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-400"
-                >
-                    Cancel
-                </button>
-            </div>
-        </div>
+            </ComboboxAnchor>
 
-        <div v-if="customInstances.length > 0" class="mt-2">
-            <p class="text-xs text-gray-600 mb-1">Custom instances:</p>
-            <div class="flex flex-wrap gap-1">
-                <span
-                    v-for="instance in customInstances"
-                    :key="instance"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs"
+            <ComboboxContent class="max-h-60 overflow-auto">
+                <!-- Show "Create" option when searchTerm doesn't match any existing instances -->
+                <ComboboxItem
+                    v-if="searchTerm && filteredInstances.length === 0"
+                    :value="searchTerm"
+                    class="cursor-pointer"
                 >
-                    {{ instance }}
-                    <button
-                        @click="deleteCustomInstance(instance)"
-                        class="text-red-600 hover:text-red-800 font-bold"
-                        aria-label="Delete custom instance"
-                    >
-                        ×
-                    </button>
-                </span>
-            </div>
-        </div>
+                    <div class="flex items-center">
+                        <span class="text-sm">Create "<strong>{{ searchTerm }}</strong>"</span>
+                    </div>
+                </ComboboxItem>
+
+                <!-- Show filtered instances -->
+                <ComboboxItem
+                    v-for="instance in filteredInstances"
+                    :key="instance"
+                    :value="instance"
+                    class="cursor-pointer"
+                >
+                    <div class="flex items-center justify-between w-full">
+                        <span>{{ instance }}</span>
+                        <button
+                            v-if="isCustomInstance(instance)"
+                            @click.stop.prevent="deleteCustomInstance(instance)"
+                            class="ml-2 text-red-600 hover:text-red-800 text-xs"
+                            aria-label="Delete custom instance"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </ComboboxItem>
+
+                <!-- Show empty state only when there's no search term -->
+                <ComboboxEmpty v-if="!searchTerm">
+                    <div class="py-2">
+                        <p class="text-sm text-gray-500">
+                            Type to search or enter a custom Galaxy instance URL
+                        </p>
+                    </div>
+                </ComboboxEmpty>
+            </ComboboxContent>
+        </Combobox>
     </div>
 </template>
 
