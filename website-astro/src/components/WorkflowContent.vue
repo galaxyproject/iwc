@@ -327,17 +327,21 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                 </ul>
                 <h3 class="font-bold text-l mt-4">Running this workflow</h3>
                 <GalaxyInstanceSelector v-model="selectedInstance" />
-                <p class="my-2 text-sm font-medium">
-                    You can choose to run the workflow with sample data prefilled, or with your own data.
+                <p class="my-3 text-sm text-gray-600">
+                    Choose how you want to run this workflow:
                 </p>
-                <div class="mt-4 flex flex-col gap-2">
+                <div class="mt-3 flex flex-col gap-3">
                     <Button as="a" :href="launchUrl" target="_blank" class="w-full">
-                        🚀 Run Workflow
+                        Launch Workflow
                     </Button>
-                    <Button @click="createLandingPage" class="w-full">
-                        🚀 Run with example data
+                    <Button @click="createLandingPage" variant="outline" class="w-full">
+                        Try with Example Data
                     </Button>
                 </div>
+                <p class="mt-3 text-xs text-gray-500">
+                    <strong>Launch Workflow:</strong> Import with your own data<br>
+                    <strong>Try with Examples:</strong> Pre-filled demo datasets
+                </p>
             </div>
         </div>
     </div>
