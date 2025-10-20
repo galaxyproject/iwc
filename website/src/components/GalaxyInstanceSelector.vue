@@ -91,6 +91,7 @@ const isExactMatch = computed(() => {
     return allInstances.value.some((instance) => instance.toLowerCase() === searchTerm.value.toLowerCase());
 });
 
+
 onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
@@ -132,11 +133,22 @@ watch(selectedInstance, (newVal, oldVal) => {
     }
 });
 
-// Custom filter function to disable radix-vue's default filtering
-// We handle filtering ourselves with filteredInstances computed property
-const customFilterFunction = () => {
-    // Return true for all items - we're already filtering with filteredInstances
-    return true;
+// Custom filter function - must include both instances and the search term
+// to prevent radix-vue from filtering them out
+const customFilterFunction = (list: any[]) => {
+    // Build a list of all values that should be visible
+    const visibleValues = new Set();
+
+    // Add the search term itself (for the Create button)
+    if (searchTerm.value) {
+        visibleValues.add(searchTerm.value);
+    }
+
+    // Add all instances from our filtered list
+    filteredInstances.value.forEach(instance => visibleValues.add(instance));
+
+    // Return all values that should be visible
+    return Array.from(visibleValues);
 };
 </script>
 
@@ -182,9 +194,9 @@ const customFilterFunction = () => {
                     </div>
                 </ComboboxItem>
 
-                <!-- Show empty state only when there's no search term and no instances -->
+                <!-- Show empty state only when there are truly no instances at all -->
                 <ComboboxEmpty v-if="!searchTerm && allInstances.length === 0">
-                    <div class="py-2">
+                    <div class="py-2 px-3">
                         <p class="text-sm text-gray-500">Type to search or enter a custom Galaxy instance URL</p>
                     </div>
                 </ComboboxEmpty>

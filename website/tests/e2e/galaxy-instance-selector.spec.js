@@ -235,4 +235,65 @@ test.describe("Galaxy Instance Selector", () => {
         // Verify custom instance is selected
         await expect(combobox).toHaveValue(customUrl);
     });
+
+    test("create button appears for localhost URLs", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+
+        // Test with localhost URL
+        const customUrl = "http://localhost:8080";
+
+        // Click and type custom URL
+        await combobox.click();
+        await combobox.fill(customUrl);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Debug: take a screenshot to see what's happening
+        await page.screenshot({ path: 'test-results/localhost-test.png' });
+
+        // Check if dropdown is visible
+        const dropdown = page.locator('[role="listbox"]');
+        await expect(dropdown).toBeVisible();
+
+        // Should show create option
+        const createOption = page.getByRole("option", { name: new RegExp(`Create.*${customUrl}`) });
+        await expect(createOption).toBeVisible();
+
+        // Click to create
+        await createOption.click();
+
+        // Verify custom instance is selected
+        await expect(combobox).toHaveValue(customUrl);
+    });
+
+    test("dropdown stays open when typing URL with no matches", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+
+        // Test with URL that has no matches
+        const partialUrl = "http:";
+
+        // Click and type partial URL
+        await combobox.click();
+        await combobox.fill(partialUrl);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Check if dropdown is visible
+        const dropdown = page.locator('[role="listbox"]');
+        await expect(dropdown).toBeVisible();
+
+        // Should show create option
+        const createOption = page.getByRole("option", { name: new RegExp(`Create.*${partialUrl}`) });
+        await expect(createOption).toBeVisible();
+
+        // Dropdown should still be open
+        await expect(dropdown).toBeVisible();
+
+        // We should have at least 1 option (the Create button)
+        const allOptions = page.locator('[role="option"]');
+        const optionCount = await allOptions.count();
+        expect(optionCount).toBeGreaterThanOrEqual(1);
+    });
 });

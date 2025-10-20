@@ -18,6 +18,7 @@ const emit = defineEmits(["update:modelValue"]);
         @update:modelValue="emit('update:modelValue', $event)"
         :class="cn('w-full', props.class)"
         :filterFunction="props.filterFunction"
+        :displayValue="(item) => item"
         v-bind="$attrs">
         <slot />
     </ComboboxRoot>
