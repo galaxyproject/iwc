@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
 interface Author {
     name: string;
@@ -10,7 +10,7 @@ const props = defineProps<{
     author: Author;
 }>();
 
-const authorUrl = computed(() => (props.author.orcid ? `https://orcid.org/${props.author.orcid}` : '#'));
+const authorUrl = computed(() => (props.author.orcid ? `https://orcid.org/${props.author.orcid}` : "#"));
 </script>
 
 <template>

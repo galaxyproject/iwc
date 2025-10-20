@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ComboboxAnchor, type ComboboxAnchorProps } from 'radix-vue';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { ComboboxAnchor, type ComboboxAnchorProps } from "radix-vue";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends ComboboxAnchorProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();

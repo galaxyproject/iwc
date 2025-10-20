@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { TabsContent, type TabsContentProps } from 'radix-vue';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { TabsContent, type TabsContentProps } from "radix-vue";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends TabsContentProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();
@@ -17,20 +17,19 @@ const props = defineProps<Props>();
             cn(
                 'mt-6 tab-content-transition',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bay-of-many-700 focus-visible:ring-offset-2',
-                props.class
+                props.class,
             )
-        "
-    >
+        ">
         <slot />
     </TabsContent>
 </template>
 
 <style scoped>
-.tab-content-transition[data-state='active'] {
+.tab-content-transition[data-state="active"] {
     animation: fade-in 150ms ease-out;
 }
 
-.tab-content-transition[data-state='inactive'] {
+.tab-content-transition[data-state="inactive"] {
     animation: fade-out 100ms ease-in;
 }
 

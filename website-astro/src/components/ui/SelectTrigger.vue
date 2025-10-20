@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { SelectTrigger, type SelectTriggerProps } from 'radix-vue';
-import { ChevronDown } from 'lucide-vue-next';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { SelectTrigger, type SelectTriggerProps } from "radix-vue";
+import { ChevronDown } from "lucide-vue-next";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends SelectTriggerProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();
@@ -21,10 +21,9 @@ const props = defineProps<Props>();
                 'focus:outline-none focus:ring-2 focus:ring-bay-of-many-700 focus:ring-offset-2',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'data-[placeholder]:text-gray-500',
-                props.class
+                props.class,
             )
-        "
-    >
+        ">
         <slot />
         <ChevronDown class="h-4 w-4 opacity-50" />
     </SelectTrigger>

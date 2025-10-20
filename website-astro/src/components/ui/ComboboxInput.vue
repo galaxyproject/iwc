@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ComboboxInput, type ComboboxInputProps } from 'radix-vue';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { ComboboxInput, type ComboboxInputProps } from "radix-vue";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends ComboboxInputProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();
@@ -19,10 +19,9 @@ const props = defineProps<Props>();
                 'placeholder:text-gray-400',
                 'focus:outline-none focus:ring-2 focus:ring-bay-of-many-700 focus:border-transparent',
                 'disabled:cursor-not-allowed disabled:opacity-50',
-                props.class
+                props.class,
             )
-        "
-    >
+        ">
         <slot />
     </ComboboxInput>
 </template>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { SelectRoot, type SelectRootProps } from 'radix-vue';
+import { SelectRoot, type SelectRootProps } from "radix-vue";
 
-interface Props extends SelectRootProps {
-}
+interface Props extends SelectRootProps {}
 
 const props = defineProps<Props>();
 </script>

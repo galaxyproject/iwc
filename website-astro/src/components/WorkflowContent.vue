@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue';
-import { stringify } from 'yaml';
-import type { Workflow } from '../models/workflow';
-import MarkdownRenderer from './MarkdownRenderer.vue';
-import Author from './Author.vue';
-import GalaxyInstanceSelector from './GalaxyInstanceSelector.vue';
-import Button from './ui/Button.vue';
-import Tabs from './ui/Tabs.vue';
-import TabsList from './ui/TabsList.vue';
-import TabsTrigger from './ui/TabsTrigger.vue';
-import TabsContent from './ui/TabsContent.vue';
-import { formatDate } from '../utils';
+import { ref, computed, onMounted, nextTick } from "vue";
+import { stringify } from "yaml";
+import type { Workflow } from "../models/workflow";
+import MarkdownRenderer from "./MarkdownRenderer.vue";
+import Author from "./Author.vue";
+import GalaxyInstanceSelector from "./GalaxyInstanceSelector.vue";
+import Button from "./ui/Button.vue";
+import Tabs from "./ui/Tabs.vue";
+import TabsList from "./ui/TabsList.vue";
+import TabsTrigger from "./ui/TabsTrigger.vue";
+import TabsContent from "./ui/TabsContent.vue";
+import { formatDate } from "../utils";
 
 const props = defineProps<{
     workflow: Workflow;
 }>();
 
-const selectedInstance = ref('');
-const currentTab = ref('about');
+const selectedInstance = ref("");
+const currentTab = ref("about");
 
 const launchUrl = computed(() => {
-    if (!selectedInstance.value) return '';
+    if (!selectedInstance.value) return "";
     return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(props.workflow.trsID)}&trs_version=v${props.workflow.definition.release}&run_form=true`;
 });
 
@@ -36,8 +36,8 @@ function trsIdAndVersionToDockstoreUrl(trs_id: string, trs_version: string) {
 }
 
 const dockstoreWorkflowPageUrl = computed(() => {
-    const repoPath = props.workflow?.trsID.substring('#workflow/'.length);
-    const baseUrl = 'https://dockstore.org/workflows/';
+    const repoPath = props.workflow?.trsID.substring("#workflow/".length);
+    const baseUrl = "https://dockstore.org/workflows/";
     return baseUrl + repoPath;
 });
 
@@ -47,23 +47,20 @@ const doiResolverUrl = computed(() => {
 
 async function createLandingPage() {
     const job = testToRequestState();
-    const trs_url = trsIdAndVersionToDockstoreUrl(
-        props.workflow?.trsID!,
-        `v${props.workflow?.definition.release}`
-    );
+    const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow?.trsID!, `v${props.workflow?.definition.release}`);
     const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
         body: JSON.stringify({
             workflow_id: trs_url,
-            workflow_target_type: 'trs_url',
+            workflow_target_type: "trs_url",
             request_state: job,
             public: true,
         }),
     });
     const json = await response.json();
-    const landingPage = `${selectedInstance.value}/workflow_landings/${json['uuid']}?public=true`;
-    window.open(landingPage, '_blank');
+    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}?public=true`;
+    window.open(landingPage, "_blank");
 }
 
 const tools = computed(() => {
@@ -94,23 +91,23 @@ interface TabItem {
 
 const tabs = computed<TabItem[]>(() => [
     {
-        value: 'about',
-        label: 'About',
-        content: props.workflow?.readme || 'No README available.',
+        value: "about",
+        label: "About",
+        content: props.workflow?.readme || "No README available.",
     },
     {
-        value: 'diagram',
-        label: 'Diagram',
-        content: props.workflow?.diagrams || 'No diagram available',
+        value: "diagram",
+        label: "Diagram",
+        content: props.workflow?.diagrams || "No diagram available",
     },
     {
-        value: 'version-history',
-        label: 'Version History',
-        content: props.workflow?.changelog || 'No CHANGELOG available.',
+        value: "version-history",
+        label: "Version History",
+        content: props.workflow?.changelog || "No CHANGELOG available.",
     },
     {
-        value: 'how-to-run',
-        label: 'How to Run',
+        value: "how-to-run",
+        label: "How to Run",
         // No content property as we'll use a custom template for this tab
     },
 ]);
@@ -157,17 +154,18 @@ onMounted(() => {
 
                     <!-- About Tab -->
                     <TabsContent value="about" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'about')?.content || ''" />
+                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'about')?.content || ''" />
                     </TabsContent>
 
                     <!-- Diagram Tab -->
                     <TabsContent value="diagram" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'diagram')?.content || ''" />
+                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'diagram')?.content || ''" />
                     </TabsContent>
 
                     <!-- Version History Tab -->
                     <TabsContent value="version-history" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find(t => t.value === 'version-history')?.content || ''" />
+                        <MarkdownRenderer
+                            :markdownContent="tabs.find((t) => t.value === 'version-history')?.content || ''" />
                     </TabsContent>
 
                     <!-- How to Run Tab -->
@@ -195,9 +193,7 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow and fill in your own input parameters and datasets.
                                         </p>
-                                        <Button as="a" :href="launchUrl" target="_blank">
-                                            🚀 Run Workflow
-                                        </Button>
+                                        <Button as="a" :href="launchUrl" target="_blank"> 🚀 Run Workflow </Button>
                                     </div>
 
                                     <div class="border border-gray-300 rounded-lg p-4">
@@ -205,9 +201,7 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <Button @click="createLandingPage">
-                                            🚀 Run with example data
-                                        </Button>
+                                        <Button @click="createLandingPage"> 🚀 Run with example data </Button>
                                     </div>
                                 </div>
                                 <div v-if="!selectedInstance" class="mt-3 text-sm text-amber-600">
@@ -232,34 +226,39 @@ onMounted(() => {
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 1: Install Planemo</h4>
                                 <p class="mb-2 text-sm">If you haven't already, install Planemo using pip:</p>
-                                <pre class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>pip install planemo</code></pre>
+                                <pre
+                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>pip install planemo</code></pre>
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
                                 <p class="mb-2 text-sm">Download the workflow .ga file:</p>
-                                <pre class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga" -o {{ workflow?.iwcID }}.ga</code></pre>
+                                <pre
+                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga" -o {{ workflow?.iwcID }}.ga</code></pre>
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
                                 <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
-                                <pre class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}-tests.yml" -o {{ workflow?.iwcID }}-tests.yml
+                                <pre
+                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}-tests.yml" -o {{ workflow?.iwcID }}-tests.yml
 planemo test {{ workflow?.iwcID }}.ga</code></pre>
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 4: Create workflow job file</h4>
                                 <p class="mb-2 text-sm">
-                                    Create a workflow job file with your input parameters and update the values to
-                                    match your environment and run:
+                                    Create a workflow job file with your input parameters and update the values to match
+                                    your environment and run:
                                 </p>
-                                <pre class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>{{ workflow_job_input }}</code></pre>
+                                <pre
+                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>{{ workflow_job_input }}</code></pre>
                             </div>
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 5: Run the workflow with your data</h4>
                                 <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
-                                <pre class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>planemo run {{ workflow?.iwcID }}.ga {{ workflow?.iwcID }}-job.yml \
+                                <pre
+                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>planemo run {{ workflow?.iwcID }}.ga {{ workflow?.iwcID }}-job.yml \
     --output_directory . \
     --download_outputs \
     --output_json output.json </code></pre>
@@ -273,13 +272,15 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                     <a
                                         :href="dockstoreWorkflowPageUrl"
                                         target="_blank"
-                                        class="text-bay-of-many-700 hover:underline"
-                                    >
+                                        class="text-bay-of-many-700 hover:underline">
                                         View this workflow on Dockstore ↗
                                     </a>
                                 </li>
                                 <li v-if="workflow.doi">
-                                    <a :href="doiResolverUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
+                                    <a
+                                        :href="doiResolverUrl"
+                                        target="_blank"
+                                        class="text-bay-of-many-700 hover:underline">
                                         Cite this workflow (DOI: {{ workflow.doi }}) ↗
                                     </a>
                                 </li>
@@ -287,8 +288,7 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                     <a
                                         href="https://training.galaxyproject.org"
                                         target="_blank"
-                                        class="text-bay-of-many-700 hover:underline"
-                                    >
+                                        class="text-bay-of-many-700 hover:underline">
                                         Galaxy Training Materials ↗
                                     </a>
                                 </li>
@@ -320,26 +320,23 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                     </li>
                     <li>
                         <strong>TRS: </strong>
-                        <a :href="dockstoreWorkflowPageUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
+                        <a
+                            :href="dockstoreWorkflowPageUrl"
+                            target="_blank"
+                            class="text-bay-of-many-700 hover:underline">
                             {{ workflow.trsID }} ↗
                         </a>
                     </li>
                 </ul>
                 <h3 class="font-bold text-l mt-4">Running this workflow</h3>
                 <GalaxyInstanceSelector v-model="selectedInstance" />
-                <p class="my-3 text-sm text-gray-600">
-                    Choose how you want to run this workflow:
-                </p>
+                <p class="my-3 text-sm text-gray-600">Choose how you want to run this workflow:</p>
                 <div class="mt-3 flex flex-col gap-3">
-                    <Button as="a" :href="launchUrl" target="_blank" class="w-full">
-                        Launch Workflow
-                    </Button>
-                    <Button @click="createLandingPage" variant="outline" class="w-full">
-                        Try with Example Data
-                    </Button>
+                    <Button as="a" :href="launchUrl" target="_blank" class="w-full"> Launch Workflow </Button>
+                    <Button @click="createLandingPage" variant="outline" class="w-full"> Try with Example Data </Button>
                 </div>
                 <p class="mt-3 text-xs text-gray-500">
-                    <strong>Launch Workflow:</strong> Import with your own data<br>
+                    <strong>Launch Workflow:</strong> Import with your own data<br />
                     <strong>Try with Examples:</strong> Pre-filled demo datasets
                 </p>
             </div>

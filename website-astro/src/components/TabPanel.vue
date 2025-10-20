@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue";
 
 interface Tab {
     title: string;
@@ -21,7 +21,9 @@ const currentTab = ref(0);
                 :key="index"
                 :class="[
                     'px-4 py-2 rounded-t-lg border border-b-0',
-                    currentTab === index ? 'bg-chicago-50 border-gray-300' : 'bg-white hover:bg-chicago-50 border-gray-200',
+                    currentTab === index
+                        ? 'bg-chicago-50 border-gray-300'
+                        : 'bg-white hover:bg-chicago-50 border-gray-200',
                 ]"
                 @click="currentTab = index">
                 {{ tab.title }}

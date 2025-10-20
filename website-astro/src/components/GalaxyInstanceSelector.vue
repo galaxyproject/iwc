@@ -5,22 +5,22 @@
  * Persisted in local storage are the currently selected instance, and a list of custom added instances.
  */
 
-import { ref, computed, onMounted, watch } from 'vue';
-import { useStorage } from '@vueuse/core';
-import Combobox from './ui/Combobox.vue';
-import ComboboxAnchor from './ui/ComboboxAnchor.vue';
-import ComboboxInput from './ui/ComboboxInput.vue';
-import ComboboxContent from './ui/ComboboxContent.vue';
-import ComboboxItem from './ui/ComboboxItem.vue';
-import ComboboxEmpty from './ui/ComboboxEmpty.vue';
+import { ref, computed, onMounted, watch } from "vue";
+import { useStorage } from "@vueuse/core";
+import Combobox from "./ui/Combobox.vue";
+import ComboboxAnchor from "./ui/ComboboxAnchor.vue";
+import ComboboxInput from "./ui/ComboboxInput.vue";
+import ComboboxContent from "./ui/ComboboxContent.vue";
+import ComboboxItem from "./ui/ComboboxItem.vue";
+import ComboboxEmpty from "./ui/ComboboxEmpty.vue";
 
 // Default instance list - never modified
 const defaultInstances = [
-    'https://usegalaxy.org',
-    'https://usegalaxy.eu',
-    'https://usegalaxy.org.au',
-    'https://usegalaxy.fr',
-    'https://test.galaxyproject.org',
+    "https://usegalaxy.org",
+    "https://usegalaxy.eu",
+    "https://usegalaxy.org.au",
+    "https://usegalaxy.fr",
+    "https://test.galaxyproject.org",
 ];
 
 const props = defineProps({
@@ -30,13 +30,13 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(["update:modelValue", "change"]);
 
 // Persist custom instances to localStorage
-const customInstances = useStorage<Array<string>>('galaxy-custom-instances', []);
+const customInstances = useStorage<Array<string>>("galaxy-custom-instances", []);
 
 // Persist last selected instance URL
-const lastSelectedInstance = useStorage<string>('galaxy-selected-instance', defaultInstances[0]);
+const lastSelectedInstance = useStorage<string>("galaxy-selected-instance", defaultInstances[0]);
 
 // Combine default and custom instances for display
 const allInstances = computed(() => {
@@ -74,7 +74,7 @@ const deleteCustomInstance = (instance: string) => {
 
 // Initialize selected instance
 const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
-const searchTerm = ref('');
+const searchTerm = ref("");
 
 // Filter instances based on search term
 const filteredInstances = computed(() => {
@@ -82,21 +82,21 @@ const filteredInstances = computed(() => {
         return allInstances.value;
     }
     const search = searchTerm.value.toLowerCase();
-    return allInstances.value.filter(instance => instance.toLowerCase().includes(search));
+    return allInstances.value.filter((instance) => instance.toLowerCase().includes(search));
 });
 
 // Check if search term exactly matches an existing instance
 const isExactMatch = computed(() => {
     if (!searchTerm.value) return false;
-    return allInstances.value.some(instance => instance.toLowerCase() === searchTerm.value.toLowerCase());
+    return allInstances.value.some((instance) => instance.toLowerCase() === searchTerm.value.toLowerCase());
 });
 
 onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
         selectedInstance.value = lastSelectedInstance.value;
-        emit('update:modelValue', selectedInstance.value);
-        emit('change', selectedInstance.value);
+        emit("update:modelValue", selectedInstance.value);
+        emit("change", selectedInstance.value);
     }
 });
 
@@ -107,28 +107,28 @@ watch(
         if (newVal && newVal !== selectedInstance.value) {
             selectedInstance.value = newVal;
         }
-    }
+    },
 );
 
 // Watch for changes to the selected instance.  This is where we emit.
 watch(selectedInstance, (newVal, oldVal) => {
     if (newVal) {
         // Handle both string values and objects with value property
-        const instanceUrl = typeof newVal === 'string' ? newVal : newVal;
+        const instanceUrl = typeof newVal === "string" ? newVal : newVal;
 
         // If the newval isn't in the list of all instances, add it to the custom list
         if (!allInstances.value.some((def) => def === instanceUrl)) {
             if (!customInstances.value.some((custom) => custom === instanceUrl)) {
                 customInstances.value.push(instanceUrl);
-                searchTerm.value = ''; // Clear the search after creation
+                searchTerm.value = ""; // Clear the search after creation
             }
         }
 
         // Update the last selected instance in storage
         lastSelectedInstance.value = instanceUrl;
         // Emit the changes
-        emit('update:modelValue', instanceUrl);
-        emit('change', instanceUrl);
+        emit("update:modelValue", instanceUrl);
+        emit("change", instanceUrl);
     }
 });
 </script>
@@ -143,21 +143,17 @@ watch(selectedInstance, (newVal, oldVal) => {
 
         <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm">
             <ComboboxAnchor class="w-full">
-                <ComboboxInput
-                    placeholder="Select or type a Galaxy instance URL"
-                    class="w-full"
-                />
+                <ComboboxInput placeholder="Select or type a Galaxy instance URL" class="w-full" />
             </ComboboxAnchor>
 
             <ComboboxContent class="max-h-60 overflow-auto">
                 <!-- Show "Create" option when searchTerm doesn't exactly match any existing instance -->
-                <ComboboxItem
-                    v-if="searchTerm && !isExactMatch"
-                    :value="searchTerm"
-                    class="cursor-pointer"
-                >
+                <ComboboxItem v-if="searchTerm && !isExactMatch" :value="searchTerm" class="cursor-pointer">
                     <div class="flex items-center">
-                        <span class="text-sm">Create "<strong>{{ searchTerm }}</strong>"</span>
+                        <span class="text-sm"
+                            >Create "<strong>{{ searchTerm }}</strong
+                            >"</span
+                        >
                     </div>
                 </ComboboxItem>
 
@@ -166,16 +162,14 @@ watch(selectedInstance, (newVal, oldVal) => {
                     v-for="instance in filteredInstances"
                     :key="instance"
                     :value="instance"
-                    class="cursor-pointer"
-                >
+                    class="cursor-pointer">
                     <div class="flex items-center justify-between w-full">
                         <span>{{ instance }}</span>
                         <button
                             v-if="isCustomInstance(instance)"
                             @click.stop.prevent="deleteCustomInstance(instance)"
                             class="ml-2 text-red-600 hover:text-red-800 text-xs"
-                            aria-label="Delete custom instance"
-                        >
+                            aria-label="Delete custom instance">
                             ×
                         </button>
                     </div>
@@ -184,9 +178,7 @@ watch(selectedInstance, (newVal, oldVal) => {
                 <!-- Show empty state only when there's no search term and no instances -->
                 <ComboboxEmpty v-if="!searchTerm && allInstances.length === 0">
                     <div class="py-2">
-                        <p class="text-sm text-gray-500">
-                            Type to search or enter a custom Galaxy instance URL
-                        </p>
+                        <p class="text-sm text-gray-500">Type to search or enter a custom Galaxy instance URL</p>
                     </div>
                 </ComboboxEmpty>
             </ComboboxContent>

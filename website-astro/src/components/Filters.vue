@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useStore } from '@nanostores/vue';
-import { selectedFilters, toggleFilter, collectionToSlug } from '../stores/workflowStore';
+import { computed } from "vue";
+import { useStore } from "@nanostores/vue";
+import { selectedFilters, toggleFilter, collectionToSlug } from "../stores/workflowStore";
 
 // Accept collections as props (passed from Astro at build time)
 const props = defineProps<{
@@ -24,19 +24,19 @@ const secondRowFilters = computed(() => {
 const handleFilterClick = (filter: string) => {
     const currentPath = window.location.pathname;
 
-    if (currentPath === '/') {
+    if (currentPath === "/") {
         // On main page, toggle filter and update URL
         toggleFilter(filter);
         const params = new URLSearchParams(window.location.search);
 
         if (selected.value.includes(filter)) {
-            params.delete('filter');
+            params.delete("filter");
         } else {
-            params.set('filter', filter);
+            params.set("filter", filter);
         }
 
-        const newUrl = params.toString() ? `?${params.toString()}` : '/';
-        window.history.pushState({}, '', newUrl);
+        const newUrl = params.toString() ? `?${params.toString()}` : "/";
+        window.history.pushState({}, "", newUrl);
     } else {
         // On other pages, navigate to collection page
         window.location.href = `/collection/${collectionToSlug(filter)}`;

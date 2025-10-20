@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ComboboxItem, type ComboboxItemProps } from 'radix-vue';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { ComboboxItem, type ComboboxItemProps } from "radix-vue";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends ComboboxItemProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();
@@ -19,10 +19,9 @@ const props = defineProps<Props>();
                 'hover:bg-gray-100 hover:text-gray-900',
                 'data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900',
                 'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-                props.class
+                props.class,
             )
-        "
-    >
+        ">
         <slot />
     </ComboboxItem>
 </template>

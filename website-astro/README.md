@@ -94,6 +94,7 @@ Runs the Playwright E2E tests.
 ## 🏗️ Architecture
 
 This site uses Astro's islands architecture, where:
+
 - Pages are pre-rendered at build time (SSG)
 - Interactive Vue components are hydrated on the client only where needed (`client:load`)
 - State management is handled by Nanostores (lighter than Pinia)
@@ -113,6 +114,7 @@ This creates `website-astro/public/workflow_manifest.json` with metadata for all
 ## 🎨 Styling
 
 The site uses a custom Galaxy color scheme defined in `tailwind.config.ts`:
+
 - **ebony-clay**: Dark navy (primary dark)
 - **bay-of-many**: Medium blue (primary)
 - **hokey-pokey**: Gold accent
@@ -121,12 +123,14 @@ The site uses a custom Galaxy color scheme defined in `tailwind.config.ts`:
 ## 🔄 Migration from Nuxt
 
 This site was migrated from Nuxt 3 to Astro for:
+
 - Better static site generation performance
 - Reduced JavaScript bundle size
 - Simpler architecture for a content-heavy site
 - Islands architecture for selective hydration
 
 Key changes:
+
 - Replaced Nuxt UI components with plain Tailwind
 - Replaced Pinia with Nanostores
 - Replaced Nuxt pages with Astro pages

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { TabsTrigger, type TabsTriggerProps } from 'radix-vue';
-import type { HTMLAttributes } from 'vue';
-import { cn } from '@/lib/utils';
+import { TabsTrigger, type TabsTriggerProps } from "radix-vue";
+import type { HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 interface Props extends TabsTriggerProps {
-    class?: HTMLAttributes['class'];
+    class?: HTMLAttributes["class"];
 }
 
 const props = defineProps<Props>();
@@ -20,10 +20,9 @@ const props = defineProps<Props>();
                 'data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bay-of-many-700 focus-visible:ring-offset-2',
                 'disabled:pointer-events-none disabled:opacity-50',
-                props.class
+                props.class,
             )
-        "
-    >
+        ">
         <slot />
     </TabsTrigger>
 </template>

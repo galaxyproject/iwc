@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue';
-import { marked } from 'marked';
-import mermaid from 'mermaid';
+import { ref, nextTick, watch } from "vue";
+import { marked } from "marked";
+import mermaid from "mermaid";
 
 // Props
 const props = defineProps({
@@ -12,12 +12,12 @@ const props = defineProps({
 });
 
 // Refs
-const renderedHtml = ref<string>('');
+const renderedHtml = ref<string>("");
 
 // Initialize Mermaid
 mermaid.initialize({
     startOnLoad: false,
-    theme: 'neutral',
+    theme: "neutral",
 });
 
 // Watch Markdown Content for Changes
@@ -26,14 +26,14 @@ watch(
     (newContent) => {
         renderMarkdown(newContent);
     },
-    { immediate: true }
+    { immediate: true },
 );
 
 // Render Markdown Function
 async function renderMarkdown(content: string) {
     renderedHtml.value = await marked(content);
     // Only render mermaid diagrams on client-side
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
         await nextTick();
         renderMermaidDiagrams();
     }
@@ -42,19 +42,19 @@ async function renderMarkdown(content: string) {
 // Render Mermaid Diagrams
 function renderMermaidDiagrams() {
     // Only run on client-side
-    if (typeof document === 'undefined') return;
+    if (typeof document === "undefined") return;
 
-    const mermaidElements = document.querySelectorAll('.language-mermaid');
+    const mermaidElements = document.querySelectorAll(".language-mermaid");
     mermaidElements.forEach((element) => {
         const parent = element.parentElement;
-        const code = element.textContent || '';
+        const code = element.textContent || "";
         if (parent) {
             // Hide the code block and show loading indicator
-            element.style.display = 'none';
+            element.style.display = "none";
 
             // Create loading indicator
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'mermaid-loading';
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "mermaid-loading";
             loadingDiv.innerHTML = `
                 <div class="mermaid-loading-spinner"></div>
                 <p class="mermaid-loading-text">Rendering diagram...</p>
@@ -63,240 +63,243 @@ function renderMermaidDiagrams() {
 
             try {
                 const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
-                mermaid.render(id, code).then((value) => {
-                    // Remove loading indicator
-                    if (loadingDiv.parentElement) {
-                        loadingDiv.remove();
-                    }
-                    // Create container with zoom controls
-                    const container = document.createElement('div');
-                    container.className = 'mermaid-zoom-container';
-
-                    const controls = document.createElement('div');
-                    controls.className = 'mermaid-zoom-controls';
-
-                    // Create buttons
-                    const zoomInBtn = document.createElement('button');
-                    zoomInBtn.textContent = '+';
-                    zoomInBtn.className = 'mermaid-zoom-btn';
-                    zoomInBtn.setAttribute('aria-label', 'Zoom in');
-
-                    const zoomOutBtn = document.createElement('button');
-                    zoomOutBtn.textContent = '−';
-                    zoomOutBtn.className = 'mermaid-zoom-btn';
-                    zoomOutBtn.setAttribute('aria-label', 'Zoom out');
-
-                    const resetBtn = document.createElement('button');
-                    resetBtn.textContent = '⌂';
-                    resetBtn.className = 'mermaid-zoom-btn';
-                    resetBtn.setAttribute('aria-label', 'Reset zoom');
-
-                    const fullscreenBtn = document.createElement('button');
-                    fullscreenBtn.textContent = '⛶';
-                    fullscreenBtn.className = 'mermaid-zoom-btn';
-                    fullscreenBtn.setAttribute('aria-label', 'Toggle fullscreen');
-
-                    controls.appendChild(zoomInBtn);
-                    controls.appendChild(zoomOutBtn);
-                    controls.appendChild(resetBtn);
-                    controls.appendChild(fullscreenBtn);
-
-                    const content = document.createElement('div');
-                    content.className = 'mermaid-zoom-content';
-                    content.innerHTML = value.svg;
-
-                    container.appendChild(controls);
-                    container.appendChild(content);
-                    parent.innerHTML = '';
-                    parent.appendChild(container);
-                    parent.classList.add('not-prose');
-
-                    // Zoom functionality
-                    let scale = 1;
-                    let originX = 0;
-                    let originY = 0;
-                    let isDragging = false;
-                    let startX = 0;
-                    let startY = 0;
-
-                    const svg = content.querySelector('svg');
-                    if (svg) {
-                        svg.style.cursor = 'grab';
-                        svg.style.transformOrigin = '0 0';
-
-                        function updateTransform() {
-                            svg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+                mermaid
+                    .render(id, code)
+                    .then((value) => {
+                        // Remove loading indicator
+                        if (loadingDiv.parentElement) {
+                            loadingDiv.remove();
                         }
+                        // Create container with zoom controls
+                        const container = document.createElement("div");
+                        container.className = "mermaid-zoom-container";
 
-                        let lastMouseX = content.offsetWidth / 2;
-                        let lastMouseY = content.offsetHeight / 2;
+                        const controls = document.createElement("div");
+                        controls.className = "mermaid-zoom-controls";
 
-                        content.addEventListener('mousemove', (e) => {
-                            if (!isDragging) {
+                        // Create buttons
+                        const zoomInBtn = document.createElement("button");
+                        zoomInBtn.textContent = "+";
+                        zoomInBtn.className = "mermaid-zoom-btn";
+                        zoomInBtn.setAttribute("aria-label", "Zoom in");
+
+                        const zoomOutBtn = document.createElement("button");
+                        zoomOutBtn.textContent = "−";
+                        zoomOutBtn.className = "mermaid-zoom-btn";
+                        zoomOutBtn.setAttribute("aria-label", "Zoom out");
+
+                        const resetBtn = document.createElement("button");
+                        resetBtn.textContent = "⌂";
+                        resetBtn.className = "mermaid-zoom-btn";
+                        resetBtn.setAttribute("aria-label", "Reset zoom");
+
+                        const fullscreenBtn = document.createElement("button");
+                        fullscreenBtn.textContent = "⛶";
+                        fullscreenBtn.className = "mermaid-zoom-btn";
+                        fullscreenBtn.setAttribute("aria-label", "Toggle fullscreen");
+
+                        controls.appendChild(zoomInBtn);
+                        controls.appendChild(zoomOutBtn);
+                        controls.appendChild(resetBtn);
+                        controls.appendChild(fullscreenBtn);
+
+                        const content = document.createElement("div");
+                        content.className = "mermaid-zoom-content";
+                        content.innerHTML = value.svg;
+
+                        container.appendChild(controls);
+                        container.appendChild(content);
+                        parent.innerHTML = "";
+                        parent.appendChild(container);
+                        parent.classList.add("not-prose");
+
+                        // Zoom functionality
+                        let scale = 1;
+                        let originX = 0;
+                        let originY = 0;
+                        let isDragging = false;
+                        let startX = 0;
+                        let startY = 0;
+
+                        const svg = content.querySelector("svg");
+                        if (svg) {
+                            svg.style.cursor = "grab";
+                            svg.style.transformOrigin = "0 0";
+
+                            function updateTransform() {
+                                svg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
+                            }
+
+                            let lastMouseX = content.offsetWidth / 2;
+                            let lastMouseY = content.offsetHeight / 2;
+
+                            content.addEventListener("mousemove", (e) => {
+                                if (!isDragging) {
+                                    const rect = content.getBoundingClientRect();
+                                    lastMouseX = e.clientX - rect.left;
+                                    lastMouseY = e.clientY - rect.top;
+                                }
+                            });
+
+                            function zoomToPoint(newScale, mouseX, mouseY) {
+                                const oldScale = scale;
+                                const scaleDiff = newScale / oldScale;
+
+                                const newOriginX = mouseX - (mouseX - originX) * scaleDiff;
+                                const newOriginY = mouseY - (mouseY - originY) * scaleDiff;
+
+                                scale = newScale;
+                                originX = newOriginX;
+                                originY = newOriginY;
+                                updateTransform();
+                            }
+
+                            zoomInBtn.addEventListener("click", () => {
+                                svg.style.transition = "transform 0.2s ease";
+                                const newScale = Math.min(scale * 1.2, 5);
+                                const centerX = content.offsetWidth / 2;
+                                const centerY = content.offsetHeight / 2;
+                                zoomToPoint(newScale, centerX, centerY);
+                                setTimeout(() => (svg.style.transition = "none"), 200);
+                            });
+
+                            zoomOutBtn.addEventListener("click", () => {
+                                svg.style.transition = "transform 0.2s ease";
+                                const newScale = Math.max(scale / 1.2, 0.1);
+                                const centerX = content.offsetWidth / 2;
+                                const centerY = content.offsetHeight / 2;
+                                zoomToPoint(newScale, centerX, centerY);
+                                setTimeout(() => (svg.style.transition = "none"), 200);
+                            });
+
+                            resetBtn.addEventListener("click", () => {
+                                svg.style.transition = "transform 0.3s ease";
+                                scale = 1;
+                                originX = 0;
+                                originY = 0;
+                                updateTransform();
+                                setTimeout(() => (svg.style.transition = "none"), 300);
+                            });
+
+                            fullscreenBtn.addEventListener("click", () => {
+                                if (container.classList.contains("mermaid-fullscreen")) {
+                                    container.classList.remove("mermaid-fullscreen");
+                                    document.body.style.overflow = "";
+                                } else {
+                                    container.classList.add("mermaid-fullscreen");
+                                    document.body.style.overflow = "hidden";
+                                }
+                            });
+
+                            // Mouse wheel zoom
+                            content.addEventListener("wheel", (e) => {
+                                e.preventDefault();
                                 const rect = content.getBoundingClientRect();
-                                lastMouseX = e.clientX - rect.left;
-                                lastMouseY = e.clientY - rect.top;
-                            }
-                        });
+                                const mouseX = e.clientX - rect.left;
+                                const mouseY = e.clientY - rect.top;
 
-                        function zoomToPoint(newScale, mouseX, mouseY) {
-                            const oldScale = scale;
-                            const scaleDiff = newScale / oldScale;
+                                // Detect if this is likely a trackpad (fine-grained) vs mouse wheel (coarse)
+                                // Trackpads typically have smaller deltaY values and more frequent events
+                                const isTrackpad = Math.abs(e.deltaY) < 50;
+                                const zoomFactor = isTrackpad ? 1.01 : 1.1;
 
-                            const newOriginX = mouseX - (mouseX - originX) * scaleDiff;
-                            const newOriginY = mouseY - (mouseY - originY) * scaleDiff;
+                                const newScale =
+                                    e.deltaY > 0 ? Math.max(scale / zoomFactor, 0.1) : Math.min(scale * zoomFactor, 5);
 
-                            scale = newScale;
-                            originX = newOriginX;
-                            originY = newOriginY;
-                            updateTransform();
-                        }
+                                zoomToPoint(newScale, mouseX, mouseY);
+                            });
 
-                        zoomInBtn.addEventListener('click', () => {
-                            svg.style.transition = 'transform 0.2s ease';
-                            const newScale = Math.min(scale * 1.2, 5);
-                            const centerX = content.offsetWidth / 2;
-                            const centerY = content.offsetHeight / 2;
-                            zoomToPoint(newScale, centerX, centerY);
-                            setTimeout(() => (svg.style.transition = 'none'), 200);
-                        });
-
-                        zoomOutBtn.addEventListener('click', () => {
-                            svg.style.transition = 'transform 0.2s ease';
-                            const newScale = Math.max(scale / 1.2, 0.1);
-                            const centerX = content.offsetWidth / 2;
-                            const centerY = content.offsetHeight / 2;
-                            zoomToPoint(newScale, centerX, centerY);
-                            setTimeout(() => (svg.style.transition = 'none'), 200);
-                        });
-
-                        resetBtn.addEventListener('click', () => {
-                            svg.style.transition = 'transform 0.3s ease';
-                            scale = 1;
-                            originX = 0;
-                            originY = 0;
-                            updateTransform();
-                            setTimeout(() => (svg.style.transition = 'none'), 300);
-                        });
-
-                        fullscreenBtn.addEventListener('click', () => {
-                            if (container.classList.contains('mermaid-fullscreen')) {
-                                container.classList.remove('mermaid-fullscreen');
-                                document.body.style.overflow = '';
-                            } else {
-                                container.classList.add('mermaid-fullscreen');
-                                document.body.style.overflow = 'hidden';
-                            }
-                        });
-
-                        // Mouse wheel zoom
-                        content.addEventListener('wheel', (e) => {
-                            e.preventDefault();
-                            const rect = content.getBoundingClientRect();
-                            const mouseX = e.clientX - rect.left;
-                            const mouseY = e.clientY - rect.top;
-
-                            // Detect if this is likely a trackpad (fine-grained) vs mouse wheel (coarse)
-                            // Trackpads typically have smaller deltaY values and more frequent events
-                            const isTrackpad = Math.abs(e.deltaY) < 50;
-                            const zoomFactor = isTrackpad ? 1.01 : 1.1;
-
-                            const newScale =
-                                e.deltaY > 0 ? Math.max(scale / zoomFactor, 0.1) : Math.min(scale * zoomFactor, 5);
-
-                            zoomToPoint(newScale, mouseX, mouseY);
-                        });
-
-                        svg.addEventListener('mousedown', (e) => {
-                            isDragging = true;
-                            startX = e.clientX - originX;
-                            startY = e.clientY - originY;
-                            svg.style.cursor = 'grabbing';
-                            e.preventDefault();
-                        });
-
-                        document.addEventListener('mousemove', (e) => {
-                            if (isDragging) {
-                                originX = e.clientX - startX;
-                                originY = e.clientY - startY;
-                                updateTransform();
-                            }
-                        });
-
-                        document.addEventListener('mouseup', () => {
-                            if (isDragging) {
-                                isDragging = false;
-                                svg.style.cursor = 'grab';
-                            }
-                        });
-
-                        // Touch support
-                        let initialDistance = 0;
-                        let initialScale = 1;
-
-                        svg.addEventListener('touchstart', (e) => {
-                            if (e.touches.length === 2) {
-                                const touch1 = e.touches[0];
-                                const touch2 = e.touches[1];
-                                initialDistance = Math.hypot(
-                                    touch2.clientX - touch1.clientX,
-                                    touch2.clientY - touch1.clientY
-                                );
-                                initialScale = scale;
-                            } else if (e.touches.length === 1) {
+                            svg.addEventListener("mousedown", (e) => {
                                 isDragging = true;
-                                const touch = e.touches[0];
-                                startX = touch.clientX - originX;
-                                startY = touch.clientY - originY;
-                            }
-                            e.preventDefault();
-                        });
+                                startX = e.clientX - originX;
+                                startY = e.clientY - originY;
+                                svg.style.cursor = "grabbing";
+                                e.preventDefault();
+                            });
 
-                        svg.addEventListener('touchmove', (e) => {
-                            if (e.touches.length === 2) {
-                                const touch1 = e.touches[0];
-                                const touch2 = e.touches[1];
-                                const distance = Math.hypot(
-                                    touch2.clientX - touch1.clientX,
-                                    touch2.clientY - touch1.clientY
-                                );
-                                scale = Math.max(0.1, Math.min(5, initialScale * (distance / initialDistance)));
-                                updateTransform();
-                            } else if (e.touches.length === 1 && isDragging) {
-                                const touch = e.touches[0];
-                                originX = touch.clientX - startX;
-                                originY = touch.clientY - startY;
-                                updateTransform();
-                            }
-                            e.preventDefault();
-                        });
+                            document.addEventListener("mousemove", (e) => {
+                                if (isDragging) {
+                                    originX = e.clientX - startX;
+                                    originY = e.clientY - startY;
+                                    updateTransform();
+                                }
+                            });
 
-                        svg.addEventListener('touchend', () => {
-                            isDragging = false;
-                        });
-                    }
-                }).catch((e) => {
-                    console.error('Mermaid rendering error:', e);
-                    // Remove loading indicator on error
-                    if (loadingDiv.parentElement) {
-                        loadingDiv.remove();
-                    }
-                    // Show error message
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'mermaid-error';
-                    errorDiv.textContent = 'Failed to render diagram';
-                    parent.appendChild(errorDiv);
-                });
+                            document.addEventListener("mouseup", () => {
+                                if (isDragging) {
+                                    isDragging = false;
+                                    svg.style.cursor = "grab";
+                                }
+                            });
+
+                            // Touch support
+                            let initialDistance = 0;
+                            let initialScale = 1;
+
+                            svg.addEventListener("touchstart", (e) => {
+                                if (e.touches.length === 2) {
+                                    const touch1 = e.touches[0];
+                                    const touch2 = e.touches[1];
+                                    initialDistance = Math.hypot(
+                                        touch2.clientX - touch1.clientX,
+                                        touch2.clientY - touch1.clientY,
+                                    );
+                                    initialScale = scale;
+                                } else if (e.touches.length === 1) {
+                                    isDragging = true;
+                                    const touch = e.touches[0];
+                                    startX = touch.clientX - originX;
+                                    startY = touch.clientY - originY;
+                                }
+                                e.preventDefault();
+                            });
+
+                            svg.addEventListener("touchmove", (e) => {
+                                if (e.touches.length === 2) {
+                                    const touch1 = e.touches[0];
+                                    const touch2 = e.touches[1];
+                                    const distance = Math.hypot(
+                                        touch2.clientX - touch1.clientX,
+                                        touch2.clientY - touch1.clientY,
+                                    );
+                                    scale = Math.max(0.1, Math.min(5, initialScale * (distance / initialDistance)));
+                                    updateTransform();
+                                } else if (e.touches.length === 1 && isDragging) {
+                                    const touch = e.touches[0];
+                                    originX = touch.clientX - startX;
+                                    originY = touch.clientY - startY;
+                                    updateTransform();
+                                }
+                                e.preventDefault();
+                            });
+
+                            svg.addEventListener("touchend", () => {
+                                isDragging = false;
+                            });
+                        }
+                    })
+                    .catch((e) => {
+                        console.error("Mermaid rendering error:", e);
+                        // Remove loading indicator on error
+                        if (loadingDiv.parentElement) {
+                            loadingDiv.remove();
+                        }
+                        // Show error message
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "mermaid-error";
+                        errorDiv.textContent = "Failed to render diagram";
+                        parent.appendChild(errorDiv);
+                    });
             } catch (e) {
-                console.error('Mermaid rendering error:', e);
+                console.error("Mermaid rendering error:", e);
                 // Remove loading indicator on error
                 if (loadingDiv.parentElement) {
                     loadingDiv.remove();
                 }
                 // Show error message
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'mermaid-error';
-                errorDiv.textContent = 'Failed to render diagram';
+                const errorDiv = document.createElement("div");
+                errorDiv.className = "mermaid-error";
+                errorDiv.textContent = "Failed to render diagram";
                 parent.appendChild(errorDiv);
             }
         }
@@ -472,7 +475,7 @@ function renderMermaidDiagrams() {
 
 /* Instructions overlay for first time users */
 :deep(.mermaid-zoom-container::after) {
-    content: '💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right';
+    content: "💡 Use mouse wheel to zoom, drag to pan, or use controls in top-right";
     position: absolute;
     bottom: 8px;
     left: 8px;

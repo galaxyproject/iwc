@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from '@nanostores/vue';
-import Fuse from 'fuse.js';
-import { allWorkflows } from '../stores/workflowStore';
-import WorkflowCard from './WorkflowCard.vue';
-import MarkdownRenderer from './MarkdownRenderer.vue';
-import type { Workflow } from '../models/workflow';
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "@nanostores/vue";
+import Fuse from "fuse.js";
+import { allWorkflows } from "../stores/workflowStore";
+import WorkflowCard from "./WorkflowCard.vue";
+import MarkdownRenderer from "./MarkdownRenderer.vue";
+import type { Workflow } from "../models/workflow";
 
 const props = defineProps<{
     collectionName: string;
@@ -14,13 +14,13 @@ const props = defineProps<{
 const workflows = useStore(allWorkflows);
 const collectionDescription = ref<string | null>(null);
 const isLoading = ref(false);
-const searchQuery = ref('');
+const searchQuery = ref("");
 
 // Load collection description
 async function loadCollectionDescription(collection: string) {
     isLoading.value = true;
     try {
-        const response = await fetch(`/category-descriptions/${collection.toLowerCase().replace(/ /g, '-')}.md`);
+        const response = await fetch(`/category-descriptions/${collection.toLowerCase().replace(/ /g, "-")}.md`);
         if (response.ok) {
             collectionDescription.value = await response.text();
         } else {
@@ -37,30 +37,28 @@ async function loadCollectionDescription(collection: string) {
 // Filter workflows by the selected collection
 const collectionWorkflows = computed(() =>
     workflows.value.filter((workflow) =>
-        workflow.collections.some((col) => col.toLowerCase() === props.collectionName.toLowerCase())
-    )
+        workflow.collections.some((col) => col.toLowerCase() === props.collectionName.toLowerCase()),
+    ),
 );
 
 // Sort workflows descending by workflow.updated
 const sortedWorkflows = computed(() =>
-    collectionWorkflows.value
-        .slice()
-        .sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime())
+    collectionWorkflows.value.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
 );
 
 // Define a fuse instance for fuzzy searching
 const fuseOptions = {
     keys: [
         {
-            name: 'definition.name',
+            name: "definition.name",
             weight: 0.7,
         },
         {
-            name: 'definition.annotation',
+            name: "definition.annotation",
             weight: 0.3,
         },
         {
-            name: 'definition.tags',
+            name: "definition.tags",
             weight: 0.1,
         },
     ],
@@ -87,7 +85,7 @@ onMounted(() => {
     <div>
         <div class="w-full p-4 bg-ebony-clay text-center">
             <h2 class="text-lg text-white font-semibold mb-4">
-                Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? 's' : '' }} in
+                Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in
                 this collection
             </h2>
 
