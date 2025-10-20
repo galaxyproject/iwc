@@ -74,7 +74,7 @@ const navigateToCollection = (collection: string) => {
         </CardContent>
 
         <!-- Footer -->
-        <div :class="[compact ? 'p-3' : 'px-6 py-3', 'border-t']">
+        <div :class="[compact ? 'p-3' : 'px-6 py-3', 'border-t border-gray-200']">
             <div :class="`flex justify-between ${compact ? 'text-xs' : 'text-xs'} text-gray-500`">
                 <p class="flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

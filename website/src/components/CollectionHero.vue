@@ -32,7 +32,7 @@ const collectionWorkflows = computed(() =>
                 @input="collectionSearchQuery.set($event.target.value)"
                 type="text"
                 :placeholder="`Search ${collectionName} workflows`"
-                class="w-full p-2 mb-2 border rounded-lg" />
+                class="w-full p-2 mb-2 border border-gray-300 bg-white rounded-lg" />
         </div>
 
         <div v-if="showBackLink" class="mt-4">
