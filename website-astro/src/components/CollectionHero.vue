@@ -22,8 +22,8 @@ const collectionWorkflows = computed(() =>
 <template>
     <div class="w-full p-4 bg-ebony-clay text-center">
         <h2 class="text-lg text-white font-semibold mb-4">
-            Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in
-            this collection
+            Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in this
+            collection
         </h2>
 
         <div class="max-w-6xl w-full mx-auto">
