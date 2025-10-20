@@ -211,4 +211,28 @@ test.describe("Galaxy Instance Selector", () => {
         const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(customUrl1));
     });
+
+    test("create button appears for URLs that don't match any instances", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+
+        // Test with a URL that starts similar to an existing instance but doesn't match
+        const customUrl = "https://usegalaxy.org.foo";
+
+        // Click and type custom URL
+        await combobox.click();
+        await combobox.fill(customUrl);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Should show create option even though it starts with "https://usegalaxy.org"
+        const createOption = page.getByRole("option", { name: new RegExp(`Create.*${customUrl}`) });
+        await expect(createOption).toBeVisible();
+
+        // Click to create
+        await createOption.click();
+
+        // Verify custom instance is selected
+        await expect(combobox).toHaveValue(customUrl);
+    });
 });

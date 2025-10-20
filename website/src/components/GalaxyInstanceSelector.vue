@@ -131,6 +131,13 @@ watch(selectedInstance, (newVal, oldVal) => {
         emit("change", instanceUrl);
     }
 });
+
+// Custom filter function to disable radix-vue's default filtering
+// We handle filtering ourselves with filteredInstances computed property
+const customFilterFunction = () => {
+    // Return true for all items - we're already filtering with filteredInstances
+    return true;
+};
 </script>
 
 <template>
@@ -141,7 +148,7 @@ watch(selectedInstance, (newVal, oldVal) => {
             </p>
         </div>
 
-        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm">
+        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm" :filterFunction="customFilterFunction">
             <ComboboxAnchor class="w-full">
                 <ComboboxInput placeholder="Select or type a Galaxy instance URL" class="w-full" />
             </ComboboxAnchor>
