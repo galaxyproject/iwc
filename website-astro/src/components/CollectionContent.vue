@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
-import { allWorkflows } from "../stores/workflowStore";
+import { allWorkflows, collectionSearchQuery } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
 import type { Workflow } from "../models/workflow";
@@ -12,9 +12,9 @@ const props = defineProps<{
 }>();
 
 const workflows = useStore(allWorkflows);
+const searchQuery = useStore(collectionSearchQuery);
 const collectionDescription = ref<string | null>(null);
 const isLoading = ref(false);
-const searchQuery = ref("");
 
 // Load collection description
 async function loadCollectionDescription(collection: string) {
@@ -79,25 +79,15 @@ const filteredWorkflows = computed(() => {
 onMounted(() => {
     loadCollectionDescription(props.collectionName);
 });
+
+onUnmounted(() => {
+    // Reset search query when leaving the collection page
+    collectionSearchQuery.set("");
+});
 </script>
 
 <template>
     <div>
-        <div class="w-full p-4 bg-ebony-clay text-center">
-            <h2 class="text-lg text-white font-semibold mb-4">
-                Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in
-                this collection
-            </h2>
-
-            <div class="max-w-6xl w-full mx-auto">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    :placeholder="`Search ${collectionName} workflows`"
-                    class="w-full p-2 mb-2 border rounded-lg" />
-            </div>
-        </div>
-
         <div class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
             <h2 class="text-xl font-semibold mb-4">About {{ collectionName }}</h2>
             <div class="prose !max-w-none">
