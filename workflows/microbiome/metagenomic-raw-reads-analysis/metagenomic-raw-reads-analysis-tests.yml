@@ -1,4 +1,4 @@
-- doc: Test outline for Genes_catalogue_paired_collection_metaG_ABRomics
+- doc: Test outline for metagenomic-raw-reads-analysis workflow
   job:
     Metagenomics Trimmed reads:
       class: Collection
@@ -6,90 +6,68 @@
       elements:
       - class: Collection
         type: paired
-        identifier: genes_catalogue_test
+        identifier: raw_reads_metag_test
         elements:
           - class: File
             identifier: forward
-            location: https://zenodo.org/records/17348100/files/genes_catalogue_R1.fastqsanger.gz
+            location: https://zenodo.org/records/17395554/files/PSM6XBT3_500k_R1.fastq.gz
           - class: File
             identifier: reverse
-            location: https://zenodo.org/records/17348100/files/genes_catalogue_R2.fastqsanger.gz
-    Select an eggnogmapper DB: 5.0.2
-    Select a mmseqs2 taxonomy DB: UniRef50-17-b804f-23042025
-    Select a database for starAMR: staramr_downloaded_07042025_resfinder_d1e607b_pointfinder_694919f_plasmidfinder_3e77502
-    Select a virulence genes detection database: vfdb
-    Select a AMR genes detection database: amrfinderplus_V3.12_2024-05-02.2
+            location: https://zenodo.org/records/17395554/files/PSM6XBT3_500k_R2.fastq.gz
+    Select a Sylph database: sylph_downloaded_21072025_gtdb-r220-c200-dbv1.syldb
+    Select a Sylph tax database: sylph_tax_downloaded_21072025
+    Select a DeepARG database: deeparg_1.0.4-03072025
+    Select a Groot database: arg-annot.90-1.1.2-09122024
+    Deeparg minimum probability for considering a reads as ARG-like: '0.8'
+    Groot average base pair length of reads: '100'
+    Groot coverage cutoff for reporting ARGs: '0.6'
   outputs:
-    mmseqs2_taxonomy_filtered:
-      asserts:
-        has_text:
-          text: "root"
-        has_n_columns:
-          n: 4
-    eggnong_annotation_filtered:
-      asserts:
-        has_text:
-          text: "Contig id"
-        has_n_columns:
-          n: 21
-    mmseqs2_taxonomy_kraken:
-      asserts:
-        has_text:
-          text: "cellular root"
-        has_n_columns:
-          n: 6
-    argnorm_amrfinderplus_report:
-      asserts:
-        has_text:
-          text: "Protein identifier"
-    eggnog_annotations:
-      asserts:
-        has_text:
-          text: "#query"
-        has_n_columns:
-          n: 21
-    resfinder:
-      asserts:
-        has_text:
-          text: "Isolate ID"
-        has_n_columns:
-          n: 13    
-    abricate_virulence_report:
-      asserts:
-        has_text:
-          text: "#FILE"
-        has_n_columns:
-          n: 15
-    amrfinderplus_report:
-      asserts:
-        has_text:
-          text: "Protein identifier"
-        has_n_columns:
-          n: 22
-    tooldistillator_summarize_collection:
+    sylph_tax_prof:
       element_tests:
-        genes_catalogue_test:
+        raw_reads_metag_test:
+          has_text:
+            text: "Taxonomic_abundance"
+          has_n_columns:
+            n: 15
+    sylph_tax_prof:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "clade_name"
+          has_n_columns:
+            n: 2
+    deeparg_mapping_arg:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "#ARG"
+          has_n_columns:
+            n: 4
+    groot_report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "no_results"
+            has_n_columns:
+              n: 1
+    argnorm_groot_report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "no_results"
+            has_n_columns:
+              n: 1
+    tooldistillator_summarize:
+      element_tests:
+        raw_reads_metag_test:
           asserts:
             - that: has_text
-              text: "megahit_report"
+              text: "groot_report"
             - that: has_text
-              text: "quast_report"
+              text: "sylph_report"
             - that: has_text
-              text: "prodigal_report"
+              text: "sylphtax_report"
             - that: has_text
-              text: "coverm_report"
-    tooldistillator_summarize_catalogue:
-      asserts:
-        - that: has_text
-          text: "eggnogmapper_report"
-        - that: has_text
-          text: "mmseqs2linclust_report"
-        - that: has_text
-          text: "staramr_report"
-          text: "mmseqs2taxonomy_report"
-        - that: has_text
-          text: "abricate_report"
-        - that: has_text
-          text: "amrfinderplus_report"
-        - that: has_text
-          text: "argnorm_report"
+              text: "argnorm_report"
