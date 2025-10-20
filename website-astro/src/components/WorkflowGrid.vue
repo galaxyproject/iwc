@@ -2,17 +2,21 @@
 import { ref, computed, onMounted } from 'vue';
 import { useStore } from '@nanostores/vue';
 import Fuse from 'fuse.js';
-import { allWorkflows, selectedFilters, setFilterFromUrl } from '../stores/workflowStore';
+import { selectedFilters, setFilterFromUrl } from '../stores/workflowStore';
 import WorkflowCard from './WorkflowCard.vue';
 import type { Workflow } from '../models/workflow';
 
-const workflows = useStore(allWorkflows);
+// Accept workflows as props (passed from Astro at build time)
+const props = defineProps<{
+    workflows: Workflow[];
+}>();
+
 const filters = useStore(selectedFilters);
 const searchQuery = ref('');
 
 // Sort workflows by updated date
 const sortedWorkflows = computed(() =>
-    workflows.value.slice().sort((a, b) =>
+    props.workflows.slice().sort((a, b) =>
         new Date(b.updated).getTime() - new Date(a.updated).getTime()
     )
 );

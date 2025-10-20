@@ -45,3 +45,25 @@ export function getAllTags(collections: WorkflowCollection[]) {
   const workflows = getAllWorkflows(collections);
   return Array.from(new Set(workflows.flatMap((w) => w.definition.tags)));
 }
+
+// Extract only the fields needed for workflow listing and search
+export function getLightweightWorkflows(collections: WorkflowCollection[]) {
+  return getAllWorkflows(collections).map(w => ({
+    // Identifiers
+    iwcID: w.iwcID,
+    trsID: w.trsID,
+
+    // Metadata for display
+    updated: w.updated,
+    collections: w.collections,
+
+    // Minimal definition fields for listing and search
+    definition: {
+      uuid: w.definition.uuid,
+      name: w.definition.name,
+      annotation: w.definition.annotation,
+      release: w.definition.release,
+      tags: w.definition.tags
+    }
+  }));
+}
