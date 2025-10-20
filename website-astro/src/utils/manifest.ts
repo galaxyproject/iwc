@@ -1,4 +1,4 @@
-import type { WorkflowCollection } from "../models/workflow";
+import type { WorkflowCollection, LightweightWorkflow } from "../models/workflow";
 
 let manifestData: WorkflowCollection[] | null = null;
 
@@ -47,7 +47,7 @@ export function getAllTags(collections: WorkflowCollection[]) {
 }
 
 // Extract only the fields needed for workflow listing and search
-export function getLightweightWorkflows(collections: WorkflowCollection[]) {
+export function getLightweightWorkflows(collections: WorkflowCollection[]): LightweightWorkflow[] {
     return getAllWorkflows(collections).map((w) => ({
         // Identifiers
         iwcID: w.iwcID,

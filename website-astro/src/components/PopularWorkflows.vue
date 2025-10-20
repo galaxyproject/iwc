@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import WorkflowCard from "./WorkflowCard.vue";
-import type { Workflow } from "../models/workflow";
+import type { LightweightWorkflow } from "../models/workflow";
 
 const props = defineProps<{
     /** List of Trs Ids for most popular workflows */
     workflowTrsIds: string[];
     /** All workflows (passed from Astro at build time) */
-    workflows: Workflow[];
+    workflows: LightweightWorkflow[];
 }>();
 
 const popularWorkflows = computed(() => {

@@ -4,6 +4,21 @@ export interface WorkflowCollection {
     workflows: Workflow[];
 }
 
+// Define a lightweight workflow interface for listing/search (subset of Workflow)
+export interface LightweightWorkflow {
+    iwcID: string;
+    trsID: string;
+    updated: string;
+    collections: string[];
+    definition: {
+        uuid: string;
+        name: string;
+        annotation: string;
+        release: string;
+        tags: string[] | null;
+    };
+}
+
 // Define the interface for a single workflow
 export interface Workflow {
     name: string;

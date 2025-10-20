@@ -4,11 +4,11 @@ import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
 import { selectedFilters, setFilterFromUrl } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
-import type { Workflow } from "../models/workflow";
+import type { LightweightWorkflow } from "../models/workflow";
 
 // Accept workflows as props (passed from Astro at build time)
 const props = defineProps<{
-    workflows: Workflow[];
+    workflows: LightweightWorkflow[];
 }>();
 
 const filters = useStore(selectedFilters);
@@ -33,7 +33,7 @@ const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
 
 // Filtered workflows
 const filteredWorkflows = computed(() => {
-    const matchesSelectedFilters = (workflow: Workflow): boolean => {
+    const matchesSelectedFilters = (workflow: LightweightWorkflow): boolean => {
         return !filters.value.length || filters.value.every((filter) => workflow.collections.includes(filter));
     };
 

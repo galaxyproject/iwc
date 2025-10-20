@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Workflow } from "../models/workflow";
+import type { Workflow, LightweightWorkflow } from "../models/workflow";
 import { formatDate } from "../utils/";
 import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
@@ -7,7 +7,7 @@ import CardContent from "./ui/CardContent.vue";
 import Badge from "./ui/Badge.vue";
 
 defineProps<{
-    workflow: Workflow;
+    workflow: Workflow | LightweightWorkflow;
     compact?: boolean;
 }>();
 
