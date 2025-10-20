@@ -21,8 +21,8 @@ test.describe("Galaxy Instance Selector", () => {
         const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
         await expect(combobox).toHaveValue("https://usegalaxy.org");
 
-        // Verify Run Workflow link uses default instance
-        const runWorkflowLink = page.getByRole("link", { name: /Run Workflow/i });
+        // Verify Launch Workflow link uses default instance
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", /https:\/\/usegalaxy\.org/);
     });
 
@@ -46,8 +46,8 @@ test.describe("Galaxy Instance Selector", () => {
         // Verify selection
         await expect(combobox).toHaveValue("https://usegalaxy.eu");
 
-        // Verify Run Workflow link updates
-        const runWorkflowLink = page.getByRole("link", { name: /Run Workflow/i });
+        // Verify Launch Workflow link updates
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", /https:\/\/usegalaxy\.eu/);
     });
 
@@ -72,8 +72,8 @@ test.describe("Galaxy Instance Selector", () => {
         // Verify custom instance is selected
         await expect(combobox).toHaveValue(customUrl);
 
-        // Verify Run Workflow link uses custom instance
-        const runWorkflowLink = page.getByRole("link", { name: /Run Workflow/i });
+        // Verify Launch Workflow link uses custom instance
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(customUrl));
     });
 
@@ -140,8 +140,8 @@ test.describe("Galaxy Instance Selector", () => {
         // Should revert to default instance
         await expect(combobox).toHaveValue("https://usegalaxy.org");
 
-        // Verify Run Workflow link updates
-        const runWorkflowLink = page.getByRole("link", { name: /Run Workflow/i });
+        // Verify Launch Workflow link updates
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", /https:\/\/usegalaxy\.org/);
 
         // Open dropdown again to verify custom instance is gone
@@ -207,8 +207,8 @@ test.describe("Galaxy Instance Selector", () => {
         await page.getByRole("option", { name: customUrl1, exact: false }).click();
         await expect(combobox).toHaveValue(customUrl1);
 
-        // Verify Run Workflow link updates
-        const runWorkflowLink = page.getByRole("link", { name: /Run Workflow/i });
+        // Verify Launch Workflow link updates
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
         await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(customUrl1));
     });
 });
