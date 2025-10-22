@@ -296,4 +296,200 @@ test.describe("Galaxy Instance Selector", () => {
         const optionCount = await allOptions.count();
         expect(optionCount).toBeGreaterThanOrEqual(1);
     });
+
+    test("auto-prepends https:// to URLs without protocol", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const urlWithoutProtocol = "usegalaxy.org";
+        const expectedUrl = "https://usegalaxy.org";
+
+        // Click and type URL without protocol
+        await combobox.click();
+        await combobox.fill(urlWithoutProtocol);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Find any Create option (to see what's actually displayed)
+        const createOption = page.getByRole("option", { name: /Create/i });
+        await expect(createOption).toBeVisible();
+
+        // Click create option
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify Launch Workflow link uses normalized URL (most important check)
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(expectedUrl));
+
+        // Reload and verify the normalized URL persists
+        await page.reload();
+        await page.waitForLoadState("networkidle");
+
+        // After reload, the combobox should have the normalized URL
+        await expect(combobox).toHaveValue(expectedUrl);
+    });
+
+    test("auto-prepends http:// to localhost URLs", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const urlWithoutProtocol = "localhost:8080";
+        const expectedUrl = "http://localhost:8080";
+
+        // Click and type localhost URL without protocol
+        await combobox.click();
+        await combobox.fill(urlWithoutProtocol);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Find any Create option
+        const createOption = page.getByRole("option", { name: /Create/i });
+        await expect(createOption).toBeVisible();
+
+        // Click create option
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify Launch Workflow link uses normalized URL (most important check)
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(expectedUrl.replace(/[.:]/g, "\\$&")));
+
+        // Reload and verify the normalized URL persists
+        await page.reload();
+        await page.waitForLoadState("networkidle");
+
+        // After reload, the combobox should have the normalized URL
+        await expect(combobox).toHaveValue(expectedUrl);
+    });
+
+    test("auto-prepends http:// to 127.0.0.1 URLs", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const urlWithoutProtocol = "127.0.0.1:8080";
+        const expectedUrl = "http://127.0.0.1:8080";
+
+        // Click and type 127.0.0.1 URL without protocol
+        await combobox.click();
+        await combobox.fill(urlWithoutProtocol);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Find any Create option
+        const createOption = page.getByRole("option", { name: /Create/i });
+        await expect(createOption).toBeVisible();
+
+        // Click create option
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify Launch Workflow link uses normalized URL (most important check)
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(expectedUrl.replace(/[.:]/g, "\\$&")));
+
+        // Reload and verify the normalized URL persists
+        await page.reload();
+        await page.waitForLoadState("networkidle");
+
+        // After reload, the combobox should have the normalized URL
+        await expect(combobox).toHaveValue(expectedUrl);
+    });
+
+    test("preserves already valid URLs with https://", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const validUrl = "https://my-galaxy-instance.org";
+
+        // Click and type valid URL with protocol
+        await combobox.click();
+        await combobox.fill(validUrl);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Click create option
+        const createOption = page.getByRole("option", { name: new RegExp(`Create.*${validUrl}`) });
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify the URL was not changed
+        await expect(combobox).toHaveValue(validUrl);
+
+        // Verify Launch Workflow link uses the URL
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(validUrl));
+    });
+
+    test("trims whitespace from URLs", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const urlWithWhitespace = "  usegalaxy.org  ";
+        const expectedUrl = "https://usegalaxy.org";
+
+        // Click and type URL with whitespace
+        await combobox.click();
+        await combobox.fill(urlWithWhitespace);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Find any Create option
+        const createOption = page.getByRole("option", { name: /Create/i });
+        await expect(createOption).toBeVisible();
+
+        // Click create option
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify Launch Workflow link uses normalized URL (most important check)
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(expectedUrl));
+
+        // Reload and verify the normalized URL persists
+        await page.reload();
+        await page.waitForLoadState("networkidle");
+
+        // After reload, the combobox should have the normalized URL
+        await expect(combobox).toHaveValue(expectedUrl);
+    });
+
+    test("handles URLs without protocol in subdomain format", async ({ page }) => {
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        const urlWithoutProtocol = "galaxy.example.com";
+        const expectedUrl = "https://galaxy.example.com";
+
+        // Click and type URL without protocol
+        await combobox.click();
+        await combobox.fill(urlWithoutProtocol);
+
+        // Wait for dropdown to update
+        await page.waitForTimeout(500);
+
+        // Find any Create option
+        const createOption = page.getByRole("option", { name: /Create/i });
+        await expect(createOption).toBeVisible();
+
+        // Click create option
+        await createOption.click();
+
+        // Wait for normalization to occur
+        await page.waitForTimeout(500);
+
+        // Verify Launch Workflow link uses normalized URL (most important check)
+        const runWorkflowLink = page.getByRole("link", { name: /Launch Workflow/i });
+        await expect(runWorkflowLink).toHaveAttribute("href", new RegExp(expectedUrl));
+
+        // Reload and verify the normalized URL persists
+        await page.reload();
+        await page.waitForLoadState("networkidle");
+
+        // After reload, the combobox should have the normalized URL
+        await expect(combobox).toHaveValue(expectedUrl);
+    });
 });

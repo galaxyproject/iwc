@@ -10,7 +10,7 @@ import Tabs from "./ui/Tabs.vue";
 import TabsList from "./ui/TabsList.vue";
 import TabsTrigger from "./ui/TabsTrigger.vue";
 import TabsContent from "./ui/TabsContent.vue";
-import { formatDate } from "../utils";
+import { formatDate, normalizeGalaxyUrl } from "../utils";
 
 const props = defineProps<{
     workflow: Workflow;
@@ -21,7 +21,9 @@ const currentTab = ref("about");
 
 const launchUrl = computed(() => {
     if (!selectedInstance.value) return "";
-    return `${selectedInstance.value}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(props.workflow.trsID)}&trs_version=v${props.workflow.definition.release}&run_form=true`;
+    // Normalize the URL to ensure it has a protocol
+    const normalizedInstance = normalizeGalaxyUrl(selectedInstance.value) || selectedInstance.value;
+    return `${normalizedInstance}/workflows/trs_import?trs_server=dockstore.org&trs_id=${encodeURIComponent(props.workflow.trsID)}&trs_version=v${props.workflow.definition.release}&run_form=true`;
 });
 
 function testToRequestState() {
@@ -48,7 +50,9 @@ const doiResolverUrl = computed(() => {
 async function createLandingPage() {
     const job = testToRequestState();
     const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow?.trsID!, `v${props.workflow?.definition.release}`);
-    const response = await fetch(`${selectedInstance.value}/api/workflow_landings`, {
+    // Normalize the URL to ensure it has a protocol
+    const normalizedInstance = normalizeGalaxyUrl(selectedInstance.value) || selectedInstance.value;
+    const response = await fetch(`${normalizedInstance}/api/workflow_landings`, {
         headers: { "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify({
@@ -59,7 +63,7 @@ async function createLandingPage() {
         }),
     });
     const json = await response.json();
-    const landingPage = `${selectedInstance.value}/workflow_landings/${json["uuid"]}?public=true`;
+    const landingPage = `${normalizedInstance}/workflow_landings/${json["uuid"]}?public=true`;
     window.open(landingPage, "_blank");
 }
 

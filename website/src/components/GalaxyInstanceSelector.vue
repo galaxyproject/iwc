@@ -7,6 +7,7 @@
 
 import { ref, computed, onMounted, watch } from "vue";
 import { useStorage } from "@vueuse/core";
+import { normalizeGalaxyUrl } from "../utils";
 import Combobox from "./ui/Combobox.vue";
 import ComboboxAnchor from "./ui/ComboboxAnchor.vue";
 import ComboboxInput from "./ui/ComboboxInput.vue";
@@ -59,6 +60,9 @@ const isCustomInstance = (instance: string) => {
     return !defaultInstances.includes(instance);
 };
 
+// Initialize selected instance
+const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
+
 // Delete a custom instance
 const deleteCustomInstance = (instance: string) => {
     const index = customInstances.value.indexOf(instance);
@@ -72,8 +76,6 @@ const deleteCustomInstance = (instance: string) => {
     }
 };
 
-// Initialize selected instance
-const selectedInstance = ref(props.modelValue || lastSelectedInstance.value);
 const searchTerm = ref("");
 
 // Filter instances based on search term
@@ -139,9 +141,12 @@ const customFilterFunction = (list: any[]) => {
     // Build a list of all values that should be visible
     const visibleValues = new Set();
 
-    // Add the search term itself (for the Create button)
+    // Add the normalized search term (for the Create button)
     if (searchTerm.value) {
-        visibleValues.add(searchTerm.value);
+        const normalized = normalizeGalaxyUrl(searchTerm.value);
+        if (normalized) {
+            visibleValues.add(normalized);
+        }
     }
 
     // Add all instances from our filtered list
@@ -167,10 +172,10 @@ const customFilterFunction = (list: any[]) => {
 
             <ComboboxContent class="max-h-60 overflow-auto">
                 <!-- Show "Create" option when searchTerm doesn't exactly match any existing instance -->
-                <ComboboxItem v-if="searchTerm && !isExactMatch" :value="searchTerm" class="cursor-pointer">
+                <ComboboxItem v-if="searchTerm && !isExactMatch" :value="normalizeGalaxyUrl(searchTerm) || searchTerm" class="cursor-pointer">
                     <div class="flex items-center">
                         <span class="text-sm"
-                            >Create "<strong>{{ searchTerm }}</strong
+                            >Create "<strong>{{ normalizeGalaxyUrl(searchTerm) || searchTerm }}</strong
                             >"</span
                         >
                     </div>
