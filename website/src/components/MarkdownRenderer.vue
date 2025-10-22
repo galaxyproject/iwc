@@ -337,6 +337,7 @@ function renderMermaidDiagrams() {
     border-radius: 8px;
     background: transparent;
     margin: 1rem 0;
+    min-height: 600px;
 }
 
 :deep(.mermaid-loading-spinner) {
