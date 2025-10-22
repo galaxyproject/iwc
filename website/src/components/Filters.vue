@@ -55,7 +55,7 @@ const handleFilterClick = (filter: string) => {
                         :class="{
                             'text-gold border-transparent': !selected.includes(filter),
                             'text-white border-gold': selected.includes(filter),
-                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter)
+                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter),
                         }"
                         @click="handleFilterClick(filter)">
                         {{ filter }}
@@ -74,7 +74,7 @@ const handleFilterClick = (filter: string) => {
                         :class="{
                             'text-gold border-transparent': !selected.includes(filter),
                             'text-white border-gold': selected.includes(filter),
-                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter)
+                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter),
                         }"
                         @click="handleFilterClick(filter)">
                         {{ filter }}

@@ -250,7 +250,7 @@ test.describe("Galaxy Instance Selector", () => {
         await page.waitForTimeout(500);
 
         // Debug: take a screenshot to see what's happening
-        await page.screenshot({ path: 'test-results/localhost-test.png' });
+        await page.screenshot({ path: "test-results/localhost-test.png" });
 
         // Check if dropdown is visible
         const dropdown = page.locator('[role="listbox"]');

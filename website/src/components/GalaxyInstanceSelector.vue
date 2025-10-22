@@ -94,7 +94,6 @@ const isExactMatch = computed(() => {
     return allInstances.value.some((instance) => instance.toLowerCase() === searchTerm.value.toLowerCase());
 });
 
-
 onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
@@ -151,7 +150,7 @@ const customFilterFunction = (list: any[]) => {
     }
 
     // Add all instances from our filtered list
-    filteredInstances.value.forEach(instance => visibleValues.add(instance));
+    filteredInstances.value.forEach((instance) => visibleValues.add(instance));
 
     // Return all values that should be visible
     return Array.from(visibleValues);
@@ -173,7 +172,10 @@ const customFilterFunction = (list: any[]) => {
 
             <ComboboxContent class="max-h-60 overflow-auto">
                 <!-- Show "Create" option when searchTerm doesn't exactly match any existing instance -->
-                <ComboboxItem v-if="searchTerm && !isExactMatch" :value="normalizeGalaxyUrl(searchTerm) || searchTerm" class="cursor-pointer">
+                <ComboboxItem
+                    v-if="searchTerm && !isExactMatch"
+                    :value="normalizeGalaxyUrl(searchTerm) || searchTerm"
+                    class="cursor-pointer">
                     <div class="flex items-center">
                         <span class="text-sm"
                             >Create "<strong>{{ normalizeGalaxyUrl(searchTerm) || searchTerm }}</strong
