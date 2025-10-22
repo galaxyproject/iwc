@@ -304,7 +304,7 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
         </div>
 
         <!-- Right sidebar -->
-        <div class="lg:w-80">
+        <div class="lg:w-1/4 min-w-80">
             <div class="sticky top-4 bg-white border border-gray-200 rounded-lg p-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4 text-gray-700">{{ workflow.definition.annotation }}</p>
