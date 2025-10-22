@@ -22,6 +22,7 @@ const defaultInstances = [
     "https://usegalaxy.org.au",
     "https://usegalaxy.fr",
     "https://test.galaxyproject.org",
+    "https://galaxy.cfdeworkspace.org",
 ];
 
 const props = defineProps({
