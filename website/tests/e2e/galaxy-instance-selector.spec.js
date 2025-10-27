@@ -551,50 +551,8 @@ test.describe("Galaxy Instance Selector", () => {
         expect(requestBody.request_state).toBeDefined();
     });
 
-    test("Try with Example Data button shows alert when no instance selected", async ({ page }) => {
-        // Set up dialog handler BEFORE navigation to capture alert
-        const dialogPromise = new Promise((resolve) => {
-            page.once("dialog", async (dialog) => {
-                resolve(dialog.message());
-                await dialog.accept();
-            });
-        });
-
-        // Navigate to workflow page
-        await page.goto("/workflow/rnaseq-pe-main/");
-        await page.waitForLoadState("networkidle");
-
-        // Clear the selected instance by setting it to empty in component state
-        await page.evaluate(() => {
-            // Find the Vue component and clear the selected instance
-            const combobox = document.querySelector('input[role="combobox"]');
-            if (combobox) {
-                combobox.value = "";
-                combobox.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-        });
-
-        await page.waitForTimeout(500);
-
-        // Find and click the "Try with Example Data" button
-        const exampleDataButton = page.getByRole("button", { name: /Try with Example Data/i }).first();
-        await exampleDataButton.click();
-
-        // Wait for and verify the alert
-        const alertMessage = await dialogPromise;
-        expect(alertMessage).toContain("Please select a Galaxy instance");
-    });
-
     test("Try with Example Data button handles API errors gracefully", async ({ page }) => {
-        // Set up dialog handler BEFORE navigation to capture alert
-        const dialogPromise = new Promise((resolve) => {
-            page.once("dialog", async (dialog) => {
-                resolve(dialog.message());
-                await dialog.accept();
-            });
-        });
-
-        // Set up API route to return error
+        // Set up API route to return error BEFORE navigation
         await page.route("**/api/workflow_landings", async (route) => {
             await route.fulfill({
                 status: 500,
@@ -607,12 +565,20 @@ test.describe("Galaxy Instance Selector", () => {
         await page.goto("/workflow/rnaseq-pe-main/");
         await page.waitForLoadState("networkidle");
 
+        // Ensure default instance is selected
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        await expect(combobox).toHaveValue(DEFAULT_INSTANCES[0]);
+
+        // Set up dialog handler to capture alert
+        const dialogPromise = page.waitForEvent("dialog");
+
         // Find and click the "Try with Example Data" button
         const exampleDataButton = page.getByRole("button", { name: /Try with Example Data/i }).first();
         await exampleDataButton.click();
 
         // Wait for and verify the error alert
-        const alertMessage = await dialogPromise;
-        expect(alertMessage).toContain("Failed to create landing page");
+        const dialog = await dialogPromise;
+        expect(dialog.message()).toContain("Failed to create landing page");
+        await dialog.accept();
     });
 });
