@@ -15,7 +15,7 @@ const props = defineProps<Props>();
         v-bind="props"
         :class="
             cn(
-                'px-4 py-2 font-medium text-sm rounded-md transition-all',
+                'px-4 py-2 font-medium text-sm rounded-md transition-all cursor-pointer',
                 'text-gray-600 hover:text-gray-900',
                 'data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bay-of-many-700 focus-visible:ring-offset-2',
