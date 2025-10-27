@@ -500,4 +500,119 @@ test.describe("Galaxy Instance Selector", () => {
         // After reload, the combobox should have the normalized URL
         await expect(combobox).toHaveValue(expectedUrl);
     });
+
+    test("Try with Example Data button makes API call to create landing page", async ({ page }) => {
+        // Set up API route interception
+        let apiCallMade = false;
+        let requestBody = null;
+
+        await page.route("**/api/workflow_landings", async (route) => {
+            apiCallMade = true;
+            requestBody = route.request().postDataJSON();
+
+            // Mock successful response
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({ uuid: "test-uuid-12345" }),
+            });
+        });
+
+        // Navigate to workflow page
+        await page.goto("/workflow/rnaseq-pe-main/");
+        await page.waitForLoadState("networkidle");
+
+        // Select a Galaxy instance (default should be selected)
+        const combobox = page.getByRole("combobox", { name: /Select or type a Galaxy/i });
+        await expect(combobox).toHaveValue(DEFAULT_INSTANCES[0]);
+
+        // Find and click the "Try with Example Data" button
+        const exampleDataButton = page.getByRole("button", { name: /Try with Example Data/i }).first();
+        await expect(exampleDataButton).toBeVisible();
+
+        // Set up window.open spy to prevent actual window opening
+        await page.evaluate(() => {
+            window.open = () => null;
+        });
+
+        await exampleDataButton.click();
+
+        // Wait a bit for the API call to complete
+        await page.waitForTimeout(1000);
+
+        // Verify API call was made
+        expect(apiCallMade).toBe(true);
+
+        // Verify request body contains expected fields
+        expect(requestBody).toBeTruthy();
+        expect(requestBody.workflow_target_type).toBe("trs_url");
+        expect(requestBody.workflow_id).toContain("dockstore.org");
+        expect(requestBody.public).toBe(true);
+        expect(requestBody.request_state).toBeDefined();
+    });
+
+    test("Try with Example Data button shows alert when no instance selected", async ({ page }) => {
+        // Set up dialog handler BEFORE navigation to capture alert
+        const dialogPromise = new Promise((resolve) => {
+            page.once("dialog", async (dialog) => {
+                resolve(dialog.message());
+                await dialog.accept();
+            });
+        });
+
+        // Navigate to workflow page
+        await page.goto("/workflow/rnaseq-pe-main/");
+        await page.waitForLoadState("networkidle");
+
+        // Clear the selected instance by setting it to empty in component state
+        await page.evaluate(() => {
+            // Find the Vue component and clear the selected instance
+            const combobox = document.querySelector('input[role="combobox"]');
+            if (combobox) {
+                combobox.value = "";
+                combobox.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+        });
+
+        await page.waitForTimeout(500);
+
+        // Find and click the "Try with Example Data" button
+        const exampleDataButton = page.getByRole("button", { name: /Try with Example Data/i }).first();
+        await exampleDataButton.click();
+
+        // Wait for and verify the alert
+        const alertMessage = await dialogPromise;
+        expect(alertMessage).toContain("Please select a Galaxy instance");
+    });
+
+    test("Try with Example Data button handles API errors gracefully", async ({ page }) => {
+        // Set up dialog handler BEFORE navigation to capture alert
+        const dialogPromise = new Promise((resolve) => {
+            page.once("dialog", async (dialog) => {
+                resolve(dialog.message());
+                await dialog.accept();
+            });
+        });
+
+        // Set up API route to return error
+        await page.route("**/api/workflow_landings", async (route) => {
+            await route.fulfill({
+                status: 500,
+                contentType: "application/json",
+                body: JSON.stringify({ error: "Server error" }),
+            });
+        });
+
+        // Navigate to workflow page
+        await page.goto("/workflow/rnaseq-pe-main/");
+        await page.waitForLoadState("networkidle");
+
+        // Find and click the "Try with Example Data" button
+        const exampleDataButton = page.getByRole("button", { name: /Try with Example Data/i }).first();
+        await exampleDataButton.click();
+
+        // Wait for and verify the error alert
+        const alertMessage = await dialogPromise;
+        expect(alertMessage).toContain("Failed to create landing page");
+    });
 });
