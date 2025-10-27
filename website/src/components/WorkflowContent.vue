@@ -48,23 +48,39 @@ const doiResolverUrl = computed(() => {
 });
 
 async function createLandingPage() {
+    if (!selectedInstance.value) {
+        alert("Please select a Galaxy instance first");
+        return;
+    }
+
     const job = testToRequestState();
     const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow?.trsID!, `v${props.workflow?.definition.release}`);
     // Normalize the URL to ensure it has a protocol
     const normalizedInstance = normalizeGalaxyUrl(selectedInstance.value) || selectedInstance.value;
-    const response = await fetch(`${normalizedInstance}/api/workflow_landings`, {
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        body: JSON.stringify({
-            workflow_id: trs_url,
-            workflow_target_type: "trs_url",
-            request_state: job,
-            public: true,
-        }),
-    });
-    const json = await response.json();
-    const landingPage = `${normalizedInstance}/workflow_landings/${json["uuid"]}?public=true`;
-    window.open(landingPage, "_blank");
+
+    try {
+        const response = await fetch(`${normalizedInstance}/api/workflow_landings`, {
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            body: JSON.stringify({
+                workflow_id: trs_url,
+                workflow_target_type: "trs_url",
+                request_state: job,
+                public: true,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to create landing page: ${response.statusText}`);
+        }
+
+        const json = await response.json();
+        const landingPage = `${normalizedInstance}/workflow_landings/${json["uuid"]}?public=true`;
+        window.open(landingPage, "_blank");
+    } catch (error) {
+        console.error("Error creating landing page:", error);
+        alert("Failed to create landing page. Please try again or check the browser console for details.");
+    }
 }
 
 const tools = computed(() => {
@@ -197,7 +213,7 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow and fill in your own input parameters and datasets.
                                         </p>
-                                        <Button as="a" :href="launchUrl" target="_blank"> 🚀 Run Workflow </Button>
+                                        <Button as="a" :href="launchUrl" target="_blank"> Launch Workflow </Button>
                                     </div>
 
                                     <div class="border border-gray-300 rounded-lg p-4">
@@ -205,7 +221,7 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <Button @click="createLandingPage"> 🚀 Run with example data </Button>
+                                        <Button @click="createLandingPage"> Try with Example Data </Button>
                                     </div>
                                 </div>
                                 <div v-if="!selectedInstance" class="mt-3 text-sm text-amber-600">
