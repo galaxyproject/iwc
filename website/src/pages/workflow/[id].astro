@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import IWCHeader from '../../components/IWCHeader.astro';
+import WorkflowContent from '../../components/WorkflowContent.vue';
+import { loadManifest, getAllWorkflows } from '../../utils/manifest';
+import type { Workflow } from '../../models/workflow';
+
+export async function getStaticPaths() {
+    const collections = await loadManifest();
+    const allWorkflows = getAllWorkflows(collections);
+
+    return allWorkflows.map((workflow) => {
+        return {
+            params: { id: workflow.iwcID },
+            props: { workflow },
+        };
+    });
+}
+
+const { workflow } = Astro.props as { workflow: Workflow };
+
+const baseUrl = 'https://iwc.galaxyproject.org';
+const workflowName = workflow.definition?.name || 'Workflow Details';
+const description = workflow.definition.annotation || 'Galaxy workflow';
+---
+
+<BaseLayout
+    title={`${workflowName} | IWC`}
+    description={description}
+    ogTitle={workflowName}
+    ogDescription={description}
+    ogImage={`${baseUrl}/iwc_logo.png`}
+    ogType="website"
+    twitterCard="summary"
+    twitterTitle={workflowName}
+    twitterDescription={description}
+    twitterImage={`${baseUrl}/iwc_logo.png`}
+>
+    <IWCHeader slot="header" />
+
+    <WorkflowContent slot="content" {workflow} client:only="vue" />
+</BaseLayout>
