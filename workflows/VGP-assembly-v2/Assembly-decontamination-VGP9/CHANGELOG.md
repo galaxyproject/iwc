@@ -2,6 +2,10 @@
 
 ## [1.2] - 2025-10-20
 
+### Changes
+
+- Add tags to outputs for compatibility with export and report workflows
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2`
 
