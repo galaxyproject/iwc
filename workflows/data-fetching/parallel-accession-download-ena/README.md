@@ -17,7 +17,7 @@ MIT License
 
 The workflow performs the following steps:
 
-1. **Input Processing**: Takes a list of accession numbers (e.g., SRR numbers from NCBI SRA or ENA)
+1. **Input Processing**: Takes a list of accession numbers (e.g., SRR numbers from ENA)
 2. **Batch Splitting**: Divides the accession list into smaller chunks for parallel processing
 3. **Parallel Download**: Downloads FASTQ files for each batch simultaneously using the `fastq-dl` tool
 4. **Output Organization**: Organizes downloaded data into three categories:
@@ -58,7 +58,6 @@ The workflow performs the following steps:
 - **Features**:
   - Automatically detects whether data is single-end or paired-end
   - Downloads metadata for each accession
-  - Handles both NCBI SRA and ENA repositories
 
 ### Step 3-5: Apply Rules
 - **Purpose**: Organizes downloaded files into properly structured collections
@@ -95,7 +94,7 @@ The workflow performs the following steps:
    - Number of accessions
    - Size of each sequencing dataset
    - Network bandwidth
-   - Server load on ENA/NCBI
+   - Server load on ENA
 
 4. **Error Handling**: Some accessions may fail to download if:
    - The accession is invalid
