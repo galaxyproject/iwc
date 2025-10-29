@@ -11,9 +11,11 @@ import { normalizeGalaxyUrl } from "../utils";
 import Combobox from "./ui/Combobox.vue";
 import ComboboxAnchor from "./ui/ComboboxAnchor.vue";
 import ComboboxInput from "./ui/ComboboxInput.vue";
+import ComboboxTrigger from "./ui/ComboboxTrigger.vue";
 import ComboboxContent from "./ui/ComboboxContent.vue";
 import ComboboxItem from "./ui/ComboboxItem.vue";
 import ComboboxEmpty from "./ui/ComboboxEmpty.vue";
+import { ChevronDown } from "lucide-vue-next";
 
 // Default instance list - never modified
 const defaultInstances = [
@@ -78,6 +80,42 @@ const deleteCustomInstance = (instance: string) => {
 };
 
 const searchTerm = ref("");
+const open = ref(false);
+
+// Handle opening dropdown - clear search to show all instances
+const handleInputFocus = () => {
+    if (!open.value) {
+        searchTerm.value = "";
+    }
+};
+
+// Track if user has started typing
+const userIsTyping = ref(false);
+
+// Watch searchTerm to detect user typing
+watch(searchTerm, (newVal, oldVal) => {
+    // User is typing if searchTerm changes and it's not equal to selected instance
+    if (newVal !== selectedInstance.value) {
+        userIsTyping.value = true;
+    } else {
+        userIsTyping.value = false;
+    }
+});
+
+// Watch for dropdown opening/closing
+watch(open, (newVal, oldVal) => {
+    if (oldVal === false && newVal === true) {
+        // Dropdown just opened - clear search to show all instances
+        // But only if user hasn't started typing yet
+        if (!userIsTyping.value && searchTerm.value === selectedInstance.value) {
+            searchTerm.value = "";
+        }
+    } else if (oldVal === true && newVal === false) {
+        // Dropdown just closed - restore the selected instance value
+        searchTerm.value = selectedInstance.value;
+        userIsTyping.value = false;
+    }
+});
 
 // Filter instances based on search term
 const filteredInstances = computed(() => {
@@ -165,9 +203,17 @@ const customFilterFunction = (list: any[]) => {
             </p>
         </div>
 
-        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm" :filterFunction="customFilterFunction">
-            <ComboboxAnchor class="w-full">
-                <ComboboxInput placeholder="Select or type a Galaxy instance URL" class="w-full" />
+        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm" v-model:open="open" :filterFunction="customFilterFunction">
+            <ComboboxAnchor class="w-full relative">
+                <ComboboxInput
+                    placeholder="Select or type a Galaxy instance URL"
+                    class="w-full pr-10"
+                    @focus="handleInputFocus" />
+                <ComboboxTrigger
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                    aria-label="Toggle dropdown">
+                    <ChevronDown :class="{ 'rotate-180': open }" class="h-4 w-4 text-gray-500 transition-transform" />
+                </ComboboxTrigger>
             </ComboboxAnchor>
 
             <ComboboxContent class="max-h-60 overflow-auto">
