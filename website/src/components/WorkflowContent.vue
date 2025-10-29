@@ -221,7 +221,9 @@ onMounted(() => {
                                         <p class="text-sm mb-4">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <Button @click="createLandingPage" variant="outline"> Try with Example Data </Button>
+                                        <Button @click="createLandingPage" variant="outline">
+                                            Try with Example Data
+                                        </Button>
                                     </div>
                                 </div>
                                 <div v-if="!selectedInstance" class="mt-3 text-sm text-amber-600">
