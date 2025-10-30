@@ -26,7 +26,7 @@ async function copyToClipboard() {
     <div class="relative group max-w-full">
         <button
             @click="copyToClipboard"
-            class="absolute right-2 top-2 z-10 flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-white border border-gray-500 rounded bg-transparent hover:bg-gray-700/50 transition-colors"
+            class="absolute right-2 top-2 z-10 flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-white border border-gray-500 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
             :aria-label="copied ? 'Copied' : 'Copy to clipboard'">
             <Copy v-if="!copied" :size="14" />
             <Check v-else :size="14" />
