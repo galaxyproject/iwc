@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6] - 2025-10-30
+
+## Changes
+- Mash QC now only runs if there are multiple samples
+- Unhide the Genomescope model output
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.1.3.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.2.0+galaxy1`
+
+
 ## [0.5] - 2025-10-01
 
 # Changes
