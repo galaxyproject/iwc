@@ -163,7 +163,7 @@ onMounted(() => {
 <template>
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Main content area -->
-        <div class="flex-1">
+        <div class="flex-1 min-w-0">
             <div class="p-4 mb-6">
                 <Tabs v-model="currentTab" @update:modelValue="onTabChange">
                     <!-- Tab List -->
