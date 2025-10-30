@@ -208,7 +208,7 @@ onMounted(() => {
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 2: Choose how to run</h4>
-                                <div class="grid md:grid-cols-2 gap-6">
+                                <div class="grid xl:grid-cols-2 gap-6">
                                     <div class="border border-gray-300 rounded-lg p-4">
                                         <h5 class="font-bold mb-2">Run with your own data</h5>
                                         <p class="text-sm mb-4">
@@ -315,7 +315,7 @@ onMounted(() => {
         </div>
 
         <!-- Right sidebar -->
-        <div class="lg:w-1/4 min-w-80">
+        <div class="lg:w-1/4 lg:min-w-64">
             <div class="sticky top-4 bg-white border border-gray-200 rounded-lg p-6">
                 <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
                 <p class="mb-4 text-gray-700">{{ workflow.definition.annotation }}</p>
