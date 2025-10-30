@@ -4,6 +4,7 @@
 
 ## Changes
 - Mash QC now only runs if there are multiple samples
+- Unhide the Genomescope model output
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy3`
