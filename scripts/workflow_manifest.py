@@ -4,7 +4,7 @@ import yaml
 import requests
 import re
 import shutil
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, quote
 from create_mermaid import walk_directory
 from planemo.galaxy.workflows import job_template
 
@@ -230,7 +230,10 @@ def path_to_location(input_item, root):
                 else:
                     # Create location URL from path for downloading files
                     relative_path = os.path.join(root.replace("./", ""), input_item["path"].lstrip("/"))
-                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{relative_path}"
+                    # URL-encode the path to handle spaces and special characters
+                    # Use safe='/' to keep forward slashes unencoded as path separators
+                    encoded_path = quote(relative_path, safe='/')
+                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{encoded_path}"
                     del input_item["path"]
             if "filetype" not in input_item:
                 # Add filetype if not present
