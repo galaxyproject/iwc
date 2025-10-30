@@ -5,6 +5,7 @@ import type { Workflow } from "../models/workflow";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
 import Author from "./Author.vue";
 import GalaxyInstanceSelector from "./GalaxyInstanceSelector.vue";
+import CodeBlock from "./CodeBlock.vue";
 import Button from "./ui/Button.vue";
 import Tabs from "./ui/Tabs.vue";
 import TabsList from "./ui/TabsList.vue";
@@ -246,23 +247,19 @@ onMounted(() => {
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 1: Install Planemo</h4>
                                 <p class="mb-2 text-sm">If you haven't already, install Planemo using pip:</p>
-                                <pre
-                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>pip install planemo</code></pre>
+                                <CodeBlock code="pip install planemo" />
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
                                 <p class="mb-2 text-sm">Download the workflow .ga file:</p>
-                                <pre
-                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}.ga" -o {{ workflow?.iwcID }}.ga</code></pre>
+                                <CodeBlock :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
                                 <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
-                                <pre
-                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>curl "https://iwc.galaxyproject.org/data/{{ workflow?.iwcID }}-tests.yml" -o {{ workflow?.iwcID }}-tests.yml
-planemo test {{ workflow?.iwcID }}.ga</code></pre>
+                                <CodeBlock :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
@@ -271,17 +268,12 @@ planemo test {{ workflow?.iwcID }}.ga</code></pre>
                                     Create a workflow job file with your input parameters and update the values to match
                                     your environment and run:
                                 </p>
-                                <pre
-                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>{{ workflow_job_input }}</code></pre>
+                                <CodeBlock :code="workflow_job_input" />
                             </div>
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 5: Run the workflow with your data</h4>
                                 <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
-                                <pre
-                                    class="p-3 rounded overflow-x-auto bg-gray-800 text-gray-100"><code>planemo run {{ workflow?.iwcID }}.ga {{ workflow?.iwcID }}-job.yml \
-    --output_directory . \
-    --download_outputs \
-    --output_json output.json </code></pre>
+                                <CodeBlock :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>
                         </div>
 
