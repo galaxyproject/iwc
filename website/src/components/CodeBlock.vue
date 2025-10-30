@@ -27,13 +27,13 @@ async function copyToClipboard() {
         <button
             @click="copyToClipboard"
             class="absolute right-2 top-2 z-10 flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-white border border-gray-500 rounded bg-transparent hover:bg-gray-700/50 transition-colors"
-            :aria-label="copied ? 'Copied' : 'Copy to clipboard'"
-        >
+            :aria-label="copied ? 'Copied' : 'Copy to clipboard'">
             <Copy v-if="!copied" :size="14" />
             <Check v-else :size="14" />
             <span v-if="!copied">Copy</span>
             <span v-else>Copied!</span>
         </button>
-        <pre class="p-3 pr-16 lg:pr-20 rounded overflow-x-auto bg-gray-800 text-gray-100 text-sm shadow-inner"><code>{{ code }}</code></pre>
+        <pre
+            class="p-3 pr-16 lg:pr-20 rounded overflow-x-auto bg-gray-800 text-gray-100 text-sm shadow-inner"><code>{{ code }}</code></pre>
     </div>
 </template>

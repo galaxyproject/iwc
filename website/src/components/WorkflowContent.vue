@@ -253,13 +253,15 @@ onMounted(() => {
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
                                 <p class="mb-2 text-sm">Download the workflow .ga file:</p>
-                                <CodeBlock :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
+                                <CodeBlock
+                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
                                 <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
-                                <CodeBlock :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
+                                <CodeBlock
+                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
@@ -273,7 +275,8 @@ onMounted(() => {
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2">Step 5: Run the workflow with your data</h4>
                                 <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
-                                <CodeBlock :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
+                                <CodeBlock
+                                    :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>
                         </div>
 
