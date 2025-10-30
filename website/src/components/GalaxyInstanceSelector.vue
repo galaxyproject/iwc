@@ -5,15 +5,17 @@
  * Persisted in local storage are the currently selected instance, and a list of custom added instances.
  */
 
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import { useStorage } from "@vueuse/core";
 import { normalizeGalaxyUrl } from "../utils";
 import Combobox from "./ui/Combobox.vue";
 import ComboboxAnchor from "./ui/ComboboxAnchor.vue";
 import ComboboxInput from "./ui/ComboboxInput.vue";
+import ComboboxTrigger from "./ui/ComboboxTrigger.vue";
 import ComboboxContent from "./ui/ComboboxContent.vue";
 import ComboboxItem from "./ui/ComboboxItem.vue";
 import ComboboxEmpty from "./ui/ComboboxEmpty.vue";
+import { ChevronDown } from "lucide-vue-next";
 
 // Default instance list - never modified
 const defaultInstances = [
@@ -78,6 +80,53 @@ const deleteCustomInstance = (instance: string) => {
 };
 
 const searchTerm = ref("");
+const open = ref(false);
+
+// Handle opening dropdown - clear search to show all instances
+const handleInputFocus = () => {
+    if (!open.value) {
+        searchTerm.value = "";
+    }
+};
+
+// Handle ESC key to cancel typing and close dropdown
+const handleKeydown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && open.value) {
+        event.preventDefault();
+        event.stopPropagation();
+        // Force close dropdown - this will trigger our watcher which restores searchTerm
+        userIsTyping.value = false;
+        open.value = false;
+    }
+};
+
+// Track if user has started typing
+const userIsTyping = ref(false);
+
+// Watch searchTerm to detect user typing
+watch(searchTerm, (newVal, oldVal) => {
+    // User is typing if searchTerm changes and it's not equal to selected instance
+    if (newVal !== selectedInstance.value) {
+        userIsTyping.value = true;
+    } else {
+        userIsTyping.value = false;
+    }
+});
+
+// Watch for dropdown opening/closing
+watch(open, (newVal, oldVal) => {
+    if (oldVal === false && newVal === true) {
+        // Dropdown just opened - clear search to show all instances
+        // But only if user hasn't started typing yet
+        if (!userIsTyping.value && searchTerm.value === selectedInstance.value) {
+            searchTerm.value = "";
+        }
+    } else if (oldVal === true && newVal === false) {
+        // Dropdown just closed - restore the selected instance value
+        searchTerm.value = selectedInstance.value;
+        userIsTyping.value = false;
+    }
+});
 
 // Filter instances based on search term
 const filteredInstances = computed(() => {
@@ -94,6 +143,16 @@ const isExactMatch = computed(() => {
     return allInstances.value.some((instance) => instance.toLowerCase() === searchTerm.value.toLowerCase());
 });
 
+// Add global ESC key handler for closing dropdown
+const handleEscKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && open.value) {
+        event.preventDefault();
+        event.stopPropagation();
+        userIsTyping.value = false;
+        open.value = false;
+    }
+};
+
 onMounted(() => {
     if (!props.modelValue) {
         // If no model value provided, use the last selected instance
@@ -101,6 +160,12 @@ onMounted(() => {
         emit("update:modelValue", selectedInstance.value);
         emit("change", selectedInstance.value);
     }
+
+    document.addEventListener("keydown", handleEscKey, true);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("keydown", handleEscKey, true);
 });
 
 // Watch for changes to modelValue from parent component
@@ -138,6 +203,10 @@ watch(selectedInstance, (newVal, oldVal) => {
 // Custom filter function - must include both instances and the search term
 // to prevent radix-vue from filtering them out
 const customFilterFunction = (list: any[]) => {
+    // If not open, ignore search term and present full list to avoid partial render during close animations
+    if (!open.value) {
+        return allInstances.value;
+    }
     // Build a list of all values that should be visible
     const visibleValues = new Set();
 
@@ -165,9 +234,22 @@ const customFilterFunction = (list: any[]) => {
             </p>
         </div>
 
-        <Combobox v-model="selectedInstance" v-model:searchTerm="searchTerm" :filterFunction="customFilterFunction">
-            <ComboboxAnchor class="w-full">
-                <ComboboxInput placeholder="Select or type a Galaxy instance URL" class="w-full" />
+        <Combobox
+            v-model="selectedInstance"
+            v-model:searchTerm="searchTerm"
+            v-model:open="open"
+            :filterFunction="customFilterFunction"
+            @keydown.capture="handleKeydown">
+            <ComboboxAnchor class="w-full relative">
+                <ComboboxInput
+                    placeholder="Select or type a Galaxy instance URL"
+                    class="w-full pr-10"
+                    @focus="handleInputFocus" />
+                <ComboboxTrigger
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
+                    aria-label="Toggle dropdown">
+                    <ChevronDown :class="{ 'rotate-180': open }" class="h-4 w-4 text-gray-500 transition-transform" />
+                </ComboboxTrigger>
             </ComboboxAnchor>
 
             <ComboboxContent class="max-h-60 overflow-auto">
