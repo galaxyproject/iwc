@@ -1,0 +1,82 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import IWCHeader from "../components/IWCHeader.astro";
+import Filters from "../components/Filters.vue";
+import WorkflowGrid from "../components/WorkflowGrid.vue";
+import PopularWorkflows from "../components/PopularWorkflows.vue";
+import { loadManifest, getLightweightWorkflows, getAllCollections } from "../utils/manifest";
+
+// Load manifest data at build time
+const collections = await loadManifest();
+
+// Extract lightweight data for homepage (only what's needed for listing/search)
+const workflows = getLightweightWorkflows(collections);
+const allCollections = getAllCollections(collections);
+
+// Define popular workflow TRS IDs
+const POPULAR_WORKFLOW_TRS_IDS = [
+    "#workflow/github.com/iwc-workflows/rnaseq-pe/main",
+    "#workflow/github.com/iwc-workflows/chipseq-pe/main",
+    "#workflow/github.com/iwc-workflows/atacseq/main",
+];
+---
+
+<BaseLayout
+    title="Intergalactic Workflow Commission"
+    description="Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly and reliably"
+    ogTitle="Intergalactic Workflow Commission"
+    ogDescription="Discover and run vetted analysis pipelines on Galaxy"
+    ogImage="https://iwc.galaxyproject.org/iwc_logo.png"
+    ogType="website"
+    twitterCard="summary"
+    twitterTitle="Intergalactic Workflow Commission"
+    twitterDescription="Discover and run vetted analysis pipelines on Galaxy"
+    twitterImage="https://iwc.galaxyproject.org/iwc_logo.png"
+    hasHero={true}>
+    <IWCHeader slot="header" />
+
+    <div slot="hero" class="flex bg-ebony-clay p-4 items-center flex-col">
+        <h1 class="text-5xl my-8 text-white text-center font-bold">
+            Discover and run vetted analysis pipelines on Galaxy
+        </h1>
+        <h2 class="text-xl text-white text-center font-semibold mb-16">
+            Ready-to-use, open-source pipelines with sample data and training materials to make progress quickly and
+            reliably.
+        </h2>
+
+        <PopularWorkflows workflowTrsIds={POPULAR_WORKFLOW_TRS_IDS} workflows={workflows} client:load />
+
+        <div class="max-w-6xl w-full mt-12 p-4">
+            <input
+                type="text"
+                id="search-input"
+                placeholder="Search workflows"
+                class="w-full p-2 mb-2 border border-gray-300 bg-white rounded-lg"
+            />
+        </div>
+
+        <Filters collections={allCollections} client:load />
+    </div>
+
+    <div slot="content">
+        <div id="category-description" class="w-full my-4 p-4 bg-white rounded-lg shadow-md" style="display:none;">
+            <h2 id="category-title" class="text-xl font-semibold mb-4"></h2>
+            <div id="category-content" class="prose !max-w-none"></div>
+        </div>
+
+        <WorkflowGrid workflows={workflows} client:load />
+    </div>
+</BaseLayout>
+
+<script>
+    // Wire up search input to WorkflowGrid
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const event = new CustomEvent("search-change", {
+                detail: (e.target as HTMLInputElement).value,
+            });
+            window.dispatchEvent(event);
+        });
+    }
+</script>
