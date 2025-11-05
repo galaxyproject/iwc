@@ -116,3 +116,72 @@ export function generateWorkflowJsonLd(
 export function serializeJsonLd(jsonLd: WorkflowJsonLd): string {
     return JSON.stringify(jsonLd, null, 2);
 }
+
+/**
+ * Google Scholar citation meta tag
+ */
+export interface CitationMetaTag {
+    name: string;
+    content: string;
+}
+
+/**
+ * Generates Google Scholar citation meta tags for a workflow
+ * Google Scholar requires: title, author(s), and publication_date
+ *
+ * @param workflow - The workflow object from the manifest
+ * @returns Array of meta tag objects with name and content
+ */
+export function generateCitationMetaTags(workflow: Workflow): CitationMetaTag[] {
+    const tags: CitationMetaTag[] = [];
+
+    // Required: Title
+    tags.push({
+        name: "citation_title",
+        content: workflow.definition.name,
+    });
+
+    // Required: Authors (one tag per person, skip organizations)
+    workflow.definition.creator.forEach((creator) => {
+        if (creator.class === "Person") {
+            tags.push({
+                name: "citation_author",
+                content: creator.name,
+            });
+        }
+    });
+
+    // Required: Publication date
+    const publicationDate = new Date(workflow.updated).toISOString().split("T")[0];
+    tags.push({
+        name: "citation_publication_date",
+        content: publicationDate,
+    });
+
+    // Optional: DOI
+    if (workflow.doi) {
+        tags.push({
+            name: "citation_doi",
+            content: workflow.doi,
+        });
+    }
+
+    // Optional: Abstract
+    if (workflow.definition.annotation) {
+        tags.push({
+            name: "citation_abstract",
+            content: workflow.definition.annotation,
+        });
+    }
+
+    // Optional: Keywords
+    const keywords = [...(workflow.collections || []), ...(workflow.definition.tags || [])].filter(Boolean);
+    if (keywords.length > 0) {
+        tags.push({
+            name: "citation_keywords",
+            content: keywords.join("; "),
+        });
+    }
+
+    return tags;
+}

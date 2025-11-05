@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("JSON-LD structured data", () => {
+test.describe("Structured metadata for academic search", () => {
     test("Workflow page includes valid JSON-LD", async ({ page }) => {
         // Navigate to a workflow page
         await page.goto("/workflow/rnaseq-sr-main/");
@@ -113,5 +113,63 @@ test.describe("JSON-LD structured data", () => {
         expect(jsonLd1.name).not.toBe(jsonLd2.name);
         expect(jsonLd1.url).not.toBe(jsonLd2.url);
         expect(jsonLd1.identifier).not.toBe(jsonLd2.identifier);
+    });
+});
+
+test.describe("Google Scholar citation meta tags", () => {
+    test("Workflow page includes required citation meta tags", async ({ page }) => {
+        await page.goto("/workflow/rnaseq-sr-main/");
+
+        // Verify required meta tags exist
+        const titleTag = await page.locator('meta[name="citation_title"]').getAttribute("content");
+        expect(titleTag).toBeTruthy();
+        expect(titleTag).toContain("RNA-Seq");
+
+        // Verify at least one author tag
+        const authorTags = await page.locator('meta[name="citation_author"]').count();
+        expect(authorTags).toBeGreaterThan(0);
+
+        // Verify publication date
+        const dateTag = await page.locator('meta[name="citation_publication_date"]').getAttribute("content");
+        expect(dateTag).toBeTruthy();
+        expect(dateTag).toMatch(/^\d{4}-\d{2}-\d{2}$/); // YYYY-MM-DD format
+    });
+
+    test("Workflow with DOI includes citation_doi meta tag", async ({ page }) => {
+        await page.goto("/workflow/chipseq-sr-main/");
+
+        const doiTag = await page.locator('meta[name="citation_doi"]').getAttribute("content");
+        expect(doiTag).toBeTruthy();
+        expect(doiTag).toMatch(/^10\.\d+\/zenodo\.\d+$/);
+    });
+
+    test("Workflow includes citation_keywords", async ({ page }) => {
+        await page.goto("/workflow/rnaseq-sr-main/");
+
+        const keywordsTag = await page.locator('meta[name="citation_keywords"]').getAttribute("content");
+        expect(keywordsTag).toBeTruthy();
+        expect(keywordsTag).toContain(";"); // Keywords should be semicolon-separated
+    });
+
+    test("Workflow includes citation_abstract", async ({ page }) => {
+        await page.goto("/workflow/chipseq-sr-main/");
+
+        const abstractTag = await page.locator('meta[name="citation_abstract"]').getAttribute("content");
+        expect(abstractTag).toBeTruthy();
+        expect(abstractTag.length).toBeGreaterThan(20);
+    });
+
+    test("Only person creators are listed as citation_author", async ({ page }) => {
+        await page.goto("/workflow/mgnify-amplicon-pipeline-v5-quality-control-single-end-main/");
+
+        // This workflow has both Organization and Person creators
+        const authorTags = await page.locator('meta[name="citation_author"]').all();
+        const authors = await Promise.all(authorTags.map((tag) => tag.getAttribute("content")));
+
+        // Verify we have person authors (should be 2: Rand Zoabi and Paul Zierep)
+        expect(authors.length).toBeGreaterThan(0);
+
+        // Verify none of the authors are "MGnify - EMBL" (the organization)
+        expect(authors).not.toContain("MGnify - EMBL");
     });
 });
