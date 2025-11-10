@@ -2,10 +2,11 @@
 
 ## [0.4] - 2025-10-07
 
-### Logic Update
+### Manual updates
 
 * **metaSPAdes** now supports running in single-assembly mode when individual samples are submitted. Previously, it always performed co-assembly, which is the default tool setting.
-* Grouping for grouped assemblies is now handled in the main workflow through a metadata sample sheet (`Metadata for grouped assembly/binning`). If no sample sheet is provided, individual assemblies are performed by default.
+* **bakta**, **quast** (for the bins), **coverM** results are joined into one overview table each
+* For **dRep** also the clustering results are generated.
 * All tools have been updated to their latest versions.
 * Workflow annotations.
 
