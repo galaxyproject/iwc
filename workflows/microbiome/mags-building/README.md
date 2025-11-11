@@ -25,8 +25,8 @@ Input reads must be quality-filtered, with host reads removed.
 See other MAGs workflows in IWC for quality filtering and host removal.
 
 - **Trimmed reads**: Quality-trimmed reads from individual samples.
-- **Trimmed reads from grouped samples**: These reads need to be grouped based on the desired MAGs generation approach:  
-  - **Individual MAGs Generation**: Use the same input as `Sample-wise Trimmed Paired Reads` to generate MAGs per sample.  
+- **Trimmed reads from grouped samples**: These reads need to be grouped based on the desired MAGs generation approach. The tool [fastq_groupmerge](toolshed.g2.bx.psu.edu/repos/iuc/fastq_groupmerge/fastq_groupmerge/1.0.1+galaxy0) can be used to perform the grouping.  
+  - **Individual MAGs Generation**: Use the same input as `Trimmed Reads` to generate MAGs per sample.  
   - **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all reads input one file for a fully pooled MAGs approach.  
   - **Grouped MAGs Generation (Co-assembly/Binning)**: Merge samples based on predefined groups.  
   - **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.  
