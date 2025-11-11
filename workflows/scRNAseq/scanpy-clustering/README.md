@@ -12,7 +12,7 @@ This workflow follows Scanpy legacy workflow [clustering 3k PBMCs](https://scanp
         - Cell Ranger v2 or earlier version call this file as `genes.tsv` and contains two columns:
             - Gene ID (Ensembl gene ID or other identifiers)
             - Gene Name (common gene name or symbol)
-        - Cell Ranger v2 or earlier version call this file as `features.tsv` and contains three columns:
+        - Cell Ranger v3 or later version call this file as `features.tsv` and contains three columns:
             - Feature ID (Ensembl gene ID or other identifiers)
             - Feature Name (common gene name or symbol)
             - Feature Type (e.g., Gene Expression, Antibody Capture, CRISPR Guide Capture, etc.)

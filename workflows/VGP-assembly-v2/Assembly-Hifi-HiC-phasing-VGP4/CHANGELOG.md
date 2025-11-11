@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4] - 2025-09-30
+
+### Changes
+
+- Remove BUSCO for QC, replace with Compleasm summary.
+- Improved report.
+
 ## [0.3.13] - 2025-09-29
 
 ### Automatic update
