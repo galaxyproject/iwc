@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1] - 2025-11-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4`
+
 ## [1.0] - 2025-10-03
 
 ### Tool change
