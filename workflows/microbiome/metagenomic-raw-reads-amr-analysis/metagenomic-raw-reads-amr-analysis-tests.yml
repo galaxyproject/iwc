@@ -1,0 +1,78 @@
+- doc: Test outline for metagenomic-raw-reads-amr-analysis workflow
+  job:
+    Metagenomics Trimmed reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: raw_reads_metag_test
+        elements:
+          - class: File
+            identifier: forward
+            location: https://zenodo.org/records/17395554/files/PSM6XBT3_500k_R1.fastq.gz
+          - class: File
+            identifier: reverse
+            location: https://zenodo.org/records/17395554/files/PSM6XBT3_500k_R2.fastq.gz
+    Select a Sylph database: sylph_downloaded_07112025_gtdb-r220-c200-dbv1.syldb
+    Select a Sylph tax database: sylph_tax_downloaded_08112025
+    Select a DeepARG database: deeparg_1.0.4-07112025
+    Select a Groot database: arg-annot.90-1.1.2-08112025
+    Select a Groot database for ARGnorm: groot-argannot
+    Deeparg minimum probability for considering a reads as ARG-like: '0.8'
+    Groot average base pair length of reads: '100'
+    Groot coverage cutoff for reporting ARGs: '0.6'
+  outputs:
+    sylph_tax_prof:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "Taxonomic_abundance"
+          has_n_columns:
+            n: 15
+    sylph_tax_prof:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "clade_name"
+          has_n_columns:
+            n: 2
+    deeparg_mapping_arg:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "#ARG"
+          has_n_columns:
+            n: 4
+    groot_report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "argannot~~~(Bla)cfxA2~~~AF504910:1-966"
+            has_n_columns:
+              n: 4
+    argnorm_groot_report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "ARO:3003002"
+            has_n_columns:
+              n: 2
+    tooldistillator_summarize:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            - that: has_text
+              text: "groot_report"
+            - that: has_text
+              text: "sylph_report"
+            - that: has_text
+              text: "sylphtax_report"
+            - that: has_text
+              text: "argnorm_report"
+            - that: has_text
+              text: "deeparg_report"
+            - that: has_text
+              text: "sylph-tax.sylphmpa_file"
