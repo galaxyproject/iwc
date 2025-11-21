@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4] - 2025-10-07
+
+### Changed
+
+- **metaSPAdes** now supports running in single-assembly mode when individual samples are submitted. Previously, it always performed co-assembly, which is the default tool setting.
+- All tools have been updated to their latest versions.
+
+### Added
+
+- **bakta**, **quast** (for the bins), **coverM** results are joined into one overview table each
+- For **dRep** also the clustering results are generated.
+- Workflow annotations.
+
 ## [0.3] - 2025-06-09
 
 ### Automatic update
