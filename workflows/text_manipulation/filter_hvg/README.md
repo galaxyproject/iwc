@@ -24,6 +24,31 @@ The workflow need the following inputs:
 ## Processing
 
 - The workflow calculates the variance of each feature, sorts the table by the variance and the selects the top n features.
+- For example from the matrix above we want to have the expression matrix of top 2 highly variable genes:
+    - Calculate variance per row:
+
+    |gene	|Sample1|Sample2|Sample3|variance|
+    |-------|-------|-------|-------|--------|
+    |gene1	|8.99	|9.34	|9.79   |0.161   |
+    |gene2	|5.94	|6.45	|6.08   |0.069   |
+    |gene3	|6.38	|5.67	|6.53   |0.211   |
+    |gene4	|9.63	|8.80	|6.85   |2.037   |
+
+    - Sort by variance:
+
+    |gene	|Sample1|Sample2|Sample3|variance|
+    |-------|-------|-------|-------|--------|
+    |gene4	|9.63	|8.80	|6.85   |2.037   |
+    |gene3	|6.38	|5.67	|6.53   |0.211   |
+    |gene1	|8.99	|9.34	|9.79   |0.161   |
+    |gene2	|5.94	|6.45	|6.08   |0.069   |
+
+    - Return top 2 highly variable genes:
+
+    |gene	|Sample1|Sample2|Sample3|
+    |-------|-------|-------|-------|
+    |gene4	|9.63	|8.80	|6.85   |
+    |gene3	|6.38	|5.67	|6.53   |
 
 ## Contribution
 
