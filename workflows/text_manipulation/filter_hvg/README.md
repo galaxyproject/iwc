@@ -9,6 +9,15 @@ This workflow will calculate the variance of each gene among the samples, then s
 The workflow need the following inputs:
 - **The tabular file:**
     - A tabular file with first column the feature names and first row the sample names.
+    - For example:
+
+    |gene	|Sample1|Sample2|Sample3|
+    |-------|-------|-------|-------|
+    |gene1	|8.99	|9.34	|9.79   |
+    |gene2	|5.94	|6.45	|6.08   |
+    |gene3	|6.38	|5.67	|6.53   |
+    |gene4	|9.63	|8.80	|6.85   |
+
 - **Number of top features:**
     - an integer parameter indicating the number of highly variable feature to return.
 
