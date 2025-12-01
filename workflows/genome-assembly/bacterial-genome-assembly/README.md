@@ -23,4 +23,4 @@ This workflow uses paired-end illumina trimmed reads fastq(.gz) files and execut
    - Assembly Graph
    - Assembly report
 3. Aggregating outputs
-   - JSON file with information about the outputs of **Shovill**, **Bandage**
+   - JSON file with information about the outputs of **Shovill**
