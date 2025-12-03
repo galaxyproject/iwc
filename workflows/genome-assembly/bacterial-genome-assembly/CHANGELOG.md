@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.1] - 2025-12-01
+
+### Automatic update
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0`
+
+### Removed
+
+* Remove some Tooldistillator input because the main information is not found in these files
+
 ## [2.0] - 2025-08-11
 
 ### Removed
