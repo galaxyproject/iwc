@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import IWCHeader from "../../components/IWCHeader.astro";
 import WorkflowContent from "../../components/WorkflowContent.vue";
 import { loadManifest, getAllWorkflows } from "../../utils/manifest";
+import { generateWorkflowJsonLd, serializeJsonLd, generateCitationMetaTags } from "../../utils/jsonld";
 import type { Workflow } from "../../models/workflow";
 
 export async function getStaticPaths() {
@@ -22,6 +23,13 @@ const { workflow } = Astro.props as { workflow: Workflow };
 const baseUrl = "https://iwc.galaxyproject.org";
 const workflowName = workflow.definition?.name || "Workflow Details";
 const description = workflow.definition.annotation || "Galaxy workflow";
+
+// Generate JSON-LD structured data for SEO and academic discoverability
+const jsonLd = generateWorkflowJsonLd(workflow, baseUrl);
+const jsonLdScript = serializeJsonLd(jsonLd);
+
+// Generate Google Scholar citation meta tags
+const citationMetaTags = generateCitationMetaTags(workflow);
 ---
 
 <BaseLayout
@@ -35,6 +43,15 @@ const description = workflow.definition.annotation || "Galaxy workflow";
     twitterTitle={workflowName}
     twitterDescription={description}
     twitterImage={`${baseUrl}/iwc_logo.png`}>
+    <!-- Structured data for SEO and academic discoverability -->
+    <Fragment slot="head">
+        <!-- JSON-LD for general search engines -->
+        <script type="application/ld+json" set:html={jsonLdScript} />
+
+        <!-- Google Scholar citation meta tags -->
+        {citationMetaTags.map((tag) => <meta name={tag.name} content={tag.content} />)}
+    </Fragment>
+
     <IWCHeader slot="header" />
 
     <WorkflowContent slot="content" {workflow} client:only="vue" />
