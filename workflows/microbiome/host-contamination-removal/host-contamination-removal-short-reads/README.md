@@ -16,3 +16,7 @@ This workflow takes paired-end Illumina fastq(.gz) files and executes the follow
 - A list of paired datasets corresponding to paired-end reads without the reads mapping to the reference genomes, in `fastqsanger` or `fastqsanger.gz`.
 - List of `JSON` reports of Bowtie2 for each sample that could be used as inputs for extra MultiQC
 - MultiQC report of the mapping statistics in HTML
+
+## When to use this workflow
+
+Use this workflow for **short-read paired-end Illumina sequencing data**. For long-read data (Nanopore, PacBio), see the [Host or Contamination removal on long-reads](../host-contamination-removal-long-reads/) workflow.

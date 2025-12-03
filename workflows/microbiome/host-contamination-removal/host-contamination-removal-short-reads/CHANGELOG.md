@@ -1,5 +1,5 @@
 # Changelog
-   
-## [0.1] yyyy-mm-dd
-   
+
+## [0.1] 2025-12-03
+
 First release.
