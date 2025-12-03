@@ -1,4 +1,4 @@
-# Short-reads quality control and trimming
+# Short-read quality control and trimming
 
 Before starting any analysis, it is always a good idea to assess the quality of the input data and to discard poor-quality base content by trimming and filtering reads.
 
