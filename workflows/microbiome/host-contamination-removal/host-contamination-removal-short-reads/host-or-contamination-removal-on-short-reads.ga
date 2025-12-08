@@ -16,7 +16,6 @@
     ],
     "format-version": "0.1",
     "license": "MIT",
-    "release": "0.1",
     "name": "Host or Contamination Removal on Short-Reads",
     "readme": "# Host or Contamination removal on short-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes paired-end Illumina fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Bowtie 2**\n2. Aggregation of the mapping reports using **MultiQC**\n\n## Input Datasets\n\n- A list of paired datasets corresponding to paired-end reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n\n## Output Datasets\n\n- A list of paired datasets corresponding to paired-end reads without the reads mapping to the reference genomes, in `fastqsanger` or `fastqsanger.gz`.\n- List of `JSON` reports of Bowtie2 for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML",
     "report": {
@@ -78,10 +77,52 @@
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1",
+            "annotation": "Take two collections and create a paired collection from them.",
+            "content_id": "__ZIP_COLLECTION__",
             "errors": null,
             "id": 2,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Create a paired collection",
+            "name": "Zip collections",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 620,
+                "top": 0
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Reads without host or contaminant reads"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__ZIP_COLLECTION__",
+            "tool_state": "{\"input_forward\": {\"__class__\": \"ConnectedValue\"}, \"input_reverse\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "63e069fd-7c6d-48e1-b891-9ad0a93a5516",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Contamination Filtered Reads",
+                    "output_name": "output",
+                    "uuid": "02423350-1d61-4be2-a743-9dca7bae63b8"
+                }
+            ]
+        },
+        "3": {
+            "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+            "errors": null,
+            "id": 3,
             "input_connections": {
                 "library|input_1": {
                     "id": 0,
@@ -106,12 +147,8 @@
             "name": "Bowtie2",
             "outputs": [
                 {
-                    "name": "output_unaligned_reads_l",
-                    "type": "fastqsanger"
-                },
-                {
-                    "name": "output_unaligned_reads_r",
-                    "type": "fastqsanger"
+                    "name": "output_unaligned_read_pairs",
+                    "type": "input"
                 },
                 {
                     "name": "output",
@@ -150,15 +187,15 @@
                     "output_name": "mapping_stats"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "d5ceb9f3c25b",
+                "changeset_revision": "f76cbb84d67f",
                 "name": "bowtie2",
                 "owner": "devteam",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"simple\", \"__current_case__\": 0, \"presets\": \"no_presets\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 2, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"unaligned_file\": true, \"aligned_file\": false, \"paired_options\": {\"paired_options_selector\": \"no\", \"__current_case__\": 1}}, \"reference_genome\": {\"source\": \"indexed\", \"__current_case__\": 0, \"index\": {\"__class__\": \"ConnectedValue\"}}, \"rg\": {\"rg_selector\": \"do_not_set\", \"__current_case__\": 3}, \"sam_options\": {\"sam_options_selector\": \"no\", \"__current_case__\": 1}, \"save_mapping_stats\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "2.5.3+galaxy1",
+            "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"simple\", \"__current_case__\": 0, \"presets\": \"no_presets\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 1, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"unaligned_file\": true, \"aligned_file\": false, \"paired_options\": {\"paired_options_selector\": \"no\", \"__current_case__\": 1}}, \"reference_genome\": {\"source\": \"indexed\", \"__current_case__\": 0, \"index\": {\"__class__\": \"ConnectedValue\"}}, \"rg\": {\"rg_selector\": \"do_not_set\", \"__current_case__\": 3}, \"sam_options\": {\"sam_options_selector\": \"no\", \"__current_case__\": 1}, \"save_mapping_stats\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.5.4+galaxy0",
             "type": "tool",
             "uuid": "4f0ed86e-4ab8-4737-a980-41405a6c5295",
             "when": null,
@@ -170,65 +207,14 @@
                 }
             ]
         },
-        "3": {
-            "annotation": "Take two collections and create a paired collection from them.",
-            "content_id": "__ZIP_COLLECTION__",
-            "errors": null,
-            "id": 3,
-            "input_connections": {
-                "input_forward": {
-                    "id": 2,
-                    "output_name": "output_unaligned_reads_l"
-                },
-                "input_reverse": {
-                    "id": 2,
-                    "output_name": "output_unaligned_reads_r"
-                }
-            },
-            "inputs": [],
-            "label": "Create a paired collection",
-            "name": "Zip collections",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 620,
-                "top": 0
-            },
-            "post_job_actions": {
-                "RenameDatasetActionoutput": {
-                    "action_arguments": {
-                        "newname": "Reads without host or contaminant reads"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "__ZIP_COLLECTION__",
-            "tool_state": "{\"input_forward\": {\"__class__\": \"ConnectedValue\"}, \"input_reverse\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "63e069fd-7c6d-48e1-b891-9ad0a93a5516",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Contamination Filtered Reads",
-                    "output_name": "output",
-                    "uuid": "02423350-1d61-4be2-a743-9dca7bae63b8"
-                }
-            ]
-        },
         "4": {
             "annotation": "Aggregation of the mapping statistics for all samples",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
             "errors": null,
             "id": 4,
             "input_connections": {
                 "results_0|software_cond|input": {
-                    "id": 2,
+                    "id": 3,
                     "output_name": "mapping_stats"
                 }
             },
@@ -268,15 +254,15 @@
                     "output_name": "html_report"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
             "tool_shed_repository": {
-                "changeset_revision": "31c42a2c02d3",
+                "changeset_revision": "e4dd4c0622f6",
                 "name": "multiqc",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"bowtie2\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Host Removal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "1.27+galaxy3",
+            "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"bowtie2\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Host Removal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.27+galaxy4",
             "type": "tool",
             "uuid": "c982928f-6392-4608-a8c7-88046300a4b1",
             "when": null,
@@ -294,6 +280,7 @@
         "contamination",
         "short_reads"
     ],
-    "uuid": "0fc16104-af45-48b0-bec5-6540e3dc2114",
-    "version": 10
+    "uuid": "1d991799-d956-475b-b54a-a660676ecf4a",
+    "version": 1,
+    "release": "0.2"
 }
