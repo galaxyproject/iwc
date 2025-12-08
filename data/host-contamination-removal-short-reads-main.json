@@ -1,0 +1,355 @@
+{
+    "name": "main",
+    "subclass": "Galaxy",
+    "publish": true,
+    "primaryDescriptorPath": "/host-or-contamination-removal-on-short-reads.ga",
+    "testParameterFiles": [
+        "/host-or-contamination-removal-on-short-reads-tests.yml"
+    ],
+    "authors": [
+        {
+            "name": "Paul Zierep",
+            "orcid": "0000-0003-2982-388X"
+        },
+        {
+            "name": "B\u00e9r\u00e9nice Batut",
+            "orcid": "0000-0001-9852-1987"
+        }
+    ],
+    "definition": {
+        "a_galaxy_workflow": "true",
+        "annotation": "This workflow takes paired-end Illumina fastq(.gz) files and runs Bowtie to map the reads against a reference genome (human, by default) and keep only the reads that do not align. MultiQC is used to aggregate the mapping reports.",
+        "comments": [],
+        "creator": [
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0000-0003-2982-388X",
+                "name": "Paul Zierep"
+            },
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0000-0001-9852-1987",
+                "name": "B\u00e9r\u00e9nice Batut"
+            }
+        ],
+        "format-version": "0.1",
+        "license": "MIT",
+        "name": "Host or Contamination Removal on Short-Reads",
+        "readme": "# Host or Contamination removal on short-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes paired-end Illumina fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Bowtie 2**\n2. Aggregation of the mapping reports using **MultiQC**\n\n## Input Datasets\n\n- A list of paired datasets corresponding to paired-end reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n\n## Output Datasets\n\n- A list of paired datasets corresponding to paired-end reads without the reads mapping to the reference genomes, in `fastqsanger` or `fastqsanger.gz`.\n- List of `JSON` reports of Bowtie2 for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML",
+        "report": {
+            "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+        },
+        "steps": {
+            "0": {
+                "annotation": "Short-reads as a paired-end collection of fastqsanger(.gz) files",
+                "content_id": null,
+                "errors": null,
+                "id": 0,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "Short-reads as a paired-end collection of fastqsanger(.gz) files",
+                        "name": "Short-reads"
+                    }
+                ],
+                "label": "Short-reads",
+                "name": "Input dataset collection",
+                "outputs": [],
+                "position": {
+                    "left": 0,
+                    "top": 0
+                },
+                "tool_id": null,
+                "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null}",
+                "tool_version": null,
+                "type": "data_collection_input",
+                "uuid": "f0ca536e-1255-4b44-8fad-73adec33ff74",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "1": {
+                "annotation": "Reads not mapping to this reference genome will be kept.",
+                "content_id": null,
+                "errors": null,
+                "id": 1,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "Reads not mapping to this reference genome will be kept.",
+                        "name": "Host/Contaminant Reference Genome"
+                    }
+                ],
+                "label": "Host/Contaminant Reference Genome",
+                "name": "Input parameter",
+                "outputs": [],
+                "position": {
+                    "left": 0,
+                    "top": 140
+                },
+                "tool_id": null,
+                "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+                "tool_version": null,
+                "type": "parameter_input",
+                "uuid": "af636432-a9d2-4b0f-ba42-5eaa1cbe750a",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "2": {
+                "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+                "errors": null,
+                "id": 2,
+                "input_connections": {
+                    "library|input_1": {
+                        "id": 0,
+                        "output_name": "output"
+                    },
+                    "reference_genome|index": {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool Bowtie2",
+                        "name": "library"
+                    },
+                    {
+                        "description": "runtime parameter for tool Bowtie2",
+                        "name": "reference_genome"
+                    }
+                ],
+                "label": "Bowtie2",
+                "name": "Bowtie2",
+                "outputs": [
+                    {
+                        "name": "output_unaligned_read_pairs",
+                        "type": "input"
+                    },
+                    {
+                        "name": "output",
+                        "type": "bam"
+                    },
+                    {
+                        "name": "mapping_stats",
+                        "type": "txt"
+                    }
+                ],
+                "position": {
+                    "left": 310,
+                    "top": 0
+                },
+                "post_job_actions": {
+                    "HideDatasetActionoutput": {
+                        "action_arguments": {},
+                        "action_type": "HideDatasetAction",
+                        "output_name": "output"
+                    },
+                    "HideDatasetActionoutput_unaligned_reads_l": {
+                        "action_arguments": {},
+                        "action_type": "HideDatasetAction",
+                        "output_name": "output_unaligned_reads_l"
+                    },
+                    "HideDatasetActionoutput_unaligned_reads_r": {
+                        "action_arguments": {},
+                        "action_type": "HideDatasetAction",
+                        "output_name": "output_unaligned_reads_r"
+                    },
+                    "RenameDatasetActionmapping_stats": {
+                        "action_arguments": {
+                            "newname": "Bowtie2 mapping statistics"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "mapping_stats"
+                    },
+                    "RenameDatasetActionoutput_unaligned_read_pairs": {
+                        "action_arguments": {
+                            "newname": "Reads without host or contaminant reads"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "output_unaligned_read_pairs"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "f76cbb84d67f",
+                    "name": "bowtie2",
+                    "owner": "devteam",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"simple\", \"__current_case__\": 0, \"presets\": \"no_presets\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 1, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"unaligned_file\": true, \"aligned_file\": false, \"paired_options\": {\"paired_options_selector\": \"no\", \"__current_case__\": 1}}, \"reference_genome\": {\"source\": \"indexed\", \"__current_case__\": 0, \"index\": {\"__class__\": \"ConnectedValue\"}}, \"rg\": {\"rg_selector\": \"do_not_set\", \"__current_case__\": 3}, \"sam_options\": {\"sam_options_selector\": \"no\", \"__current_case__\": 1}, \"save_mapping_stats\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "2.5.4+galaxy0",
+                "type": "tool",
+                "uuid": "4f0ed86e-4ab8-4737-a980-41405a6c5295",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "Contamination Filtered Reads",
+                        "output_name": "output_unaligned_read_pairs",
+                        "uuid": "6b919dad-1cf0-4c28-bd7f-3e43d2aedfc9"
+                    },
+                    {
+                        "label": "Bowtie2 Mapping Statistics",
+                        "output_name": "mapping_stats",
+                        "uuid": "76c58935-0b96-4549-8ff4-bd17952c903f"
+                    }
+                ]
+            },
+            "3": {
+                "annotation": "Aggregation of the mapping statistics for all samples",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
+                "errors": null,
+                "id": 3,
+                "input_connections": {
+                    "results_0|software_cond|input": {
+                        "id": 2,
+                        "output_name": "mapping_stats"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool MultiQC",
+                        "name": "image_content_input"
+                    }
+                ],
+                "label": "MultiQC",
+                "name": "MultiQC",
+                "outputs": [
+                    {
+                        "name": "html_report",
+                        "type": "html"
+                    },
+                    {
+                        "name": "stats",
+                        "type": "tabular"
+                    }
+                ],
+                "position": {
+                    "left": 620,
+                    "top": 240
+                },
+                "post_job_actions": {
+                    "HideDatasetActionstats": {
+                        "action_arguments": {},
+                        "action_type": "HideDatasetAction",
+                        "output_name": "stats"
+                    },
+                    "RenameDatasetActionhtml_report": {
+                        "action_arguments": {
+                            "newname": "MultiQC HTML report"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "html_report"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
+                "tool_shed_repository": {
+                    "changeset_revision": "e4dd4c0622f6",
+                    "name": "multiqc",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"bowtie2\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Host Removal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "1.27+galaxy4",
+                "type": "tool",
+                "uuid": "c982928f-6392-4608-a8c7-88046300a4b1",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "MultiQC HTML Report",
+                        "output_name": "html_report",
+                        "uuid": "62e6de76-2033-413e-9f5c-7f97a3e1741d"
+                    }
+                ]
+            }
+        },
+        "tags": [
+            "microbiome",
+            "contamination",
+            "short_reads"
+        ],
+        "uuid": "d31ffe9d-0fdc-470d-a70c-2e6b121e77d3",
+        "version": 2,
+        "release": "0.2"
+    },
+    "workflow_job_input": {
+        "Short-reads": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        },
+        "Host/Contaminant Reference Genome": "todo_param_value"
+    },
+    "readme": "# Host or Contamination removal on short-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes paired-end Illumina fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Bowtie 2**\n2. Aggregation of the mapping reports using **MultiQC**\n\n## Input Datasets\n\n- A list of paired datasets corresponding to paired-end reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n\n## Output Datasets\n\n- A list of paired datasets corresponding to paired-end reads without the reads mapping to the reference genomes, in `fastqsanger` or `fastqsanger.gz`.\n- List of `JSON` reports of Bowtie2 for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML\n\n## When to use this workflow\n\nUse this workflow for **short-read paired-end Illumina sequencing data**. For long-read data (Nanopore, PacBio), see the [Host or Contamination removal on long-reads](../host-contamination-removal-long-reads/) workflow.",
+    "changelog": "# Changelog\n\n## [0.2] - 2025-12-08\n\n### Changes\n\n- Remove `ZIP_COLLECTION` step which is not needed anymore because latest `bowtie` version outputs the unmapped reads in a list of paired datasets.\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0`\n- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4`\n\n## [0.1] - 2025-12-03\n\nFirst release.\n",
+    "diagrams": "# Workflow diagrams\n\n## Host or Contamination Removal on Short-Reads\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Short-reads\"]@{ shape: docs }\n1[\"\u2139\ufe0f Host/Contaminant Reference Genome\"]@{ shape: lean-l }\n2[\"Bowtie2\"]@{ shape: process }\n0 --> 2\n1 --> 2\n3[\"MultiQC\"]@{ shape: process }\n2 --> 3\n```\n",
+    "updated": "2025-12-08T00:00:00",
+    "trsID": "#workflow/github.com/iwc-workflows/host-contamination-removal-short-reads/main",
+    "iwcID": "host-contamination-removal-short-reads-main",
+    "dockstore_id": 34596,
+    "categories": [],
+    "collections": [],
+    "doi": "10.5281/zenodo.17832962",
+    "tests": [
+        {
+            "doc": "Test outline for Host-or-Contamination-removal-on-short-reads",
+            "job": {
+                "Short-reads": {
+                    "class": "Collection",
+                    "collection_type": "list:paired",
+                    "elements": [
+                        {
+                            "class": "Collection",
+                            "type": "paired",
+                            "identifier": "pair",
+                            "elements": [
+                                {
+                                    "class": "File",
+                                    "identifier": "forward",
+                                    "location": "https://zenodo.org/records/15089018/files/MAG_reads_forward.fastqsanger.gz",
+                                    "filetype": "fastqsanger.gz"
+                                },
+                                {
+                                    "class": "File",
+                                    "identifier": "reverse",
+                                    "location": "https://zenodo.org/records/15089018/files/MAG_reads_reverse.fastqsanger.gz",
+                                    "filetype": "fastqsanger.gz"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "Host/Contaminant Reference Genome": "hg38"
+            },
+            "outputs": {
+                "MultiQC HTML Report": {
+                    "asserts": {
+                        "has_text": {
+                            "text": "Bowtie"
+                        }
+                    }
+                },
+                "Bowtie2 Mapping Statistics": {
+                    "element_tests": {
+                        "pair": {
+                            "asserts": {
+                                "has_text": {
+                                    "text": "9462 reads"
+                                },
+                                "has_n_lines": {
+                                    "n": 15
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
