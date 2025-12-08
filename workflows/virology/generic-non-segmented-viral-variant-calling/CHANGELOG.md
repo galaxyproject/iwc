@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3] - 2025-12-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4`
+
 ## [0.2] - 2025-12-04
 
 ### Changed
