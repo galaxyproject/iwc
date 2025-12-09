@@ -7,8 +7,10 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/meryl_groups_kmers/meryl_groups_kmers/1.3+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl_groups_kmers/meryl_groups_kmers/1.4.1+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/meryl_histogram_kmers/meryl_histogram_kmers/1.3+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl_histogram_kmers/meryl_histogram_kmers/1.4.1+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy1`
-- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy6`
-- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy7`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy7`
+- `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.1.0+galaxy0`
+
 
 ## [0.6] - 2025-10-30
 
