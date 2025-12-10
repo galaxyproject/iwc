@@ -1,6 +1,9 @@
 # Changelog
 
-## [3.3] - 2025-11-17
+## [3.3] - 2025-12-10
+
+## Changes
+- Show PretextMap files in history for easier export. 
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy0`
