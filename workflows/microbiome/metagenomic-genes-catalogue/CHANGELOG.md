@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2] - 2025-12-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/recetox/table_pandas_rename_column/table_pandas_rename_column/2.2.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/recetox/table_pandas_rename_column/table_pandas_rename_column/2.2.3+galaxy1`
+
 ## [1.1] - 2025-12-08
 
 ### Automatic update
