@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.3] - 2025-12-10
+
+## Changes
+- Show PretextMap files in history for easier export. 
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.21+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.7` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.8`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.7` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.8`
+
 
 ## [3.2] - 2025-11-10
 
