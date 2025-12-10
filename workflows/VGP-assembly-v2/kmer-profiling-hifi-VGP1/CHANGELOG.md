@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8] - 2025-12-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.2.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.3.0+galaxy0`
+
 ## [0.7] - 2025-11-10
 
 ### Automatic update
