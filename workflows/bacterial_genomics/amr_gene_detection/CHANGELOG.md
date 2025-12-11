@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] - 2025-12-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.1+galaxy0`
+
 ## [1.1.7] 2025-12-01
 
 ### Automatic update
