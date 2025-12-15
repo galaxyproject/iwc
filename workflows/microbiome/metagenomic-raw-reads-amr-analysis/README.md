@@ -1,8 +1,8 @@
-# Raw reads AMR analysis from metagenomic data
+# Raw read AMR analysis from metagenomic data
 
 This workflow generates functional and taxonomic information from paired short reads.
 
-## Raw reads Annotation
+## Raw read Annotation
 
 Directly from trimmed raw reads, following processing steps are performed:
 
