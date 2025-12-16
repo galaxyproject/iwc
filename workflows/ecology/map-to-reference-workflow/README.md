@@ -1,4 +1,4 @@
-# Map-to-reference Workflow
+# Amplicon pool alignment to reference Workflow
 
 ## Context
 
