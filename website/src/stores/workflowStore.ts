@@ -13,6 +13,12 @@ export const collectionSearchQuery = atom<string>("");
 // View mode (list or grid)
 export const viewMode = atom<"list" | "grid">("list");
 
+// Search query (homepage)
+export const searchQuery = atom<string>("");
+
+// Computed: is search active?
+export const isSearchActive = computed(searchQuery, (q) => q.trim().length > 0);
+
 // Computed stores
 export const allWorkflows = computed(workflowCollections, (collections) => {
     return collections.flatMap((collection) => collection.workflows);
@@ -43,6 +49,29 @@ export function setFilterFromUrl() {
         if (filter) {
             selectedFilters.set([filter]);
         }
+    }
+}
+
+export function setSearchFromUrl() {
+    if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get("q");
+        if (q) {
+            searchQuery.set(q);
+        }
+    }
+}
+
+export function updateSearchUrl(query: string) {
+    if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        if (query.trim()) {
+            params.set("q", query.trim());
+        } else {
+            params.delete("q");
+        }
+        const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
     }
 }
 

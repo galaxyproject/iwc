@@ -384,3 +384,27 @@ if __name__ == "__main__":
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
+
+    # Generate lightweight search index for the website
+    search_index = []
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            definition = workflow.get("definition", {})
+            annotation = definition.get("annotation", "") or ""
+            # Truncate annotation to 300 chars for search index
+            if len(annotation) > 300:
+                annotation = annotation[:300].rsplit(" ", 1)[0] + "..."
+
+            search_entry = {
+                "id": workflow["iwcID"],
+                "name": definition.get("name", workflow.get("name", "")),
+                "annotation": annotation,
+                "tags": definition.get("tags") or [],
+                "collections": workflow.get("collections", []),
+                "updated": workflow.get("updated"),
+            }
+            search_index.append(search_entry)
+
+    search_index_path = os.path.join(OUTPUT_DIR, "search-index.json")
+    write_to_json(search_index, search_index_path)
+    print(f"Search index written to {search_index_path} ({len(search_index)} entries)")

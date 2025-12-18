@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
-import { selectedFilters, setFilterFromUrl, viewMode } from "../stores/workflowStore";
+import {
+    selectedFilters,
+    setFilterFromUrl,
+    setSearchFromUrl,
+    viewMode,
+    searchQuery as searchQueryStore,
+    isSearchActive,
+} from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import WorkflowListItem from "./WorkflowListItem.vue";
+import ViewToggle from "./ViewToggle.vue";
 import type { LightweightWorkflow } from "../models/workflow";
 
 // Accept workflows as props (passed from Astro at build time)
@@ -14,7 +22,8 @@ const props = defineProps<{
 
 const filters = useStore(selectedFilters);
 const mode = useStore(viewMode);
-const searchQuery = ref("");
+const searchQuery = useStore(searchQueryStore);
+const isSearching = useStore(isSearchActive);
 
 // Sort workflows by updated date
 const sortedWorkflows = computed(() =>
@@ -48,9 +57,14 @@ const filteredWorkflows = computed(() => {
     }
 });
 
+// Computed for results count display
+const hasActiveFilters = computed(() => isSearching.value || filters.value.length > 0);
+const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
+
 // Auto-scroll to grid when filter is present
 onMounted(() => {
     setFilterFromUrl();
+    setSearchFromUrl();
 
     // Initialize view mode from localStorage
     const savedViewMode = localStorage.getItem("iwc-view-mode");
@@ -67,17 +81,36 @@ onMounted(() => {
             }
         }, 100);
     }
-
-    // Listen for search input changes
-    window.addEventListener("search-change", (e: Event) => {
-        const customEvent = e as CustomEvent;
-        searchQuery.value = customEvent.detail;
-    });
 });
 </script>
 
 <template>
     <div class="w-full">
+        <!-- Results header row -->
+        <div class="flex justify-between items-center mb-4">
+            <Transition name="fade" mode="out-in">
+                <!-- Searching with category -->
+                <p v-if="isSearching && selectedCategory" key="search-category" class="text-chicago-600 text-sm">
+                    Found <span class="font-semibold">{{ filteredWorkflows.length }}</span>
+                    <span class="font-bold text-ebony-clay-900"> {{ selectedCategory }} </span> workflows
+                </p>
+                <!-- Searching only -->
+                <p v-else-if="isSearching" key="search" class="text-chicago-600 text-sm">
+                    Found <span class="font-semibold">{{ filteredWorkflows.length }}</span> workflows
+                </p>
+                <!-- Category only -->
+                <p v-else-if="selectedCategory" key="category" class="text-chicago-600 text-sm">
+                    <span class="font-semibold">{{ filteredWorkflows.length }}</span>
+                    <span class="font-bold text-ebony-clay-900"> {{ selectedCategory }} </span> workflows
+                </p>
+                <!-- No filters -->
+                <p v-else key="total" class="text-chicago-500 text-sm">
+                    {{ sortedWorkflows.length }} workflows
+                </p>
+            </Transition>
+            <ViewToggle />
+        </div>
+
         <!-- View transition wrapper -->
         <Transition name="view-fade" mode="out-in">
             <!-- List View -->
