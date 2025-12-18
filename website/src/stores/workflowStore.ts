@@ -10,6 +10,9 @@ export const selectedFilters = atom<string[]>([]);
 // Collection page search query
 export const collectionSearchQuery = atom<string>("");
 
+// View mode (list or grid)
+export const viewMode = atom<"list" | "grid">("list");
+
 // Computed stores
 export const allWorkflows = computed(workflowCollections, (collections) => {
     return collections.flatMap((collection) => collection.workflows);

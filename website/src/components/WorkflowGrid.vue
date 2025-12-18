@@ -2,8 +2,9 @@
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
-import { selectedFilters, setFilterFromUrl } from "../stores/workflowStore";
+import { selectedFilters, setFilterFromUrl, viewMode } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
+import WorkflowListItem from "./WorkflowListItem.vue";
 import type { LightweightWorkflow } from "../models/workflow";
 
 // Accept workflows as props (passed from Astro at build time)
@@ -12,6 +13,7 @@ const props = defineProps<{
 }>();
 
 const filters = useStore(selectedFilters);
+const mode = useStore(viewMode);
 const searchQuery = ref("");
 
 // Sort workflows by updated date
@@ -50,6 +52,12 @@ const filteredWorkflows = computed(() => {
 onMounted(() => {
     setFilterFromUrl();
 
+    // Initialize view mode from localStorage
+    const savedViewMode = localStorage.getItem("iwc-view-mode");
+    if (savedViewMode === "list" || savedViewMode === "grid") {
+        viewMode.set(savedViewMode);
+    }
+
     const params = new URLSearchParams(window.location.search);
     if (params.get("filter")) {
         setTimeout(() => {
@@ -70,9 +78,23 @@ onMounted(() => {
 
 <template>
     <div class="w-full">
-        <div id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <WorkflowCard v-for="workflow in filteredWorkflows" :key="workflow.definition.uuid" :workflow="workflow" />
+        <!-- List View -->
+        <div v-if="mode === 'list'" id="workflows" class="flex flex-col border border-gray-200 rounded-lg overflow-hidden">
+            <WorkflowListItem
+                v-for="workflow in filteredWorkflows"
+                :key="workflow.definition.uuid"
+                :workflow="workflow" />
         </div>
+
+        <!-- Grid View -->
+        <div v-else id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <WorkflowCard
+                v-for="workflow in filteredWorkflows"
+                :key="workflow.definition.uuid"
+                :workflow="workflow"
+                compact />
+        </div>
+
         <div v-if="filteredWorkflows.length === 0" class="text-center py-12 text-gray-500">
             <p class="text-xl">No workflows found matching your criteria.</p>
         </div>
