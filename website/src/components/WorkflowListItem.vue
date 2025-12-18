@@ -20,16 +20,21 @@ const navigateToCollection = (collection: string) => {
 <template>
     <div
         :id="`workflow-${workflow.definition.uuid}`"
-        class="p-4 border-b border-gray-100 hover:bg-gray-100 transition-colors odd:bg-gray-50">
-        <div class="flex items-start gap-4">
+        class="group relative px-5 py-4 border-b border-ebony-clay-100 transition-all duration-200 odd:bg-bay-of-many-50/30 hover:bg-bay-of-many-50">
+        <!-- Hover accent bar -->
+        <div
+            class="absolute left-0 top-0 bottom-0 w-1 bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
+
+        <div class="flex items-start gap-6">
             <!-- Main content -->
             <div class="flex-1 min-w-0">
-                <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`">
-                    <h3 class="text-lg font-bold text-ebony-clay hover:underline mb-2">
+                <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
+                    <h3
+                        class="text-lg font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200 mb-1.5">
                         {{ workflow.definition.name }}
                     </h3>
                 </a>
-                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p class="text-sm text-chicago-600 mb-3 line-clamp-2 leading-relaxed">
                     {{ workflow.definition.annotation }}
                 </p>
 
@@ -39,7 +44,7 @@ const navigateToCollection = (collection: string) => {
                         v-for="collection in workflow.collections.slice(0, 4)"
                         :key="collection"
                         variant="secondary"
-                        class="text-xs cursor-pointer hover:bg-hokey-pokey hover:text-white transition-colors"
+                        class="text-xs cursor-pointer hover:bg-hokey-pokey-500 hover:text-ebony-clay-950 hover:border-hokey-pokey-500 transition-colors duration-200"
                         @click="navigateToCollection(collection)">
                         {{ collection }}
                     </Badge>
@@ -50,13 +55,13 @@ const navigateToCollection = (collection: string) => {
             </div>
 
             <!-- Metadata sidebar -->
-            <div class="flex flex-col gap-2 text-xs text-gray-500 min-w-[160px]">
-                <div class="flex items-center gap-1.5">
-                    <Tag :size="14" />
-                    <span>{{ workflow.definition.release }}</span>
+            <div class="flex flex-col gap-2.5 text-sm min-w-[140px] pt-0.5">
+                <div class="flex items-center gap-2 text-chicago-500">
+                    <Tag :size="14" class="text-bay-of-many-500" />
+                    <span class="font-medium text-ebony-clay-700">{{ workflow.definition.release }}</span>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <Clock :size="14" />
+                <div class="flex items-center gap-2 text-chicago-500">
+                    <Clock :size="14" class="text-bay-of-many-400" />
                     <span>{{ formatDate(workflow.updated) }}</span>
                 </div>
             </div>

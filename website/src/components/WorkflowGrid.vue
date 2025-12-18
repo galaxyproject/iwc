@@ -78,25 +78,95 @@ onMounted(() => {
 
 <template>
     <div class="w-full">
-        <!-- List View -->
-        <div v-if="mode === 'list'" id="workflows" class="flex flex-col border border-gray-200 rounded-lg overflow-hidden">
-            <WorkflowListItem
-                v-for="workflow in filteredWorkflows"
-                :key="workflow.definition.uuid"
-                :workflow="workflow" />
-        </div>
+        <!-- View transition wrapper -->
+        <Transition name="view-fade" mode="out-in">
+            <!-- List View -->
+            <div
+                v-if="mode === 'list'"
+                key="list"
+                id="workflows"
+                class="flex flex-col border border-ebony-clay-100 rounded-xl overflow-hidden shadow-sm">
+                <TransitionGroup name="list-stagger" appear>
+                    <WorkflowListItem
+                        v-for="(workflow, index) in filteredWorkflows"
+                        :key="workflow.definition.uuid"
+                        :workflow="workflow"
+                        :style="{ '--stagger-delay': `${Math.min(index * 20, 300)}ms` }" />
+                </TransitionGroup>
+            </div>
 
-        <!-- Grid View -->
-        <div v-else id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <WorkflowCard
-                v-for="workflow in filteredWorkflows"
-                :key="workflow.definition.uuid"
-                :workflow="workflow"
-                compact />
-        </div>
+            <!-- Grid View -->
+            <div v-else key="grid" id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <TransitionGroup name="grid-stagger" appear>
+                    <WorkflowCard
+                        v-for="(workflow, index) in filteredWorkflows"
+                        :key="workflow.definition.uuid"
+                        :workflow="workflow"
+                        :style="{ '--stagger-delay': `${Math.min(index * 30, 400)}ms` }"
+                        compact />
+                </TransitionGroup>
+            </div>
+        </Transition>
 
-        <div v-if="filteredWorkflows.length === 0" class="text-center py-12 text-gray-500">
-            <p class="text-xl">No workflows found matching your criteria.</p>
-        </div>
+        <Transition name="fade">
+            <div v-if="filteredWorkflows.length === 0" class="text-center py-12 text-chicago-500">
+                <p class="text-xl">No workflows found matching your criteria.</p>
+            </div>
+        </Transition>
     </div>
 </template>
+
+<style scoped>
+/* View switch transition */
+.view-fade-enter-active,
+.view-fade-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.view-fade-enter-from {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.view-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+/* List stagger animation */
+.list-stagger-enter-active {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    transition-delay: var(--stagger-delay, 0ms);
+}
+
+.list-stagger-enter-from {
+    opacity: 0;
+    transform: translateX(-12px);
+}
+
+/* Grid stagger animation */
+.grid-stagger-enter-active {
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+    transition-delay: var(--stagger-delay, 0ms);
+}
+
+.grid-stagger-enter-from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+}
+
+/* Simple fade for empty state */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

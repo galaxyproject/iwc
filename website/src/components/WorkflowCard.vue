@@ -21,16 +21,25 @@ const navigateToCollection = (collection: string) => {
 </script>
 
 <template>
-    <Card
-        :id="`workflow-${workflow.definition.uuid}`"
-        :class="[
-            'flex flex-col',
-            compact ? 'h-[18rem] hover:shadow-lg transition-shadow bg-white' : 'mb-6 hover:shadow-lg transition-shadow',
-        ]">
+    <div :id="`workflow-${workflow.definition.uuid}`" class="group relative h-full">
+        <!-- Hover accent bar -->
+        <div
+            class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200 z-10" />
+        <Card
+            :class="[
+                'flex flex-col h-full',
+                compact
+                    ? 'hover:shadow-lg transition-all duration-200 bg-white'
+                    : 'mb-6 hover:shadow-lg transition-all duration-200',
+            ]">
         <!-- Header -->
         <CardHeader :class="compact ? 'p-3' : 'px-6 py-4 pb-2'">
-            <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`">
-                <h2 :class="`font-bold hover:underline text-ebony-clay ${compact ? 'text-lg' : 'text-xl'}`">
+            <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
+                <h2
+                    :class="[
+                        'font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200',
+                        compact ? 'text-lg' : 'text-xl',
+                    ]">
                     {{ workflow.definition.name }}
                 </h2>
             </a>
@@ -98,5 +107,6 @@ const navigateToCollection = (collection: string) => {
                 </p>
             </div>
         </div>
-    </Card>
+        </Card>
+    </div>
 </template>
