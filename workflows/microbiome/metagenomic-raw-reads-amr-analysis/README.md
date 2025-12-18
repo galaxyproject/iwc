@@ -1,17 +1,16 @@
 # Raw read AMR analysis from metagenomic data
 
-This workflow generates functional and taxonomic information from paired short reads.
+From metagenomics short-read data, this workflow performs taxonomic profiling, predicts Antibiotic Resistance Genes (ARGs), and standardizes ARG annotations.
 
 ## Raw read Annotation
 
-Directly from trimmed raw reads, following processing steps are performed:
+Directly from metagenomics short-reads after quality control and host/contamination removal, the following processing steps are performed:
 
-* **Taxonomic Assignment** using Sylph and Sylph-tax
-* **AMR detection** with Groot and deepARG
-* **Results uniformization** with argNorm
+* **Taxonomic Profiling** using Sylph and Sylph-tax
+* **Antibiotic Resistance Genes (ARGs) prediction** with Groot and deepARG
+* **ARG annotations normalization to the ARO** with argNorm
 
 ## Input Requirements
 
-Input reads must be quality-filtered, with host reads removed.
+Input reads must be short reads that have been quality-filtered, with host/contaminant reads removed. They should be in fastqsanger(.gz) inside a paired collection.
 
-* **Trimmed reads** : Quality-trimmed reads from individual samples, used solely for abundance estimation.
