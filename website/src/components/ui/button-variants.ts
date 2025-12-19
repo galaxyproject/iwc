@@ -1,15 +1,15 @@
 import { type VariantProps, cva } from "class-variance-authority";
 
 export const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ebony-clay-900 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
     {
         variants: {
             variant: {
                 default: "bg-hokey-pokey-600 text-white shadow hover:bg-hokey-pokey-700",
                 destructive: "bg-red-500 text-white shadow-sm hover:bg-red-600",
-                outline: "border border-gray-300 bg-white shadow-sm hover:bg-gray-50 hover:text-gray-900",
-                secondary: "bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-200",
-                ghost: "hover:bg-gray-100 hover:text-gray-900",
+                outline: "border border-ebony-clay-200 bg-white shadow-sm hover:bg-ebony-clay-50 hover:text-ebony-clay-900 text-ebony-clay-800",
+                secondary: "bg-ebony-clay-100 text-ebony-clay-900 shadow-sm hover:bg-ebony-clay-200",
+                ghost: "hover:bg-ebony-clay-100 hover:text-ebony-clay-900",
                 link: "text-bay-of-many-700 underline-offset-4 hover:underline",
             },
             size: {
