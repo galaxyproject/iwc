@@ -27,14 +27,14 @@ const handleInput = (e: Event) => {
     }, 300);
 };
 
-// Auto-scroll when search becomes active
+// Auto-scroll when search becomes active - scroll to top so collapsed hero stays visible
 watch(isSearching, (active) => {
     if (active) {
         nextTick(() => {
             setTimeout(() => {
-                document.getElementById("workflows")?.scrollIntoView({
+                window.scrollTo({
+                    top: 0,
                     behavior: "smooth",
-                    block: "start",
                 });
             }, 150);
         });
