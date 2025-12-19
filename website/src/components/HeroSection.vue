@@ -4,9 +4,11 @@ import { useStore } from "@nanostores/vue";
 import { searchQuery, updateSearchUrl, setSearchFromUrl, isSearchActive } from "../stores/workflowStore";
 import PopularWorkflows from "./PopularWorkflows.vue";
 import Filters from "./Filters.vue";
+import type { SearchIndexEntry } from "../models/workflow";
 
 const props = defineProps<{
     popularTrsIds: string[];
+    workflows: SearchIndexEntry[];
 }>();
 
 const query = useStore(searchQuery);
@@ -67,6 +69,7 @@ onMounted(() => {
             <PopularWorkflows
                 v-if="!isSearching"
                 :workflowTrsIds="popularTrsIds"
+                :workflows="workflows"
                 class="mb-8" />
         </Transition>
 

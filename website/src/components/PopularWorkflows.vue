@@ -1,26 +1,20 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import { useStore } from "@nanostores/vue";
+import { computed } from "vue";
 import WorkflowCard from "./WorkflowCard.vue";
-import { searchIndex, loadSearchIndex } from "../stores/workflowStore";
+import type { SearchIndexEntry } from "../models/workflow";
 
 const props = defineProps<{
     /** List of Trs Ids for most popular workflows */
     workflowTrsIds: string[];
+    workflows: SearchIndexEntry[];
 }>();
-
-const workflows = useStore(searchIndex);
 
 const popularWorkflows = computed(() => {
     return props.workflowTrsIds
         ?.map((trsID) => {
-            return workflows.value.find((w) => w.trsID === trsID);
+            return props.workflows.find((w) => w.trsID === trsID);
         })
         .filter(Boolean);
-});
-
-onMounted(() => {
-    loadSearchIndex();
 });
 </script>
 

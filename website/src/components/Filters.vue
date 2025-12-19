@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useStore } from "@nanostores/vue";
-import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections, loadSearchIndex } from "../stores/workflowStore";
+import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections } from "../stores/workflowStore";
 
 const selected = useStore(selectedFilters);
 const collections = useStore(searchIndexCollections);
@@ -15,10 +15,6 @@ const firstRowFilters = computed(() => {
 const secondRowFilters = computed(() => {
     const halfLength = Math.ceil(collections.value.length / 2);
     return collections.value.slice(halfLength);
-});
-
-onMounted(() => {
-    loadSearchIndex();
 });
 
 const handleFilterClick = (filter: string) => {

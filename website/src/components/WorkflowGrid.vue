@@ -10,22 +10,27 @@ import {
     searchQuery as searchQueryStore,
     isSearchActive,
     searchIndex,
-    loadSearchIndex,
 } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import WorkflowListItem from "./WorkflowListItem.vue";
 import ViewToggle from "./ViewToggle.vue";
 import type { SearchIndexEntry } from "../models/workflow";
 
+const props = defineProps<{
+    workflows: SearchIndexEntry[];
+}>();
+
+// Initialize store with prop data immediately (for other components that read from store)
+searchIndex.set(props.workflows);
+
 const filters = useStore(selectedFilters);
 const mode = useStore(viewMode);
 const searchQuery = useStore(searchQueryStore);
 const isSearching = useStore(isSearchActive);
-const workflows = useStore(searchIndex);
 
-// Sort workflows by updated date
+// Sort workflows by updated date (use props directly, no store subscription needed)
 const sortedWorkflows = computed(() =>
-    workflows.value.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
+    props.workflows.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
 );
 
 // Fuse.js configuration (flat structure now)
@@ -63,10 +68,7 @@ const hasActiveFilters = computed(() => isSearching.value || filters.value.lengt
 const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
 
 // Auto-scroll to grid when filter is present
-onMounted(async () => {
-    // Load search index from static JSON
-    await loadSearchIndex();
-
+onMounted(() => {
     setFilterFromUrl();
     setSearchFromUrl();
 

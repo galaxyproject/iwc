@@ -4,9 +4,8 @@ import type { Workflow, WorkflowCollection, SearchIndexEntry } from "../models/w
 // Store for workflow collections
 export const workflowCollections = atom<WorkflowCollection[]>([]);
 
-// Store for search index (lightweight workflow data)
+// Store for search index (lightweight workflow data, initialized from props at build time)
 export const searchIndex = atom<SearchIndexEntry[]>([]);
-export const searchIndexLoaded = atom<boolean>(false);
 
 // Selected filters
 export const selectedFilters = atom<string[]>([]);
@@ -90,18 +89,3 @@ export function collectionToSlug(collection: string): string {
 export const searchIndexCollections = computed(searchIndex, (entries) => {
     return Array.from(new Set(entries.flatMap((e) => e.collections))).sort();
 });
-
-// Fetch search index from static JSON
-export async function loadSearchIndex(): Promise<void> {
-    if (searchIndexLoaded.get()) return;
-
-    try {
-        const response = await fetch("/data/search-index.json");
-        if (!response.ok) throw new Error(`Failed to fetch search index: ${response.status}`);
-        const data: SearchIndexEntry[] = await response.json();
-        searchIndex.set(data);
-        searchIndexLoaded.set(true);
-    } catch (error) {
-        console.error("Error loading search index:", error);
-    }
-}
