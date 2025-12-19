@@ -318,25 +318,27 @@ onMounted(() => {
 
         <!-- Right sidebar -->
         <div class="lg:w-1/4 lg:min-w-64">
-            <div class="sticky top-4 bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
-                <p class="mb-4 text-gray-700">{{ workflow.definition.annotation }}</p>
-                <ul class="space-y-2 text-sm">
-                    <li><strong>Author(s):</strong></li>
+            <div class="sticky top-4 bg-white border border-ebony-clay-100 rounded-lg p-6 shadow-sm">
+                <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-l-4 border-hokey-pokey-500 pl-3 -ml-3">
+                    {{ workflow.definition.name }}
+                </h2>
+                <p class="mb-4 text-chicago-700">{{ workflow.definition.annotation }}</p>
+                <ul class="space-y-2 text-sm text-chicago-700">
+                    <li><strong class="text-ebony-clay-900">Author(s):</strong></li>
                     <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
                         <Author :author="author" />
                     </li>
-                    <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
-                    <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
-                    <li><strong>License: </strong>{{ workflow.definition.license }}</li>
+                    <li><strong class="text-ebony-clay-900">Release: </strong>{{ workflow.definition.release }}</li>
+                    <li><strong class="text-ebony-clay-900">Updated: </strong>{{ formatDate(workflow.updated) }}</li>
+                    <li><strong class="text-ebony-clay-900">License: </strong>{{ workflow.definition.license }}</li>
                     <li v-if="workflow.doi">
-                        <strong>DOI: </strong>
+                        <strong class="text-ebony-clay-900">DOI: </strong>
                         <a :href="doiResolverUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
                             {{ workflow.doi }} ↗
                         </a>
                     </li>
                     <li>
-                        <strong>TRS: </strong>
+                        <strong class="text-ebony-clay-900">TRS: </strong>
                         <a
                             :href="dockstoreWorkflowPageUrl"
                             target="_blank"
@@ -345,14 +347,14 @@ onMounted(() => {
                         </a>
                     </li>
                 </ul>
-                <h3 class="font-bold text-l mt-4">Running this workflow</h3>
+                <h3 class="font-bold text-l mt-4 text-ebony-clay-900">Running this workflow</h3>
                 <GalaxyInstanceSelector v-model="selectedInstance" />
-                <p class="my-3 text-sm text-gray-600">Choose how you want to run this workflow:</p>
+                <p class="my-3 text-sm text-chicago-600">Choose how you want to run this workflow:</p>
                 <div class="mt-3 flex flex-col gap-3">
                     <Button as="a" :href="launchUrl" target="_blank" class="w-full"> Launch Workflow </Button>
                     <Button @click="createLandingPage" variant="outline" class="w-full"> Try with Example Data </Button>
                 </div>
-                <p class="mt-3 text-xs text-gray-500">
+                <p class="mt-3 text-xs text-chicago-500">
                     <strong>Launch Workflow:</strong> Import with your own data<br />
                     <strong>Try with Examples:</strong> Pre-filled demo datasets
                 </p>
