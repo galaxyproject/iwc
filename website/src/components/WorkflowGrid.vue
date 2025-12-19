@@ -67,7 +67,6 @@ const filteredWorkflows = computed(() => {
 const hasActiveFilters = computed(() => isSearching.value || filters.value.length > 0);
 const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
 
-// Auto-scroll to grid when filter is present
 onMounted(() => {
     setFilterFromUrl();
     setSearchFromUrl();
@@ -76,16 +75,6 @@ onMounted(() => {
     const savedViewMode = localStorage.getItem("iwc-view-mode");
     if (savedViewMode === "list" || savedViewMode === "grid") {
         viewMode.set(savedViewMode);
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("filter")) {
-        setTimeout(() => {
-            const gridElement = document.getElementById("workflows");
-            if (gridElement) {
-                gridElement.scrollIntoView({ behavior: "smooth" });
-            }
-        }, 100);
     }
 });
 </script>

@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "@nanostores/vue";
-import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections, searchIndex } from "../stores/workflowStore";
+import {
+    selectedFilters,
+    toggleFilter,
+    collectionToSlug,
+    searchIndexCollections,
+    searchIndex,
+    setFilterFromUrl,
+} from "../stores/workflowStore";
 
-const selected = useStore(selectedFilters);
+const storeSelected = useStore(selectedFilters);
 const collections = useStore(searchIndexCollections);
 const workflows = useStore(searchIndex);
+
+// Use local ref to avoid hydration mismatch - starts empty like SSR
+const selected = ref<string[]>([]);
 
 // Count workflows per collection
 const collectionCounts = computed(() => {
@@ -27,6 +37,17 @@ const firstRowFilters = computed(() => {
 const secondRowFilters = computed(() => {
     const halfLength = Math.ceil(collections.value.length / 2);
     return collections.value.slice(halfLength);
+});
+
+onMounted(() => {
+    setFilterFromUrl();
+    // Sync local ref with store after hydration
+    selected.value = storeSelected.value;
+});
+
+// Keep local ref in sync with store changes
+selectedFilters.subscribe((value) => {
+    selected.value = value;
 });
 
 const handleFilterClick = (filter: string) => {
