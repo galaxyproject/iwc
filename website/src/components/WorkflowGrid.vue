@@ -97,8 +97,9 @@ onMounted(() => {
             <Transition name="fade" mode="out-in">
                 <!-- Searching with category -->
                 <p v-if="isSearching && selectedCategory" key="search-category" class="text-chicago-600 text-sm">
-                    Found <span class="font-semibold">{{ filteredWorkflows.length }}</span>
-                    <span class="font-bold text-ebony-clay-900"> {{ selectedCategory }} </span> workflows
+                    Found <span class="font-semibold">{{ filteredWorkflows.length }}</span
+                    >&nbsp;<span class="font-bold text-ebony-clay-900">{{ selectedCategory }}</span
+                    >&nbsp;workflows matching your query
                 </p>
                 <!-- Searching only -->
                 <p v-else-if="isSearching" key="search" class="text-chicago-600 text-sm">
@@ -106,12 +107,13 @@ onMounted(() => {
                 </p>
                 <!-- Category only -->
                 <p v-else-if="selectedCategory" key="category" class="text-chicago-600 text-sm">
-                    <span class="font-semibold">{{ filteredWorkflows.length }}</span>
-                    <span class="font-bold text-ebony-clay-900"> {{ selectedCategory }} </span> workflows
+                    <span class="font-semibold">{{ filteredWorkflows.length }}</span
+                    >&nbsp;<span class="font-bold text-ebony-clay-900">{{ selectedCategory }}</span
+                    >&nbsp;workflows
                 </p>
                 <!-- No filters -->
                 <p v-else key="total" class="text-chicago-500 text-sm">
-                    {{ sortedWorkflows.length }} workflows
+                    <span class="font-semibold">{{ sortedWorkflows.length }}</span> <span>workflows</span>
                 </p>
             </Transition>
             <ViewToggle />
@@ -159,7 +161,9 @@ onMounted(() => {
 /* View switch transition */
 .view-fade-enter-active,
 .view-fade-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 
 .view-fade-enter-from {

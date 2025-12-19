@@ -196,10 +196,14 @@ onMounted(() => {
 
                         <div class="bg-bay-of-many-50 p-6 rounded-lg mb-8 not-prose">
                             <h3 class="text-xl font-bold mb-4 text-ebony-clay-900">Run in Galaxy</h3>
-                            <p class="mb-4 text-chicago-700">The easiest way to run this workflow is directly in a Galaxy instance:</p>
+                            <p class="mb-4 text-chicago-700">
+                                The easiest way to run this workflow is directly in a Galaxy instance:
+                            </p>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 1: Select a Galaxy instance</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 1: Select a Galaxy instance
+                                </h4>
                                 <GalaxyInstanceSelector v-model="selectedInstance" class="mb-4" />
                                 <div v-if="selectedInstance" class="text-sm text-chicago-600">
                                     Selected instance: <span class="font-medium">{{ selectedInstance }}</span>
@@ -248,26 +252,34 @@ onMounted(() => {
 
                             <div class="mb-6">
                                 <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 1: Install Planemo</h4>
-                                <p class="mb-2 text-sm text-chicago-600">If you haven't already, install Planemo using pip:</p>
+                                <p class="mb-2 text-sm text-chicago-600">
+                                    If you haven't already, install Planemo using pip:
+                                </p>
                                 <CodeBlock code="pip install planemo" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 2: Download the workflow</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 2: Download the workflow
+                                </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
                                 <CodeBlock
                                     :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 3: Run the workflow tests</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 3: Run the workflow tests
+                                </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
                                     :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 4: Create workflow job file</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 4: Create workflow job file
+                                </h4>
                                 <p class="mb-2 text-sm text-chicago-600">
                                     Create a workflow job file with your input parameters and update the values to match
                                     your environment and run:
@@ -275,8 +287,12 @@ onMounted(() => {
                                 <CodeBlock :code="workflow_job_input" />
                             </div>
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 5: Run the workflow with your data</h4>
-                                <p class="mt-2 mb-2 text-sm text-chicago-600">Then run the workflow with your job file:</p>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 5: Run the workflow with your data
+                                </h4>
+                                <p class="mt-2 mb-2 text-sm text-chicago-600">
+                                    Then run the workflow with your job file:
+                                </p>
                                 <CodeBlock
                                     :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>

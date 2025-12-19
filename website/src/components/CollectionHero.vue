@@ -36,7 +36,9 @@ const collectionWorkflows = computed(() =>
         </div>
 
         <div v-if="showBackLink" class="mt-4">
-            <a href="/" class="text-white hover:text-hokey-pokey-300 underline transition-colors"> ← Back to all workflows </a>
+            <a href="/" class="text-white hover:text-hokey-pokey-300 underline transition-colors">
+                ← Back to all workflows
+            </a>
         </div>
     </div>
 </template>

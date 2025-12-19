@@ -66,11 +66,7 @@ onMounted(() => {
 
         <!-- Popular Workflows - hide when searching -->
         <Transition name="fade-collapse">
-            <PopularWorkflows
-                v-if="!isSearching"
-                :workflowTrsIds="popularTrsIds"
-                :workflows="workflows"
-                class="mb-8" />
+            <PopularWorkflows v-if="!isSearching" :workflowTrsIds="popularTrsIds" :workflows="workflows" class="mb-8" />
         </Transition>
 
         <!-- Search Input -->
