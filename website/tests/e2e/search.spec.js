@@ -9,12 +9,12 @@ test.describe("Search functionality", () => {
     });
 
     test("Search input is visible on homepage", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await expect(searchInput).toBeVisible();
     });
 
     test("Typing in search updates URL with query parameter", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await searchInput.fill("RNA");
 
         // Wait for debounced URL update (300ms + buffer)
@@ -24,7 +24,7 @@ test.describe("Search functionality", () => {
     });
 
     test("Search filters workflows and shows results count", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await searchInput.fill("RNA");
 
         // Wait for search to apply
@@ -39,28 +39,8 @@ test.describe("Search functionality", () => {
         await expect(workflowGrid).toBeVisible();
     });
 
-    test("Hero collapses when search is active", async ({ page }) => {
-        // Initially, popular workflows section should be visible
-        const popularHeading = page.locator("text=Get started with one of our most popular workflows");
-        await expect(popularHeading).toBeVisible();
-
-        // Type in search
-        const searchInput = page.getByPlaceholder("Search workflows");
-        await searchInput.fill("test");
-
-        // Wait for transition
-        await page.waitForTimeout(400);
-
-        // Popular workflows should be hidden
-        await expect(popularHeading).not.toBeVisible();
-
-        // Compact header should be visible
-        const compactHeader = page.locator("text=Search IWC Workflows");
-        await expect(compactHeader).toBeVisible();
-    });
-
-    test("Clearing search restores hero", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+    test("Clearing search clears URL parameter", async ({ page }) => {
+        const searchInput = page.getByPlaceholder("Search workflows...");
 
         // Type and then clear
         await searchInput.fill("RNA");
@@ -68,10 +48,6 @@ test.describe("Search functionality", () => {
 
         await searchInput.clear();
         await page.waitForTimeout(400);
-
-        // Popular workflows should be visible again
-        const popularHeading = page.locator("text=Get started with one of our most popular workflows");
-        await expect(popularHeading).toBeVisible();
 
         // URL should not have query parameter
         await expect(page).not.toHaveURL(/\?q=/);
@@ -83,7 +59,7 @@ test.describe("Search functionality", () => {
         await page.waitForLoadState("networkidle");
 
         // Search input should have the value
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await expect(searchInput).toHaveValue("ChIP");
 
         // Results should be filtered
@@ -93,7 +69,7 @@ test.describe("Search functionality", () => {
 
     test("Search finds workflows by annotation content", async ({ page }) => {
         // Search for "RNA-seq" which appears in lncRNAs annotation
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await searchInput.fill("RNA-seq");
 
         await page.waitForTimeout(300);
@@ -105,7 +81,7 @@ test.describe("Search functionality", () => {
     });
 
     test("Search finds workflows by collection name", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await searchInput.fill("Single Cell");
 
         await page.waitForTimeout(300);
@@ -117,7 +93,7 @@ test.describe("Search functionality", () => {
     });
 
     test("Search with no results shows empty state", async ({ page }) => {
-        const searchInput = page.getByPlaceholder("Search workflows");
+        const searchInput = page.getByPlaceholder("Search workflows...");
         await searchInput.fill("xyznonexistent123");
 
         await page.waitForTimeout(300);
@@ -129,19 +105,19 @@ test.describe("Search functionality", () => {
 
     test("Search combined with filter shows correct count", async ({ page }) => {
         // First apply a filter
-        const assemblyFilter = page.getByRole("button", { name: /Genome Assembly/i });
+        const assemblyFilter = page.getByRole("button", { name: /Genome assembly/i });
         if ((await assemblyFilter.count()) > 0) {
             await assemblyFilter.click();
             await page.waitForTimeout(300);
 
             // Then search
-            const searchInput = page.getByPlaceholder("Search workflows");
+            const searchInput = page.getByPlaceholder("Search workflows...");
             await searchInput.fill("annotation");
 
             await page.waitForTimeout(300);
 
-            // Should show category-specific results text
-            const resultsText = page.locator("text=/Found \\d+.*Genome Assembly.*workflows/");
+            // Should show category-specific results text (case-insensitive)
+            const resultsText = page.locator("text=/Found \\d+.*Genome assembly.*workflows/i");
             await expect(resultsText).toBeVisible();
         }
     });
