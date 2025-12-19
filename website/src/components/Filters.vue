@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useStore } from "@nanostores/vue";
-import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections } from "../stores/workflowStore";
+import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections, searchIndex } from "../stores/workflowStore";
 
 const selected = useStore(selectedFilters);
 const collections = useStore(searchIndexCollections);
+const workflows = useStore(searchIndex);
+
+// Count workflows per collection
+const collectionCounts = computed(() => {
+    const counts: Record<string, number> = {};
+    for (const w of workflows.value) {
+        for (const c of w.collections) {
+            counts[c] = (counts[c] || 0) + 1;
+        }
+    }
+    return counts;
+});
 
 // Split filters into two equal rows
 const firstRowFilters = computed(() => {
@@ -21,11 +33,12 @@ const handleFilterClick = (filter: string) => {
     const currentPath = window.location.pathname;
 
     if (currentPath === "/") {
-        // On main page, toggle filter and update URL
+        // Check state before toggling
+        const wasSelected = selected.value.includes(filter);
         toggleFilter(filter);
-        const params = new URLSearchParams(window.location.search);
 
-        if (selected.value.includes(filter)) {
+        const params = new URLSearchParams(window.location.search);
+        if (wasSelected) {
             params.delete("filter");
         } else {
             params.set("filter", filter);
@@ -47,16 +60,15 @@ const handleFilterClick = (filter: string) => {
             <template v-for="(filter, index) in firstRowFilters" :key="filter">
                 <div class="filter-wrapper flex items-center">
                     <span
-                        class="py-1 px-2 cursor-pointer transition-all duration-200 ease-in-out rounded border-b-2 border-t-2 whitespace-nowrap"
+                        class="py-1 px-2 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap border-b-4"
                         :class="{
-                            'text-gold border-transparent': !selected.includes(filter),
-                            'text-white border-gold': selected.includes(filter),
-                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter),
+                            'text-chicago-300 border-transparent hover:text-white': !selected.includes(filter),
+                            'text-white border-hokey-pokey-500': selected.includes(filter),
                         }"
                         @click="handleFilterClick(filter)">
-                        {{ filter }}
+                        {{ filter }}<span class="text-chicago-500 ml-1">({{ collectionCounts[filter] || 0 }})</span>
                     </span>
-                    <span v-if="index < firstRowFilters.length - 1" class="divider text-gray-200 mx-1">|</span>
+                    <span v-if="index < firstRowFilters.length - 1" class="divider text-chicago-600 mx-1">·</span>
                 </div>
             </template>
         </div>
@@ -66,16 +78,15 @@ const handleFilterClick = (filter: string) => {
             <template v-for="(filter, index) in secondRowFilters" :key="filter">
                 <div class="filter-wrapper flex items-center">
                     <span
-                        class="py-1 px-2 cursor-pointer transition-all duration-200 ease-in-out rounded border-b-2 border-t-2 whitespace-nowrap"
+                        class="py-1 px-2 cursor-pointer transition-all duration-200 ease-in-out whitespace-nowrap border-b-4"
                         :class="{
-                            'text-gold border-transparent': !selected.includes(filter),
-                            'text-white border-gold': selected.includes(filter),
-                            'hover:bg-gold hover:text-white hover:bg-opacity-5': !selected.includes(filter),
+                            'text-chicago-300 border-transparent hover:text-white': !selected.includes(filter),
+                            'text-white border-hokey-pokey-500': selected.includes(filter),
                         }"
                         @click="handleFilterClick(filter)">
-                        {{ filter }}
+                        {{ filter }}<span class="text-chicago-500 ml-1">({{ collectionCounts[filter] || 0 }})</span>
                     </span>
-                    <span v-if="index < secondRowFilters.length - 1" class="divider text-gray-200 mx-1">|</span>
+                    <span v-if="index < secondRowFilters.length - 1" class="divider text-chicago-600 mx-1">·</span>
                 </div>
             </template>
         </div>
