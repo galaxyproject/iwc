@@ -6,6 +6,7 @@ import {
     selectedFilters,
     setFilterFromUrl,
     setSearchFromUrl,
+    updateSearchUrl,
     viewMode,
     searchQuery as searchQueryStore,
     isSearchActive,
@@ -67,6 +68,18 @@ const filteredWorkflows = computed(() => {
 const hasActiveFilters = computed(() => isSearching.value || filters.value.length > 0);
 const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
 
+// Debounced URL update for search
+let urlUpdateTimeout: ReturnType<typeof setTimeout>;
+const handleSearchInput = (e: Event) => {
+    const value = (e.target as HTMLInputElement).value;
+    searchQueryStore.set(value);
+
+    clearTimeout(urlUpdateTimeout);
+    urlUpdateTimeout = setTimeout(() => {
+        updateSearchUrl(value);
+    }, 300);
+};
+
 onMounted(() => {
     setFilterFromUrl();
     setSearchFromUrl();
@@ -81,6 +94,16 @@ onMounted(() => {
 
 <template>
     <div class="w-full">
+        <!-- Search input -->
+        <div class="mb-4">
+            <input
+                type="text"
+                :value="searchQuery"
+                @input="handleSearchInput"
+                placeholder="Search workflows..."
+                class="w-full p-3 border border-chicago-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
+        </div>
+
         <!-- Results header row -->
         <div class="flex justify-between items-center mb-4">
             <Transition name="fade" mode="out-in">
