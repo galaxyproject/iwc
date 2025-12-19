@@ -32,11 +32,11 @@ const collectionWorkflows = computed(() =>
                 @input="collectionSearchQuery.set($event.target.value)"
                 type="text"
                 :placeholder="`Search ${collectionName} workflows`"
-                class="w-full p-2 mb-2 border border-gray-300 bg-white rounded-lg" />
+                class="w-full p-3 border border-ebony-clay-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
         </div>
 
         <div v-if="showBackLink" class="mt-4">
-            <a href="/" class="text-white hover:text-gray-300 underline"> ← Back to all workflows </a>
+            <a href="/" class="text-white hover:text-hokey-pokey-300 underline transition-colors"> ← Back to all workflows </a>
         </div>
     </div>
 </template>

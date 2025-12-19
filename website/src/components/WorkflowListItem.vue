@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import type { Workflow, LightweightWorkflow } from "../models/workflow";
-import { formatDate } from "../utils/";
+import { formatDate, navigateToCollection } from "../utils/";
 import Badge from "./ui/Badge.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
 defineProps<{
     workflow: Workflow | LightweightWorkflow;
 }>();
-
-const navigateToCollection = (collection: string) => {
-    const slug = collection
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
-    window.location.href = `/collection/${slug}`;
-};
 </script>
 
 <template>

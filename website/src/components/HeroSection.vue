@@ -81,7 +81,7 @@ onMounted(() => {
                 :value="query"
                 @input="handleInput"
                 placeholder="Search workflows"
-                class="w-full p-3 border border-gray-300 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
+                class="w-full p-3 border border-ebony-clay-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
         </div>
 
         <!-- Filters -->
