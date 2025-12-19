@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Workflow, LightweightWorkflow } from "../models/workflow";
+import type { SearchIndexEntry } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
@@ -8,13 +8,13 @@ import Badge from "./ui/Badge.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
 defineProps<{
-    workflow: Workflow | LightweightWorkflow;
+    workflow: SearchIndexEntry;
     compact?: boolean;
 }>();
 </script>
 
 <template>
-    <div :id="`workflow-${workflow.definition.uuid}`" class="group relative h-full">
+    <div :id="`workflow-${workflow.uuid}`" class="group relative h-full">
         <!-- Hover accent bar -->
         <div
             class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200 z-10" />
@@ -33,7 +33,7 @@ defineProps<{
                         'font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200',
                         compact ? 'text-lg' : 'text-xl',
                     ]">
-                    {{ workflow.definition.name }}
+                    {{ workflow.name }}
                 </h2>
             </a>
         </CardHeader>
@@ -42,7 +42,7 @@ defineProps<{
         <CardContent :class="['flex-1 flex flex-col', compact ? 'px-3 py-2' : 'px-6 py-2']">
             <div class="flex flex-col flex-grow">
                 <p :class="`flex-grow ${compact ? 'text-sm line-clamp-6 mb-2' : 'mb-4'}`">
-                    {{ workflow.definition.annotation }}
+                    {{ workflow.annotation }}
                 </p>
 
                 <div
@@ -80,7 +80,7 @@ defineProps<{
             <div class="flex justify-between text-xs text-chicago-500">
                 <p class="flex items-center gap-1.5">
                     <Tag :size="14" class="text-bay-of-many-500" />
-                    <span class="font-medium text-ebony-clay-700">{{ workflow.definition.release }}</span>
+                    <span class="font-medium text-ebony-clay-700">{{ workflow.release }}</span>
                 </p>
                 <p class="flex items-center gap-1.5">
                     <Clock :size="14" class="text-bay-of-many-400" />

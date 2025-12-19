@@ -1,8 +1,12 @@
 import { atom, computed } from "nanostores";
-import type { Workflow, WorkflowCollection } from "../models/workflow";
+import type { Workflow, WorkflowCollection, SearchIndexEntry } from "../models/workflow";
 
 // Store for workflow collections
 export const workflowCollections = atom<WorkflowCollection[]>([]);
+
+// Store for search index (lightweight workflow data)
+export const searchIndex = atom<SearchIndexEntry[]>([]);
+export const searchIndexLoaded = atom<boolean>(false);
 
 // Selected filters
 export const selectedFilters = atom<string[]>([]);
@@ -80,4 +84,24 @@ export function collectionToSlug(collection: string): string {
         .toLowerCase()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, "");
+}
+
+// Computed: all collections from search index
+export const searchIndexCollections = computed(searchIndex, (entries) => {
+    return Array.from(new Set(entries.flatMap((e) => e.collections))).sort();
+});
+
+// Fetch search index from static JSON
+export async function loadSearchIndex(): Promise<void> {
+    if (searchIndexLoaded.get()) return;
+
+    try {
+        const response = await fetch("/data/search-index.json");
+        if (!response.ok) throw new Error(`Failed to fetch search index: ${response.status}`);
+        const data: SearchIndexEntry[] = await response.json();
+        searchIndex.set(data);
+        searchIndexLoaded.set(true);
+    } catch (error) {
+        console.error("Error loading search index:", error);
+    }
 }

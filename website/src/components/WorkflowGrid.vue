@@ -9,42 +9,43 @@ import {
     viewMode,
     searchQuery as searchQueryStore,
     isSearchActive,
+    searchIndex,
+    loadSearchIndex,
 } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import WorkflowListItem from "./WorkflowListItem.vue";
 import ViewToggle from "./ViewToggle.vue";
-import type { LightweightWorkflow } from "../models/workflow";
-
-// Accept workflows as props (passed from Astro at build time)
-const props = defineProps<{
-    workflows: LightweightWorkflow[];
-}>();
+import type { SearchIndexEntry } from "../models/workflow";
 
 const filters = useStore(selectedFilters);
 const mode = useStore(viewMode);
 const searchQuery = useStore(searchQueryStore);
 const isSearching = useStore(isSearchActive);
+const workflows = useStore(searchIndex);
 
 // Sort workflows by updated date
 const sortedWorkflows = computed(() =>
-    props.workflows.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
+    workflows.value.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
 );
 
-// Fuse.js configuration
+// Fuse.js configuration (flat structure now)
 const fuseOptions = {
     keys: [
-        { name: "definition.name", weight: 0.7 },
-        { name: "definition.annotation", weight: 0.3 },
-        { name: "definition.tags", weight: 0.1 },
+        { name: "name", weight: 0.5 },
+        { name: "annotation", weight: 0.4 },
+        { name: "tags", weight: 0.2 },
+        { name: "collections", weight: 0.1 },
     ],
-    threshold: 0.3,
+    threshold: 0.4,
+    ignoreLocation: true, // Match anywhere in the string equally
+    minMatchCharLength: 2,
 };
 
 const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
 
 // Filtered workflows
 const filteredWorkflows = computed(() => {
-    const matchesSelectedFilters = (workflow: LightweightWorkflow): boolean => {
+    const matchesSelectedFilters = (workflow: SearchIndexEntry): boolean => {
         return !filters.value.length || filters.value.every((filter) => workflow.collections.includes(filter));
     };
 
@@ -62,7 +63,10 @@ const hasActiveFilters = computed(() => isSearching.value || filters.value.lengt
 const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
 
 // Auto-scroll to grid when filter is present
-onMounted(() => {
+onMounted(async () => {
+    // Load search index from static JSON
+    await loadSearchIndex();
+
     setFilterFromUrl();
     setSearchFromUrl();
 
@@ -122,7 +126,7 @@ onMounted(() => {
                 <TransitionGroup name="list-stagger" appear>
                     <WorkflowListItem
                         v-for="(workflow, index) in filteredWorkflows"
-                        :key="workflow.definition.uuid"
+                        :key="workflow.uuid"
                         :workflow="workflow"
                         :style="{ '--stagger-delay': `${Math.min(index * 20, 300)}ms` }" />
                 </TransitionGroup>
@@ -133,7 +137,7 @@ onMounted(() => {
                 <TransitionGroup name="grid-stagger" appear>
                     <WorkflowCard
                         v-for="(workflow, index) in filteredWorkflows"
-                        :key="workflow.definition.uuid"
+                        :key="workflow.uuid"
                         :workflow="workflow"
                         :style="{ '--stagger-delay': `${Math.min(index * 30, 400)}ms` }"
                         compact />

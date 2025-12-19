@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "@nanostores/vue";
-import { selectedFilters, toggleFilter, collectionToSlug } from "../stores/workflowStore";
-
-// Accept collections as props (passed from Astro at build time)
-const props = defineProps<{
-    collections: string[];
-}>();
+import { selectedFilters, toggleFilter, collectionToSlug, searchIndexCollections, loadSearchIndex } from "../stores/workflowStore";
 
 const selected = useStore(selectedFilters);
+const collections = useStore(searchIndexCollections);
 
 // Split filters into two equal rows
 const firstRowFilters = computed(() => {
-    const halfLength = Math.ceil(props.collections.length / 2);
-    return props.collections.slice(0, halfLength);
+    const halfLength = Math.ceil(collections.value.length / 2);
+    return collections.value.slice(0, halfLength);
 });
 
 const secondRowFilters = computed(() => {
-    const halfLength = Math.ceil(props.collections.length / 2);
-    return props.collections.slice(halfLength);
+    const halfLength = Math.ceil(collections.value.length / 2);
+    return collections.value.slice(halfLength);
+});
+
+onMounted(() => {
+    loadSearchIndex();
 });
 
 const handleFilterClick = (filter: string) => {

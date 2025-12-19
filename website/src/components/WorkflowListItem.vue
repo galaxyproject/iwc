@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { Workflow, LightweightWorkflow } from "../models/workflow";
+import type { SearchIndexEntry } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Badge from "./ui/Badge.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
 defineProps<{
-    workflow: Workflow | LightweightWorkflow;
+    workflow: SearchIndexEntry;
 }>();
 </script>
 
 <template>
     <div
-        :id="`workflow-${workflow.definition.uuid}`"
+        :id="`workflow-${workflow.uuid}`"
         class="group relative px-5 py-4 border-b border-ebony-clay-100 transition-all duration-200 odd:bg-bay-of-many-50/30 hover:bg-bay-of-many-50">
         <!-- Hover accent bar -->
         <div
@@ -23,11 +23,11 @@ defineProps<{
                 <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
                     <h3
                         class="text-lg font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200 mb-1.5">
-                        {{ workflow.definition.name }}
+                        {{ workflow.name }}
                     </h3>
                 </a>
                 <p class="text-sm text-chicago-600 mb-3 line-clamp-2 leading-relaxed">
-                    {{ workflow.definition.annotation }}
+                    {{ workflow.annotation }}
                 </p>
 
                 <!-- Collections badges -->
@@ -50,7 +50,7 @@ defineProps<{
             <div class="flex flex-col gap-2.5 text-sm min-w-[140px] pt-0.5">
                 <div class="flex items-center gap-2 text-chicago-500">
                     <Tag :size="14" class="text-bay-of-many-500" />
-                    <span class="font-medium text-ebony-clay-700">{{ workflow.definition.release }}</span>
+                    <span class="font-medium text-ebony-clay-700">{{ workflow.release }}</span>
                 </div>
                 <div class="flex items-center gap-2 text-chicago-500">
                     <Clock :size="14" class="text-bay-of-many-400" />

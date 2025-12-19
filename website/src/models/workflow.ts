@@ -19,6 +19,19 @@ export interface LightweightWorkflow {
     };
 }
 
+// Search index entry - flat structure loaded from search-index.json
+export interface SearchIndexEntry {
+    iwcID: string;
+    trsID: string;
+    uuid: string;
+    name: string;
+    annotation: string;
+    tags: string[];
+    release: string;
+    collections: string[];
+    updated: string;
+}
+
 // Define the interface for a single workflow
 export interface Workflow {
     name: string;

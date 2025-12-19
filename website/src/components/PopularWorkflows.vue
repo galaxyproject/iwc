@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
+import { useStore } from "@nanostores/vue";
 import WorkflowCard from "./WorkflowCard.vue";
-import type { LightweightWorkflow } from "../models/workflow";
+import { searchIndex, loadSearchIndex } from "../stores/workflowStore";
 
 const props = defineProps<{
     /** List of Trs Ids for most popular workflows */
     workflowTrsIds: string[];
-    /** All workflows (passed from Astro at build time) */
-    workflows: LightweightWorkflow[];
 }>();
+
+const workflows = useStore(searchIndex);
 
 const popularWorkflows = computed(() => {
     return props.workflowTrsIds
         ?.map((trsID) => {
-            return props.workflows.find((w) => w.trsID === trsID);
+            return workflows.value.find((w) => w.trsID === trsID);
         })
         .filter(Boolean);
+});
+
+onMounted(() => {
+    loadSearchIndex();
 });
 </script>
 
@@ -27,7 +32,7 @@ const popularWorkflows = computed(() => {
         <div class="grid grid-cols-3 gap-4 mx-auto px-4">
             <WorkflowCard
                 v-for="workflow in popularWorkflows"
-                :key="workflow.definition.uuid"
+                :key="workflow.uuid"
                 :workflow="workflow"
                 compact />
         </div>

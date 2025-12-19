@@ -386,20 +386,20 @@ if __name__ == "__main__":
     write_to_json(workflow_data, "workflow_manifest.json")
 
     # Generate lightweight search index for the website
+    # Contains all fields needed for search AND display (replaces LightweightWorkflow)
     search_index = []
     for item in workflow_data:
         for workflow in item["workflows"]:
             definition = workflow.get("definition", {})
-            annotation = definition.get("annotation", "") or ""
-            # Truncate annotation to 300 chars for search index
-            if len(annotation) > 300:
-                annotation = annotation[:300].rsplit(" ", 1)[0] + "..."
 
             search_entry = {
-                "id": workflow["iwcID"],
+                "iwcID": workflow["iwcID"],
+                "trsID": workflow["trsID"],
+                "uuid": definition.get("uuid", ""),
                 "name": definition.get("name", workflow.get("name", "")),
-                "annotation": annotation,
+                "annotation": definition.get("annotation", "") or "",
                 "tags": definition.get("tags") or [],
+                "release": definition.get("release", ""),
                 "collections": workflow.get("collections", []),
                 "updated": workflow.get("updated"),
             }
