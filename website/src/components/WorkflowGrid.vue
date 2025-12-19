@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
 import {
@@ -9,7 +9,6 @@ import {
     updateSearchUrl,
     viewMode,
     searchQuery as searchQueryStore,
-    isSearchActive,
     searchIndex,
 } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
@@ -24,10 +23,13 @@ const props = defineProps<{
 // Initialize store with prop data immediately (for other components that read from store)
 searchIndex.set(props.workflows);
 
-const filters = useStore(selectedFilters);
 const mode = useStore(viewMode);
-const searchQuery = useStore(searchQueryStore);
-const isSearching = useStore(isSearchActive);
+
+// Use local refs to avoid hydration mismatch - start empty like SSR
+const localFilters = ref<string[]>([]);
+const localSearchQuery = ref("");
+const isHydrated = ref(false);
+const isSearching = computed(() => localSearchQuery.value.trim().length > 0);
 
 // Sort workflows by updated date (use props directly, no store subscription needed)
 const sortedWorkflows = computed(() =>
@@ -49,29 +51,32 @@ const fuseOptions = {
 
 const fuse = computed(() => new Fuse(sortedWorkflows.value, fuseOptions));
 
-// Filtered workflows
+// Filtered workflows (use local refs for hydration safety)
 const filteredWorkflows = computed(() => {
     const matchesSelectedFilters = (workflow: SearchIndexEntry): boolean => {
-        return !filters.value.length || filters.value.every((filter) => workflow.collections.includes(filter));
+        return (
+            !localFilters.value.length || localFilters.value.every((filter) => workflow.collections.includes(filter))
+        );
     };
 
-    if (!searchQuery.value) {
+    if (!localSearchQuery.value) {
         return sortedWorkflows.value.filter(matchesSelectedFilters);
     } else {
-        const searchResults = fuse.value.search(searchQuery.value.trim());
+        const searchResults = fuse.value.search(localSearchQuery.value.trim());
         const fuzzyMatches = searchResults.map((result) => result.item);
         return fuzzyMatches.filter(matchesSelectedFilters);
     }
 });
 
 // Computed for results count display
-const hasActiveFilters = computed(() => isSearching.value || filters.value.length > 0);
-const selectedCategory = computed(() => (filters.value.length > 0 ? filters.value[0] : null));
+const hasActiveFilters = computed(() => isSearching.value || localFilters.value.length > 0);
+const selectedCategory = computed(() => (localFilters.value.length > 0 ? localFilters.value[0] : null));
 
 // Debounced URL update for search
 let urlUpdateTimeout: ReturnType<typeof setTimeout>;
 const handleSearchInput = (e: Event) => {
     const value = (e.target as HTMLInputElement).value;
+    localSearchQuery.value = value;
     searchQueryStore.set(value);
 
     clearTimeout(urlUpdateTimeout);
@@ -84,10 +89,27 @@ onMounted(() => {
     setFilterFromUrl();
     setSearchFromUrl();
 
+    // Sync local refs with store after hydration
+    localFilters.value = selectedFilters.get();
+    localSearchQuery.value = searchQueryStore.get();
+    isHydrated.value = true;
+
     // Initialize view mode from localStorage
     const savedViewMode = localStorage.getItem("iwc-view-mode");
     if (savedViewMode === "list" || savedViewMode === "grid") {
         viewMode.set(savedViewMode);
+    }
+});
+
+// Keep local refs in sync with store changes (only after hydration)
+selectedFilters.subscribe((value) => {
+    if (isHydrated.value) {
+        localFilters.value = value;
+    }
+});
+searchQueryStore.subscribe((value) => {
+    if (isHydrated.value) {
+        localSearchQuery.value = value;
     }
 });
 </script>
@@ -98,7 +120,7 @@ onMounted(() => {
         <div class="mb-4">
             <input
                 type="text"
-                :value="searchQuery"
+                :value="localSearchQuery"
                 @input="handleSearchInput"
                 placeholder="Search workflows..."
                 class="w-full p-3 border border-chicago-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />

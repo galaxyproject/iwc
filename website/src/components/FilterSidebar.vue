@@ -2,26 +2,34 @@
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "@nanostores/vue";
 import { TooltipRoot, TooltipTrigger, TooltipContent, TooltipPortal, TooltipProvider } from "radix-vue";
-import {
-    selectedFilters,
-    toggleFilter,
-    collectionToSlug,
-    searchIndexCollections,
-    searchIndex,
-    setFilterFromUrl,
-} from "../stores/workflowStore";
+import { selectedFilters, toggleFilter, collectionToSlug, setFilterFromUrl } from "../stores/workflowStore";
+import type { SearchIndexEntry } from "../models/workflow";
+
+const props = defineProps<{
+    workflows: SearchIndexEntry[];
+}>();
 
 const storeSelected = useStore(selectedFilters);
-const collections = useStore(searchIndexCollections);
-const workflows = useStore(searchIndex);
 
 // Use local ref to avoid hydration mismatch - starts empty like SSR
 const selected = ref<string[]>([]);
+const isHydrated = ref(false);
+
+// Compute collections directly from props (not store) for immediate render
+const collections = computed(() => {
+    const collectionSet = new Set<string>();
+    for (const w of props.workflows) {
+        for (const c of w.collections) {
+            collectionSet.add(c);
+        }
+    }
+    return Array.from(collectionSet).sort();
+});
 
 // Count workflows per collection
 const collectionCounts = computed(() => {
     const counts: Record<string, number> = {};
-    for (const w of workflows.value) {
+    for (const w of props.workflows) {
         for (const c of w.collections) {
             counts[c] = (counts[c] || 0) + 1;
         }
@@ -39,11 +47,14 @@ const sortedCollections = computed(() => {
 onMounted(() => {
     setFilterFromUrl();
     selected.value = storeSelected.value;
+    isHydrated.value = true;
 });
 
-// Keep local ref in sync with store changes
+// Keep local ref in sync with store changes (only after hydration)
 selectedFilters.subscribe((value) => {
-    selected.value = value;
+    if (isHydrated.value) {
+        selected.value = value;
+    }
 });
 
 const handleFilterClick = (filter: string) => {
