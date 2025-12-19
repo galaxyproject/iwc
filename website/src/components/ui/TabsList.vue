@@ -12,7 +12,7 @@ const props = defineProps<Props>();
 
 <template>
     <TabsList
-        :class="cn('inline-flex items-center justify-start w-full gap-1 bg-ebony-clay-50 p-1 rounded-lg', props.class)">
+        :class="cn('inline-flex items-center justify-start w-full gap-1 border-b border-ebony-clay-100', props.class)">
         <slot />
     </TabsList>
 </template>
