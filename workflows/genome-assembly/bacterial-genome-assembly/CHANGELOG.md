@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.2] - 2025-12-22
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/1.1.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/shovill/shovill/1.4.2+galaxy0`
+
 ## [2.0.1] - 2025-12-01
 
 ### Automatic update
