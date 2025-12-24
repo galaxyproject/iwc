@@ -39,7 +39,7 @@ export interface Workflow {
     publish: boolean;
     primaryDescriptorPath: string;
     testParameterFiles: string[];
-    tests: any[]; // replace with actual interface from openapi schema
+    tests: unknown[]; // TODO: replace with actual interface from openapi schema
     authors: Author[];
     definition: WorkflowDefinition;
     readme: string;
@@ -86,7 +86,7 @@ interface Creator {
 interface Step {
     annotation: string;
     content_id: string | null;
-    errors: any | null;
+    errors: unknown | null;
     id: number;
     input_connections: { [key: string]: InputConnection };
     inputs: Input[];

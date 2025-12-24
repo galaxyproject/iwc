@@ -55,7 +55,11 @@ async function createLandingPage() {
     }
 
     const job = testToRequestState();
-    const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow?.trsID!, `v${props.workflow?.definition.release}`);
+    if (!props.workflow?.trsID || !props.workflow?.definition.release) {
+        alert("Workflow information is incomplete");
+        return;
+    }
+    const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow.trsID, `v${props.workflow.definition.release}`);
     // Normalize the URL to ensure it has a protocol
     const normalizedInstance = normalizeGalaxyUrl(selectedInstance.value) || selectedInstance.value;
 
@@ -84,7 +88,7 @@ async function createLandingPage() {
     }
 }
 
-const tools = computed(() => {
+const _tools = computed(() => {
     if (!props.workflow || !props.workflow.definition || !props.workflow.definition.steps) {
         return [];
     }

@@ -69,7 +69,7 @@ const filteredWorkflows = computed(() => {
 });
 
 // Computed for results count display
-const hasActiveFilters = computed(() => isSearching.value || localFilters.value.length > 0);
+const _hasActiveFilters = computed(() => isSearching.value || localFilters.value.length > 0);
 const selectedCategory = computed(() => (localFilters.value.length > 0 ? localFilters.value[0] : null));
 
 // Debounced URL update for search

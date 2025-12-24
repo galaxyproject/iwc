@@ -5,7 +5,6 @@ import Fuse from "fuse.js";
 import { allWorkflows, collectionSearchQuery } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
-import type { Workflow } from "../models/workflow";
 
 const props = defineProps<{
     collectionName: string;

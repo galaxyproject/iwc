@@ -69,7 +69,7 @@ export function normalizeGalaxyUrl(url: string): string | null {
             return null;
         }
         return url;
-    } catch (e) {
+    } catch {
         // Invalid URL
         return null;
     }

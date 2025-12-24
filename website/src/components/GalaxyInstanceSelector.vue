@@ -5,7 +5,7 @@
  * Persisted in local storage are the currently selected instance, and a list of custom added instances.
  */
 
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { useStorage } from "@vueuse/core";
 import { normalizeGalaxyUrl } from "../utils";
 import Combobox from "./ui/Combobox.vue";
@@ -104,7 +104,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 const userIsTyping = ref(false);
 
 // Watch searchTerm to detect user typing
-watch(searchTerm, (newVal, oldVal) => {
+watch(searchTerm, (newVal) => {
     // User is typing if searchTerm changes and it's not equal to selected instance
     if (newVal !== selectedInstance.value) {
         userIsTyping.value = true;
@@ -179,7 +179,7 @@ watch(
 );
 
 // Watch for changes to the selected instance.  This is where we emit.
-watch(selectedInstance, (newVal, oldVal) => {
+watch(selectedInstance, (newVal) => {
     if (newVal) {
         // Handle both string values and objects with value property
         const instanceUrl = typeof newVal === "string" ? newVal : newVal;
@@ -202,7 +202,7 @@ watch(selectedInstance, (newVal, oldVal) => {
 
 // Custom filter function - must include both instances and the search term
 // to prevent radix-vue from filtering them out
-const customFilterFunction = (list: any[]) => {
+const customFilterFunction = (_list: string[]) => {
     // If not open, ignore search term and present full list to avoid partial render during close animations
     if (!open.value) {
         return allInstances.value;

@@ -1,5 +1,5 @@
 import { atom, computed } from "nanostores";
-import type { Workflow, WorkflowCollection, SearchIndexEntry } from "../models/workflow";
+import type { WorkflowCollection, SearchIndexEntry } from "../models/workflow";
 
 // Store for workflow collections
 export const workflowCollections = atom<WorkflowCollection[]>([]);

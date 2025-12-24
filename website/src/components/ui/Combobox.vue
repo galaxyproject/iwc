@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface Props extends ComboboxRootProps {
     class?: HTMLAttributes["class"];
-    filterFunction?: (items: any[], searchTerm: string) => any[];
+    filterFunction?: (items: unknown[], searchTerm: string) => unknown[];
 }
 
 const props = defineProps<Props>();

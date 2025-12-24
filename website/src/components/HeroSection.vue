@@ -2,7 +2,7 @@
 import PopularWorkflows from "./PopularWorkflows.vue";
 import type { SearchIndexEntry } from "../models/workflow";
 
-const props = defineProps<{
+defineProps<{
     popularTrsIds: string[];
     workflows: SearchIndexEntry[];
 }>();
