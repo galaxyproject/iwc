@@ -24,11 +24,11 @@ const isGrid = computed(() => mode.value === "grid");
 
             <!-- List button -->
             <button
-                @click="handleValueChange('list')"
                 :aria-pressed="!isGrid"
                 aria-label="List view"
                 class="relative z-10 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
-                :class="!isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'">
+                :class="!isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'"
+                @click="handleValueChange('list')">
                 <List
                     :size="16"
                     class="transition-transform duration-300"
@@ -38,11 +38,11 @@ const isGrid = computed(() => mode.value === "grid");
 
             <!-- Grid button -->
             <button
-                @click="handleValueChange('grid')"
                 :aria-pressed="isGrid"
                 aria-label="Grid view"
                 class="relative z-10 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
-                :class="isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'">
+                :class="isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'"
+                @click="handleValueChange('grid')">
                 <LayoutGrid
                     :size="16"
                     class="transition-transform duration-300"

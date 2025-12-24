@@ -18,6 +18,6 @@ const props = defineProps<{
             </h2>
         </div>
 
-        <PopularWorkflows :workflowTrsIds="popularTrsIds" :workflows="workflows" />
+        <PopularWorkflows :workflow-trs-ids="popularTrsIds" :workflows="workflows" />
     </div>
 </template>

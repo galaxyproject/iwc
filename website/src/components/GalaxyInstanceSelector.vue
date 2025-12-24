@@ -236,9 +236,9 @@ const customFilterFunction = (list: any[]) => {
 
         <Combobox
             v-model="selectedInstance"
-            v-model:searchTerm="searchTerm"
+            v-model:search-term="searchTerm"
             v-model:open="open"
-            :filterFunction="customFilterFunction"
+            :filter-function="customFilterFunction"
             @keydown.capture="handleKeydown">
             <ComboboxAnchor class="w-full relative">
                 <ComboboxInput
@@ -276,9 +276,9 @@ const customFilterFunction = (list: any[]) => {
                         <span>{{ instance }}</span>
                         <button
                             v-if="isCustomInstance(instance)"
-                            @click.stop.prevent="deleteCustomInstance(instance)"
                             class="ml-2 text-red-600 hover:text-red-800 text-xs"
-                            aria-label="Delete custom instance">
+                            aria-label="Delete custom instance"
+                            @click.stop.prevent="deleteCustomInstance(instance)">
                             ×
                         </button>
                     </div>

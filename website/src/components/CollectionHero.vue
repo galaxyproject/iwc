@@ -29,10 +29,10 @@ const collectionWorkflows = computed(() =>
         <div class="max-w-6xl w-full mx-auto">
             <input
                 :value="searchQuery"
-                @input="collectionSearchQuery.set($event.target.value)"
                 type="text"
                 :placeholder="`Search ${collectionName} workflows`"
-                class="w-full p-3 border border-ebony-clay-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
+                class="w-full p-3 border border-ebony-clay-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow"
+                @input="collectionSearchQuery.set($event.target.value)" />
         </div>
 
         <div v-if="showBackLink" class="mt-4">

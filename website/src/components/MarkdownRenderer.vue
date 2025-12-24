@@ -308,7 +308,7 @@ function renderMermaidDiagrams() {
 </script>
 
 <template>
-    <div v-html="renderedHtml"></div>
+    <div v-html="renderedHtml" />
 </template>
 
 <style scoped>

@@ -13,10 +13,10 @@ const emit = defineEmits(["update:modelValue"]);
 
 <template>
     <TabsRoot
-        :modelValue="props.modelValue"
-        @update:modelValue="emit('update:modelValue', $event)"
-        :defaultValue="props.defaultValue"
-        :class="cn('w-full', props.class)">
+        :model-value="props.modelValue"
+        :default-value="props.defaultValue"
+        :class="cn('w-full', props.class)"
+        @update:model-value="emit('update:modelValue', $event)">
         <slot />
     </TabsRoot>
 </template>

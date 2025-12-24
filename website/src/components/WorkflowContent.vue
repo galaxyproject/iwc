@@ -165,7 +165,7 @@ onMounted(() => {
         <!-- Main content area -->
         <div class="flex-1 min-w-0">
             <div class="p-4 mb-6">
-                <Tabs v-model="currentTab" @update:modelValue="onTabChange">
+                <Tabs v-model="currentTab" @update:model-value="onTabChange">
                     <!-- Tab List -->
                     <TabsList class="mb-4">
                         <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">
@@ -175,18 +175,18 @@ onMounted(() => {
 
                     <!-- About Tab -->
                     <TabsContent value="about" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'about')?.content || ''" />
+                        <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'about')?.content || ''" />
                     </TabsContent>
 
                     <!-- Diagram Tab -->
                     <TabsContent value="diagram" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'diagram')?.content || ''" />
+                        <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'diagram')?.content || ''" />
                     </TabsContent>
 
                     <!-- Version History Tab -->
                     <TabsContent value="version-history" class="prose !max-w-none">
                         <MarkdownRenderer
-                            :markdownContent="tabs.find((t) => t.value === 'version-history')?.content || ''" />
+                            :markdown-content="tabs.find((t) => t.value === 'version-history')?.content || ''" />
                     </TabsContent>
 
                     <!-- How to Run Tab -->
@@ -226,7 +226,7 @@ onMounted(() => {
                                         <p class="text-sm mb-4 text-chicago-600">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <Button @click="createLandingPage" variant="outline">
+                                        <Button variant="outline" @click="createLandingPage">
                                             Try with Example Data
                                         </Button>
                                     </div>
@@ -338,10 +338,12 @@ onMounted(() => {
                 <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-l-4 border-hokey-pokey-500 pl-3 -ml-3">
                     {{ workflow.definition.name }}
                 </h2>
-                <p class="mb-4 text-chicago-700">{{ workflow.definition.annotation }}</p>
+                <p class="mb-4 text-chicago-700">
+                    {{ workflow.definition.annotation }}
+                </p>
                 <ul class="space-y-2 text-sm text-chicago-700">
                     <li><strong class="text-ebony-clay-900">Author(s):</strong></li>
-                    <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
+                    <li v-for="author in workflow.authors" :key="author.name" class="ml-2">
                         <Author :author="author" />
                     </li>
                     <li><strong class="text-ebony-clay-900">Release: </strong>{{ workflow.definition.release }}</li>
@@ -368,7 +370,7 @@ onMounted(() => {
                 <p class="my-3 text-sm text-chicago-600">Choose how you want to run this workflow:</p>
                 <div class="mt-3 flex flex-col gap-3">
                     <Button as="a" :href="launchUrl" target="_blank" class="w-full"> Launch Workflow </Button>
-                    <Button @click="createLandingPage" variant="outline" class="w-full"> Try with Example Data </Button>
+                    <Button variant="outline" class="w-full" @click="createLandingPage"> Try with Example Data </Button>
                 </div>
                 <p class="mt-3 text-xs text-chicago-500">
                     <strong>Launch Workflow:</strong> Import with your own data<br />

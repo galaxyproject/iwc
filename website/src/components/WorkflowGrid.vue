@@ -121,9 +121,9 @@ searchQueryStore.subscribe((value) => {
             <input
                 type="text"
                 :value="localSearchQuery"
-                @input="handleSearchInput"
                 placeholder="Search workflows..."
-                class="w-full p-3 border border-chicago-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow" />
+                class="w-full p-3 border border-chicago-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow"
+                @input="handleSearchInput" />
         </div>
 
         <!-- Results header row -->
@@ -158,8 +158,8 @@ searchQueryStore.subscribe((value) => {
             <!-- List View -->
             <div
                 v-if="mode === 'list'"
-                key="list"
                 id="workflows"
+                key="list"
                 class="flex flex-col border border-ebony-clay-100 rounded-xl overflow-hidden shadow-sm">
                 <TransitionGroup name="list-stagger" appear>
                     <WorkflowListItem
@@ -171,7 +171,7 @@ searchQueryStore.subscribe((value) => {
             </div>
 
             <!-- Grid View -->
-            <div v-else key="grid" id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-else id="workflows" key="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <TransitionGroup name="grid-stagger" appear>
                     <WorkflowCard
                         v-for="(workflow, index) in filteredWorkflows"

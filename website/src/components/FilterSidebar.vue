@@ -89,14 +89,14 @@ const handleFilterClick = (filter: string) => {
                     <TooltipRoot v-for="filter in sortedCollections" :key="filter">
                         <TooltipTrigger as-child>
                             <button
-                                @click="handleFilterClick(filter)"
                                 class="group flex items-center justify-between px-3 py-2 rounded-lg text-sm text-left transition-all duration-150 border-l-4 w-full"
                                 :class="{
                                     'bg-hokey-pokey-500/10 text-hokey-pokey-600 border-hokey-pokey-500 pl-2':
                                         selected.includes(filter),
                                     'text-chicago-600 hover:bg-chicago-100 hover:text-chicago-800 border-transparent':
                                         !selected.includes(filter),
-                                }">
+                                }"
+                                @click="handleFilterClick(filter)">
                                 <span class="truncate">{{ filter }}</span>
                                 <span
                                     class="text-xs tabular-nums transition-colors ml-2 shrink-0"
