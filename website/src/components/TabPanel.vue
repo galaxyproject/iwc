@@ -30,7 +30,9 @@ const currentTab = ref(0);
             </button>
         </div>
         <div class="bg-chicago-50 rounded-b-lg p-6 border border-gray-300">
-            <p class="text-gray-700">{{ tabs[currentTab].content }}</p>
+            <p class="text-gray-700">
+                {{ tabs[currentTab].content }}
+            </p>
         </div>
     </div>
 </template>

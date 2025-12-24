@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const delegatedProps = computed(() => {
-    const { class: _, variant, size, ...delegated } = props;
+    const { class: _, variant: _variant, size: _size, ...delegated } = props;
     return delegated;
 });
 </script>
