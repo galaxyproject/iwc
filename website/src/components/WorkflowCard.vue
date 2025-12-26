@@ -41,7 +41,7 @@ defineProps<{
             <!-- Body -->
             <CardContent :class="['flex-1 flex flex-col', compact ? 'px-3 py-2' : 'px-6 py-2']">
                 <div class="flex flex-col flex-grow">
-                    <p :class="`flex-grow ${compact ? 'text-sm line-clamp-6 mb-2' : 'mb-4'}`">
+                    <p :class="`flex-grow ${compact ? 'text-sm line-clamp-3 mb-2' : 'mb-4'}`">
                         {{ workflow.annotation }}
                     </p>
 
