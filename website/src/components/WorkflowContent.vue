@@ -55,7 +55,11 @@ async function createLandingPage() {
     }
 
     const job = testToRequestState();
-    const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow?.trsID!, `v${props.workflow?.definition.release}`);
+    if (!props.workflow?.trsID || !props.workflow?.definition.release) {
+        alert("Workflow information is incomplete");
+        return;
+    }
+    const trs_url = trsIdAndVersionToDockstoreUrl(props.workflow.trsID, `v${props.workflow.definition.release}`);
     // Normalize the URL to ensure it has a protocol
     const normalizedInstance = normalizeGalaxyUrl(selectedInstance.value) || selectedInstance.value;
 
@@ -84,7 +88,7 @@ async function createLandingPage() {
     }
 }
 
-const tools = computed(() => {
+const _tools = computed(() => {
     if (!props.workflow || !props.workflow.definition || !props.workflow.definition.steps) {
         return [];
     }
@@ -165,7 +169,7 @@ onMounted(() => {
         <!-- Main content area -->
         <div class="flex-1 min-w-0">
             <div class="p-4 mb-6">
-                <Tabs v-model="currentTab" @update:modelValue="onTabChange">
+                <Tabs v-model="currentTab" @update:model-value="onTabChange">
                     <!-- Tab List -->
                     <TabsList class="mb-4">
                         <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">
@@ -175,18 +179,18 @@ onMounted(() => {
 
                     <!-- About Tab -->
                     <TabsContent value="about" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'about')?.content || ''" />
+                        <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'about')?.content || ''" />
                     </TabsContent>
 
                     <!-- Diagram Tab -->
                     <TabsContent value="diagram" class="prose !max-w-none">
-                        <MarkdownRenderer :markdownContent="tabs.find((t) => t.value === 'diagram')?.content || ''" />
+                        <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'diagram')?.content || ''" />
                     </TabsContent>
 
                     <!-- Version History Tab -->
                     <TabsContent value="version-history" class="prose !max-w-none">
                         <MarkdownRenderer
-                            :markdownContent="tabs.find((t) => t.value === 'version-history')?.content || ''" />
+                            :markdown-content="tabs.find((t) => t.value === 'version-history')?.content || ''" />
                     </TabsContent>
 
                     <!-- How to Run Tab -->
@@ -194,35 +198,39 @@ onMounted(() => {
                         <h1>How to Run This Workflow</h1>
                         <p>There are multiple ways to run this workflow. Choose the method that suits your needs:</p>
 
-                        <div class="bg-gray-50 p-6 rounded-lg mb-8 not-prose">
-                            <h3 class="text-xl font-bold mb-4">Run in Galaxy</h3>
-                            <p class="mb-4">The easiest way to run this workflow is directly in a Galaxy instance:</p>
+                        <div class="bg-bay-of-many-50 p-6 rounded-lg mb-8 not-prose">
+                            <h3 class="text-xl font-bold mb-4 text-ebony-clay-900">Run in Galaxy</h3>
+                            <p class="mb-4 text-chicago-700">
+                                The easiest way to run this workflow is directly in a Galaxy instance:
+                            </p>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 1: Select a Galaxy instance</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 1: Select a Galaxy instance
+                                </h4>
                                 <GalaxyInstanceSelector v-model="selectedInstance" class="mb-4" />
-                                <div v-if="selectedInstance" class="text-sm text-gray-600">
+                                <div v-if="selectedInstance" class="text-sm text-chicago-600">
                                     Selected instance: <span class="font-medium">{{ selectedInstance }}</span>
                                 </div>
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 2: Choose how to run</h4>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 2: Choose how to run</h4>
                                 <div class="grid xl:grid-cols-2 gap-6">
-                                    <div class="border border-gray-300 rounded-lg p-4">
-                                        <h5 class="font-bold mb-2">Run with your own data</h5>
-                                        <p class="text-sm mb-4">
+                                    <div class="border border-bay-of-many-200 bg-white rounded-lg p-4 shadow-sm">
+                                        <h5 class="font-bold mb-2 text-ebony-clay-900">Run with your own data</h5>
+                                        <p class="text-sm mb-4 text-chicago-600">
                                             Import the workflow and fill in your own input parameters and datasets.
                                         </p>
                                         <Button as="a" :href="launchUrl" target="_blank"> Launch Workflow </Button>
                                     </div>
 
-                                    <div class="border border-gray-300 rounded-lg p-4">
-                                        <h5 class="font-bold mb-2">Run with example data</h5>
-                                        <p class="text-sm mb-4">
+                                    <div class="border border-bay-of-many-200 bg-white rounded-lg p-4 shadow-sm">
+                                        <h5 class="font-bold mb-2 text-ebony-clay-900">Run with example data</h5>
+                                        <p class="text-sm mb-4 text-chicago-600">
                                             Import the workflow with example datasets pre-filled, ready to launch.
                                         </p>
-                                        <Button @click="createLandingPage" variant="outline">
+                                        <Button variant="outline" @click="createLandingPage">
                                             Try with Example Data
                                         </Button>
                                     </div>
@@ -233,9 +241,9 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-6 rounded-lg not-prose">
-                            <h3 class="text-xl font-bold mb-4">Run with Planemo CLI</h3>
-                            <p class="mb-4">
+                        <div class="bg-ebony-clay-50 p-6 rounded-lg not-prose">
+                            <h3 class="text-xl font-bold mb-4 text-ebony-clay-900">Run with Planemo CLI</h3>
+                            <p class="mb-4 text-chicago-700">
                                 For advanced users and developers, you can run this workflow using the
                                 <a
                                     href="https://planemo.readthedocs.io/"
@@ -247,44 +255,56 @@ onMounted(() => {
                             </p>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 1: Install Planemo</h4>
-                                <p class="mb-2 text-sm">If you haven't already, install Planemo using pip:</p>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">Step 1: Install Planemo</h4>
+                                <p class="mb-2 text-sm text-chicago-600">
+                                    If you haven't already, install Planemo using pip:
+                                </p>
                                 <CodeBlock code="pip install planemo" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 2: Download the workflow</h4>
-                                <p class="mb-2 text-sm">Download the workflow .ga file:</p>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 2: Download the workflow
+                                </h4>
+                                <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
                                 <CodeBlock
                                     :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 3: Run the workflow tests</h4>
-                                <p class="mb-2 text-sm">Run the workflow tests with Planemo:</p>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 3: Run the workflow tests
+                                </h4>
+                                <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
                                     :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 4: Create workflow job file</h4>
-                                <p class="mb-2 text-sm">
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 4: Create workflow job file
+                                </h4>
+                                <p class="mb-2 text-sm text-chicago-600">
                                     Create a workflow job file with your input parameters and update the values to match
                                     your environment and run:
                                 </p>
                                 <CodeBlock :code="workflow_job_input" />
                             </div>
                             <div class="mb-6">
-                                <h4 class="text-lg font-medium mb-2">Step 5: Run the workflow with your data</h4>
-                                <p class="mt-2 mb-2 text-sm">Then run the workflow with your job file:</p>
+                                <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
+                                    Step 5: Run the workflow with your data
+                                </h4>
+                                <p class="mt-2 mb-2 text-sm text-chicago-600">
+                                    Then run the workflow with your job file:
+                                </p>
                                 <CodeBlock
                                     :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>
                         </div>
 
                         <div class="mt-8 not-prose">
-                            <h3 class="text-xl font-bold mb-4">Additional Resources</h3>
-                            <ul class="space-y-2">
+                            <h3 class="text-xl font-bold mb-4 text-ebony-clay-900">Additional Resources</h3>
+                            <ul class="space-y-2 text-chicago-700">
                                 <li>
                                     <a
                                         :href="dockstoreWorkflowPageUrl"
@@ -318,25 +338,29 @@ onMounted(() => {
 
         <!-- Right sidebar -->
         <div class="lg:w-1/4 lg:min-w-64">
-            <div class="sticky top-4 bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="font-bold text-xl mb-4">{{ workflow.definition.name }}</h2>
-                <p class="mb-4 text-gray-700">{{ workflow.definition.annotation }}</p>
-                <ul class="space-y-2 text-sm">
-                    <li><strong>Author(s):</strong></li>
-                    <li class="ml-2" v-for="author in workflow.authors" :key="author.name">
+            <div class="sticky top-4 bg-white border border-ebony-clay-100 rounded-lg p-6 shadow-sm">
+                <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-l-4 border-hokey-pokey-500 pl-3 -ml-3">
+                    {{ workflow.definition.name }}
+                </h2>
+                <p class="mb-4 text-chicago-700">
+                    {{ workflow.definition.annotation }}
+                </p>
+                <ul class="space-y-2 text-sm text-chicago-700">
+                    <li><strong class="text-ebony-clay-900">Author(s):</strong></li>
+                    <li v-for="author in workflow.authors" :key="author.name" class="ml-2">
                         <Author :author="author" />
                     </li>
-                    <li><strong>Release: </strong>{{ workflow.definition.release }}</li>
-                    <li><strong>Updated: </strong>{{ formatDate(workflow.updated) }}</li>
-                    <li><strong>License: </strong>{{ workflow.definition.license }}</li>
+                    <li><strong class="text-ebony-clay-900">Release: </strong>{{ workflow.definition.release }}</li>
+                    <li><strong class="text-ebony-clay-900">Updated: </strong>{{ formatDate(workflow.updated) }}</li>
+                    <li><strong class="text-ebony-clay-900">License: </strong>{{ workflow.definition.license }}</li>
                     <li v-if="workflow.doi">
-                        <strong>DOI: </strong>
+                        <strong class="text-ebony-clay-900">DOI: </strong>
                         <a :href="doiResolverUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
                             {{ workflow.doi }} ↗
                         </a>
                     </li>
                     <li>
-                        <strong>TRS: </strong>
+                        <strong class="text-ebony-clay-900">TRS: </strong>
                         <a
                             :href="dockstoreWorkflowPageUrl"
                             target="_blank"
@@ -345,14 +369,14 @@ onMounted(() => {
                         </a>
                     </li>
                 </ul>
-                <h3 class="font-bold text-l mt-4">Running this workflow</h3>
+                <h3 class="font-bold text-l mt-4 text-ebony-clay-900">Running this workflow</h3>
                 <GalaxyInstanceSelector v-model="selectedInstance" />
-                <p class="my-3 text-sm text-gray-600">Choose how you want to run this workflow:</p>
+                <p class="my-3 text-sm text-chicago-600">Choose how you want to run this workflow:</p>
                 <div class="mt-3 flex flex-col gap-3">
                     <Button as="a" :href="launchUrl" target="_blank" class="w-full"> Launch Workflow </Button>
-                    <Button @click="createLandingPage" variant="outline" class="w-full"> Try with Example Data </Button>
+                    <Button variant="outline" class="w-full" @click="createLandingPage"> Try with Example Data </Button>
                 </div>
-                <p class="mt-3 text-xs text-gray-500">
+                <p class="mt-3 text-xs text-chicago-500">
                     <strong>Launch Workflow:</strong> Import with your own data<br />
                     <strong>Try with Examples:</strong> Pre-filled demo datasets
                 </p>

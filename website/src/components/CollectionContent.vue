@@ -5,7 +5,6 @@ import Fuse from "fuse.js";
 import { allWorkflows, collectionSearchQuery } from "../stores/workflowStore";
 import WorkflowCard from "./WorkflowCard.vue";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
-import type { Workflow } from "../models/workflow";
 
 const props = defineProps<{
     collectionName: string;
@@ -94,7 +93,7 @@ onUnmounted(() => {
                 <div v-if="isLoading" class="min-h-[50px] flex items-center justify-center">
                     <span class="text-gray-500">Loading description...</span>
                 </div>
-                <MarkdownRenderer v-else-if="collectionDescription" :markdownContent="collectionDescription" />
+                <MarkdownRenderer v-else-if="collectionDescription" :markdown-content="collectionDescription" />
                 <div v-else class="text-gray-500">No description available for this collection.</div>
             </div>
         </div>

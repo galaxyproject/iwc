@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface Props extends ComboboxRootProps {
     class?: HTMLAttributes["class"];
-    filterFunction?: (items: any[], searchTerm: string) => any[];
+    filterFunction?: (items: unknown[], searchTerm: string) => unknown[];
 }
 
 const props = defineProps<Props>();
@@ -14,12 +14,12 @@ const emit = defineEmits(["update:modelValue"]);
 
 <template>
     <ComboboxRoot
-        :modelValue="props.modelValue"
-        @update:modelValue="emit('update:modelValue', $event)"
+        :model-value="props.modelValue"
         :class="cn('w-full', props.class)"
-        :filterFunction="props.filterFunction"
-        :displayValue="(item) => item"
-        v-bind="$attrs">
+        :filter-function="props.filterFunction"
+        :display-value="(item) => item"
+        v-bind="$attrs"
+        @update:model-value="emit('update:modelValue', $event)">
         <slot />
     </ComboboxRoot>
 </template>

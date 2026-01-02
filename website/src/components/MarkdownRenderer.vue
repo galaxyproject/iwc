@@ -130,14 +130,15 @@ function renderMermaidDiagrams() {
                                 svg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
                             }
 
-                            let lastMouseX = content.offsetWidth / 2;
-                            let lastMouseY = content.offsetHeight / 2;
+                            // Track mouse position for potential zoom-to-cursor feature
+                            let _lastMouseX = content.offsetWidth / 2;
+                            let _lastMouseY = content.offsetHeight / 2;
 
                             content.addEventListener("mousemove", (e) => {
                                 if (!isDragging) {
                                     const rect = content.getBoundingClientRect();
-                                    lastMouseX = e.clientX - rect.left;
-                                    lastMouseY = e.clientY - rect.top;
+                                    _lastMouseX = e.clientX - rect.left;
+                                    _lastMouseY = e.clientY - rect.top;
                                 }
                             });
 
@@ -308,7 +309,7 @@ function renderMermaidDiagrams() {
 </script>
 
 <template>
-    <div v-html="renderedHtml"></div>
+    <div v-html="renderedHtml" />
 </template>
 
 <style scoped>

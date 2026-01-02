@@ -10,6 +10,19 @@ export function formatDate(isoString: string): string {
 }
 
 /**
+ * Navigates to a collection page by converting the collection name to a URL slug.
+ *
+ * @param collection - The collection name to navigate to.
+ */
+export function navigateToCollection(collection: string): void {
+    const slug = collection
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+    window.location.href = `/collection/${slug}`;
+}
+
+/**
  * Normalizes a Galaxy instance URL by ensuring it has a valid protocol.
  * - Auto-prepends https:// to URLs without a protocol
  * - Preserves http:// for localhost/127.0.0.1 URLs
@@ -56,7 +69,7 @@ export function normalizeGalaxyUrl(url: string): string | null {
             return null;
         }
         return url;
-    } catch (e) {
+    } catch {
         // Invalid URL
         return null;
     }
