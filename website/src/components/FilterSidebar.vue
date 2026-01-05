@@ -80,7 +80,7 @@ const handleFilterClick = (filter: string) => {
 </script>
 
 <template>
-    <aside class="w-48 lg:w-56 shrink-0 pr-6">
+    <aside class="hidden md:block w-48 lg:w-56 shrink-0 pr-6">
         <div class="sticky top-4">
             <h3 class="text-xs font-semibold text-chicago-400 uppercase tracking-wider mb-3">Categories</h3>
 
