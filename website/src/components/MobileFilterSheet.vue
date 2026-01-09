@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { useStore } from "@nanostores/vue";
+import { ref, computed } from "vue";
 import {
     DialogRoot,
     DialogTrigger,
@@ -11,93 +10,23 @@ import {
     DialogClose,
 } from "radix-vue";
 import { Filter, X } from "lucide-vue-next";
-import { selectedFilters, toggleFilter, collectionToSlug, setFilterFromUrl } from "../stores/workflowStore";
+import { useFilterState } from "../composables/useFilterState";
 import type { SearchIndexEntry } from "../models/workflow";
 
 const props = defineProps<{
     workflows: SearchIndexEntry[];
 }>();
 
-const storeSelected = useStore(selectedFilters);
 const isOpen = ref(false);
 
-// Use local ref to avoid hydration mismatch
-const selected = ref<string[]>([]);
-const isHydrated = ref(false);
-
-// Compute collections from props
-const collections = computed(() => {
-    const collectionSet = new Set<string>();
-    for (const w of props.workflows) {
-        for (const c of w.collections) {
-            collectionSet.add(c);
-        }
-    }
-    return Array.from(collectionSet).sort();
+const { selected, collectionCounts, sortedCollections, handleFilterClick } = useFilterState({
+    workflows: props.workflows,
+    closeOnSelect: () => {
+        isOpen.value = false;
+    },
 });
 
-// Count workflows per collection
-const collectionCounts = computed(() => {
-    const counts: Record<string, number> = {};
-    for (const w of props.workflows) {
-        for (const c of w.collections) {
-            counts[c] = (counts[c] || 0) + 1;
-        }
-    }
-    return counts;
-});
-
-// Sort collections by workflow count (descending)
-const sortedCollections = computed(() => {
-    return [...collections.value].sort((a, b) => {
-        return (collectionCounts.value[b] || 0) - (collectionCounts.value[a] || 0);
-    });
-});
-
-// Button label shows active filter or default text
-const buttonLabel = computed(() => {
-    if (selected.value.length > 0) {
-        return selected.value[0];
-    }
-    return "Filter by category";
-});
-
-onMounted(() => {
-    setFilterFromUrl();
-    selected.value = storeSelected.value;
-    isHydrated.value = true;
-});
-
-// Keep local ref in sync with store
-selectedFilters.subscribe((value) => {
-    if (isHydrated.value) {
-        selected.value = value;
-    }
-});
-
-const handleFilterClick = (filter: string) => {
-    const currentPath = window.location.pathname;
-
-    if (currentPath === "/") {
-        const wasSelected = selected.value.includes(filter);
-        toggleFilter(filter);
-
-        const params = new URLSearchParams(window.location.search);
-        if (wasSelected) {
-            params.delete("filter");
-        } else {
-            params.set("filter", filter);
-        }
-
-        const newUrl = params.toString() ? `?${params.toString()}` : "/";
-        window.history.pushState({}, "", newUrl);
-    } else {
-        window.location.href = `/collection/${collectionToSlug(filter)}`;
-    }
-
-    // Close the sheet after selection
-    isOpen.value = false;
-};
+const buttonLabel = computed(() => selected.value[0] ?? "Filter by category");
 </script>
 
 <template>
