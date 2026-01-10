@@ -7,12 +7,18 @@
             "class": "Person",
             "identifier": "0000-0001-6553-5274",
             "name": "Peter van Heusden"
+        },
+        {
+            "class": "Organization",
+            "name": "South African National Bioinformatics Institute, University of the Western Cape",
+            "url": "https://www.sanbi.ac.za"
         }
     ],
     "format-version": "0.1",
+    "help": "",
     "license": "AGPL-3.0-or-later",
-    "name": "TB Variant Analysis v1.5.2 - Mycobacterium kraken2 DB",
-    "readme": "# M. tuberculosis variant analysis\n\nThis workflow computes variants and drug resistance reports from M. tuberculosis short read data.",
+    "name": "TB Variant Analysis v1.5.2",
+    "readme": "# M. tuberculosis variant analysis\n\nThis workflow computes variants and drug resistance reports from M. tuberculosis short read data. It is recommended to use the M. tuberculosis inferred ancestral sequence as a reference. A copy in Genbank format can be downloaded [here](https://zenodo.org/records/3960260/files/Mycobacterium_tuberculosis_ancestral_reference.gbk).\n\n## Inputs\n\n1. Per-sample reads as a list of pairs.\n\n2. Reference genome sequence\n\n3. Minimum depth of coverage to analyse a position on a genome (default: 10)\n\n4. Minimum allele fraction to support a variant (default: 0.8)\n\n5. Fraction of the genome with min depth required to complete analysis (default: 0.9)\n\n6. Additional BWA-MEM options (a string value). These can be used to fine-tune the operation of BWA-MEM within snippy.\n\n## Steps \n\nThe workflow follows the following steps:\n\n1.  Reads are quality-filtered using [fastp](https://github.com/OpenGene/fastp), contaminants are removed by filtering using [kraken2](https://github.com/DerrickWood/kraken2?tab=readme-ov-file) and the [Mycobacterium representative database](https://zenodo.org/records/8339822).\n\n2. Filtered reads are mapped to the reference genome and variants are called using [snippy](https://github.com/tseemann/snippy). Only variants with a minimum allelle frequency (a workflow parameter, set to 0.8 i.e. 80% by default) are retained.\n\n3. Depth of coverage of the alignment is computed using [mosdepth](https://github.com/brentp/mosdepth). This depth calculation is used to compute what proportion of the genome is covered by a minimum depth of reads. Both of these parameters can be set as workflow inputs, with minimum depth of coverage set to 10 by default and fraction of the genome that needs to be covered with min depth set to 0.9 (90%). After mapping, the input samples are filtered to only continue analysis with those samples that pass minimum mapping criteria.\n\n4. Quality control metrics from the read filtering and mapping are combined to create a report using [MultiQC](https://github.com/MultiQC/MultiQC).\n\n5. Variants are filtered using [tb_variant_filter](https://github.com/COMBAT-TB/tb_variant_filter) to exclude those in problematic regions of the M. tuberculosis region (e.g. PE/PPE genes).\n\n6. Drug resistance and lineage prediction is performed using [TB-Profiler](https://github.com/jodyphelan/TBProfiler).\n\n7. For each input sample, a genome is computed by (a) filtering variants to retain only single nucleotide variants and remove those in problematic regions of the genome (b) masking the reference genome to replace regions of low mapping coverage with Ns (c) inserting the computed variants into the masked reference genome. These genomes are suitable for later phylogenetic and cluster analysis. A SNP distance matrix between all input samples, with and without the reference genome included, is computed.\n\n8. A report on all variants in each sample is prepared using [tbvcfreport](https://github.com/COMBAT-TB/tbvcfreport). This links back to further information in the COMBAT TB eXplorer database.\n\n## Workflow outputs\n\nThe key workflow outputs are:\n\n1. Quality Control Report produced by MultiQC along with a report on which samples had sufficient mapped reads to be analysed further.\n\n2. TB Profiler drug resistance and lineage reports. In addition to the per-sample reports a combined report is also generated collating information from all samples.\n\n3. Per-sample annotated and filtered variants in VCF format.\n\n4. A user-friend (HTML format) per sample report on variants and drug resistance.\n\n5. Per-sample genomes with single nucleotide variants included and low coverage regions masked. These are provided both as a collection and as a single multi-record FASTA file.\n\n6. SNP distance matrices calculated between the per-sample genomes, with and without the reference sequence included in the analysis.\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -1084,7 +1090,7 @@
                 {
                     "label": "multiqc_stats",
                     "output_name": "stats",
-                    "uuid": "3fc2f7eb-9175-4dba-b095-bcbf95b8b8e2"
+                    "uuid": "5d189f3e-bb0d-4c7d-a4ac-31e1b5772f4a"
                 },
                 {
                     "label": "html_report",
@@ -1385,14 +1391,14 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "results_json",
-                    "output_name": "results_json",
-                    "uuid": "d68f1fb8-f80e-40bc-982a-269d48b586f8"
-                },
-                {
                     "label": "output_txt",
                     "output_name": "output_txt",
                     "uuid": "335635b4-a4de-4980-ad02-68f0035daeaa"
+                },
+                {
+                    "label": "results_json",
+                    "output_name": "results_json",
+                    "uuid": "d68f1fb8-f80e-40bc-982a-269d48b586f8"
                 }
             ]
         },
@@ -1600,7 +1606,7 @@
                 {
                     "label": "output_tabular",
                     "output_name": "output_tabular",
-                    "uuid": "08d828e3-b71c-48cf-ba07-f649d31d3fa5"
+                    "uuid": "1556314e-67ef-458c-adac-b546e40b64c3"
                 },
                 {
                     "label": "output_variants",
@@ -1827,14 +1833,14 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "drug_resistance_report_html",
-                    "output_name": "drug_resistance_report_html",
-                    "uuid": "959528d2-f8f2-4440-99cf-44fddd6c5069"
-                },
-                {
                     "label": "variants_report_html",
                     "output_name": "variants_report_html",
                     "uuid": "4d9636eb-075b-4fd2-a1e4-1a7c37a17fc0"
+                },
+                {
+                    "label": "drug_resistance_report_html",
+                    "output_name": "drug_resistance_report_html",
+                    "uuid": "959528d2-f8f2-4440-99cf-44fddd6c5069"
                 }
             ]
         },
@@ -1954,13 +1960,13 @@
             "tool_uuid": null,
             "tool_version": "9.5+galaxy2",
             "type": "tool",
-            "uuid": "23d0aa29-eb8a-435a-b816-a3089c1b2926",
+            "uuid": "24cfbc1f-0066-49a9-8abf-e3914775a05f",
             "when": null,
             "workflow_outputs": [
                 {
                     "label": "Concatenated consensus sequences with reference",
                     "output_name": "out_file1",
-                    "uuid": "840d7cbe-18fd-474c-841d-3ec2b1e72aab"
+                    "uuid": "1ec99716-dbb4-43ba-8e21-d12e4b86d029"
                 }
             ]
         },
@@ -2008,13 +2014,13 @@
             "tool_uuid": null,
             "tool_version": "0.8.2+galaxy0",
             "type": "tool",
-            "uuid": "3eae2d7b-f176-4aa8-9f0b-2074f40f87f2",
+            "uuid": "92d89d13-65e1-4ee8-a5da-25915bba7b4c",
             "when": null,
             "workflow_outputs": [
                 {
                     "label": "snp_dists",
                     "output_name": "output",
-                    "uuid": "147fbec0-d858-49f9-972a-9260401bd3fd"
+                    "uuid": "a6de829d-13a7-4f8c-ad5c-9c9ef29f2ef5"
                 }
             ]
         },
@@ -2068,7 +2074,7 @@
                 {
                     "label": "snp_dists_with_reference",
                     "output_name": "output",
-                    "uuid": "aaff74df-81ad-4fbf-9097-bb5edb93f72e"
+                    "uuid": "8e5887f3-1e04-413a-915d-b08878540347"
                 }
             ]
         }
@@ -2078,6 +2084,6 @@
         "tuberculosis",
         "name:microgalaxy"
     ],
-    "uuid": "ebb15f1b-2072-43f2-bf05-2749d5ae42f4",
-    "version": 24
+    "uuid": "6d86f073-d3d4-411c-a33e-3fc79de5ea21",
+    "version": 27
 }
