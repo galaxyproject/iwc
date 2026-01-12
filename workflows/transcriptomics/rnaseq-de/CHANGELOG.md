@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6] - 2026-01-12
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy2`
+
 ## [0.5] - 2025-12-08
 
 ### Automatic update
