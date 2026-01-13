@@ -8,7 +8,6 @@ This workflow uses paired-end illumina fastq(.gz) files and executes the followi
 2. Taxonomic assignment on contigs
    - **Kraken2** assignment
    - **Bracken** to re-estimate abundance to the species level
-   - **Recentrifuge** to make a krona chart
 3. Aggregating outputs into a single JSON file
    - **ToolDistillator** to extract and aggregate information from different tool outputs to JSON parsable files
 
@@ -27,4 +26,4 @@ This workflow uses paired-end illumina fastq(.gz) files and executes the followi
    - Tabular file with assigned read to a taxonomic level
    - Krona chart to illustrate species diversity of the sample
 3. Aggregating outputs:
-   - JSON file with information about the outputs of **Quast, Checkm2**, **Kraken2**, **Bracken**, **Recentrifuge**
+   - JSON file with information about the outputs of **Quast, Checkm2**, **Kraken2**, **Bracken**

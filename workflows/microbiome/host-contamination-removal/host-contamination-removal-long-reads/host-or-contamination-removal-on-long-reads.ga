@@ -1,0 +1,454 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow takes Nanopore fastq(.gz) files and runs Minimap2 to map the reads against a reference genome (human, by default). It filters the output to keep only the unmapped reads and generates mapping statistics that are aggregated into a MultiQC report.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-2982-388X",
+            "name": "Paul Zierep"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0001-9852-1987",
+            "name": "Bérénice Batut"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "Host or Contamination Removal on Long-Reads",
+    "readme": "# Host or Contamination removal on long-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes Nanopore fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Minimap 2**,\n2. Filtering of the generated BAM using **BAMtools** and **Samtools** to keep only the reads that do not align,\n3. Generation of mapping statistics using **QualiMap**,\n2. Aggregation of the mapping statistics using **MultiQC**\n\n## Input Datasets\n\n- A list of datasets corresponding to reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n- Profile for mapping\n\n## Output Datasets\n\n- A list of datasets corresponding to unmapped reads in `fastqsanger` or `fastqsanger.gz`.\n- A list of reports of QualiMap for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "Reads not mapping to this reference genome will be kept.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Reads not mapping to this reference genome will be kept.",
+                    "name": "Host/Contaminant Reference Genome (long-reads)"
+                }
+            ],
+            "label": "Host/Contaminant Reference Genome (long-reads)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "b88baf2c-7b71-414c-9840-3365a6bb8a27",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Long-reads as a collection of fastqsanger(.gz) files",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Long-reads as a collection of fastqsanger(.gz) files",
+                    "name": "Long-reads"
+                }
+            ],
+            "label": "Long-reads",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 160
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "380f0855-f80f-4dc0-a9df-9e93db63186b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Each profile comes with the preconfigured settings mentioned in parentheses. You can customize each profile further in the indexing, mapping and alignment options sections below. If you do not select a profile here, the tool will use the per-parameter defaults listed in the below sections unless you customize them.",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Each profile comes with the preconfigured settings mentioned in parentheses. You can customize each profile further in the indexing, mapping and alignment options sections below. If you do not select a profile here, the tool will use the per-parameter defaults listed in the below sections unless you customize them.",
+                    "name": "Profile of preset options for the mapping (long-read)"
+                }
+            ],
+            "label": "Profile of preset options for the mapping (long-read)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 300
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "b765c0c9-10b8-4395-8bd6-7b3141489c00",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "fastq_input|analysis_type_selector": {
+                    "id": 2,
+                    "output_name": "output"
+                },
+                "fastq_input|fastq_input1": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "reference_source|ref_file": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map with minimap2",
+                    "name": "fastq_input"
+                },
+                {
+                    "description": "runtime parameter for tool Map with minimap2",
+                    "name": "fastq_input"
+                },
+                {
+                    "description": "runtime parameter for tool Map with minimap2",
+                    "name": "reference_source"
+                }
+            ],
+            "label": "minimap2",
+            "name": "Map with minimap2",
+            "outputs": [
+                {
+                    "name": "alignment_output",
+                    "type": "bam"
+                }
+            ],
+            "position": {
+                "left": 300,
+                "top": 140
+            },
+            "post_job_actions": {
+                "HideDatasetActionalignment_output": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "alignment_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "539de907fd99",
+                "name": "minimap2",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"alignment_options\": {\"splicing\": {\"splice_mode\": \"preset\", \"__current_case__\": 0}, \"A\": null, \"B\": null, \"O\": null, \"O2\": null, \"E\": null, \"E2\": null, \"z\": null, \"z2\": null, \"s\": null, \"no_end_flt\": true}, \"fastq_input\": {\"fastq_input_selector\": \"single\", \"__current_case__\": 0, \"fastq_input1\": {\"__class__\": \"ConnectedValue\"}, \"analysis_type_selector\": {\"__class__\": \"ConnectedValue\"}}, \"indexing_options\": {\"H\": false, \"k\": null, \"w\": null, \"I\": null}, \"io_options\": {\"output_format\": \"BAM\", \"Q\": false, \"L\": false, \"K\": null, \"cs\": null, \"c\": false, \"eqx\": false, \"Y\": false}, \"mapping_options\": {\"N\": null, \"F\": null, \"f\": null, \"kmer_ocurrence_interval\": {\"interval\": \"\", \"__current_case__\": 1}, \"min_occ_floor\": null, \"q_occ_frac\": \"0.01\", \"g\": null, \"r\": null, \"n\": null, \"m\": null, \"max_chain_skip\": null, \"max_chain_iter\": null, \"X\": false, \"p\": null, \"mask_len\": null}, \"reference_source\": {\"reference_source_selector\": \"cached\", \"__current_case__\": 0, \"ref_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.28+galaxy2",
+            "type": "tool",
+            "uuid": "b43a7f78-e9d5-49ab-98c9-070514036269",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Generation of mapping statistics",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/2.3+galaxy0",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input1": {
+                    "id": 3,
+                    "output_name": "alignment_output"
+                }
+            },
+            "inputs": [],
+            "label": "QualiMap",
+            "name": "QualiMap BamQC",
+            "outputs": [
+                {
+                    "name": "raw_data",
+                    "type": "input"
+                },
+                {
+                    "name": "output_html",
+                    "type": "html"
+                }
+            ],
+            "position": {
+                "left": 561.8009561567164,
+                "top": 126.87561946128731
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_html": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_html"
+                },
+                "HideDatasetActionraw_data": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "raw_data"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/2.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "30a201c9c310",
+                "name": "qualimap_bamqc",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"duplicate_skipping\": \"0\", \"input1\": {\"__class__\": \"ConnectedValue\"}, \"per_base_coverage\": false, \"plot_specific\": {\"n_bins\": \"400\", \"paint_chromosome_limits\": true, \"genome_gc_distr\": null, \"homopolymer_size\": \"3\"}, \"stats_regions\": {\"region_select\": \"all\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.3+galaxy0",
+            "type": "tool",
+            "uuid": "ff81b1f0-47ef-4a70-b23b-a009aeb0711b",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "QualiMap Statistics",
+                    "output_name": "raw_data",
+                    "uuid": "7df71ec2-03a9-4385-9a24-d57b2ad3360d"
+                }
+            ]
+        },
+        "5": {
+            "annotation": "Split BAM into mapped and unmapped",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_mapped/bamtools_split_mapped/2.5.2+galaxy2",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input_bam": {
+                    "id": 3,
+                    "output_name": "alignment_output"
+                }
+            },
+            "inputs": [],
+            "label": "Split BAM",
+            "name": "Split BAM by reads mapping status",
+            "outputs": [
+                {
+                    "name": "mapped",
+                    "type": "bam"
+                },
+                {
+                    "name": "unmapped",
+                    "type": "bam"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 370
+            },
+            "post_job_actions": {
+                "HideDatasetActionmapped": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "mapped"
+                },
+                "HideDatasetActionunmapped": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "unmapped"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_mapped/bamtools_split_mapped/2.5.2+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "fa7b5520ae53",
+                "name": "bamtools_split_mapped",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_bam\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.5.2+galaxy2",
+            "type": "tool",
+            "uuid": "56141fe0-3b82-4005-8035-9369f30511d5",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "Prepare QualiMap stats for MultiQC",
+            "content_id": "__FLATTEN__",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input": {
+                    "id": 4,
+                    "output_name": "raw_data"
+                }
+            },
+            "inputs": [],
+            "label": "Flatten collection",
+            "name": "Flatten collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 838.3582089552239,
+                "top": 78.05970149253731
+            },
+            "post_job_actions": {},
+            "tool_id": "__FLATTEN__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "0b98eb14-0255-4f48-8497-4f7f9d97bc35",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "QualiMap mapping statistics",
+                    "output_name": "output",
+                    "uuid": "1944f8cc-e22e-4dec-a8da-325bb3165e8b"
+                }
+            ]
+        },
+        "7": {
+            "annotation": "Extractions of FastQ from the unmapped reads",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fastx/samtools_fastx/1.22+galaxy1",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input": {
+                    "id": 5,
+                    "output_name": "unmapped"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Samtools fastx",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 900,
+                "top": 390
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Reads without host or contamination reads"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fastx/samtools_fastx/1.22+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "491037bfc0d2",
+                "name": "samtools_fastx",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"copy_arb_tags\": null, \"copy_tags\": false, \"exclusive_filter\": [\"256\", \"2048\"], \"exclusive_filter_all\": null, \"idxout_cond\": {\"idxout_select\": \"no\", \"__current_case__\": 0}, \"inclusive_filter\": null, \"input\": {\"__class__\": \"ConnectedValue\"}, \"output_fmt_cond\": {\"output_fmt_select\": \"fastqsanger\", \"__current_case__\": 0, \"default_quality\": null, \"output_quality\": false, \"ilumina_casava\": false}, \"outputs\": \"other\", \"read_numbering\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.22+galaxy1",
+            "type": "tool",
+            "uuid": "2e9642e7-4404-4d9b-9530-912c62a7a665",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Reads without Host or Contamination",
+                    "output_name": "output",
+                    "uuid": "1a82e66c-24c1-43f9-9c3c-121bdb895f74"
+                }
+            ]
+        },
+        "8": {
+            "annotation": "Aggregation of the mapping statistics for all samples",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "results_0|software_cond|input": {
+                    "id": 6,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool MultiQC",
+                    "name": "image_content_input"
+                }
+            ],
+            "label": "MultiQC",
+            "name": "MultiQC",
+            "outputs": [
+                {
+                    "name": "html_report",
+                    "type": "html"
+                },
+                {
+                    "name": "stats",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1078.5173740671642,
+                "top": 129.26367916277985
+            },
+            "post_job_actions": {
+                "HideDatasetActionstats": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "stats"
+                },
+                "RenameDatasetActionhtml_report": {
+                    "action_arguments": {
+                        "newname": "MultiQC HTML report"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "html_report"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4",
+            "tool_shed_repository": {
+                "changeset_revision": "e4dd4c0622f6",
+                "name": "multiqc",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"qualimap\", \"__current_case__\": 20, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Host/Contamination Removal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.27+galaxy4",
+            "type": "tool",
+            "uuid": "9bfa844d-9fee-4589-8568-80070c6c6479",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "MultiQC HTML Report",
+                    "output_name": "html_report",
+                    "uuid": "62e6de76-2033-413e-9f5c-7f97a3e1741d"
+                }
+            ]
+        }
+    },
+    "tags": [
+        "microbiome",
+        "contamination",
+        "long_reads"
+    ],
+    "uuid": "01c0f5e3-07cb-42c6-af3a-e77249c6b6ba",
+    "version": 1,
+    "release": "0.2"
+}

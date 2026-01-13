@@ -166,7 +166,20 @@ If your tests are not passing because you made an error into your test file you 
 planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 ```
 
-Note: If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
+##### Use build-in indexes
+
+If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
+The .loc files that tells Galaxy how to use the build-in indexes are stored in http://datacache.galaxyproject.org/indexes/location/.
+
+###### Example: Using the Bowtie2 Index for the Human Reference Genome (hg38)
+
+To use the Bowtie2 index for the human reference genome in a workflow, check the following .loc file: http://datacache.galaxyproject.org/indexes/location/bowtie2_indices.loc.
+The .loc entry looks like
+```
+hg38	hg38	Human (Homo sapiens) (b38): hg38	/cvmfs/data.galaxyproject.org/byhand/hg38/hg38full/bowtie2_index/hg38full
+```
+On usegalaxy.org (also using CVMFS), the display name for the hg38 genome is `Human (Homo sapiens) (b38): hg38`. The corresponding value that is required by the tool can be found in the .loc file. E.g. for `Human (Homo sapiens) (b38): hg38` it will be `hg38` - the value in the first column. 
+Note: what column is used as value depends on the tool and needs to be checked in the `tool_data_table_conf.xml` of the tool. In case of bowtie2: https://github.com/galaxyproject/tools-iuc/blob/main/tools/bowtie2/tool_data_table_conf.xml.sample
 
 #### Add required metadata
 
@@ -232,6 +245,10 @@ The workflows submitted to iwc are updated automatically. We describe here where
       - If there is a closed PR with the same title. Then everything is cancelled.
       - If a PR was already opened, the title is updated (but the CHANGELOG has not been updated).
       - If no PR was opened, a new PR is opened.
+
+## Reviews
+
+Your PR will be reviewed by an IWC member as soon as possible, following the guidelines in https://github.com/galaxyproject/iwc/blob/main/.github/PULL_REQUEST_TEMPLATE.md. To speed up reviews please familiarize with this checklist. A claude slash command is available to automate part of the review process, use `/review <pr number>` to run it.
 
 ### FAQ
 - A workflow has not been updated while it has tools that have newer versions available?

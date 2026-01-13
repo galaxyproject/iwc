@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4] - 2025-10-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.18` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.19`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.21+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.5` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.7`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.20+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.21+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2`
+
 ## [0.3] - 2025-03-17
 
 ### Automatic update

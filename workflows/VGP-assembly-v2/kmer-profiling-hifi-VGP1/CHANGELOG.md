@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.7] - 2025-11-10
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/meryl_count_kmers/meryl_count_kmers/1.3+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl_count_kmers/meryl_count_kmers/1.4.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/meryl_groups_kmers/meryl_groups_kmers/1.3+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl_groups_kmers/meryl_groups_kmers/1.4.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/meryl_histogram_kmers/meryl_histogram_kmers/1.3+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/meryl_histogram_kmers/meryl_histogram_kmers/1.4.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy7`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy7`
+- `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.0.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/genomescope/genomescope/2.1.0+galaxy0`
+
+
+## [0.6] - 2025-10-30
+
+## Changes
+- Mash QC now only runs if there are multiple samples
+- Unhide the Genomescope model output
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mash_sketch/mash_sketch/2.3+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.1.3.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.2.0+galaxy1`
+
+
+## [0.5] - 2025-10-01
+
+# Changes
+
+- Add Mash QC 
+
 ## [0.4] - 2025-08-25
 
 ### Automatic update

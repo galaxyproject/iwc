@@ -1,5 +1,57 @@
 # Changelog
 
+## [3.3] - 2025-12-10
+
+## Changes
+- Show PretextMap files in history for easier export. 
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.21+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.7` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.8`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.7` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.8`
+
+
+## [3.2] - 2025-11-10
+
+### Changes
+- Report now use static plots for better imports
+- Fix typos in tags and workflow labels
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/imagemagick_image_montage/imagemagick_image_montage/7.1.2-2+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4`
+
+## [3.1] - 2025-09-26
+
+### Changes
+
+- Duplications and alignments statistics now applied to alignements before filtering
+- Add duplications statistics on scaffold alignments
+- Remove BUSCO for QC, replaced by Compleasm
+
+
+### Updates
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/yahs/yahs/1.2a.2+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/1.1.3+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pairtools_parse/pairtools_parse/1.1.3+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3`
+
+
+
+## [3.0] - 2025-09-24
+
+### Changes
+
+- Now remove duplicated Hi-C reads
+- Duplication statistics
+- Improved report
+
+
 ## [2.2] - 2025-09-01
 
 ### Automatic update

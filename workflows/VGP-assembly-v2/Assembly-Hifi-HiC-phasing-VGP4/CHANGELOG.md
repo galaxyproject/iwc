@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5] - 2025-10-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4`
+
+## [0.4] - 2025-09-30
+
+### Changes
+
+- Remove BUSCO for QC, replace with Compleasm summary.
+- Improved report.
+
+## [0.3.13] - 2025-09-29
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3`
+
 ## [0.3.12] - 2025-09-01
 
 ### Automatic update

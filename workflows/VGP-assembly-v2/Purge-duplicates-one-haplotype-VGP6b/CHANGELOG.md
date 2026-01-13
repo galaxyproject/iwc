@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8.4] - 2025-09-29
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3`
+
 ## [0.8.3] - 2025-08-11
 
 ### Automatic update

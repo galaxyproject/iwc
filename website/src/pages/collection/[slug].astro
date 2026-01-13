@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import IWCHeader from "../../components/IWCHeader.astro";
+import CollectionHero from "../../components/CollectionHero.vue";
+import CollectionContent from "../../components/CollectionContent.vue";
+import { loadManifest, getAllCollections } from "../../utils/manifest";
+
+export async function getStaticPaths() {
+    const collections = await loadManifest();
+    const allCollections = getAllCollections(collections);
+
+    return allCollections.map((collection) => {
+        const slug = collection.toLowerCase().replace(/ /g, "-");
+        return {
+            params: { slug },
+            props: { collectionName: collection },
+        };
+    });
+}
+
+const { slug } = Astro.params;
+const { collectionName } = Astro.props;
+
+const baseUrl = "https://iwc.galaxyproject.org";
+const title = `${collectionName} - Intergalactic Workflow Commission`;
+const description = `Discover ${collectionName} workflows - Ready-to-use, open-source pipelines with sample data and training materials`;
+const ogDescription = `Discover ${collectionName} workflows on Galaxy`;
+---
+
+<BaseLayout
+    title={title}
+    description={description}
+    hasHero={true}
+    ogTitle={title}
+    ogDescription={ogDescription}
+    ogImage={`${baseUrl}/iwc_logo.png`}
+    ogType="website"
+    twitterCard="summary"
+    twitterTitle={title}
+    twitterDescription={ogDescription}
+    twitterImage={`${baseUrl}/iwc_logo.png`}>
+    <IWCHeader slot="header" />
+
+    <div slot="hero">
+        <div class="bg-ebony-clay">
+            <div class="flex p-4 items-center" style="flex-direction: column">
+                <h1 class="text-4xl my-8 text-white text-center font-bold">{collectionName} Workflows</h1>
+            </div>
+            <CollectionHero collectionName={collectionName} showBackLink={true} client:only="vue" />
+        </div>
+    </div>
+
+    <CollectionContent slot="content" collectionName={collectionName} client:only="vue" />
+</BaseLayout>
+
+<script>
+    // Initialize workflow collections
+    import { setWorkflowCollections } from "../../stores/workflowStore";
+
+    fetch("/workflow_manifest.json")
+        .then((res) => res.json())
+        .then((collections) => {
+            setWorkflowCollections(collections);
+        });
+</script>

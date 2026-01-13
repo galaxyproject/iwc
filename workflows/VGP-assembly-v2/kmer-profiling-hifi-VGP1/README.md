@@ -2,7 +2,7 @@
 
 This workflow produces a Meryl database and Genomescope outputs that will be used to determine parameters for following workflows, and assess the quality of genome assemblies. Specifically, it provides information about the genomic complexity, such as the genome size and levels of heterozygosity and repeat content, as well about the data quality. It also provides statistics on the PacBio Hifi reads. 
 
-### Inputs
+## Inputs
 
 1. The name of the species being assembled
 2. The Name of the assembly
@@ -10,20 +10,19 @@ This workflow produces a Meryl database and Genomescope outputs that will be use
 4. *k*-mer length
 5. Ploidy
 
-### Outputs
+## Outputs
 
--   Meryl Database of *k*-mer counts
--   GenomeScope
-    -   Linear plot
-    -   Log plot
-    -   Transformed linear plot
-    -   Transformed log plot
-    -   Summary
-    -   Model
-    -   Model parameteres
+- Meryl Database of *k*-mer counts
+- GenomeScope
+    - Linear plot
+    - Log plot
+    - Transformed linear plot
+    - Transformed log plot
+    - Summary
+    - Model
+    - Model parameteres
 - RDeval for PacBio Hifi Reads QC
-    -   Reads statistics
-    -   HTML report
+    - Reads statistics
+    - HTML report
+- Mash QC, heatmap of distance between Hifi datasets
   
-
- ![image](https://github.com/galaxyproject/iwc/assets/4291636/565238fc-f8a9-46ac-8b31-6276410fa436)

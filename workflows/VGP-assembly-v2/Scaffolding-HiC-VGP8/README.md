@@ -26,9 +26,9 @@ Example of VGP trajectory :
 1. Scaffolds in [fasta] and [gfa] format with the haplotype in the scaffold names.
 2. If you selected `yes` for Hi-C trimming, the trimmed collections of Hi-C reads.
 3. QC: Assembly statistics.
-4. QC: Nx plot.
-5. QC: Size plot.
-6. QC: BUSCO report.
+4. QC: Hi-C duplications statistics.
+5. QC: Nx plot.
+6. QC: Size plot.
 7. QC: Compleasm report.
 8. QC: Pretext Maps before and after scaffolding.
 9. QC: Statistics on Hi-C alignements before and after scaffolding
