@@ -1,6 +1,6 @@
 # Changelog
 
 
-## [0.1]- 2026-01-09
+## [0.1] - 2026-01-15
 
-- First release of the Metagenomic Taxonomy Analysis.
+- First release
