@@ -16,6 +16,8 @@ The following processing steps are then performed:
 - **Abundance Estimation** per sample with CoverM
 - **AMR detection** with ABRicate, AMRFinderPlus and starAMR
 
+Specific focus is placed on the functions and taxonomies associated with contigs on which an antibiotic resistance gene is detected.
+
 ## Input Requirements
 
 Input reads must be quality-filtered, with host reads removed.
