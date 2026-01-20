@@ -1,21 +1,18 @@
 # core genome Multilocus Sequence Typing (cgMLST) of Bacterial Genome workflow
 
-This workflow uses assembled bacterial genome fasta files (but can be any fasta file) and executes the following steps:
+This workflow performs core genome multilocus sequence typing (cgMLST) on contigs corresponding to one bacterial genome to characterize bacterial strains using curated reference schemes by:
 
-1. cgMLST analysis on contigs
-   - **CoreProfiler** to assign cgMLST allele profiles from bacterial genome assemblies using curated reference schemes
-2. Aggregating outputs into a single JSON file
-   - **ToolDistillator** to extract and aggregate information from different tool outputs to JSON parsable files
+1. Assignment of a cgMLST allele profile on contigs using **CoreProfiler** and curated reference schemes (from pubMLST,  BIGSdb, Enterobase, or cgMLST.org) 
+2. Extraction and aggregation of outputs into a single JSON file using **ToolDistillator**
 
 ## Inputs
 
-1. Assembled bacterial genome in fasta format.
+1. Contigs of one assembled bacterial genome in FASTA format.
 
 ## Outputs
 
-1. core genome MLST (cgMLST) results:
+1. core genome MLST (cgMLST) results as:
    - Tabular allele profile for each locus
    - FASTA file of newly detected alleles
    - JSON file with information on temporary alleles
-2. Aggregating outputs:
-   - JSON file with information about the outputs of **CoreProfiler**
+2. Aggregated outputs as a JSON file with information about the outputs of **CoreProfiler**
