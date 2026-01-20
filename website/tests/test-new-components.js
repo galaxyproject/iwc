@@ -49,7 +49,7 @@ async function testComponents() {
     console.log("\n=== TESTING SHADCN-VUE SELECT ===\n");
 
     // Find the Select component trigger
-    const selectTrigger = await page.locator('[role="combobox"]').first();
+    const selectTrigger = page.locator('[role="combobox"]').first();
     if (selectTrigger) {
         console.log("✓ Found Select component with proper ARIA role");
 
