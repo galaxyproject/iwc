@@ -1,0 +1,459 @@
+{
+    "name": "main",
+    "subclass": "Galaxy",
+    "publish": true,
+    "primaryDescriptorPath": "/cgmlst_bacterial_genome.ga",
+    "testParameterFiles": [
+        "/cgmlst_bacterial_genome-tests.yml"
+    ],
+    "authors": [
+        {
+            "name": "ABRomics",
+            "email": "abromics-support@groupes.france-bioinformatique.fr"
+        },
+        {
+            "name": "abromics-consortium",
+            "url": "https://www.abromics.fr/"
+        },
+        {
+            "name": "Clea Siguret",
+            "alternateName": "clsiguret",
+            "orcid": "0009-0005-6140-0379"
+        },
+        {
+            "name": "Hugo Lefeuvre",
+            "orcid": "0009-0005-6834-4058"
+        }
+    ],
+    "definition": {
+        "a_galaxy_workflow": "true",
+        "annotation": "This workflow performs core genome multilocus sequence typing (cgMLST) on contigs corresponding to one bacterial genome to characterize bacterial strains using curated reference schemes.",
+        "comments": [],
+        "creator": [
+            {
+                "class": "Person",
+                "email": "mailto:abromics-support@groupes.france-bioinformatique.fr",
+                "name": "ABRomics"
+            },
+            {
+                "class": "Organization",
+                "name": "abromics-consortium",
+                "url": "https://www.abromics.fr/"
+            },
+            {
+                "alternateName": "clsiguret",
+                "class": "Person",
+                "identifier": "https://orcid.org/0009-0005-6140-0379",
+                "name": "Clea Siguret"
+            },
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0009-0005-6834-4058",
+                "name": "Hugo Lefeuvre"
+            }
+        ],
+        "format-version": "0.1",
+        "license": "GPL-3.0-or-later",
+        "release": "1.0",
+        "name": "core genome Multilocus Sequence Typing (cgMLST) of bacterial genome",
+        "report": {
+            "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+        },
+        "steps": {
+            "0": {
+                "annotation": "The input for this workflow is a single FASTA file containing contigs of one bacterial genome.",
+                "content_id": null,
+                "errors": null,
+                "id": 0,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "The input for this workflow is a single FASTA file containing contigs of one bacterial genome.",
+                        "name": "Bacterial genome contigs"
+                    }
+                ],
+                "label": "Bacterial genome contigs",
+                "name": "Input dataset",
+                "outputs": [],
+                "position": {
+                    "left": 0.26469375345623,
+                    "top": 196.09455010051596
+                },
+                "tool_id": null,
+                "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null}",
+                "tool_version": null,
+                "type": "data_input",
+                "uuid": "4ae2b445-3fbd-4396-a02c-2c11d927bd3a",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "1": {
+                "annotation": "Reference Allele Scheme (from pubMLST,  BIGSdb, Enterobase, or cgMLST.org) that will be used by CoreProfiler to compare the contigs to and identify corresponding alleles.",
+                "content_id": null,
+                "errors": null,
+                "id": 1,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "Reference Allele Scheme (from pubMLST,  BIGSdb, Enterobase, or cgMLST.org) that will be used by CoreProfiler to compare the contigs to and identify corresponding alleles.",
+                        "name": "Reference Allele Scheme"
+                    }
+                ],
+                "label": "Reference Allele Scheme",
+                "name": "Input parameter",
+                "outputs": [],
+                "position": {
+                    "left": 0,
+                    "top": 372.6880185775282
+                },
+                "tool_id": null,
+                "tool_state": "{\"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+                "tool_version": null,
+                "type": "parameter_input",
+                "uuid": "3f3d899d-1401-4926-b0ec-e368831de6f9",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "2": {
+                "annotation": "Identifies alleles in contigs by comparing them to a reference allele scheme by detecting both exact matches to known alleles and potential novel alleles using a two-step BLAST-based approach.",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/coreprofiler_allele_calling/coreprofiler_allele_calling/2.0.0+galaxy2",
+                "errors": null,
+                "id": 2,
+                "input_connections": {
+                    "input_file": {
+                        "id": 0,
+                        "output_name": "output"
+                    },
+                    "input_scheme": {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool CoreProfiler allele_calling",
+                        "name": "input_file"
+                    }
+                ],
+                "label": "CoreProfiler",
+                "name": "CoreProfiler allele_calling",
+                "outputs": [
+                    {
+                        "name": "output_file",
+                        "type": "tabular"
+                    },
+                    {
+                        "name": "profiles_w_tmp_alleles",
+                        "type": "json"
+                    },
+                    {
+                        "name": "outfa",
+                        "type": "fasta"
+                    }
+                ],
+                "position": {
+                    "left": 578.9833984375,
+                    "top": 0
+                },
+                "post_job_actions": {
+                    "RenameDatasetActionnum_alleles_per_locus": {
+                        "action_arguments": {
+                            "newname": "CoreProfiler allele counts per locus"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "num_alleles_per_locus"
+                    },
+                    "RenameDatasetActionoutfa": {
+                        "action_arguments": {
+                            "newname": "Newly detected alleles by CoreProfiler"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "outfa"
+                    },
+                    "RenameDatasetActionoutput_file": {
+                        "action_arguments": {
+                            "newname": "CoreProfiler allele calling report file"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "output_file"
+                    },
+                    "RenameDatasetActionprofiles_w_tmp_alleles": {
+                        "action_arguments": {
+                            "newname": "Information about temporary alleles found by CoreProfiler"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "profiles_w_tmp_alleles"
+                    },
+                    "TagDatasetActionoutfa": {
+                        "action_arguments": {
+                            "tags": "coreprofiler_allele_calling_fasta"
+                        },
+                        "action_type": "TagDatasetAction",
+                        "output_name": "outfa"
+                    },
+                    "TagDatasetActionoutput_file": {
+                        "action_arguments": {
+                            "tags": "coreprofiler_allele_calling_report"
+                        },
+                        "action_type": "TagDatasetAction",
+                        "output_name": "output_file"
+                    },
+                    "TagDatasetActionprofiles_w_tmp_alleles": {
+                        "action_arguments": {
+                            "tags": "coreprofiler_allele_calling_tmp_json"
+                        },
+                        "action_type": "TagDatasetAction",
+                        "output_name": "profiles_w_tmp_alleles"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/coreprofiler_allele_calling/coreprofiler_allele_calling/2.0.0+galaxy2",
+                "tool_shed_repository": {
+                    "changeset_revision": "b781bb77a985",
+                    "name": "coreprofiler_allele_calling",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"autotag_section\": {\"autotag_word_size\": \"31\"}, \"input_file\": {\"__class__\": \"RuntimeValue\"}, \"input_scheme\": {\"__class__\": \"ConnectedValue\"}, \"scannew_section\": {\"min_id_new_allele\": \"90\", \"min_cov_new_allele\": \"90\", \"min_cov_incomplete\": \"70\", \"detailed\": true, \"cds\": true, \"output_selection\": [\"profiles_w_tmp_alleles_output\", \"outfa_output\"]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "2.0.0+galaxy2",
+                "type": "tool",
+                "uuid": "5c34ded7-d94a-4c2e-b6eb-9f0bfcd64ab6",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "CoreProfiler allele calling report",
+                        "output_name": "output_file",
+                        "uuid": "001fe205-8dae-4d73-970f-5e11ed5ab2f9"
+                    },
+                    {
+                        "label": "Newly detected alleles by CoreProfiler",
+                        "output_name": "outfa",
+                        "uuid": "03ab3d5e-04b0-4cbc-b423-82e8ea36849b"
+                    },
+                    {
+                        "label": "Information about temporary alleles found by CoreProfiler",
+                        "output_name": "profiles_w_tmp_alleles",
+                        "uuid": "910a65ed-a8c1-4b95-9bb8-85405e668d16"
+                    }
+                ]
+            },
+            "3": {
+                "annotation": "Extracts results from tool outputs and creates a JSON file for each tool",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0",
+                "errors": null,
+                "id": 3,
+                "input_connections": {
+                    "tool_section|tools_0|select_tool|alleles_fna_path": {
+                        "id": 2,
+                        "output_name": "outfa"
+                    },
+                    "tool_section|tools_0|select_tool|input": {
+                        "id": 2,
+                        "output_name": "output_file"
+                    },
+                    "tool_section|tools_0|select_tool|profiles_json_path": {
+                        "id": 2,
+                        "output_name": "profiles_w_tmp_alleles"
+                    },
+                    "tool_section|tools_0|select_tool|reference_database_version": {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": "ToolDistillator extraction",
+                "name": "ToolDistillator",
+                "outputs": [
+                    {
+                        "name": "output_json",
+                        "type": "input"
+                    }
+                ],
+                "position": {
+                    "left": 1081.75,
+                    "top": 136.5
+                },
+                "post_job_actions": {
+                    "RenameDatasetActionoutput_json": {
+                        "action_arguments": {
+                            "newname": "Extracted cgMLST results by ToolDistillator"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "output_json"
+                    },
+                    "TagDatasetActionoutput_json": {
+                        "action_arguments": {
+                            "tags": "tooldistillator_results_cgmlst"
+                        },
+                        "action_type": "TagDatasetAction",
+                        "output_name": "output_json"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "9f1c8dc0253e",
+                    "name": "tooldistillator",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"log\": false, \"tool_section\": {\"tools\": [{\"__index__\": 0, \"select_tool\": {\"tool_list\": \"coreprofiler\", \"__current_case__\": 9, \"input\": {\"__class__\": \"ConnectedValue\"}, \"profiles_json_path\": {\"__class__\": \"ConnectedValue\"}, \"alleles_fna_path\": {\"__class__\": \"ConnectedValue\"}, \"origin\": {\"origin\": \"false\", \"__current_case__\": 1}, \"reference_database_version\": {\"__class__\": \"ConnectedValue\"}}}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "1.0.4+galaxy0",
+                "type": "tool",
+                "uuid": "a60e8ace-5b11-435e-85c4-c1bb67d9dfeb",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "Extracted cgMLST results by ToolDistillator",
+                        "output_name": "output_json",
+                        "uuid": "708bee01-1fcf-4da6-85aa-b56de388327c"
+                    }
+                ]
+            },
+            "4": {
+                "annotation": "Summarizes several ToolDistillator JSON files into a unique JSON file",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1",
+                "errors": null,
+                "id": 4,
+                "input_connections": {
+                    "summarize_data": {
+                        "id": 3,
+                        "output_name": "output_json"
+                    }
+                },
+                "inputs": [],
+                "label": "ToolDistillator summarize",
+                "name": "ToolDistillator Summarize",
+                "outputs": [
+                    {
+                        "name": "summary_json",
+                        "type": "json"
+                    }
+                ],
+                "position": {
+                    "left": 1415.185414301885,
+                    "top": 403.2341710586666
+                },
+                "post_job_actions": {
+                    "RenameDatasetActionsummary_json": {
+                        "action_arguments": {
+                            "newname": "Summarized cgMLST ToolDistillator results"
+                        },
+                        "action_type": "RenameDatasetAction",
+                        "output_name": "summary_json"
+                    },
+                    "TagDatasetActionsummary_json": {
+                        "action_arguments": {
+                            "tags": "tooldistillator_summarize_cgmlst"
+                        },
+                        "action_type": "TagDatasetAction",
+                        "output_name": "summary_json"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1",
+                "tool_shed_repository": {
+                    "changeset_revision": "3d0223265277",
+                    "name": "tooldistillator_summarize",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"summarize_data\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                "tool_version": "1.0.0+galaxy1",
+                "type": "tool",
+                "uuid": "8583c19c-3520-42d8-a776-af5a09f54db5",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "Summarized cgMLST ToolDistillator results",
+                        "output_name": "summary_json",
+                        "uuid": "208bd650-48c2-4a18-9807-e818272b8bb0"
+                    }
+                ]
+            }
+        },
+        "tags": [
+            "Genomics",
+            "fasta",
+            "ABRomics",
+            "bacterial-genomics",
+            "cgMLST",
+            "allele-calling",
+            "typing",
+            "core-genome MLST",
+            "genotyping",
+            "core genome multilocus sequence typing"
+        ],
+        "uuid": "89d3386f-e826-417b-b078-6d9ed20aa5cf",
+        "version": 12
+    },
+    "workflow_job_input": {
+        "Bacterial genome contigs": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "Reference Allele Scheme": "todo_param_value"
+    },
+    "readme": "# core genome Multilocus Sequence Typing (cgMLST) of Bacterial Genome workflow\n\nThis workflow performs core genome multilocus sequence typing (cgMLST) on contigs corresponding to one bacterial genome to characterize bacterial strains using curated reference schemes by:\n\n1. Assignment of a cgMLST allele profile on contigs using **CoreProfiler** and curated reference schemes (from pubMLST,  BIGSdb, Enterobase, or cgMLST.org) \n2. Extraction and aggregation of outputs into a single JSON file using **ToolDistillator**\n\n## Inputs\n\n1. Contigs of one assembled bacterial genome in FASTA format.\n\n## Outputs\n\n1. core genome MLST (cgMLST) results as:\n   - Tabular allele profile for each locus\n   - FASTA file of newly detected alleles\n   - JSON file with information on temporary alleles\n2. Aggregated outputs as a JSON file with information about the outputs of **CoreProfiler**\n",
+    "changelog": "# Changelog\n\n## [1.0] - 2025-12-18\n\n- First release",
+    "diagrams": "# Workflow diagrams\n\n## core genome Multilocus Sequence Typing (cgMLST) of bacterial genome\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Bacterial genome contigs\"]@{ shape: doc }\n1[\"\u2139\ufe0f Reference Allele Scheme\"]@{ shape: lean-l }\n2[\"CoreProfiler\"]@{ shape: process }\n0 --> 2\n1 --> 2\n3[\"ToolDistillator extraction\"]@{ shape: process }\n2 --> 3\n2 --> 3\n2 --> 3\n1 --> 3\n4[\"ToolDistillator summarize\"]@{ shape: process }\n3 --> 4\n```\n",
+    "updated": "2025-12-18T00:00:00",
+    "trsID": "#workflow/github.com/iwc-workflows/cgmlst-bacterial-genome/main",
+    "iwcID": "cgmlst-bacterial-genome-main",
+    "dockstore_id": 35068,
+    "categories": [],
+    "collections": [],
+    "doi": "10.5281/zenodo.18311509",
+    "tests": [
+        {
+            "doc": "Test outline for cgmlst_bacterial_genome.ga",
+            "job": {
+                "Bacterial genome contigs": {
+                    "class": "File",
+                    "location": "https://zenodo.org/records/16779020/files/E-coli3_S194.fasta",
+                    "filetype": "fasta"
+                },
+                "Reference Allele Scheme": "coreprofiler_downloaded_2026-01-15-escherichia_v1-cgMLST-2513-enterobase-no_token"
+            },
+            "outputs": {
+                "CoreProfiler allele calling report": {
+                    "asserts": {
+                        "has_text": {
+                            "text": "AEJV01_03887"
+                        },
+                        "has_n_columns": {
+                            "n": 2514
+                        }
+                    }
+                },
+                "Newly detected alleles by CoreProfiler": {
+                    "asserts": {
+                        "has_text": {
+                            "text": ">"
+                        }
+                    }
+                },
+                "Information about temporary alleles found by CoreProfiler": {
+                    "asserts": {
+                        "has_text": {
+                            "text": "tmp_loci"
+                        }
+                    }
+                },
+                "Summarized cgMLST ToolDistillator results": {
+                    "asserts": [
+                        {
+                            "that": "has_text",
+                            "text": "coreprofiler_report"
+                        },
+                        {
+                            "that": "has_text",
+                            "text": "profiles_w_tmp_alleles"
+                        },
+                        {
+                            "that": "has_text",
+                            "text": "new_alleles_fna"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
