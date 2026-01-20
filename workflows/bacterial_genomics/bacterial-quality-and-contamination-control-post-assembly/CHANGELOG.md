@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3] - 2025-12-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.0.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.1.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.1.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.1+galaxy0`
+
 ## [1.0.2] - 2025-12-01
 
 ### Automatic update
