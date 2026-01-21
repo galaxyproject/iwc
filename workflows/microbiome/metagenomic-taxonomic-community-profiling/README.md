@@ -1,10 +1,10 @@
-# Metagenomics Community Profiling
+# Metagenomic Community Profiling
 
-From metagenomics short-read quality-controlled and host/contaminant removed data, this workflow performs taxonomic profiling using multiple state-of-the-art tools, standardizes the generated outputs, and generates visualizations. 
+This workflow performs taxonomic profiling on metagenomic short-read quality-controlled and host/contaminant removed data using multiple state-of-the-art tools, standardizes the generated outputs, and generates visualizations.
 
 ## Inputs
 
-- Paired collection of **FastQ files** containing **metagenomics short-read data** after quality control and host/contamination removal
+- Paired collection of **FastQ files** containing **metagenomic short-read data** after quality control and host/contamination removal
 - **Reference databases** for the different taxonomy profiling tools
 
 ## Workflow Overview
@@ -23,7 +23,7 @@ From metagenomics short-read quality-controlled and host/contaminant removed dat
 
 ## Outputs
 
-- Taxonomic profiles (Kraken2, Kraken2 + Bracken, MetaPhlAn, SYLPh)
+- Taxonomic profiles (Kraken2, Kraken2 + Bracken, MetaPhlAn, sylph)
 - Standardized taxonomy tables (TaxPasta)
 - Krona interactive plots
 - MultiQC HTML report
