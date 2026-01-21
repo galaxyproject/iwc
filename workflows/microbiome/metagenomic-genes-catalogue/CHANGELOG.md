@@ -14,6 +14,7 @@
 
 ### Added
 
+* Addition of a Boolean variable allowing users to choose whether they want a global gene catalog analysis or one specific to antibiotic resistance.
 * Added retrieval of contig IDs for antibiotic resistance and virulence genes retrieved with starAMR and ABRicate.
 
 ## [1.1] - 2025-12-08
