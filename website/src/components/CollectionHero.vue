@@ -20,7 +20,7 @@ const collectionWorkflows = computed(() =>
 </script>
 
 <template>
-    <div class="w-full p-4 bg-ebony-clay text-center">
+    <div class="w-full p-4 text-center relative z-10">
         <h2 class="text-lg text-white font-semibold mb-4">
             Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in this
             collection
