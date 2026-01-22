@@ -337,7 +337,7 @@ onMounted(() => {
         </div>
 
         <!-- Right sidebar -->
-        <div class="lg:w-1/4 lg:min-w-64">
+        <div class="lg:w-80 xl:w-96 2xl:w-1/4 shrink-0">
             <div class="sticky top-4 bg-white border border-ebony-clay-100 rounded-lg p-6 shadow-sm">
                 <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-b-2 border-hokey-pokey-500 pb-2">
                     {{ workflow.definition.name }}
