@@ -12,7 +12,6 @@ const props = defineProps<{
 }>();
 
 const workflows = useStore(allWorkflows);
-const searchQuery = useStore(collectionSearchQuery);
 const mode = useStore(viewMode);
 const localSearchQuery = ref("");
 
@@ -107,7 +106,10 @@ onUnmounted(() => {
             <p class="text-gray-500 text-lg">No workflows found matching your search.</p>
             <button
                 class="text-blue-600 hover:text-blue-800 underline mt-2 inline-block"
-                @click="localSearchQuery = ''; collectionSearchQuery.set('')">
+                @click="
+                    localSearchQuery = '';
+                    collectionSearchQuery.set('');
+                ">
                 Clear search
             </button>
         </div>
@@ -117,12 +119,19 @@ onUnmounted(() => {
             v-else-if="mode === 'list'"
             id="workflows"
             class="flex flex-col border border-ebony-clay-100 rounded-xl overflow-hidden shadow-sm">
-            <WorkflowListItem v-for="workflow in filteredWorkflows" :key="workflow.definition.uuid" :workflow="workflow" />
+            <WorkflowListItem
+                v-for="workflow in filteredWorkflows"
+                :key="workflow.definition.uuid"
+                :workflow="workflow" />
         </div>
 
         <!-- Grid View -->
         <div v-else id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <WorkflowCard v-for="workflow in filteredWorkflows" :key="workflow.definition.uuid" :workflow="workflow" compact />
+            <WorkflowCard
+                v-for="workflow in filteredWorkflows"
+                :key="workflow.definition.uuid"
+                :workflow="workflow"
+                compact />
         </div>
     </div>
 </template>
