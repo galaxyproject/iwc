@@ -6,7 +6,6 @@ import { allWorkflows, collectionSearchQuery, viewMode } from "../stores/workflo
 import WorkflowCard from "./WorkflowCard.vue";
 import WorkflowListItem from "./WorkflowListItem.vue";
 import ViewToggle from "./ViewToggle.vue";
-import MarkdownRenderer from "./MarkdownRenderer.vue";
 
 const props = defineProps<{
     collectionName: string;
@@ -15,27 +14,7 @@ const props = defineProps<{
 const workflows = useStore(allWorkflows);
 const searchQuery = useStore(collectionSearchQuery);
 const mode = useStore(viewMode);
-const collectionDescription = ref<string | null>(null);
-const isLoading = ref(false);
 const localSearchQuery = ref("");
-
-// Load collection description
-async function loadCollectionDescription(collection: string) {
-    isLoading.value = true;
-    try {
-        const response = await fetch(`/category-descriptions/${collection.toLowerCase().replace(/ /g, "-")}.md`);
-        if (response.ok) {
-            collectionDescription.value = await response.text();
-        } else {
-            collectionDescription.value = null;
-        }
-    } catch (error) {
-        collectionDescription.value = null;
-        console.error(`Error fetching description for ${collection}:`, error);
-    } finally {
-        isLoading.value = false;
-    }
-}
 
 // Filter workflows by the selected collection
 const collectionWorkflows = computed(() =>
@@ -88,8 +67,6 @@ const handleSearchInput = (e: Event) => {
 };
 
 onMounted(() => {
-    loadCollectionDescription(props.collectionName);
-
     // Initialize view mode from localStorage
     const savedViewMode = localStorage.getItem("iwc-view-mode");
     if (savedViewMode === "list" || savedViewMode === "grid") {
@@ -105,18 +82,6 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <!-- Description box -->
-        <div class="w-full my-4 p-4 bg-white rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-4">About {{ collectionName }}</h2>
-            <div class="prose !max-w-none">
-                <div v-if="isLoading" class="min-h-[50px] flex items-center justify-center">
-                    <span class="text-gray-500">Loading description...</span>
-                </div>
-                <MarkdownRenderer v-else-if="collectionDescription" :markdown-content="collectionDescription" />
-                <div v-else class="text-gray-500">No description available for this collection.</div>
-            </div>
-        </div>
-
         <!-- Search input -->
         <div class="mb-4">
             <input
