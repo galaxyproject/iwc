@@ -6,16 +6,10 @@
 
 * `toolshed.g2.bx.psu.edu/repos/recetox/table_pandas_rename_column/table_pandas_rename_column/2.2.3+galaxy0` should be updated to `toolshed.g2.bx.psu.edu/repos/recetox/table_pandas_rename_column/table_pandas_rename_column/2.2.3+galaxy1`
 
-### Changed
-
-* Contig IDs become uniquely named immediately after assembly using the sample name with the `Add input name as column tool`.
-* Contig IDs are retrieved without CDS information so that information on the entire contig is retrieved, not just the CDS of antibiotic resistance genes.
-* The results from eggnogmapper and mmsesq2taxonomy are filtered on a unique set of contig IDs corresponding to those where an antibiotic resistance gene is detected.
-
 ### Added
 
-* Addition of a Boolean variable allowing users to choose whether they want a global gene catalog analysis or one specific to antibiotic resistance.
-* Added retrieval of contig IDs for antibiotic resistance and virulence genes retrieved with starAMR and ABRicate.
+* Addition of a Boolean variable allowing users to choose whether users want a full genes catalog analysis or one specific to antibiotic resistance.
+* Added a workflow to retrieve the contig IDs and CDSs of antibiotic resistance genes, and to filter genes present on the same contigs as antibiotic resistance genes (if the Boolean value is False).
 
 ## [1.1] - 2025-12-08
 
