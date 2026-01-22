@@ -10,7 +10,7 @@ After assembly, CDS are detected from resulting contigs with **Prodigal**
 
 Then, depending on your choice of Boolean, this will lead to two different analyses :
 
-If the **Boolean is True** for the complete genes catalog :
+If the **Boolean is True** for the complete genes catalog:
 
 All the potential genes are clustered with **MMseqs2linclust**
 
@@ -21,7 +21,7 @@ The following processing steps are then performed on the full clustered genes ca
 - **Abundance Estimation** per sample with CoverM
 - **AMR detection** with ABRicate, AMRFinderPlus and starAMR
 
-If the **Boolean is False** for the complete genes catalog, a specific focus is placed on the functions and taxonomies associated with contigs on which an antibiotic resistance gene is detected. :
+If the **Boolean is False** for the complete genes catalog, a specific focus is placed on the functions and taxonomies associated with contigs on which an antibiotic resistance gene is detected.
 
 This will initiate the construction of a genes catalogue specific to **antibiotic resistance genes (ARGs)**.
 
