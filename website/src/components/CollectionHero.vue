@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useStore } from "@nanostores/vue";
-import { allWorkflows, collectionSearchQuery } from "../stores/workflowStore";
+import { allWorkflows } from "../stores/workflowStore";
 
 const props = defineProps<{
     collectionName: string;
@@ -15,16 +15,6 @@ const collectionWorkflows = computed(() =>
         workflow.collections.some((col) => col.toLowerCase() === props.collectionName.toLowerCase()),
     ),
 );
-
-// Wire up the static search input to the store
-onMounted(() => {
-    const searchInput = document.getElementById("collection-search") as HTMLInputElement;
-    if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
-            collectionSearchQuery.set((e.target as HTMLInputElement).value);
-        });
-    }
-});
 </script>
 
 <template>
