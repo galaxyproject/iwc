@@ -1,23 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useStore } from "@nanostores/vue";
-import { allWorkflows } from "../stores/workflowStore";
+import { ref, onMounted } from "vue";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
 
 const props = defineProps<{
     collectionName: string;
 }>();
 
-const workflows = useStore(allWorkflows);
 const collectionDescription = ref<string | null>(null);
 const isLoading = ref(true);
-
-// Filter workflows by the selected collection
-const collectionWorkflows = computed(() =>
-    workflows.value.filter((workflow) =>
-        workflow.collections.some((col) => col.toLowerCase() === props.collectionName.toLowerCase()),
-    ),
-);
 
 // Load collection description
 async function loadCollectionDescription(collection: string) {
@@ -42,18 +32,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="text-center">
-        <h2 class="text-lg text-white font-semibold mb-4">
-            <span v-if="collectionWorkflows.length > 0">
-                Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in
-                this collection
-            </span>
-            <span v-else class="opacity-70">Loading workflows...</span>
-        </h2>
-
-        <!-- Description -->
-        <div v-if="!isLoading && collectionDescription" class="max-w-4xl mx-auto mb-6">
-            <div class="prose prose-invert prose-sm !max-w-none text-white/90">
+    <div>
+        <!-- Description card with gold accent -->
+        <div
+            v-if="!isLoading && collectionDescription"
+            class="max-w-4xl mx-auto mb-6 bg-white border border-ebony-clay-100 rounded-lg shadow-md px-6 py-4 text-left">
+            <div class="prose prose-lg !max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
                 <MarkdownRenderer :markdown-content="collectionDescription" />
             </div>
         </div>
