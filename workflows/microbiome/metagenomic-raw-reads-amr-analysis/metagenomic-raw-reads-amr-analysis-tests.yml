@@ -1,0 +1,95 @@
+- doc: Test outline for metagenomic-raw-reads-amr-analysis workflow
+  job:
+    Metagenomics Reads after Quality Control and Host/Contamination Removal:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: raw_reads_metag_test
+        elements:
+          - class: File
+            identifier: forward
+            location: https://zenodo.org/records/17895994/files/PSM6XBT3_500k_R1.fastq.gz
+          - class: File
+            identifier: reverse
+            location: https://zenodo.org/records/17895994/files/PSM6XBT3_500k_R2.fastq.gz
+    Taxonomy Profiling Database for Sylph: sylph_downloaded_12122025_OceanDNA-c200-v0.3.syldb
+    Taxonomic Information Database for Sylph: sylph_tax_downloaded_08112025
+    ARG Database for DeepARG: deeparg_1.0.4-07112025
+    ARG Database for Groot: arg-annot.90-1.1.2-08112025
+    ARG Database used by Groot for ARGnorm: groot-argannot
+    Minimum probability for considering a reads as ARG-like in deepARG: '0.8'
+    Average Read Length for Groot: '100'
+    Coverage Threshold for Groot to Report an ARG: '0.6'
+  outputs:
+    Sylph Taxonomy Profiling:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "Taxonomic_abundance"
+          has_n_columns:
+            n: 15
+    Sylph Merge Taxonomy:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "clade_name"
+          has_n_columns:
+            n: 2
+    DeepARG Mapping ARG (>min probability):
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "#ARG"
+          has_n_columns:
+            n: 4
+    Groot Report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "argannot~~~(Bla)cfxA2~~~AF504910:1-966"
+            has_n_columns:
+              n: 4
+    argNorm Groot Report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_text:
+              text: "ARO:3003002"
+            has_n_columns:
+              n: 1
+    argNorm DeepARG Report:
+      element_tests:
+        raw_reads_metag_test:
+          has_text:
+            text: "#ARG"
+          has_n_columns:
+            n: 4
+    Tooldistillator Summarize:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            - that: has_text
+              text: "groot_report"
+            - that: has_text
+              text: "sylph_report"
+            - that: has_text
+              text: "sylphtax_report"
+            - that: has_text
+              text: "argnorm_report"
+            - that: has_text
+              text: "deeparg_report"
+            - that: has_text
+              text: "sylph-tax.sylphmpa_file"
+    MultiQC report:
+      asserts:
+        - that: has_text
+          text: "multiqc"
+        - that: has_text
+          text: "sylphtax"
+        - that: has_text
+          text: "DeepARG"
+        - that: has_text
+          text: "Groot"
