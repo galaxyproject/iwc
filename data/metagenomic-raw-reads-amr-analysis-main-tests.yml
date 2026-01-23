@@ -1,0 +1,97 @@
+- doc: Test outline for metagenomic-raw-reads-amr-analysis workflow
+  job:
+    ARG Database for DeepARG: deeparg_1.0.4-07112025
+    ARG Database for Groot: arg-annot.90-1.1.2-08112025
+    ARG Database used by Groot for ARGnorm: groot-argannot
+    Average Read Length for Groot: '100'
+    Coverage Threshold for Groot to Report an ARG: '0.6'
+    Metagenomics Reads after Quality Control and Host/Contamination Removal:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://zenodo.org/records/17895994/files/PSM6XBT3_500k_R1.fastq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://zenodo.org/records/17895994/files/PSM6XBT3_500k_R2.fastq.gz
+        identifier: raw_reads_metag_test
+        type: paired
+    Minimum probability for considering a reads as ARG-like in deepARG: '0.8'
+    Taxonomic Information Database for Sylph: sylph_tax_downloaded_08112025
+    Taxonomy Profiling Database for Sylph: sylph_downloaded_12122025_OceanDNA-c200-v0.3.syldb
+  outputs:
+    DeepARG Mapping ARG (>min probability):
+      element_tests:
+        raw_reads_metag_test:
+          has_n_columns:
+            n: 4
+          has_text:
+            text: '#ARG'
+    Groot Report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_n_columns:
+              n: 4
+            has_text:
+              text: argannot~~~(Bla)cfxA2~~~AF504910:1-966
+    MultiQC report:
+      asserts:
+      - text: multiqc
+        that: has_text
+      - text: sylphtax
+        that: has_text
+      - text: DeepARG
+        that: has_text
+      - text: Groot
+        that: has_text
+    Sylph Merge Taxonomy:
+      element_tests:
+        raw_reads_metag_test:
+          has_n_columns:
+            n: 2
+          has_text:
+            text: clade_name
+    Sylph Taxonomy Profiling:
+      element_tests:
+        raw_reads_metag_test:
+          has_n_columns:
+            n: 15
+          has_text:
+            text: Taxonomic_abundance
+    Tooldistillator Summarize:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+          - text: groot_report
+            that: has_text
+          - text: sylph_report
+            that: has_text
+          - text: sylphtax_report
+            that: has_text
+          - text: argnorm_report
+            that: has_text
+          - text: deeparg_report
+            that: has_text
+          - text: sylph-tax.sylphmpa_file
+            that: has_text
+    argNorm DeepARG Report:
+      element_tests:
+        raw_reads_metag_test:
+          has_n_columns:
+            n: 4
+          has_text:
+            text: '#ARG'
+    argNorm Groot Report:
+      element_tests:
+        raw_reads_metag_test:
+          asserts:
+            has_n_columns:
+              n: 1
+            has_text:
+              text: ARO:3003002
