@@ -22,7 +22,7 @@ This workflow performs taxonomic assignment for an input OTU/ASV (Operating Taxo
   5. Run the classifier on the amplicon Representative Sequences to assign taxonomy to the sample ASVs using **qiime2 feature-classifier classify-sklearn**.
   6. Create a summary visualisation of the taxonomy assigned to the sample dataset using **qiime2 taxa barplot**.
   7. Export the assigned taxonomy table from a QIIME2 artefact to `tsv` using **qiime2 tools export**.
-  8. Convert the output `tsv` table to `tabular` format using **Convert tabular to CSV** and **Convert CSV to tablubar** (requires intermediate conversion to `csv`).
+  8. Convert the output `tsv` table to `tabular` format using **Convert tabular to CSV** and **Convert CSV to tabular** (requires intermediate conversion to `csv`).
   9. Convert the `biom2` Feature Table to `tabular` using **Convert between BIOM table formats**.
   10. Combine the ASV taxonomy assignment and Feature Table `tabular` datasets using **Remove beginning** and **Join**. 
   11. Convert the combined OTU/ASV table from `tabular` to `csv` format using **Convert tabular to CSV**.
