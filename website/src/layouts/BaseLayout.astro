@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import "@fontsource/atkinson-hyperlegible/400.css";
 import "@fontsource/atkinson-hyperlegible/700.css";
 import "@fontsource/atkinson-hyperlegible/400-italic.css";
@@ -61,26 +62,32 @@ const {
 
         <link rel="icon" type="image/png" href="/iwc_logo_white.png" />
 
+        <!-- Enable client-side navigation with view transitions -->
+        <ClientRouter />
+
         <!-- Allow pages to inject additional head content (e.g., JSON-LD structured data) -->
         <slot name="head" />
     </head>
     <body class="min-h-dvh flex flex-col bg-chicago-50 font-sans">
-        <!-- Header component will go here -->
-        <header>
-            <slot name="header" />
-        </header>
+        {
+            hasHero ? (
+                <div class="header-hero-container relative">
+                    <header>
+                        <slot name="header" />
+                    </header>
+                    <div>
+                        <slot name="hero" />
+                    </div>
+                </div>
+            ) : (
+                <header class="header-container relative">
+                    <slot name="header" />
+                </header>
+            )
+        }
 
         <main class="flex-1 flex">
             <div class="w-full">
-                <!-- Hero section if provided -->
-                {
-                    hasHero && (
-                        <div>
-                            <slot name="hero" />
-                        </div>
-                    )
-                }
-
                 <div class="flex flex-col md:flex-row">
                     <!-- Left sidebar if provided -->
                     {
@@ -92,7 +99,7 @@ const {
                     }
 
                     <!-- Main content -->
-                    <div class="flex-1 px-4 md:px-8 py-4">
+                    <div class="flex-1 min-w-0 px-4 md:px-8 py-4">
                         <slot name="content">
                             <slot />
                         </slot>
@@ -113,3 +120,22 @@ const {
         <IWCFooter />
     </body>
 </html>
+
+<style>
+    .header-hero-container,
+    .header-container {
+        background: linear-gradient(to bottom, #2c3143 0%, #1a1f2e 100%);
+    }
+
+    .header-hero-container::before,
+    .header-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 24px 24px;
+        pointer-events: none;
+    }
+</style>

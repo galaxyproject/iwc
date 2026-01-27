@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { SearchIndexEntry } from "../models/workflow";
+import { computed } from "vue";
+import type { SearchIndexEntry, Workflow } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
@@ -7,14 +8,39 @@ import CardContent from "./ui/CardContent.vue";
 import Badge from "./ui/Badge.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
-defineProps<{
-    workflow: SearchIndexEntry;
+const props = defineProps<{
+    workflow: SearchIndexEntry | Workflow;
     compact?: boolean;
 }>();
+
+// Handle both SearchIndexEntry (flat name) and Workflow (definition.name) types
+const workflowName = computed(() => {
+    const w = props.workflow as Record<string, unknown>;
+    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).name) {
+        return (w.definition as Record<string, string>).name;
+    }
+    return w.name as string;
+});
+
+const workflowAnnotation = computed(() => {
+    const w = props.workflow as Record<string, unknown>;
+    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).annotation) {
+        return (w.definition as Record<string, string>).annotation;
+    }
+    return w.annotation as string;
+});
+
+const workflowUuid = computed(() => {
+    const w = props.workflow as Record<string, unknown>;
+    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).uuid) {
+        return (w.definition as Record<string, string>).uuid;
+    }
+    return w.uuid as string;
+});
 </script>
 
 <template>
-    <div :id="`workflow-${workflow.uuid}`" class="group relative h-full">
+    <div :id="`workflow-${workflowUuid}`" class="group relative h-full">
         <!-- Hover accent bar -->
         <div
             class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200 z-10" />
@@ -33,7 +59,7 @@ defineProps<{
                             'font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200',
                             compact ? 'text-lg' : 'text-xl',
                         ]">
-                        {{ workflow.name }}
+                        {{ workflowName }}
                     </h2>
                 </a>
             </CardHeader>
@@ -42,7 +68,7 @@ defineProps<{
             <CardContent :class="['flex-1 flex flex-col', compact ? 'px-3 py-2' : 'px-6 py-2']">
                 <div class="flex flex-col flex-grow">
                     <p :class="`flex-grow ${compact ? 'text-sm line-clamp-3 mb-2' : 'mb-4'}`">
-                        {{ workflow.annotation }}
+                        {{ workflowAnnotation }}
                     </p>
 
                     <div
