@@ -3,10 +3,12 @@
 This workflow performs taxonomic assignment for an input OTU/ASV (Operating Taxonomic Unit/Amplicon Sequence Variant) Feature Table and set of amplicon Representative Sequences using QIIME2. The workflow creates and trains a QIIME2 classifier for an input reference taxonomic database (e.g. [HOMD](https://www.homd.org), [SILVA](https://www.arb-silva.de), [PR2](https://pr2-database.org), [UNITE](https://unite.ut.ee)) and uses the trained classifier to assign taxonomy to OTUs/ASVs in the input Feature Table.
 
 ## Inputs
-  - Feature Table [`biom2`]: OTU table with ASVs in rows and samples in columns containing ASV counts per sample (can be the output from previous QIIME2 or DADA2 processing)
-  - Representative Sequences [`fasta`]: File containing sequences for all ASVs detected in the samples (can be the output from previous QIIME2 or DADA2 processing)
-  - Reference sequences [`fasta`]: File containing sequences for the chosen reference taxonomy database
-  - Reference taxonomy [`tabular`]: File containing taxonomy assigned to sequences in the reference taxonomy database
+  - Feature Table [`biom2`]: OTU table with ASVs in rows and samples in columns containing ASV counts per sample (can be the output from previous QIIME2 or DADA2 processing).
+  - Representative Sequences [`fasta`]: File containing sequences for all ASVs detected in the samples (can be the output from previous QIIME2 or DADA2 processing).
+  - Reference sequences [`fasta`]: File containing sequences for the chosen reference taxonomy database.
+  - Reference taxonomy [`tabular`]: File containing taxonomy assigned to sequences in the reference taxonomy database.
+  - Forward Primer Sequence [`text`]: Forward primer sequence (5' -> 3'). Required for **qiime2 feature-classifier extract-reads** (input parameter: `f_primer`). Default value is the primer for the 16S rRNA V3-V4 region (`CCTAYGGGRBGCASCAG`).
+  - Reverse Primer Sequence [`text`]: Reverse primer sequence (5' -> 3'). Required for **qiime2 feature-classifier extract-reads** (input parameter: `r_primer`). Default value is the primer for the 16S rRNA V3-V4 region (`GGACTACNNGGGTATCTAAT`).
 
 ## Outputs
   - OTU/ASV table [`csv`]: Modified version of input Feature Table with additional column with the assigned taxonomy and assignment confidence for each ASV as additional columns.
