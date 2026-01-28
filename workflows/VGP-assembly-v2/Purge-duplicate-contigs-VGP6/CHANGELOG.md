@@ -2,6 +2,10 @@
 
 ## [0.10.5] - 2026-01-26
 
+### Manual changes
+- Remove Busco QC
+- Rename scaffolds in Hap2 to account for the new sequences purged from hap1 
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/1.2.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/1.2.6+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy2`
