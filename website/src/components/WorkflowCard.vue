@@ -6,6 +6,7 @@ import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
 import CardContent from "./ui/CardContent.vue";
 import Badge from "./ui/Badge.vue";
+import WorkflowGlyph from "./WorkflowGlyph.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
 const props = defineProps<{
@@ -53,7 +54,14 @@ const workflowUuid = computed(() => {
             ]">
             <!-- Header -->
             <CardHeader :class="compact ? 'p-3' : 'px-6 py-4 pb-2'">
-                <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
+                <a
+                    :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`"
+                    class="group/link flex items-center gap-3">
+                    <WorkflowGlyph
+                        :identifier="workflowUuid"
+                        :name="workflowName"
+                        :collections="workflow.collections"
+                        :size="compact ? 32 : 40" />
                     <h2
                         :class="[
                             'font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200',

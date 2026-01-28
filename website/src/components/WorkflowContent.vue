@@ -6,6 +6,7 @@ import MarkdownRenderer from "./MarkdownRenderer.vue";
 import Author from "./Author.vue";
 import GalaxyInstanceSelector from "./GalaxyInstanceSelector.vue";
 import CodeBlock from "./CodeBlock.vue";
+import WorkflowGlyph from "./WorkflowGlyph.vue";
 import Button from "./ui/Button.vue";
 import Tabs from "./ui/Tabs.vue";
 import TabsList from "./ui/TabsList.vue";
@@ -339,9 +340,16 @@ onMounted(() => {
         <!-- Right sidebar -->
         <div class="lg:w-80 xl:w-96 2xl:w-1/4 shrink-0">
             <div class="sticky top-4 bg-white border border-ebony-clay-100 rounded-lg p-6 shadow-sm">
-                <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-b-2 border-hokey-pokey-500 pb-2">
-                    {{ workflow.definition.name }}
-                </h2>
+                <div class="flex items-center gap-4 mb-4 border-b-2 border-hokey-pokey-500 pb-3">
+                    <WorkflowGlyph
+                        :identifier="workflow.definition.uuid"
+                        :name="workflow.definition.name"
+                        :collections="workflow.collections"
+                        :size="64" />
+                    <h2 class="font-bold text-xl text-ebony-clay-900">
+                        {{ workflow.definition.name }}
+                    </h2>
+                </div>
                 <p class="mb-4 text-chicago-700">
                     {{ workflow.definition.annotation }}
                 </p>
