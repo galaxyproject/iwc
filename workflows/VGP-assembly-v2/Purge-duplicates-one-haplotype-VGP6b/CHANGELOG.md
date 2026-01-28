@@ -2,6 +2,9 @@
 
 ## [0.8.5] - 2026-01-26
 
+### Manual changes
+- Remove Busco QC
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/1.2.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/purge_dups/purge_dups/1.2.6+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1`
