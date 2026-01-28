@@ -3,6 +3,7 @@ import { computed } from "vue";
 import type { SearchIndexEntry, Workflow } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Badge from "./ui/Badge.vue";
+import WorkflowGlyph from "./WorkflowGlyph.vue";
 import { Tag, Clock } from "lucide-vue-next";
 
 const props = defineProps<{
@@ -51,7 +52,15 @@ const workflowRelease = computed(() => {
         <div
             class="absolute left-0 top-0 bottom-0 w-1 bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
 
-        <div class="flex items-start gap-6">
+        <div class="flex items-start gap-4">
+            <!-- Glyph -->
+            <WorkflowGlyph
+                :identifier="workflowUuid"
+                :name="workflowName"
+                :collections="workflow.collections"
+                :size="40"
+                class="mt-0.5 shrink-0" />
+
             <!-- Main content -->
             <div class="flex-1 min-w-0">
                 <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
