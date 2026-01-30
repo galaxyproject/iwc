@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4] - 2026-01-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/2024.10.0+dist.h3d8a7e27` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2_core__tools__import/qiime2_core__tools__import/2026.1.0+dist.h02a552c2`
+- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/2024.10.0+q2galaxy.2024.10.0` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_single/qiime2__demux__emp_single/2026.1.0+q2galaxy.2026.1.0`
+- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/2024.10.0+q2galaxy.2024.10.0` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__summarize/qiime2__demux__summarize/2026.1.0+q2galaxy.2026.1.0`
+- `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/2024.10.0+q2galaxy.2024.10.0` was updated to `toolshed.g2.bx.psu.edu/repos/q2d2/qiime2__demux__emp_paired/qiime2__demux__emp_paired/2026.1.0+q2galaxy.2026.1.0`
+
 ## [0.3] - 2024-11-04
 
 ### Automatic update
