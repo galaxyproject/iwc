@@ -184,7 +184,19 @@ onMounted(() => {
 
                     <!-- Diagram Tab -->
                     <TabsContent value="diagram" class="prose !max-w-none">
-                        <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'diagram')?.content || ''" />
+                        <!-- SVG visualization if available -->
+                        <div v-if="workflow.diagram_svg" class="mb-8">
+                            <h2 class="text-xl font-bold mb-4">Workflow Overview</h2>
+                            <div class="border rounded-lg overflow-hidden shadow-sm" v-html="workflow.diagram_svg"></div>
+                        </div>
+                        <!-- Mermaid diagrams -->
+                        <div v-if="tabs.find((t) => t.value === 'diagram')?.content">
+                            <h2 v-if="workflow.diagram_svg" class="text-xl font-bold mb-4 mt-8">Detailed Step Diagram</h2>
+                            <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'diagram')?.content || ''" />
+                        </div>
+                        <p v-if="!workflow.diagram_svg && !tabs.find((t) => t.value === 'diagram')?.content">
+                            No diagram available for this workflow.
+                        </p>
                     </TabsContent>
 
                     <!-- Version History Tab -->
