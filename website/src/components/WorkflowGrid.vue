@@ -201,7 +201,7 @@ searchQueryStore.subscribe((value) => {
                 >Dockstore</a
             >,
             <a
-                href="https://workflowhub.eu/"
+                href="https://workflowhub.eu/workflows?filter%5Bworkflow_type%5D=galaxy"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
