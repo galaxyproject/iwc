@@ -188,6 +188,33 @@ searchQueryStore.subscribe((value) => {
                 <p class="text-xl">No workflows found matching your criteria.</p>
             </div>
         </Transition>
+
+        <!-- Discover more workflows -->
+        <div
+            class="mt-8 py-5 px-6 rounded-lg border border-chicago-200 bg-chicago-50 text-center text-sm text-chicago-600">
+            Find more Galaxy workflows on
+            <a
+                href="https://dockstore.org/search?descriptorType=Galaxy&descriptorType=gxformat2&entryType=workflows&searchMode=files"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >Dockstore</a
+            >,
+            <a
+                href="https://workflowhub.eu/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >WorkflowHub</a
+            >, and the
+            <a
+                href="https://training.galaxyproject.org/training-material/workflows/list"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >Galaxy Training Network</a
+            >.
+        </div>
     </div>
 </template>
 
