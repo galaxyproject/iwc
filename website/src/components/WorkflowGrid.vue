@@ -183,16 +183,14 @@ searchQueryStore.subscribe((value) => {
             </div>
         </Transition>
 
-        <Transition name="fade">
-            <div v-if="filteredWorkflows.length === 0" class="text-center py-12 text-chicago-500">
-                <p class="text-xl">No workflows found matching your criteria.</p>
-            </div>
-        </Transition>
-
-        <!-- Discover more workflows -->
+        <!-- External workflow sources / empty state -->
         <div
             class="mt-8 py-5 px-6 rounded-lg border border-chicago-200 bg-chicago-50 text-center text-sm text-chicago-600">
-            Find more Galaxy workflows on
+            <p v-if="filteredWorkflows.length === 0" class="text-xl text-chicago-500 mb-3">
+                No workflows found matching your criteria.
+            </p>
+            <span v-if="filteredWorkflows.length === 0">Try searching for Galaxy workflows on </span>
+            <span v-else>Find more Galaxy workflows on </span>
             <a
                 href="https://dockstore.org/search?descriptorType=Galaxy&descriptorType=gxformat2&entryType=workflows&searchMode=files"
                 target="_blank"
