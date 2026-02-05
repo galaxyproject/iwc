@@ -48,11 +48,21 @@ Primary (brand-primary):     #25537b  - Node headers, connections, borders
 Background grid light:       #c5d5e4  - Minor grid lines
 Background grid major:       #b0c4d8  - Major grid lines
 Canvas background:           #f8f9fa  - Light gray
+Input nodes:                 #ffd700  - Gold for workflow data inputs
 Output nodes:                #f97316  - Orange for workflow outputs
 Report/QC nodes:             #10b981  - Green for MultiQC, reports
 Text primary:                #495057  - Body text
 Text secondary:              #868e96  - Descriptions, labels
+Input node text:             #2C3143  - Dark text on gold background
 ```
+
+### Node Color Semantics
+
+Use colors to convey meaning at a glance:
+- **Gold (#ffd700)**: Data inputs - FASTQs, reference files, GTF annotations, sample sheets
+- **Blue (#25537b)**: Processing/analysis steps - the main workflow tools
+- **Orange (#f97316)**: Final outputs - the deliverables users care about
+- **Green (#10b981)**: QC/Reports - MultiQC, quality summaries
 
 ### Node Design
 
@@ -144,7 +154,9 @@ Where `shift = 15 + (distanceX * 0.15) + (distanceY * 0.08)`
 </svg>
 ```
 
-## Node Template
+## Node Template (Processing - Blue)
+
+Standard processing/analysis nodes use blue (#25537b):
 
 ```xml
 <g class="node-card" transform="translate(X, Y)">
@@ -159,6 +171,24 @@ Where `shift = 15 + (distanceX * 0.15) + (distanceY * 0.08)`
   <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
   <!-- Output terminal at right edge -->
   <circle cx="200" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+</g>
+```
+
+## Input Node Template (Gold header)
+
+Data input nodes use gold (#ffd700) with dark text (#2C3143):
+
+```xml
+<g class="node-card" transform="translate(X, Y)">
+  <rect width="180" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+  <rect width="180" height="28" rx="4" fill="#ffd700"/>
+  <rect x="0" y="24" width="180" height="4" fill="#ffd700"/>
+  <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">1:</text>
+  <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">Input Name</text>
+  <text x="90" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Data type</text>
+  <text x="90" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Description</text>
+  <!-- Output terminal only (inputs have no input terminal) -->
+  <circle cx="180" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
 </g>
 ```
 
@@ -188,6 +218,31 @@ For workflows containing subworkflows, use a larger card with diagonal stripe pa
   <text x="12" y="22" font-family="system-ui, sans-serif" font-size="14" fill="white">⎔</text>
   <text x="30" y="22" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="white">Subworkflow Name</text>
   <!-- Inner content: mini flow diagram, output list -->
+</g>
+```
+
+## Legend Template
+
+Include a legend at the bottom of the diagram:
+
+```xml
+<g transform="translate(X, Y)">
+  <text x="0" y="0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#495057">Legend:</text>
+  <!-- Input -->
+  <rect x="60" y="-10" width="14" height="14" rx="2" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="80" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Input</text>
+  <!-- Data flow -->
+  <line x1="120" y1="-4" x2="160" y2="-4" stroke="#25537b" stroke-width="4" stroke-linecap="round"/>
+  <text x="168" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Data flow</text>
+  <!-- QC metrics -->
+  <line x1="240" y1="-4" x2="280" y2="-4" stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>
+  <text x="288" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">QC metrics</text>
+  <!-- Output -->
+  <rect x="360" y="-10" width="14" height="14" rx="2" fill="white" stroke="#f97316" stroke-width="1.5"/>
+  <text x="380" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Output</text>
+  <!-- Report -->
+  <rect x="430" y="-10" width="14" height="14" rx="2" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  <text x="450" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Report</text>
 </g>
 ```
 
