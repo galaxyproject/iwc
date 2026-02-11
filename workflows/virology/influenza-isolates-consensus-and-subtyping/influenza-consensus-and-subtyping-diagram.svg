@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 660" role="img" aria-label="Influenza A Consensus and Subtyping workflow diagram">
+  <title>Influenza A Isolate Subtyping and Consensus Sequence Generation</title>
+  <desc>Pipeline for Influenza A analysis: fastp trimming, VAPOR-based reference selection and subtyping, BWA-MEM alignment to hybrid references, per-segment consensus with ivar, MAFFT alignment, snipit visualization, and IQ-TREE phylogenetics.</desc>
+
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c5d5e4" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid-major" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#grid)"/>
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#b0c4d8" stroke-width="1"/>
+    </pattern>
+    <style>
+      .connection { stroke: #25537b; stroke-width: 4; fill: none; stroke-linecap: round; }
+      .connection-qc { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; stroke-dasharray: 5 3; }
+      .connection-secondary { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; }
+      .node-card { filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.15)); }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1150" height="660" fill="#f8f9fa"/>
+  <rect width="1150" height="660" fill="url(#grid-major)"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="1150" height="45" fill="#25537b"/>
+  <text x="20" y="28" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="white">Influenza A: Isolate Subtyping and Consensus Sequence Generation</text>
+
+  <!-- CONNECTIONS -->
+
+  <!-- References -> VAPOR -->
+  <path class="connection" d="M 180 115 C 230 115, 240 135, 280 135"/>
+  <!-- PE Reads -> fastp -->
+  <path class="connection" d="M 180 235 C 230 235, 240 245, 280 245"/>
+  <!-- fastp -> VAPOR -->
+  <path class="connection" d="M 440 245 C 460 245, 260 155, 280 155"/>
+  <!-- VAPOR -> Build hybrid ref -->
+  <path class="connection" d="M 440 145 C 475 145, 470 145, 500 145"/>
+  <!-- Build hybrid ref -> BWA-MEM -->
+  <path class="connection" d="M 660 145 C 695 145, 690 155, 720 155"/>
+  <!-- fastp -> BWA-MEM (reads) -->
+  <path class="connection" d="M 440 245 C 500 245, 690 175, 720 175"/>
+
+  <!-- BWA-MEM -> Samtools filter -->
+  <path class="connection" d="M 880 165 C 910 165, 905 165, 930 165"/>
+
+  <!-- Samtools filter -> Split by ref -->
+  <path class="connection" d="M 930 210 C 920 260, 280 350, 310 370"/>
+  <!-- Split by ref -> ivar consensus -->
+  <path class="connection" d="M 470 370 C 510 370, 500 370, 540 370"/>
+  <!-- ivar consensus -> MAFFT -->
+  <path class="connection" d="M 700 370 C 740 370, 730 370, 760 370"/>
+  <!-- MAFFT -> snipit -->
+  <path class="connection" d="M 920 370 C 950 370, 945 340, 970 340"/>
+  <!-- MAFFT -> IQ-TREE -->
+  <path class="connection" d="M 920 390 C 950 390, 945 410, 970 410"/>
+
+  <!-- QC connections -->
+  <path class="connection-qc" d="M 810 210 C 810 340, 600 470, 560 485"/>
+  <path class="connection-qc" d="M 1000 210 C 1000 360, 620 470, 590 485"/>
+
+  <!-- VAPOR -> Subtyping results (output) -->
+  <path class="connection" d="M 440 110 C 460 100, 490 85, 510 80"/>
+
+  <!-- NODES -->
+
+  <!-- INPUT: References -->
+  <g class="node-card" transform="translate(30, 70)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">1:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">References</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Per-segment refs</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Collection of FASTA</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- INPUT: PE Reads -->
+  <g class="node-card" transform="translate(30, 190)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">2:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">PE Reads</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Paired-end reads</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">list:paired collection</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: fastp -->
+  <g class="node-card" transform="translate(280, 200)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">3:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">fastp</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Quality trimming</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Adapter removal</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: VAPOR -->
+  <g class="node-card" transform="translate(280, 90)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">4:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">VAPOR</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Reference selection</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Closest match per seg</text>
+    <circle cx="0" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="65" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: Build hybrid reference -->
+  <g class="node-card" transform="translate(500, 100)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">5:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Hybrid Reference</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Build per-sample</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Multi-segment ref</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- OUTPUT: Subtyping results -->
+  <g class="node-card" transform="translate(510, 55)">
+    <rect width="130" height="50" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="130" height="22" rx="4" fill="#f97316"/>
+    <rect x="0" y="18" width="130" height="4" fill="#f97316"/>
+    <text x="65" y="15" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Subtyping</text>
+    <text x="65" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">HA/NA classification</text>
+    <circle cx="0" cy="25" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: BWA-MEM -->
+  <g class="node-card" transform="translate(720, 120)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">6:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">BWA-MEM</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Read alignment</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">To hybrid reference</text>
+    <circle cx="0" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="90" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROCESSING: Samtools filter -->
+  <g class="node-card" transform="translate(930, 120)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">7:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Filter + Split</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Samtools filter</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Split by segment</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="80" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- ROW 2: Split by ref -->
+  <g class="node-card" transform="translate(310, 325)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">8:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Per-Segment BAM</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">BAMtools split</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">By reference</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- ivar consensus -->
+  <g class="node-card" transform="translate(540, 325)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">9:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">ivar Consensus</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Per-segment</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Consensus sequences</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- MAFFT -->
+  <g class="node-card" transform="translate(760, 325)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">10:</text>
+    <text x="30" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">MAFFT</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Multiple alignment</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Per segment</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="20" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+    <circle cx="160" cy="65" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- OUTPUT: snipit plots -->
+  <g class="node-card" transform="translate(970, 300)">
+    <rect width="140" height="55" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="140" height="22" rx="4" fill="#f97316"/>
+    <rect x="0" y="18" width="140" height="4" fill="#f97316"/>
+    <text x="70" y="15" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Snipit Plots</text>
+    <text x="70" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">SNP visualizations</text>
+    <text x="70" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">Per segment</text>
+    <circle cx="0" cy="25" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- OUTPUT: IQ-TREE -->
+  <g class="node-card" transform="translate(970, 375)">
+    <rect width="140" height="55" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="140" height="22" rx="4" fill="#f97316"/>
+    <rect x="0" y="18" width="140" height="4" fill="#f97316"/>
+    <text x="70" y="15" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">ML Trees</text>
+    <text x="70" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">IQ-TREE phylogenies</text>
+    <text x="70" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">Per segment</text>
+    <circle cx="0" cy="25" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- REPORT: QC -->
+  <g class="node-card" transform="translate(510, 475)">
+    <rect width="160" height="80" rx="4" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <rect width="160" height="28" rx="4" fill="#10b981"/>
+    <rect x="0" y="24" width="160" height="4" fill="#10b981"/>
+    <text x="80" y="19" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">QC Reports</text>
+    <text x="80" y="52" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">QualiMap BamQC</text>
+    <text x="80" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Mapping quality</text>
+    <circle cx="50" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <circle cx="80" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(30, 625)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#495057">Legend:</text>
+    <rect x="60" y="-10" width="14" height="14" rx="2" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="80" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Input</text>
+    <rect x="130" y="-10" width="14" height="14" rx="2" fill="white" stroke="#25537b" stroke-width="1.5"/>
+    <text x="150" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Processing</text>
+    <line x1="230" y1="-4" x2="270" y2="-4" stroke="#25537b" stroke-width="4" stroke-linecap="round"/>
+    <text x="278" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Data flow</text>
+    <line x1="350" y1="-4" x2="390" y2="-4" stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>
+    <text x="398" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">QC metrics</text>
+    <rect x="480" y="-10" width="14" height="14" rx="2" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <text x="500" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Output</text>
+    <rect x="560" y="-10" width="14" height="14" rx="2" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <text x="580" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Report</text>
+  </g>
+
+</svg>
