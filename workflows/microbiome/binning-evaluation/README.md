@@ -24,7 +24,7 @@ SEQ2	TEST1	2
 SEQ3	TEST2	1
 ```
 
-It is important to keep this file like this otherwise **CAMI AMBER** might not work and the TAXID column is optional!
+It is important to keep this file like this otherwise **CAMI AMBER** might not work. The TAXID column is optional.
 
 
 ## Workflow Logic
