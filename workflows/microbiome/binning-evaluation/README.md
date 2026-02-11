@@ -12,7 +12,7 @@ This workflow bins paired short reads to generate Metagenome-Assembled Genomes (
 ## Biobox File
 
 The Biobox File can be generated with the utility Tool named **CAMI AMBER convert to biobox**. 
-This tool can be found on Galaxy. Important to this is that this tool does not add the TAXID column this has to be done manually!
+This tool can be found on Galaxy.
 
 The `Gold Standard File` can also be written manually. Therefore, here is an example of this tab-separated file and the information that must be included:
 
