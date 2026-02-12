@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" role="img" aria-label="RNA-Seq single-read workflow diagram">
+  <title>RNA-Seq SR: Single-End Read Processing and Quantification</title>
+  <desc>Single-end RNA-seq analysis: FASTQ trimming with fastp, STAR alignment with gene counting, optional featureCounts/Cufflinks/StringTie quantification, and coverage generation with MultiQC reporting</desc>
+
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c5d5e4" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid-major" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#grid)"/>
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#b0c4d8" stroke-width="1"/>
+    </pattern>
+    <style>
+      .connection { stroke: #25537b; stroke-width: 4; fill: none; stroke-linecap: round; }
+      .connection-qc { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; stroke-dasharray: 5 3; }
+      .connection-secondary { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; }
+      .node-card { filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.15)); }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="540" fill="#f8f9fa"/>
+  <rect width="1200" height="540" fill="url(#grid-major)"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="1200" height="45" fill="#25537b"/>
+  <text x="20" y="28" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="white">RNA-Seq SR</text>
+  <text x="135" y="28" font-family="system-ui, sans-serif" font-size="12" fill="rgba(255,255,255,0.7)">Single-End Read Processing and Quantification</text>
+
+  <!-- ==================== CONNECTIONS ==================== -->
+
+  <!-- FASTQ input → fastp -->
+  <path class="connection" d="M 200 135 C 240 135, 250 135, 290 135"/>
+
+  <!-- GTF input → STAR -->
+  <path class="connection-secondary" d="M 200 255 C 380 255, 400 175, 540 155"/>
+
+  <!-- fastp → STAR -->
+  <path class="connection" d="M 490 135 C 520 135, 530 135, 540 135"/>
+
+  <!-- STAR → featureCounts -->
+  <path class="connection" d="M 740 155 C 790 155, 800 235, 840 235"/>
+
+  <!-- STAR → Coverage -->
+  <path class="connection-secondary" d="M 740 135 C 790 135, 800 135, 840 135"/>
+
+  <!-- STAR → Mapped Reads output -->
+  <path class="connection" d="M 740 145 C 770 145, 770 365, 590 370"/>
+
+  <!-- featureCounts → Counts output -->
+  <path class="connection" d="M 1040 235 C 1060 235, 1070 340, 1030 370"/>
+
+  <!-- Coverage → bigWig output -->
+  <path class="connection" d="M 1040 135 C 1060 135, 1070 340, 870 370"/>
+
+  <!-- STAR reads_per_gene → STAR Counts output -->
+  <path class="connection" d="M 740 165 C 790 165, 790 345, 740 370"/>
+
+  <!-- fastp QC → MultiQC -->
+  <path class="connection-qc" d="M 390 180 C 390 280, 170 350, 170 400"/>
+
+  <!-- STAR log → MultiQC -->
+  <path class="connection-qc" d="M 640 180 C 640 310, 210 350, 210 400"/>
+
+  <!-- ==================== NODES ==================== -->
+
+  <!-- NODE: SE FASTQs (Input - Gold) -->
+  <g class="node-card" transform="translate(20, 90)">
+    <rect width="180" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="180" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="180" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">1:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">SE FASTQs</text>
+    <text x="90" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">List Collection</text>
+    <text x="90" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Single-end RNA-seq reads</text>
+    <circle cx="180" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: GTF Annotation (Input - Gold) -->
+  <g class="node-card" transform="translate(20, 210)">
+    <rect width="180" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="180" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="180" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">2:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">GTF Annotation</text>
+    <text x="90" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Gene annotations</text>
+    <text x="90" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Reference GTF file</text>
+    <circle cx="180" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: fastp (Processing - Blue) -->
+  <g class="node-card" transform="translate(290, 90)">
+    <rect width="200" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="200" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="200" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">3:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">fastp</text>
+    <text x="100" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Quality Control &amp; Trimming</text>
+    <text x="100" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Adapter removal, filtering</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="200" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="100" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- NODE: RNA STAR (Processing - Blue, key step) -->
+  <g class="node-card" transform="translate(540, 90)">
+    <rect width="200" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1.5"/>
+    <rect width="200" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="200" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">4:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="white">RNA STAR</text>
+    <text x="100" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Splice-aware alignment</text>
+    <text x="100" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">ENCODE params + GeneCounts</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="200" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="100" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- NODE: Coverage (Processing - Blue) -->
+  <g class="node-card" transform="translate(840, 90)">
+    <rect width="200" height="75" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="200" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="200" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">5:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Coverage</text>
+    <text x="100" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Normalized bedGraph/bigWig</text>
+    <text x="100" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Scaled per-million coverage</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="200" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: featureCounts (Processing - Blue) -->
+  <g class="node-card" transform="translate(840, 195)">
+    <rect width="200" height="75" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="200" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="200" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">6:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">featureCounts</text>
+    <text x="100" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Gene quantification</text>
+    <text x="100" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Optional: HTSeq-compatible counts</text>
+    <circle cx="0" cy="40" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="200" cy="40" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: MultiQC (Report - Green) -->
+  <g class="node-card" transform="translate(80, 400)">
+    <rect width="200" height="70" rx="4" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <rect width="200" height="24" rx="4" fill="#10b981"/>
+    <rect x="0" y="20" width="200" height="4" fill="#10b981"/>
+    <text x="10" y="17" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">MultiQC</text>
+    <text x="100" y="45" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Aggregated QC Report</text>
+    <text x="100" y="60" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">fastp + STAR + IdxStats</text>
+    <circle cx="90" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="2"/>
+    <circle cx="130" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: Mapped Reads (Output - Orange) -->
+  <g class="node-card" transform="translate(490, 370)">
+    <rect width="110" height="50" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="110" height="20" rx="4" fill="#f97316"/>
+    <rect x="0" y="16" width="110" height="4" fill="#f97316"/>
+    <text x="55" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Mapped BAMs</text>
+    <text x="55" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">Aligned reads</text>
+    <circle cx="100" cy="0" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: STAR Counts (Output - Orange) -->
+  <g class="node-card" transform="translate(690, 370)">
+    <rect width="110" height="50" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="110" height="20" rx="4" fill="#f97316"/>
+    <rect x="0" y="16" width="110" height="4" fill="#f97316"/>
+    <text x="55" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">STAR Counts</text>
+    <text x="55" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">reads per gene</text>
+    <circle cx="50" cy="0" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: Coverage Output (Output - Orange) -->
+  <g class="node-card" transform="translate(820, 370)">
+    <rect width="110" height="50" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="110" height="20" rx="4" fill="#f97316"/>
+    <rect x="0" y="16" width="110" height="4" fill="#f97316"/>
+    <text x="55" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Coverage</text>
+    <text x="55" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">bigWig tracks</text>
+    <circle cx="50" cy="0" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- NODE: featureCounts Output (Output - Orange) -->
+  <g class="node-card" transform="translate(970, 370)">
+    <rect width="120" height="50" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="120" height="20" rx="4" fill="#f97316"/>
+    <rect x="0" y="16" width="120" height="4" fill="#f97316"/>
+    <text x="60" y="14" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Count Tables</text>
+    <text x="60" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">featureCounts output</text>
+    <circle cx="60" cy="0" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(280, 500)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#495057">Legend:</text>
+    <rect x="60" y="-10" width="14" height="14" rx="2" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="80" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Input</text>
+    <line x1="120" y1="-4" x2="160" y2="-4" stroke="#25537b" stroke-width="4" stroke-linecap="round"/>
+    <text x="168" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Data flow</text>
+    <line x1="240" y1="-4" x2="280" y2="-4" stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>
+    <text x="288" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">QC metrics</text>
+    <rect x="360" y="-10" width="14" height="14" rx="2" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <text x="380" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Output</text>
+    <rect x="430" y="-10" width="14" height="14" rx="2" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <text x="450" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Report</text>
+  </g>
+
+</svg>

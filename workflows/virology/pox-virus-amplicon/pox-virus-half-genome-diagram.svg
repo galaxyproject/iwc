@@ -1,0 +1,297 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" role="img" aria-label="Pox Virus Illumina Amplicon Half-Genome workflow diagram">
+  <title>Pox Virus Illumina Amplicon Workflow (Half-Genomes)</title>
+  <desc>Pipeline for pox virus genomes sequenced as half-genomes in a tiled-amplicon approach: dual-pool fastp trimming, reference masking per pool, BWA-MEM alignment, pool merging, ivar primer trimming, ivar consensus, and MultiQC reporting.</desc>
+
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c5d5e4" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="grid-major" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#grid)"/>
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#b0c4d8" stroke-width="1"/>
+    </pattern>
+    <style>
+      .connection { stroke: #25537b; stroke-width: 4; fill: none; stroke-linecap: round; }
+      .connection-qc { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; stroke-dasharray: 5 3; }
+      .connection-secondary { stroke: #25537b; stroke-width: 3; fill: none; stroke-linecap: round; }
+      .node-card { filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.15)); }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="660" fill="#f8f9fa"/>
+  <rect width="1200" height="660" fill="url(#grid-major)"/>
+
+  <!-- Title bar -->
+  <rect x="0" y="0" width="1200" height="45" fill="#25537b"/>
+  <text x="20" y="28" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="white">Pox Virus Illumina Amplicon Workflow (Half-Genomes)</text>
+
+  <!-- CONNECTIONS -->
+
+  <!-- Reference FASTA -> Mask Pool1 -->
+  <path class="connection" d="M 180 115 C 240 115, 380 115, 420 115"/>
+  <!-- Reference FASTA -> Mask Pool2 -->
+  <path class="connection" d="M 180 115 C 240 115, 380 225, 420 225"/>
+  <!-- Primer Scheme -> split pools -->
+  <path class="connection" d="M 180 225 C 220 225, 350 165, 420 165"/>
+  <path class="connection" d="M 180 225 C 220 225, 350 195, 420 195"/>
+
+  <!-- PE Reads Pool1 -> fastp Pool1 -->
+  <path class="connection" d="M 180 335 C 220 335, 380 135, 420 135"/>
+  <!-- PE Reads Pool2 -> fastp Pool2 -->
+  <path class="connection" d="M 180 435 C 220 435, 380 245, 420 245"/>
+
+  <!-- fastp Pool1 -> BWA Pool1 -->
+  <path class="connection" d="M 580 125 C 615 125, 610 125, 640 125"/>
+  <!-- Mask Pool1 -> BWA Pool1 -->
+  <path class="connection-secondary" d="M 580 105 C 610 105, 610 115, 640 115"/>
+  <!-- fastp Pool2 -> BWA Pool2 -->
+  <path class="connection" d="M 580 235 C 615 235, 610 235, 640 235"/>
+  <!-- Mask Pool2 -> BWA Pool2 -->
+  <path class="connection-secondary" d="M 580 215 C 610 215, 610 225, 640 225"/>
+
+  <!-- BWA Pool1 -> Filter Pool1 -->
+  <path class="connection" d="M 800 125 C 835 125, 830 125, 860 125"/>
+  <!-- BWA Pool2 -> Filter Pool2 -->
+  <path class="connection" d="M 800 235 C 835 235, 830 235, 860 235"/>
+
+  <!-- Filter Pool1 -> Merge -->
+  <path class="connection" d="M 1020 125 C 1050 125, 1050 175, 1080 175"/>
+  <!-- Filter Pool2 -> Merge -->
+  <path class="connection" d="M 1020 235 C 1050 235, 1050 195, 1080 195"/>
+
+  <!-- Merge -> ivar Trim (row 2) -->
+  <path class="connection" d="M 1140 230 C 1170 260, 310 400, 340 420"/>
+  <!-- ivar Trim -> ivar Consensus -->
+  <path class="connection" d="M 500 420 C 540 420, 530 420, 560 420"/>
+  <!-- ivar Consensus -> output -->
+  <path class="connection" d="M 720 420 C 750 420, 750 410, 780 410"/>
+
+  <!-- QC connections -->
+  <path class="connection-qc" d="M 490 170 C 490 350, 540 470, 570 490"/>
+  <path class="connection-qc" d="M 490 280 C 490 370, 560 470, 590 490"/>
+  <path class="connection-qc" d="M 910 170 C 910 350, 640 470, 620 490"/>
+  <path class="connection-qc" d="M 910 280 C 910 370, 660 470, 640 490"/>
+
+  <!-- NODES -->
+
+  <!-- INPUT: Reference FASTA -->
+  <g class="node-card" transform="translate(30, 70)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">1:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">Reference FASTA</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Pox virus genome</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">FASTA format</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- INPUT: Primer Scheme -->
+  <g class="node-card" transform="translate(30, 180)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">2:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">Primer Scheme</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Tiled amplicon</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">BED format</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- INPUT: PE Reads Pool1 -->
+  <g class="node-card" transform="translate(30, 290)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">3:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">PE Reads Pool1</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Half-genome 1</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">list:paired collection</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- INPUT: PE Reads Pool2 -->
+  <g class="node-card" transform="translate(30, 390)">
+    <rect width="150" height="90" rx="4" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <rect width="150" height="28" rx="4" fill="#ffd700"/>
+    <rect x="0" y="24" width="150" height="4" fill="#ffd700"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(44,49,67,0.6)">4:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C3143">PE Reads Pool2</text>
+    <text x="75" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Half-genome 2</text>
+    <text x="75" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">list:paired collection</text>
+    <circle cx="150" cy="45" r="6" fill="white" stroke="#ffd700" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: fastp Pool1 + Mask Pool1 (combined) -->
+  <g class="node-card" transform="translate(420, 70)">
+    <rect width="160" height="100" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">5:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Pool 1 Prep</text>
+    <text x="80" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">fastp trimming</text>
+    <text x="80" y="65" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Mask reference</text>
+    <text x="80" y="82" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Pool1 half-genome</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="65" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="80" cy="100" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROCESSING: fastp Pool2 + Mask Pool2 (combined) -->
+  <g class="node-card" transform="translate(420, 180)">
+    <rect width="160" height="100" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">6:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Pool 2 Prep</text>
+    <text x="80" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">fastp trimming</text>
+    <text x="80" y="65" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Mask reference</text>
+    <text x="80" y="82" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Pool2 half-genome</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="65" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="80" cy="100" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROCESSING: BWA-MEM Pool1 -->
+  <g class="node-card" transform="translate(640, 80)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">7:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">BWA Pool1</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Align to masked ref</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Half-genome 1</text>
+    <circle cx="0" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: BWA-MEM Pool2 -->
+  <g class="node-card" transform="translate(640, 190)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">8:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">BWA Pool2</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Align to masked ref</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Half-genome 2</text>
+    <circle cx="0" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- PROCESSING: Filter Pool1 -->
+  <g class="node-card" transform="translate(860, 80)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">9:</text>
+    <text x="26" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Filter Pool1</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Samtools view</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">+ stats</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="80" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROCESSING: Filter Pool2 -->
+  <g class="node-card" transform="translate(860, 190)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">10:</text>
+    <text x="30" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Filter Pool2</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Samtools view</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">+ stats</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="80" cy="90" r="5" fill="white" stroke="#25537b" stroke-width="1.5"/>
+  </g>
+
+  <!-- PROCESSING: Merge -->
+  <g class="node-card" transform="translate(1060, 140)">
+    <rect width="120" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="120" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="120" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">11:</text>
+    <text x="30" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">Merge</text>
+    <text x="60" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Samtools merge</text>
+    <text x="60" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Combine pools</text>
+    <circle cx="0" cy="35" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="0" cy="55" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- ROW 2: ivar Trim -->
+  <g class="node-card" transform="translate(340, 375)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">12:</text>
+    <text x="30" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">ivar Trim</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Primer trimming</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Merged BAM</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- ivar Consensus -->
+  <g class="node-card" transform="translate(560, 375)">
+    <rect width="160" height="90" rx="4" fill="white" stroke="#25537b" stroke-width="1"/>
+    <rect width="160" height="28" rx="4" fill="#25537b"/>
+    <rect x="0" y="24" width="160" height="4" fill="#25537b"/>
+    <text x="10" y="19" font-family="system-ui, sans-serif" font-size="11" fill="rgba(255,255,255,0.7)">13:</text>
+    <text x="30" y="19" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">ivar Consensus</text>
+    <text x="80" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Consensus sequence</text>
+    <text x="80" y="72" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Per sample</text>
+    <circle cx="0" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+    <circle cx="160" cy="45" r="6" fill="white" stroke="#25537b" stroke-width="2"/>
+  </g>
+
+  <!-- OUTPUT: Consensus -->
+  <g class="node-card" transform="translate(780, 380)">
+    <rect width="150" height="55" rx="4" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <rect width="150" height="22" rx="4" fill="#f97316"/>
+    <rect x="0" y="18" width="150" height="4" fill="#f97316"/>
+    <text x="75" y="15" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="white">Consensus</text>
+    <text x="75" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">Combined multi-FASTA</text>
+    <text x="75" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" fill="#868e96">All samples</text>
+    <circle cx="0" cy="30" r="5" fill="white" stroke="#f97316" stroke-width="2"/>
+  </g>
+
+  <!-- REPORT: MultiQC -->
+  <g class="node-card" transform="translate(530, 480)">
+    <rect width="180" height="80" rx="4" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <rect width="180" height="28" rx="4" fill="#10b981"/>
+    <rect x="0" y="24" width="180" height="4" fill="#10b981"/>
+    <text x="90" y="19" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="white">MultiQC Reports</text>
+    <text x="90" y="52" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#495057">Pool1, Pool2, merged</text>
+    <text x="90" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9" fill="#868e96">fastp, mapping, QualiMap</text>
+    <circle cx="40" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <circle cx="60" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <circle cx="90" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <circle cx="110" cy="0" r="5" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(30, 625)">
+    <text x="0" y="0" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#495057">Legend:</text>
+    <rect x="60" y="-10" width="14" height="14" rx="2" fill="white" stroke="#ffd700" stroke-width="1.5"/>
+    <text x="80" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Input</text>
+    <rect x="130" y="-10" width="14" height="14" rx="2" fill="white" stroke="#25537b" stroke-width="1.5"/>
+    <text x="150" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Processing</text>
+    <line x1="230" y1="-4" x2="270" y2="-4" stroke="#25537b" stroke-width="4" stroke-linecap="round"/>
+    <text x="278" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Data flow</text>
+    <line x1="350" y1="-4" x2="390" y2="-4" stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>
+    <text x="398" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">QC metrics</text>
+    <rect x="480" y="-10" width="14" height="14" rx="2" fill="white" stroke="#f97316" stroke-width="1.5"/>
+    <text x="500" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Output</text>
+    <rect x="560" y="-10" width="14" height="14" rx="2" fill="white" stroke="#10b981" stroke-width="1.5"/>
+    <text x="580" y="0" font-family="system-ui, sans-serif" font-size="9" fill="#6c757d">Report</text>
+  </g>
+
+</svg>

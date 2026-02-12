@@ -46,6 +46,7 @@ export interface Workflow {
     changelog: string;
     updated: string;
     diagrams: string;
+    diagram_svg?: string;
     trsID: string;
     iwcID: string;
     categories: string[];

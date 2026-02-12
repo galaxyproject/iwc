@@ -162,6 +162,10 @@ def find_and_load_compliant_workflows(directory):
                 workflow["diagrams"] = read_contents(
                     f"{os.path.splitext(workflow_path)[0]}_diagrams.md"
                 )
+                # Load SVG diagram if it exists
+                workflow["diagram_svg"] = read_contents(
+                    f"{os.path.splitext(workflow_path)[0]}-diagram.svg"
+                )
 
                 # Extract update date from changelog
                 update_date = extract_date_from_changelog(changelog_content)
