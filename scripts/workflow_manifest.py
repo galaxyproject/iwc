@@ -149,7 +149,7 @@ def find_and_load_compliant_workflows(directory):
                 try:
                     with open(workflow_path) as f:
                         workflow["definition"] = json.load(f)
-                    workflow['workflow_job_input'] = job_template(workflow_path)
+                    workflow["workflow_job_input"] = job_template(workflow_path)
                 except Exception as e:
                     print(
                         f"No workflow file: {os.path.join(root, workflow['primaryDescriptorPath'])}: {e}"
@@ -165,6 +165,12 @@ def find_and_load_compliant_workflows(directory):
                 # Load SVG diagram if it exists
                 workflow["diagram_svg"] = read_contents(
                     f"{os.path.splitext(workflow_path)[0]}-diagram.svg"
+                )
+                # Load structured JSON diagram if it exists
+                diagram_json_path = f"{os.path.splitext(workflow_path)[0]}-diagram.json"
+                diagram_json_content = read_contents(diagram_json_path)
+                workflow["diagram_data"] = (
+                    json.loads(diagram_json_content) if diagram_json_content else None
                 )
 
                 # Extract update date from changelog
@@ -202,11 +208,17 @@ def find_and_load_compliant_workflows(directory):
                     print(f"DOI Missing: {trsID}")
                     workflow["doi"] = None
 
-                if not "testParameterFiles" in workflow:
-                    print(f"{root}/.dockstore does not contain testParameterFiles. Looking for file...")
-                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                if "testParameterFiles" not in workflow:
+                    print(
+                        f"{root}/.dockstore does not contain testParameterFiles. Looking for file..."
+                    )
+                    workflow_test_path = (
+                        f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    )
                     if not os.path.exists(workflow_test_path):
-                        workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-test.yml"
+                        workflow_test_path = (
+                            f"{workflow_path.rsplit('.ga', 1)[0]}-test.yml"
+                        )
                     if os.path.exists(workflow_test_path):
                         print(f"file found at {workflow_test_path}")
                         workflow["tests"] = process_test_file(workflow_test_path, root)
@@ -233,11 +245,15 @@ def path_to_location(input_item, root):
                     input_item["location"] = input_item["path"]
                 else:
                     # Create location URL from path for downloading files
-                    relative_path = os.path.join(root.replace("./", ""), input_item["path"].lstrip("/"))
+                    relative_path = os.path.join(
+                        root.replace("./", ""), input_item["path"].lstrip("/")
+                    )
                     # URL-encode the path to handle spaces and special characters
                     # Use safe='/' to keep forward slashes unencoded as path separators
-                    encoded_path = quote(relative_path, safe='/')
-                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{encoded_path}"
+                    encoded_path = quote(relative_path, safe="/")
+                    input_item["location"] = (
+                        f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{encoded_path}"
+                    )
                     del input_item["path"]
             if "filetype" not in input_item:
                 # Add filetype if not present
@@ -384,7 +400,7 @@ if __name__ == "__main__":
                 item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
             stage_workflow_file(workflow_path, workflow["iwcID"])
-            stage_workflow_test_file(workflow.get('tests', None), workflow["iwcID"])
+            stage_workflow_test_file(workflow.get("tests", None), workflow["iwcID"])
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")

@@ -47,11 +47,38 @@ export interface Workflow {
     updated: string;
     diagrams: string;
     diagram_svg?: string;
+    diagram_data?: DiagramData;
     trsID: string;
     iwcID: string;
     categories: string[];
     collections: string[];
     doi?: string;
+}
+
+// Structured diagram descriptor for programmatic rendering
+export interface DiagramData {
+    title: string;
+    subtitle?: string;
+    nodes: DiagramNode[];
+    edges: DiagramEdge[];
+    legend?: { items: string[] };
+}
+
+export interface DiagramNode {
+    id: string;
+    type: "input" | "tool" | "output" | "report";
+    label: string;
+    subtitle?: string;
+    detail?: string;
+    step?: string;
+    column: number;
+    row: number;
+}
+
+export interface DiagramEdge {
+    from: string;
+    to: string;
+    style?: "primary" | "secondary" | "qc" | "dual";
 }
 
 // Define the interface for an author
