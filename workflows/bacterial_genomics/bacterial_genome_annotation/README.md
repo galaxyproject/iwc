@@ -35,3 +35,5 @@ This workflow uses assembled bacterial genome fasta files (but can be any fasta 
    - IS annotation gff format
 5. Aggregating outputs:
    - JSON file with information about the outputs of **Bakta**, **IntegronFinder2**, **Plasmidfinder**, **ISEScan**
+
+   test change
