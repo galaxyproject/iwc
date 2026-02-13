@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] - 2025-10-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.8+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.9+galaxy0`
+
 ## [0.3] - 2023-09-08
 
 ### Update tools
