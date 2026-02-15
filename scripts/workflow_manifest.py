@@ -6,6 +6,7 @@ import re
 import shutil
 from urllib.parse import quote_plus, quote
 from create_mermaid import walk_directory
+from render_diagram_svgs import render_all_diagram_svgs
 from planemo.galaxy.workflows import job_template
 
 OUTPUT_DIR = "website/public/data"
@@ -365,6 +366,7 @@ def stage_workflow_test_file(test_data, iwc_id):
 if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory("./workflows")
+    render_all_diagram_svgs("./workflows")
     workflow_data = find_and_load_compliant_workflows("./workflows")
 
     index_data = []

@@ -1,0 +1,581 @@
+"""
+Build-time SVG renderer for workflow diagram JSON descriptors.
+
+Reads *-diagram.json files and writes corresponding *-diagram.svg files
+using the same layout algorithms as website/src/components/WorkflowDiagram.vue.
+"""
+
+import json
+import math
+import os
+from html import escape
+
+# --- Constants (matching WorkflowDiagram.vue exactly) ---
+
+COLORS = {
+    "input": "#ffd700",
+    "tool": "#25537b",
+    "output": "#f97316",
+    "report": "#10b981",
+}
+
+HEADER_HEIGHT = 28
+HEADER_HEIGHT_SMALL = 24
+TITLE_BAR_HEIGHT = 45
+PADDING = 20
+COLUMN_GAP = 50
+ROW_GAP = 60
+TERMINAL_RADIUS_LARGE = 6
+TERMINAL_RADIUS_SMALL = 5
+FONT_FAMILY = "system-ui, sans-serif"
+LINE_HEIGHT = 14
+
+BASE_WIDTHS = {
+    "input": 180,
+    "tool": 200,
+    "output": 140,
+    "report": 80,
+}
+
+
+def get_node_dimensions(node):
+    """Compute width, height, headerHeight for a node (matches Vue getNodeDimensions)."""
+    node_type = node["type"]
+    width = BASE_WIDTHS.get(node_type, 200)
+
+    label = node.get("label", "")
+    if node_type == "report" and len(label) > 8:
+        width = max(80, len(label) * 7 + 20)
+    if node_type == "output" and len(label) > 12:
+        width = max(140, len(label) * 8 + 20)
+
+    header_height = HEADER_HEIGHT_SMALL if node_type in ("output", "report") else HEADER_HEIGHT
+
+    text_lines = 0
+    if node.get("subtitle"):
+        text_lines += 1
+    if node.get("detail"):
+        text_lines += 1
+
+    if node_type in ("tool", "input"):
+        base_body = 42
+    else:
+        base_body = 26
+
+    height = header_height + base_body + text_lines * LINE_HEIGHT
+    return width, height, header_height
+
+
+def compute_layout(data):
+    """Compute node positions, column/row geometry. Returns list of layout dicts."""
+    nodes = data["nodes"]
+    if not nodes:
+        return []
+
+    all_rows = sorted(set(n["row"] for n in nodes))
+    all_cols = sorted(set(n["column"] for n in nodes))
+
+    # Global row heights
+    row_max_height = {}
+    for row in all_rows:
+        max_h = 0
+        for n in nodes:
+            if n["row"] == row:
+                _, h, _ = get_node_dimensions(n)
+                max_h = max(max_h, h)
+        row_max_height[row] = max_h
+
+    # Row Y positions
+    row_y = {}
+    current_y = TITLE_BAR_HEIGHT + PADDING
+    for row in all_rows:
+        row_y[row] = current_y
+        current_y += row_max_height[row] + ROW_GAP
+
+    # Column widths
+    col_max_width = {}
+    for col in all_cols:
+        max_w = 0
+        for n in nodes:
+            if n["column"] == col:
+                w, _, _ = get_node_dimensions(n)
+                max_w = max(max_w, w)
+        col_max_width[col] = max_w
+
+    # Column X positions
+    col_x = {}
+    current_x = PADDING
+    for col in all_cols:
+        col_x[col] = current_x
+        current_x += col_max_width[col] + COLUMN_GAP
+
+    layouts = []
+    for node in nodes:
+        w, h, hh = get_node_dimensions(node)
+        color = COLORS.get(node["type"], COLORS["tool"])
+        col_w = col_max_width[node["column"]]
+        x_offset = (col_w - w) / 2
+        layouts.append({
+            "node": node,
+            "x": col_x[node["column"]] + x_offset,
+            "y": row_y[node["row"]],
+            "width": w,
+            "height": h,
+            "headerHeight": hh,
+            "color": color,
+        })
+
+    return layouts
+
+
+def classify_edge(edge, layout_map):
+    """Classify edge routing type (matches Vue classifyEdge)."""
+    from_layout = layout_map.get(edge["from"])
+    to_layout = layout_map.get(edge["to"])
+    if not from_layout or not to_layout:
+        return "horizontal"
+
+    from_node = from_layout["node"]
+    to_node = to_layout["node"]
+
+    if to_node["column"] > from_node["column"] and to_node["row"] == from_node["row"]:
+        return "horizontal"
+    if to_node["column"] > from_node["column"]:
+        return "horizontal"
+    if to_node["column"] == from_node["column"] and to_node["row"] > from_node["row"]:
+        return "downward"
+    if to_node["column"] < from_node["column"] and to_node["row"] >= from_node["row"]:
+        return "wrap-around"
+    if to_node["row"] > from_node["row"]:
+        return "downward"
+    return "horizontal"
+
+
+def distribute_terminal(layout, edge_list, edge, side):
+    """Compute terminal position for an edge on a node side (matches Vue distributeTerminals)."""
+    idx = edge_list.index(edge)
+    count = len(edge_list)
+
+    if side in ("bottom", "top"):
+        spacing = layout["width"] / (count + 1)
+        return {
+            "x": layout["x"] + spacing * (idx + 1),
+            "y": layout["y"] + layout["height"] if side == "bottom" else layout["y"],
+            "side": side,
+        }
+
+    # left or right
+    body_top = layout["y"] + layout["headerHeight"]
+    body_height = layout["height"] - layout["headerHeight"]
+    x = layout["x"] + layout["width"] if side == "right" else layout["x"]
+
+    if count == 1:
+        return {"x": x, "y": body_top + body_height / 2, "side": side}
+
+    spacing = body_height / (count + 1)
+    return {"x": x, "y": body_top + spacing * (idx + 1), "side": side}
+
+
+def compute_edge_terminals(data, layout_map):
+    """Compute from/to terminal points for all edges (matches Vue edgeTerminals)."""
+    edges = data["edges"]
+
+    edge_routes = [(e, classify_edge(e, layout_map)) for e in edges]
+
+    # Group edges by node+side
+    right_out = {}
+    bottom_out = {}
+    left_in = {}
+    top_in = {}
+
+    for edge, route_type in edge_routes:
+        if route_type in ("downward", "wrap-around"):
+            bottom_out.setdefault(edge["from"], []).append(edge)
+        else:
+            right_out.setdefault(edge["from"], []).append(edge)
+
+        if route_type == "wrap-around":
+            top_in.setdefault(edge["to"], []).append(edge)
+        else:
+            left_in.setdefault(edge["to"], []).append(edge)
+
+    result = []
+    for edge, route_type in edge_routes:
+        from_layout = layout_map.get(edge["from"])
+        to_layout = layout_map.get(edge["to"])
+        if not from_layout or not to_layout:
+            continue
+
+        if route_type == "wrap-around":
+            from_pt = distribute_terminal(from_layout, bottom_out[edge["from"]], edge, "bottom")
+            to_pt = distribute_terminal(to_layout, top_in[edge["to"]], edge, "top")
+        elif route_type == "downward":
+            from_pt = distribute_terminal(from_layout, bottom_out[edge["from"]], edge, "bottom")
+            to_pt = distribute_terminal(to_layout, left_in[edge["to"]], edge, "left")
+        else:
+            from_pt = distribute_terminal(from_layout, right_out[edge["from"]], edge, "right")
+            to_pt = distribute_terminal(to_layout, left_in[edge["to"]], edge, "left")
+
+        result.append({
+            "edge": edge,
+            "from": from_pt,
+            "to": to_pt,
+            "routeType": route_type,
+        })
+
+    return result
+
+
+def connection_path(et):
+    """Generate bezier path string (matches Vue connectionPath)."""
+    from_pt = et["from"]
+    to_pt = et["to"]
+    route_type = et["routeType"]
+    dx = abs(to_pt["x"] - from_pt["x"])
+
+    if route_type == "wrap-around":
+        gap_mid_y = (from_pt["y"] + to_pt["y"]) / 2
+        return (
+            f'M {from_pt["x"]:.1f} {from_pt["y"]:.1f} '
+            f'C {from_pt["x"]:.1f} {gap_mid_y:.1f}, '
+            f'{to_pt["x"]:.1f} {gap_mid_y:.1f}, '
+            f'{to_pt["x"]:.1f} {to_pt["y"]:.1f}'
+        )
+
+    if route_type == "downward":
+        return (
+            f'M {from_pt["x"]:.1f} {from_pt["y"]:.1f} '
+            f'C {from_pt["x"]:.1f} {from_pt["y"] + 30:.1f}, '
+            f'{to_pt["x"] - 30:.1f} {to_pt["y"]:.1f}, '
+            f'{to_pt["x"]:.1f} {to_pt["y"]:.1f}'
+        )
+
+    # Horizontal
+    cp_offset = max(dx * 0.4, 30)
+    return (
+        f'M {from_pt["x"]:.1f} {from_pt["y"]:.1f} '
+        f'C {from_pt["x"] + cp_offset:.1f} {from_pt["y"]:.1f}, '
+        f'{to_pt["x"] - cp_offset:.1f} {to_pt["y"]:.1f}, '
+        f'{to_pt["x"]:.1f} {to_pt["y"]:.1f}'
+    )
+
+
+def connection_style_attrs(style):
+    """SVG stroke attributes for an edge style (matches Vue connectionStyleAttrs)."""
+    if style == "qc":
+        return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="3" stroke-dasharray="5 3"'
+    if style == "secondary":
+        return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="3"'
+    return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="4"'
+
+
+def dual_paths(et):
+    """Compute offset path pair for dual-style edges (matches Vue dualPaths)."""
+    from_pt = et["from"]
+    to_pt = et["to"]
+    offset = 3
+
+    dx = to_pt["x"] - from_pt["x"]
+    dy = to_pt["y"] - from_pt["y"]
+    length = math.sqrt(dx * dx + dy * dy) or 1
+    nx = -dy / length
+    ny = dx / length
+
+    et1 = {
+        **et,
+        "from": {"x": from_pt["x"] + nx * offset, "y": from_pt["y"] + ny * offset, "side": from_pt["side"]},
+        "to": {"x": to_pt["x"] + nx * offset, "y": to_pt["y"] + ny * offset, "side": to_pt["side"]},
+    }
+    et2 = {
+        **et,
+        "from": {"x": from_pt["x"] - nx * offset, "y": from_pt["y"] - ny * offset, "side": from_pt["side"]},
+        "to": {"x": to_pt["x"] - nx * offset, "y": to_pt["y"] - ny * offset, "side": to_pt["side"]},
+    }
+
+    return connection_path(et1), connection_path(et2)
+
+
+def compute_viewbox(layouts):
+    """Compute SVG viewBox dimensions (matches Vue viewBox computed)."""
+    if not layouts:
+        return 0, 0, 400, 200
+
+    max_x = 0
+    max_y = 0
+    for layout in layouts:
+        max_x = max(max_x, layout["x"] + layout["width"])
+        max_y = max(max_y, layout["y"] + layout["height"])
+
+    legend_height = 30
+    width = max_x + PADDING
+    height = max_y + PADDING + legend_height
+    return 0, 0, int(width), int(height)
+
+
+def header_text_color(node_type):
+    return "#2C3143" if node_type == "input" else "white"
+
+
+def step_badge_color(node_type):
+    return "rgba(44,49,67,0.6)" if node_type == "input" else "rgba(255,255,255,0.7)"
+
+
+def node_stroke_width(node_type):
+    return "1.5" if node_type in ("input", "output", "report") else "1"
+
+
+def terminal_radius(node_type):
+    return TERMINAL_RADIUS_SMALL if node_type in ("output", "report") else TERMINAL_RADIUS_LARGE
+
+
+def collect_node_terminals(node_id, edge_terminals):
+    """Collect unique terminal points for a node (matches Vue nodeTerminals)."""
+    points = []
+    for et in edge_terminals:
+        if et["edge"]["from"] == node_id:
+            points.append(et["from"])
+        if et["edge"]["to"] == node_id:
+            points.append(et["to"])
+
+    seen = set()
+    unique = []
+    for p in points:
+        key = f'{p["x"]:.1f},{p["y"]:.1f}'
+        if key not in seen:
+            seen.add(key)
+            unique.append(p)
+    return unique
+
+
+def render_svg(data):
+    """Render a diagram JSON descriptor to an SVG string."""
+    layouts = compute_layout(data)
+    layout_map = {l["node"]["id"]: l for l in layouts}
+    edge_terms = compute_edge_terminals(data, layout_map)
+    _, _, svg_width, svg_height = compute_viewbox(layouts)
+
+    title = escape(data.get("title", "Workflow Diagram"))
+    subtitle = data.get("subtitle")
+
+    legend_items = (data.get("legend") or {}).get("items", ["input", "primary", "qc", "output", "report"])
+    legend_y = svg_height - 15
+
+    lines = []
+    lines.append(
+        f'<svg viewBox="0 0 {svg_width} {svg_height}" '
+        f'aria-label="{title}" role="img" '
+        f'xmlns="http://www.w3.org/2000/svg">'
+    )
+    lines.append(f"  <title>{title}</title>")
+
+    # Defs
+    lines.append("  <defs>")
+    lines.append('    <pattern id="wd-grid" width="20" height="20" patternUnits="userSpaceOnUse">')
+    lines.append('      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#c5d5e4" stroke-width="0.5"/>')
+    lines.append("    </pattern>")
+    lines.append('    <pattern id="wd-grid-major" width="100" height="100" patternUnits="userSpaceOnUse">')
+    lines.append('      <rect width="100" height="100" fill="url(#wd-grid)"/>')
+    lines.append('      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#b0c4d8" stroke-width="1"/>')
+    lines.append("    </pattern>")
+    lines.append('    <filter id="wd-shadow" x="-5%" y="-5%" width="115%" height="115%">')
+    lines.append('      <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-opacity="0.15"/>')
+    lines.append("    </filter>")
+    lines.append("  </defs>")
+
+    # Background
+    lines.append(f'  <rect width="{svg_width}" height="{svg_height}" fill="#f8f9fa"/>')
+    lines.append(f'  <rect width="{svg_width}" height="{svg_height}" fill="url(#wd-grid-major)"/>')
+
+    # Title bar
+    lines.append(f'  <rect x="0" y="0" width="{svg_width}" height="{TITLE_BAR_HEIGHT}" fill="#25537b"/>')
+    lines.append(
+        f'  <text x="20" y="28" font-family="{FONT_FAMILY}" font-size="16" '
+        f'font-weight="600" fill="white">{title}</text>'
+    )
+    if subtitle:
+        lines.append(
+            f'  <text x="20" y="40" font-family="{FONT_FAMILY}" font-size="10" '
+            f'fill="rgba(255,255,255,0.7)">{escape(subtitle)}</text>'
+        )
+
+    # Connections (behind nodes)
+    for et in edge_terms:
+        style = et["edge"].get("style", "primary")
+        if style == "dual":
+            p1, p2 = dual_paths(et)
+            lines.append(f'  <path d="{p1}" {connection_style_attrs("primary")}/>')
+            lines.append(f'  <path d="{p2}" {connection_style_attrs("secondary")}/>')
+        else:
+            path = connection_path(et)
+            lines.append(f'  <path d="{path}" {connection_style_attrs(style)}/>')
+
+    # Nodes
+    for layout in layouts:
+        node = layout["node"]
+        x = layout["x"]
+        y = layout["y"]
+        w = layout["width"]
+        h = layout["height"]
+        hh = layout["headerHeight"]
+        color = layout["color"]
+        ntype = node["type"]
+
+        lines.append(f'  <g filter="url(#wd-shadow)" transform="translate({x:.1f}, {y:.1f})">')
+
+        # Card body
+        lines.append(
+            f'    <rect width="{w:.1f}" height="{h:.1f}" rx="4" '
+            f'fill="white" stroke="{color}" stroke-width="{node_stroke_width(ntype)}"/>'
+        )
+        # Header bar
+        lines.append(f'    <rect width="{w:.1f}" height="{hh}" rx="4" fill="{color}"/>')
+        # Fill gap between header rounded corners and body
+        lines.append(f'    <rect x="0" y="{hh - 4}" width="{w:.1f}" height="4" fill="{color}"/>')
+
+        # Step badge + label
+        step = node.get("step")
+        label = escape(node.get("label", ""))
+        if step:
+            lines.append(
+                f'    <text x="10" y="{hh - 9}" font-family="{FONT_FAMILY}" '
+                f'font-size="11" fill="{step_badge_color(ntype)}">{escape(str(step))}:</text>'
+            )
+            lines.append(
+                f'    <text x="26" y="{hh - 9}" font-family="{FONT_FAMILY}" '
+                f'font-size="11" font-weight="600" fill="{header_text_color(ntype)}">{label}</text>'
+            )
+        else:
+            lines.append(
+                f'    <text x="10" y="{hh - 9}" font-family="{FONT_FAMILY}" '
+                f'font-size="11" font-weight="600" fill="{header_text_color(ntype)}">{label}</text>'
+            )
+
+        # Subtitle
+        sub = node.get("subtitle")
+        if sub:
+            lines.append(
+                f'    <text x="{w / 2:.1f}" y="{hh + 24}" text-anchor="middle" '
+                f'font-family="{FONT_FAMILY}" font-size="10" fill="#495057">{escape(sub)}</text>'
+            )
+
+        # Detail
+        detail = node.get("detail")
+        if detail:
+            detail_y = hh + 24 + (LINE_HEIGHT if sub else 0)
+            lines.append(
+                f'    <text x="{w / 2:.1f}" y="{detail_y}" text-anchor="middle" '
+                f'font-family="{FONT_FAMILY}" font-size="9" fill="#868e96">{escape(detail)}</text>'
+            )
+
+        # Terminal circles
+        terminals = collect_node_terminals(node["id"], edge_terms)
+        r = terminal_radius(ntype)
+        for tp in terminals:
+            cx = tp["x"] - x
+            cy = tp["y"] - y
+            lines.append(
+                f'    <circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r}" '
+                f'fill="white" stroke="{color}" stroke-width="2"/>'
+            )
+
+        lines.append("  </g>")
+
+    # Legend
+    lines.append(f'  <g transform="translate({PADDING}, {legend_y})">')
+    lines.append(
+        f'    <text x="0" y="0" font-family="{FONT_FAMILY}" font-size="10" '
+        f'font-weight="600" fill="#495057">Legend:</text>'
+    )
+
+    for idx, item in enumerate(legend_items):
+        ox = 60 + idx * 120
+
+        if item == "input":
+            lines.append(
+                f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
+                f'fill="white" stroke="#ffd700" stroke-width="1.5"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">Input</text>'
+            )
+        elif item == "primary":
+            lines.append(
+                f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
+                f'stroke="#25537b" stroke-width="4" stroke-linecap="round"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">Data flow</text>'
+            )
+        elif item == "qc":
+            lines.append(
+                f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
+                f'stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">QC metrics</text>'
+            )
+        elif item == "output":
+            lines.append(
+                f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
+                f'fill="white" stroke="#f97316" stroke-width="1.5"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">Output</text>'
+            )
+        elif item == "report":
+            lines.append(
+                f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
+                f'fill="white" stroke="#10b981" stroke-width="1.5"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">Report</text>'
+            )
+        elif item == "secondary":
+            lines.append(
+                f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
+                f'stroke="#25537b" stroke-width="3" stroke-linecap="round"/>'
+            )
+            lines.append(
+                f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
+                f'font-size="9" fill="#6c757d">Secondary</text>'
+            )
+
+    lines.append("  </g>")
+    lines.append("</svg>")
+
+    return "\n".join(lines)
+
+
+def render_all_diagram_svgs(workflows_dir):
+    """Walk workflows_dir for *-diagram.json files and write corresponding SVGs."""
+    count = 0
+    for root, _, files in os.walk(workflows_dir):
+        for filename in files:
+            if filename.endswith("-diagram.json"):
+                json_path = os.path.join(root, filename)
+                svg_path = json_path.replace("-diagram.json", "-diagram.svg")
+
+                with open(json_path) as f:
+                    data = json.load(f)
+
+                svg_content = render_svg(data)
+                with open(svg_path, "w") as f:
+                    f.write(svg_content)
+
+                count += 1
+                print(f"Rendered {svg_path}")
+
+    print(f"Rendered {count} diagram SVG(s)")
+    return count
+
+
+if __name__ == "__main__":
+    import sys
+
+    directory = sys.argv[1] if len(sys.argv) > 1 else "./workflows"
+    render_all_diagram_svgs(directory)
