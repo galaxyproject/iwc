@@ -350,7 +350,7 @@ def collect_node_terminals(node_id, edge_terminals):
 def render_svg(data):
     """Render a diagram JSON descriptor to an SVG string."""
     layouts = compute_layout(data)
-    layout_map = {l["node"]["id"]: l for l in layouts}
+    layout_map = {lay["node"]["id"]: lay for lay in layouts}
     edge_terms = compute_edge_terminals(data, layout_map)
     _, _, svg_width, svg_height = compute_viewbox(layouts)
 
