@@ -1,0 +1,152 @@
+title: "COVID-19: Variation Analysis on ARTIC PE Data"
+nodes:
+  - id: reads
+    type: input
+    label: PE FASTQ Reads
+    subtitle: "list:paired collection"
+    detail: Illumina ARTIC amplicon data
+    step: "1"
+    column: 0
+    row: 0
+  - id: reference
+    type: input
+    label: SARS-CoV-2 Reference
+    subtitle: "NC_045512.2 FASTA"
+    column: 0
+    row: 1
+  - id: primerBed
+    type: input
+    label: ARTIC Primer BED
+    subtitle: Primer positions + amplicon map
+    column: 0
+    row: 2
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Quality trimming & filtering
+    step: "2"
+    column: 1
+    row: 0
+  - id: bwa
+    type: tool
+    label: BWA-MEM
+    subtitle: Map reads to reference
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterRealign
+    type: tool
+    label: Filter & Realign
+    subtitle: "MAPQ>=20 filter, LoFreq realign"
+    detail: Samtools view + Viterbi + IndelQual
+    step: "4"
+    column: 3
+    row: 0
+  - id: ivarTrim
+    type: tool
+    label: ivar trim
+    subtitle: Trim ARTIC primer sequences
+    detail: Amplicon-aware trimming
+    step: "5"
+    column: 4
+    row: 0
+  - id: lofreqCall1
+    type: tool
+    label: LoFreq Call (1st pass)
+    subtitle: Initial variant calling
+    detail: SNVs + indels
+    step: "6"
+    column: 0
+    row: 3
+  - id: ivarRemove
+    type: tool
+    label: ivar removereads
+    subtitle: Remove primer-biased amplicons
+    detail: Excludes tainted amplicon reads
+    step: "7"
+    column: 1
+    row: 3
+  - id: lofreqCall2
+    type: tool
+    label: LoFreq Call (2nd pass)
+    subtitle: Bias-corrected variant calling
+    step: "8"
+    column: 2
+    row: 3
+  - id: biasAnnotation
+    type: tool
+    label: Amplicon Bias Annotation
+    subtitle: Flag bias-affected variants
+    detail: bcftools annotate + VCF intersect
+    step: "9"
+    column: 3
+    row: 3
+  - id: snpeff
+    type: tool
+    label: SnpEff + LoFreq filter
+    subtitle: Functional annotation & strand-bias filter
+    detail: COVID-19-specific annotation
+    step: "10"
+    column: 4
+    row: 3
+  - id: annotatedVcf
+    type: output
+    label: Annotated Variants
+    subtitle: Final VCF with bias flags
+    column: 4
+    row: 4
+  - id: snpeffStats
+    type: report
+    label: SnpEff Stats
+    subtitle: Variant effect summary
+    column: 3
+    row: 4
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Preprocessing & mapping QC
+    detail: fastp + Samtools + QualiMap
+    column: 1
+    row: 4
+edges:
+  - from: reads
+    to: fastp
+  - from: reference
+    to: bwa
+    style: secondary
+  - from: primerBed
+    to: ivarTrim
+    style: secondary
+  - from: fastp
+    to: bwa
+  - from: bwa
+    to: filterRealign
+  - from: filterRealign
+    to: ivarTrim
+  - from: ivarTrim
+    to: lofreqCall1
+  - from: lofreqCall1
+    to: ivarRemove
+  - from: ivarRemove
+    to: lofreqCall2
+  - from: lofreqCall1
+    to: biasAnnotation
+    style: dual
+  - from: lofreqCall2
+    to: biasAnnotation
+    style: dual
+  - from: biasAnnotation
+    to: snpeff
+  - from: snpeff
+    to: annotatedVcf
+  - from: snpeff
+    to: snpeffStats
+    style: qc
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: filterRealign
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, dual, qc, output, report]

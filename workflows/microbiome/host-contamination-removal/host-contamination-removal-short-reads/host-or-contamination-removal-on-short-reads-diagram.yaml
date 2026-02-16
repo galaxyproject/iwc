@@ -1,0 +1,56 @@
+title: "Host or Contamination Removal on Short-Reads"
+nodes:
+  - id: shortReads
+    type: input
+    label: Short-reads
+    subtitle: "Paired-end fastq collection"
+    column: 0
+    row: 0
+  - id: refGenome
+    type: input
+    label: Reference Genome
+    subtitle: "Host/contaminant genome"
+    column: 0
+    row: 1
+  - id: bowtie2
+    type: tool
+    label: Bowtie2
+    subtitle: Map against reference
+    detail: Keep unaligned reads
+    step: "1"
+    column: 1
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregate mapping stats
+    step: "2"
+    column: 2
+    row: 1
+  - id: filteredReads
+    type: output
+    label: Filtered Reads
+    subtitle: "Reads without host/contaminant"
+    column: 2
+    row: 0
+  - id: multiqcReport
+    type: output
+    label: MultiQC HTML Report
+    subtitle: "Mapping statistics summary"
+    column: 3
+    row: 1
+edges:
+  - from: shortReads
+    to: bowtie2
+  - from: refGenome
+    to: bowtie2
+    style: secondary
+  - from: bowtie2
+    to: filteredReads
+  - from: bowtie2
+    to: multiqc
+    style: qc
+  - from: multiqc
+    to: multiqcReport
+legend:
+  items: [input, primary, qc, output, report]

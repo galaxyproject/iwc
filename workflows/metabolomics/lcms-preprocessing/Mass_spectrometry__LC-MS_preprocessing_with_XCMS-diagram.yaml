@@ -1,0 +1,153 @@
+title: "LC-MS Preprocessing with XCMS"
+nodes:
+  - id: sampleMeta
+    type: input
+    label: Sample Metadata
+    subtitle: Sample class assignments
+    detail: tabular
+    column: 0
+    row: 0
+  - id: msData
+    type: input
+    label: MS Dataset Collection
+    subtitle: Raw mass-spec files
+    detail: mzML / mzXML / netCDF
+    column: 0
+    row: 1
+  - id: readMSData
+    type: tool
+    label: MSnbase readMSData
+    subtitle: Import raw spectra
+    step: "1"
+    column: 1
+    row: 0
+  - id: findPeaks
+    type: tool
+    label: findChromPeaks
+    subtitle: Peak detection
+    detail: CentWave algorithm
+    step: "2"
+    column: 2
+    row: 0
+  - id: merge
+    type: tool
+    label: Peak Merger
+    subtitle: Combine samples
+    detail: Attach sample metadata
+    step: "3"
+    column: 3
+    row: 0
+  - id: group1
+    type: tool
+    label: groupChromPeaks
+    subtitle: Correspondence (1st)
+    detail: PeakDensity grouping
+    step: "4"
+    column: 4
+    row: 0
+  - id: retcor
+    type: tool
+    label: adjustRtime
+    subtitle: RT correction
+    detail: PeakGroups / loess
+    step: "5"
+    column: 0
+    row: 1
+  - id: group2
+    type: tool
+    label: groupChromPeaks
+    subtitle: Correspondence (2nd)
+    detail: Re-group after alignment
+    step: "6"
+    column: 1
+    row: 1
+  - id: fillPeaks
+    type: tool
+    label: fillChromPeaks
+    subtitle: Gap-filling
+    detail: Integrate missing peaks
+    step: "7"
+    column: 2
+    row: 1
+  - id: annotate
+    type: tool
+    label: CAMERA.annotate
+    subtitle: Annotate features
+    detail: Isotopes & adducts
+    step: "8"
+    column: 3
+    row: 1
+  - id: rawChrom
+    type: report
+    label: Raw Chromatograms
+    subtitle: TIC + BPI (PDF)
+    column: 1
+    row: 2
+  - id: retcorPlot
+    type: report
+    label: RT Correction Plot
+    subtitle: Raw vs adjusted (PDF)
+    column: 0
+    row: 2
+  - id: adjChrom
+    type: report
+    label: Adjusted Chromatograms
+    subtitle: TIC + BPI (PDF)
+    column: 1
+    row: 3
+  - id: intensityCheck
+    type: report
+    label: Intensity Check
+    subtitle: QC per class (PDF)
+    column: 4
+    row: 2
+  - id: dataMatrix
+    type: output
+    label: Data Matrix
+    subtitle: Peak intensity table
+    column: 2
+    row: 2
+  - id: variableMetadata
+    type: output
+    label: Variable Metadata
+    subtitle: Annotated features
+    column: 3
+    row: 2
+edges:
+  - from: msData
+    to: readMSData
+  - from: readMSData
+    to: findPeaks
+  - from: findPeaks
+    to: merge
+  - from: sampleMeta
+    to: merge
+    style: secondary
+  - from: merge
+    to: group1
+  - from: group1
+    to: retcor
+  - from: retcor
+    to: group2
+  - from: group2
+    to: fillPeaks
+  - from: fillPeaks
+    to: annotate
+  - from: readMSData
+    to: rawChrom
+    style: qc
+  - from: retcor
+    to: retcorPlot
+    style: qc
+  - from: retcor
+    to: adjChrom
+    style: qc
+  - from: group1
+    to: intensityCheck
+    style: qc
+  - from: fillPeaks
+    to: dataMatrix
+  - from: annotate
+    to: variableMetadata
+legend:
+  items: [input, primary, secondary, qc, output, report]
