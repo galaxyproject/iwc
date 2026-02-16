@@ -1,56 +1,68 @@
-- doc: Test outline for hi-c-map-for-assembly-manual-curation.ga 1
+# Planemo test configuration for Hi-C contact map workflow
+# Test 1: Single read set per technology (no collections)
+# Test 2: Multiple read sets with collections
+
+- doc: Test 1 - Single read set per technology
   job:
     Haplotype 1:
       class: File
-      location: https://zenodo.org/records/14230702/files/Haplotype%202.fasta
+      location: https://zenodo.org/records/18664706/files/Haplotype_1.fasta?
       filetype: fasta
       hashes:
       - hash_function: SHA-1
-        hash_value: b37d7c2409974cd01f5c602fcdf64a49e27e5e77
+        hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
     Haplotype 2:
       class: File
-      location: https://zenodo.org/records/14230702/files/Haplotype%202.fasta
+      location: https://zenodo.org/records/18664706/files/Haplotype_2.fasta
       filetype: fasta
       hashes:
       - hash_function: SHA-1
-        hash_value: b37d7c2409974cd01f5c602fcdf64a49e27e5e77
+        hash_value: 166cb118625113e39593bedb10aaea028c20f77d
     Hi-C reads:
       class: Collection
       collection_type: list:paired
       elements:
       - class: Collection
         type: paired
-        identifier: Hi-C reads
+        identifier: Hi-C_set_1
         elements:
         - identifier: forward
           class: File
-          path: https://zenodo.org/records/14230702/files/HiC%20forward.fastqsanger.gz
+          location: https://zenodo.org/records/18664706/files/HiC_forward_1.fastqsanger.gz
           hashes:
           - hash_function: SHA-1
-            hash_value: 4c49cbc443870ec731c79f3a69123c6de8f8de52
+            hash_value: 2dafed5cc07885dfe59c8a85311dfb4343deb9c3
         - identifier: reverse
           class: File
-          path: https://zenodo.org/records/14230702/files/HiC%20reverse.fastqsanger.gz
+          location: https://zenodo.org/records/18664706/files/HiC_reverse_1.fastqsanger.gz
           hashes:
           - hash_function: SHA-1
-            hash_value: 0041f9c48ca789a6ce1e1f61d355d9e967f00727
+            hash_value: 3c31935d0d706a62ecc1f82f27ee01c402e64416
     PacBio reads:
       class: Collection
       collection_type: list
       elements:
       - class: File
-        identifier: PacBio reads.fastq.gz
-        location: https://zenodo.org/records/14230702/files/PacBio%20reads.fastq.gz
+        identifier: PacBio_set_1
+        location: https://zenodo.org/records/18664706/files/PacBio_reads_1.fastq.gz
         hashes:
         - hash_function: SHA-1
-          hash_value: d154e11c10bf3d3484505901f364d2f9cd50d573
+          hash_value: 84fe8fad10155f9edd1365ba13bb5f30f0d1d881
     Do you want to add suffixes to the scaffold names?: true
-    Will you use a second haplotype?: false
+    Will you use a second haplotype?: true
     First Haplotype suffix: H1
     Second Haplotype suffix: H2
-    Do you want to trim the Hi-C data?: true
-    Telomere repeat to suit species: CCCTAA
-    Minimum Mapping Quality: 20
+    Do you want to trim the Hi-C data?: false
+    Remove duplicated Hi-C reads?: true
+    "Remove adapters from HiFi reads? ": false
+    Minimum Mapping Quality: 10
+    Canonical telomeric pattern: TTAGGG
+    Telomeric Patterns to explore (comma-separated), IUPAC allowed: TTAGGG,CCCTAA
+    Bin Size for Bigwig files: 100
+    Species Name: Test_species
+    Assembly Name: toLid
+    Lineage for Compleasm: vertebrata_odb10
+    Database for Compleasm: v5 
   outputs:
     Assembly for curation:
       asserts:
@@ -59,91 +71,140 @@
     Gaps Bed:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t835498\t835698"
-    Seqtk-telo Output:
+          text: "scaffold_10.H1"
+    Telomere Report:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t0\t11012\t139653677"
+          text: "scaffold_10.H1"
     Gaps Bedgraph:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t835498\t835698\t200"
+          text: "scaffold_10.H1"
     BigWig Coverage:
       asserts:
         has_size:
-          value: 100000
-          delta: 40000
-    Telomeres Bedgraph:
+          value: 10000
+          delta: 5000
+    terminal telomeres:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t0\t11012\t11012"
+          text: "scaffold_10.H1"
+        has_text:
+          text: "scaffold_1.H1"
     Merged Hi-C Alignments:
       asserts:
         has_size:
-          value: 37000000
-          delta: 5000000
+          value: 7500000
+          delta: 3000000
     Pretext All tracks:
       asserts:
         has_size:
-          value: 790000
-          delta: 50000
+          value: 1000000
+          delta: 500000
     Pretext All tracks - Multimapping:
       asserts:
         has_size:
-          value: 1700000
-          delta: 500000
-- doc: Test outline for hi-c-map-for-assembly-manual-curation.ga 2
+          value: 800000
+          delta: 400000
+    Compleasm Genes track:
+      asserts:
+        has_text:
+          text: "scaffold_1.H2\t106669\t106765"
+    Markduplicates Summary:
+      asserts:
+        has_text:
+          text: "1042\t217\t3942"
+    "Hi-C duplication stats: Raw":
+      asserts:
+        has_text:
+          text: "total_dups\t3941"
+    P telomeres bed: 
+      asserts:
+        has_text:
+          text: "scaffold_1.H1\t488600\t500600\t12000"
+- doc: Test 2 - Multiple read sets with collections
   job:
     Haplotype 1:
       class: File
-      location: https://zenodo.org/records/14230702/files/Haplotype%201.fasta
+      location: https://zenodo.org/records/18664706/files/Haplotype_1.fasta
       filetype: fasta
       hashes:
       - hash_function: SHA-1
-        hash_value: dd7f28c1a72f429e2c15485003e1f7ec164f7a82
+        hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
     Haplotype 2:
       class: File
-      location: https://zenodo.org/records/14230702/files/Haplotype%201.fasta
+      location: https://zenodo.org/records/18664706/files/Haplotype_2.fasta
       filetype: fasta
       hashes:
       - hash_function: SHA-1
-        hash_value: dd7f28c1a72f429e2c15485003e1f7ec164f7a82
+        hash_value: 166cb118625113e39593bedb10aaea028c20f77d
     Hi-C reads:
       class: Collection
       collection_type: list:paired
       elements:
       - class: Collection
         type: paired
-        identifier: Hi-C reads
+        identifier: Hi-C_set_1
         elements:
         - identifier: forward
           class: File
-          path: https://zenodo.org/records/14230702/files/HiC%20forward.fastqsanger.gz
+          location: https://zenodo.org/records/18664706/files/HiC_forward_1.fastqsanger.gz
           hashes:
           - hash_function: SHA-1
-            hash_value: 4c49cbc443870ec731c79f3a69123c6de8f8de52
+            hash_value: 2dafed5cc07885dfe59c8a85311dfb4343deb9c3
         - identifier: reverse
           class: File
-          path: https://zenodo.org/records/14230702/files/HiC%20reverse.fastqsanger.gz
+          location: https://zenodo.org/records/18664706/files/HiC_reverse_1.fastqsanger.gz
           hashes:
           - hash_function: SHA-1
-            hash_value: 0041f9c48ca789a6ce1e1f61d355d9e967f00727
+            hash_value: 3c31935d0d706a62ecc1f82f27ee01c402e64416
+      - class: Collection
+        type: paired
+        identifier: Hi-C_set_2
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/18664706/files/HiC_forward_2.fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 8a7f037515cf6f6e90688ed706b4807870e29e39
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/18664706/files/HiC_reverse_2.fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 6a5f44e04bafc49f98187d20a19b35163baee371
     PacBio reads:
       class: Collection
       collection_type: list
       elements:
       - class: File
-        identifier: PacBio reads.fastq.gz
-        location: https://zenodo.org/records/14230702/files/PacBio%20reads.fastq.gz
+        identifier: PacBio_set_1
+        path: test_data/PacBio_reads_1.fastq.gz
         hashes:
         - hash_function: SHA-1
-          hash_value: d154e11c10bf3d3484505901f364d2f9cd50d573
+          hash_value: 84fe8fad10155f9edd1365ba13bb5f30f0d1d881
+      - class: File
+        identifier: PacBio_set_2
+        path: test_data/PacBio_reads_2.fastq.gz
+        hashes:
+        - hash_function: SHA-1
+          hash_value: f0408118bf8d116d0d560d2899fc4861c930c067
     Do you want to add suffixes to the scaffold names?: true
-    Will you use a second haplotype?: false
+    Will you use a second haplotype?: true
     First Haplotype suffix: H1
     Second Haplotype suffix: H2
-    Do you want to trim the Hi-C data?: true
-    Telomere repeat to suit species: CCCTAA
+    Do you want to trim the Hi-C data?: false
+    Remove duplicated Hi-C reads?: false
+    "Remove adapters from HiFi reads? ": false
+    Minimum Mapping Quality: 10
+    Canonical telomeric pattern: TTAGGG
+    Telomeric Patterns to explore (comma-separated), IUPAC allowed: TTAGGG,CCCTAA
+    Bin Size for Bigwig files: 100
+    Species Name: Test_species
+    Assembly Name: toLid
+    Lineage for Compleasm: vertebrata_odb10
+    Database for Compleasm: v5
   outputs:
     Assembly for curation:
       asserts:
@@ -152,28 +213,50 @@
     Gaps Bed:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t34145604\t34145804"
+          text: "scaffold_10.H1"
+    Telomere Report:
+      asserts:
+        has_text:
+          text: "scaffold_10.H1"
     Gaps Bedgraph:
       asserts:
         has_text:
-          text: "scaffold_10.H1\t34145604\t34145804\t200"
+          text: "scaffold_10.H1"
     BigWig Coverage:
       asserts:
         has_size:
-          value: 100000
-          delta: 40000
+          value: 20000
+          delta: 10000
+    terminal telomeres:
+      asserts:
+        has_text:
+          text: "scaffold_10.H1"
+        has_text:
+          text: "scaffold_1.H1"
     Merged Hi-C Alignments:
       asserts:
         has_size:
-          value: 37000000
-          delta: 5000000
+          value: 15000000
+          delta: 6000000
     Pretext All tracks:
       asserts:
         has_size:
-          value: 780000
-          delta: 50000
+          value: 2000000
+          delta: 1000000
     Pretext All tracks - Multimapping:
       asserts:
         has_size:
-          value: 1600000
-          delta: 500000
+          value: 2000000
+          delta: 1000000
+    Compleasm Genes track:
+      asserts:
+        has_text:
+          text: "scaffold_1.H2\t106669\t106765"
+    "Hi-C duplication stats: Raw":
+      asserts:
+        has_text:
+          text: "total_dups\t1305"
+    P telomeres bed: 
+      asserts:
+        has_text:
+          text: "scaffold_1.H1\t488600\t500600\t12000"
