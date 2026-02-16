@@ -3,7 +3,6 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import { stringify } from "yaml";
 import type { Workflow } from "../models/workflow";
 import MarkdownRenderer from "./MarkdownRenderer.vue";
-import WorkflowDiagram from "./WorkflowDiagram.vue";
 import Author from "./Author.vue";
 import GalaxyInstanceSelector from "./GalaxyInstanceSelector.vue";
 import CodeBlock from "./CodeBlock.vue";
@@ -186,15 +185,8 @@ onMounted(() => {
                     <!-- Diagram Tab -->
                     <TabsContent value="diagram" class="prose !max-w-none">
                         <h1>{{ workflow.definition.name }}</h1>
-                        <!-- Rendered diagram (preferred) -->
-                        <div v-if="workflow.diagram_data" class="mb-8">
-                            <h2>Workflow Overview</h2>
-                            <div class="border rounded-lg overflow-hidden shadow-sm">
-                                <WorkflowDiagram :data="workflow.diagram_data" />
-                            </div>
-                        </div>
-                        <!-- Legacy raw SVG fallback -->
-                        <div v-else-if="workflow.diagram_svg" class="mb-8">
+                        <!-- SVG diagram -->
+                        <div v-if="workflow.diagram_svg" class="mb-8">
                             <h2>Workflow Overview</h2>
                             <div
                                 class="workflow-overview-svg border rounded-lg overflow-hidden shadow-sm"
@@ -213,7 +205,6 @@ onMounted(() => {
                         </div>
                         <p
                             v-if="
-                                !workflow.diagram_data &&
                                 !workflow.diagram_svg &&
                                 !tabs.find((t) => t.value === 'diagram')?.content
                             ">
