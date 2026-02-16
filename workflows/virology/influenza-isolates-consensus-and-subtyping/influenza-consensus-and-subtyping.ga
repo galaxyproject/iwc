@@ -29,9 +29,9 @@
         {
             "child_steps": [
                 2,
+                16,
                 17,
                 18,
-                16,
                 19
             ],
             "color": "blue",
@@ -51,7 +51,6 @@
         },
         {
             "child_steps": [
-                13,
                 3,
                 4,
                 6,
@@ -61,6 +60,7 @@
                 10,
                 11,
                 12,
+                13,
                 14,
                 15
             ],
@@ -106,9 +106,9 @@
                 44,
                 46,
                 47,
-                40,
                 49,
-                50
+                50,
+                40
             ],
             "color": "red",
             "data": {
@@ -127,10 +127,10 @@
         },
         {
             "child_steps": [
-                29,
                 22,
                 25,
                 27,
+                29,
                 20
             ],
             "color": "lime",
@@ -205,7 +205,6 @@
     "format-version": "0.1",
     "help": "## Input datasets\n\n- **Sequenced paired-end data**: a list of pairs of sequencing datasets, one fw-/rv-reads pair per sequenced isolate\n- **References per segment collection**: this must be provided as a list of FASTA datasets, one for each Influenza genome segment to analyze. Each of these datasets should contain all reference sequences of the corresponding segment that you wish to use in the analysis.\n\n  **NOTE 1**: For subtyping to work correctly *all* FASTA sequence title lines in the input need to follow the scheme (note the use of both `|` and `/`):\n\n  `>[segment]|[influenza type]/[host]/[region]/[internal reference number]/[collection year]|subtype|[accession number]`\n\n  where `[host]` can be omitted for samples obtained from human patients.\n\n  Examples:\n\n  - `>NS|A/California/07/2009|H1N1|NC_026432.1` (for the NS segment sequence of a H1N1 sample obtained from a human patient in California in 2009)\n  - `>NA|A/chicken/Zimbabwe/AI4935/2017|H5N8|MF973227.1` (for the NA segment sequence of a H5N8 sample obtained from chicken in Zimbabwe in 2017)\n\n  **NOTE 2**: Sequences containing the ambiguity symbol N will be ignored by the workflow entirely.\n\n  **NOTE 3**: Datasets in this collection must not use colons (`:`) as part of their names.\n\n  **NOTE 4**: A well-formatted collection of Influenza A reference sequences suitable for most analysis needs is linked from the \"Data resources\" section of the page: https://virology.usegalaxy.eu/published/page?id=a04ab8d6ecb698fa. The underlying per-segment FASTA files to build the collection are deposited at https://doi.org/10.5281/zenodo.15364147.\n\n## Outputs:\n\n- **successful VAPOR runs - closest references**: a nested collection listing, for each sample and segment, the up to 500 best matching reference sequences according to VAPOR; inspect this collection if you are curious how many good matches to your data there were in the reference collection; useful for debugging, for example, if generated consensus sequences contain unresolved bases (Ns); missing segments or samples in this collection indicate that VAPOR failed to identify any matches for the respective item\n- **Subtyping results**: a table listing one sample and its detected subtype (with respect to the HA and NA segments) per row; missing subtype information for HA, NA or both segments is indicated by H?, N? and H?N?, respectively, in the corresponding sample line.\n- **Hybrid reference genomes used for mapping**: collection of compiled reference genomes (in FASTA format, one per sample) that served as input for bwa-mem; each reference genome consists of the genome segments from the reference collections that best matched the corresponding sample's sequencing data\n- **fastp reports**: QC and read trimming and filtering results from fastp\n- **Final read mapping results**: bwa-mem mapping results in BAM format post-processed with samtools view\n- **QC reports for mapping results**: a collection of reports of QC metrics for the \"Final read mapping results\" generated with Qualimap\n- **Per-sample consensus sequences**: a nested collection of consensus sequences organized first by sample, then by segment\n- **Per-segment consensus sequences with samples combined**: a collection of the same consensus sequences organized by segment; each collection element is a multi-sequence FASTA dataset with the segment-specific sequences of all samples\n- **Multiple sequence alignments per segment**: a collection of multiple sequence alignments generated with MAFFT from each of the \"Per-segment consensus sequences with samples combined\" above; generated only for segments for which at least two samples yielded a consensus sequence\n- **Snipit plots per segment**: a collection of SNP plots across samples generated with Snipit; one plot per segment; generated only for segments for which at least two samples yielded a consensus sequence; the first input sample will be used as the reference in the plot\n- **IQ-Tree per-segment ML tree**, **IQ-Tree per-segment ML distance matrix** and **IQ-Tree per-segment report**: collections of IQ-Tree ML trees, distance matrices and reports; each collection has one element per segment; generated  only for segments for which at least three samples yielded a consensus sequence\n\n## Related training material\n\nhttps://gxy.io/GTN:T00308 guides you through a simplified, manual analysis that still includes the key steps of this workflow.",
     "license": "AGPL-3.0-or-later",
-    "release": "0.3",
     "name": "Influenza A isolate subtyping and consensus sequence generation",
     "readme": "# Subtyping and consensus sequence generation for batches of Influenza A isolates\n\nThis workflow performs subtyping (with respect to the HA and NA genes) and consensus sequence generation for batches of Illumina PE sequenced Influenza isolates. It overcomes Influenza genome variability by compiling the best possible reference for read mapping from a collection of reference sequences for each viral genome segment. The workflow has been tested for Influenza A isolates only but should also work with other types if a suitable collection of per-segment reference sequences (see \"Input datasets\" in the Help section) is provided.\n\nIt uses:\n- **VAPOR** for identifying, from a collection of reference sequences of each of the eight viral genome segments, the individual segment sequences that match the sequencing data for each sample most closely\n- **fastp** for sequenced reads pre-processing,\n- **bwa mem** for mapping the preprocessed reads to a reference compiled from the best-matching segment sequences identified by *VAPOR*\n- **ivar consensus** for generating consensus sequences from the mapped reads data\n- **MAFFT** for generating multiple sequence alignments from the consensus sequences of the samples in a batch\n- **Snipit** and **IQ-Tree** for visualizing differences and analyzing relationships between sequences from a batch\n\nThe workflow provides a subtyping report, the consensus sequences arranged by gene segment or by sample, quality control at the level of sequenced reads and of mapping results, and batch-level visualization and phylogenetic insight.",
     "report": {
@@ -463,7 +462,7 @@
                 },
                 "TagDatasetActionreport_html": {
                     "action_arguments": {
-                        "tags": "\ud83d\udd0d"
+                        "tags": "🔍"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "report_html"
@@ -477,6 +476,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"duplicated_reads\": {\"handling_options\": {\"eval_dups\": \"--dont_eval_duplication\", \"__current_case__\": 0}}, \"filter_options\": {\"quality_filtering_options\": {\"disable_quality_filtering\": false, \"qualified_quality_phred\": null, \"unqualified_percent_limit\": null, \"n_base_limit\": null}, \"length_filtering_options\": {\"disable_length_filtering\": false, \"length_required\": \"30\", \"length_limit\": null}, \"low_complexity_filter\": {\"enable_low_complexity_filter\": false, \"complexity_threshold\": null}}, \"output_options\": {\"report_html\": true, \"report_json\": false}, \"overrepresented_sequence_analysis\": {\"overrepresentation_analysis\": false, \"overrepresentation_sampling\": null}, \"read_mod_options\": {\"polyg_tail_trimming\": {\"trimming_select\": \"\", \"__current_case__\": 1, \"poly_g_min_len\": null}, \"polyx_tail_trimming\": {\"polyx_trimming_select\": \"\", \"__current_case__\": 1}, \"umi_processing\": {\"umi\": false, \"umi_loc\": \"\", \"umi_len\": null, \"umi_prefix\": \"\"}, \"cutting_by_quality_options\": {\"cut_front_select\": {\"cut_front\": \"\", \"__current_case__\": 1}, \"cut_tail_select\": {\"cut_tail\": \"\", \"__current_case__\": 1}, \"cut_right_select\": {\"cut_right\": \"\", \"__current_case__\": 1}}, \"base_correction_options\": {\"correction\": false}}, \"single_paired\": {\"single_paired_selector\": \"paired_collection\", \"__current_case__\": 1, \"paired_input\": {\"__class__\": \"ConnectedValue\"}, \"merge_reads\": {\"merge\": \"\", \"__current_case__\": 1}, \"adapter_trimming_options\": {\"disable_adapter_trimming\": false, \"adapter_sequence1\": \"\", \"adapter_sequence2\": \"\", \"detect_adapter_for_pe\": true}, \"global_trimming_options\": {\"trim_front1\": null, \"trim_tail1\": null, \"trim_front2\": null, \"trim_tail2\": null}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "1.1.0+galaxy0",
             "type": "tool",
             "uuid": "f7f9bf2c-0087-4731-9e61-c8cde95acbf0",
@@ -980,7 +980,7 @@
                 "top": 754.4319318470165
             },
             "post_job_actions": {
-                "HideDatasetActionoutput": {
+                "HideDatasetActionoutput_scores": {
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
                     "output_name": "output_scores"
@@ -1039,7 +1039,7 @@
                 },
                 "TagDatasetActionoutput": {
                     "action_arguments": {
-                        "tags": "\ud83d\udd0d"
+                        "tags": "🔍"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "output"
@@ -1048,7 +1048,7 @@
             "tool_id": "__FILTER_FAILED_DATASETS__",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.1.0",
+            "tool_version": "1.0.0",
             "type": "tool",
             "uuid": "b0ccb093-c5c3-45f4-ad41-b8d2e0f1e101",
             "when": null,
@@ -1057,7 +1057,8 @@
                     "label": "successful VAPOR runs - closest references",
                     "output_name": "output",
                     "uuid": "246cdfd3-52d0-4d6f-8c63-90d148402487"
-                }]
+                }
+            ]
         },
         "18": {
             "annotation": "",
@@ -1616,7 +1617,7 @@
             "tool_id": "__FILTER_FAILED_DATASETS__",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.1.0",
+            "tool_version": "1.0.0",
             "type": "tool",
             "uuid": "52ce1caf-2663-429a-a96a-7ac6a8668b5c",
             "when": null,
@@ -1633,12 +1634,7 @@
                     "output_name": "output"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Replace",
-                    "name": "infile"
-                }
-            ],
+            "inputs": [],
             "label": null,
             "name": "Replace",
             "outputs": [
@@ -1666,7 +1662,7 @@
                 },
                 "TagDatasetActionoutfile": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "outfile"
@@ -1679,7 +1675,7 @@
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"find_and_replace\": [{\"__index__\": 0, \"find_pattern\": \"^([^\\\\t]+)\\\\t$\", \"replace_pattern\": \"$1\\\\tH?N?\", \"is_regex\": false, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 1, \"find_pattern\": \"^(.+\\\\t)(\\\\t.*)$\", \"replace_pattern\": \"$1H?$2\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 2, \"find_pattern\": \"^(.+\\\\t)$\", \"replace_pattern\": \"$1N?\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 3, \"find_pattern\": \"^(.+\\\\t)HA.+\\\\|.*(H\\\\d{1,2})N\\\\d{1,2}\\\\|[^|]+(\\\\t.+)$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 4, \"find_pattern\": \"(.+\\\\t)(.+\\\\t)NA.+\\\\|.*H\\\\d{1,2}(N\\\\d{1,2})\\\\|.+$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 5, \"find_pattern\": \"^(.+\\\\t)(.+)\\\\t(.+)$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}], \"infile\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"find_and_replace\": [{\"__index__\": 0, \"find_pattern\": \"^([^\\\\t]+)\\\\t$\", \"replace_pattern\": \"$1\\\\tH?N?\", \"is_regex\": false, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 1, \"find_pattern\": \"^(.+\\\\t)(\\\\t.*)$\", \"replace_pattern\": \"$1H?$2\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 2, \"find_pattern\": \"^(.+\\\\t)$\", \"replace_pattern\": \"$1N?\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 3, \"find_pattern\": \"^(.+\\\\t)HA.+\\\\|.*(H\\\\d{1,2})N\\\\d{1,2}\\\\|[^|]+(\\\\t.+)$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 4, \"find_pattern\": \"(.+\\\\t)(.+\\\\t)NA.+\\\\|.*H\\\\d{1,2}(N\\\\d{1,2})\\\\|.+$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}, {\"__index__\": 5, \"find_pattern\": \"^(.+\\\\t)(.+)\\\\t(.+)$\", \"replace_pattern\": \"$1$2$3\", \"is_regex\": true, \"global\": false, \"caseinsensitive\": false, \"wholewords\": false, \"skip_first_line\": false, \"searchwhere\": {\"searchwhere_select\": \"line\", \"__current_case__\": 0}}], \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
@@ -1749,7 +1745,7 @@
         },
         "32": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_ref/bamtools_split_ref/2.5.2+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_ref/bamtools_split_ref/2.5.3+galaxy0",
             "errors": null,
             "id": 32,
             "input_connections": {
@@ -1772,16 +1768,16 @@
                 "top": 691.488888355329
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_ref/bamtools_split_ref/2.5.2+galaxy2",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bamtools_split_ref/bamtools_split_ref/2.5.3+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9b8feb118f9e",
+                "changeset_revision": "f66e109710bd",
                 "name": "bamtools_split_ref",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"input_bam\": {\"__class__\": \"ConnectedValue\"}, \"refs\": null, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.5.2+galaxy2",
+            "tool_version": "2.5.3+galaxy0",
             "type": "tool",
             "uuid": "a8f839cd-2513-4d6b-bbf3-d64e701392f9",
             "when": null,
@@ -1830,7 +1826,7 @@
                 },
                 "TagDatasetActionoutput_html": {
                     "action_arguments": {
-                        "tags": "\ud83d\udd0d"
+                        "tags": "🔍"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "output_html"
@@ -2212,7 +2208,7 @@
                 },
                 "TagDatasetActionconsensus": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "consensus"
@@ -2560,7 +2556,7 @@
                 },
                 "TagDatasetActionoutfile": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "outfile"
@@ -2731,7 +2727,12 @@
                     "output_name": "output_filtered"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool MAFFT",
+                    "name": "seed"
+                }
+            ],
             "label": null,
             "name": "MAFFT",
             "outputs": [
@@ -2861,7 +2862,7 @@
                 },
                 "TagDatasetActionsnp_plot": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "snp_plot"
@@ -2975,14 +2976,14 @@
                 },
                 "TagDatasetActioniqtree": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "iqtree"
                 },
                 "TagDatasetActionmldist": {
                     "action_arguments": {
-                        "tags": "\u2b50"
+                        "tags": "⭐"
                     },
                     "action_type": "TagDatasetAction",
                     "output_name": "mldist"
@@ -3024,5 +3025,7 @@
         "AIV",
         "virology"
     ],
-    "uuid": "82ea5fad-0a20-4cf5-beb0-23f81c7795e7"
+    "uuid": "5aa5e7fa-c19d-4a91-a416-d5ab6d3f78fd",
+    "version": 1,
+    "release": "0.4"
 }
