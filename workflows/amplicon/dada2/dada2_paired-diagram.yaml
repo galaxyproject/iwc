@@ -1,0 +1,110 @@
+title: "DADA2 Amplicon Analysis Pipeline - Paired End"
+nodes:
+  - id: input
+    type: input
+    label: Paired Input Data
+    subtitle: "list:paired collection"
+    step: "1"
+    column: 0
+    row: 0
+  - id: filterAndTrim
+    type: tool
+    label: filterAndTrim
+    subtitle: Trim and filter reads
+    detail: Quality + length filtering
+    step: "2"
+    column: 1
+    row: 0
+  - id: learnErrors
+    type: tool
+    label: learnErrors
+    subtitle: Learn error rates
+    detail: Fwd + Rev (separately)
+    step: "3"
+    column: 2
+    row: 0
+  - id: dada
+    type: tool
+    label: dada (Denoise)
+    subtitle: Sample inference
+    detail: Fwd + Rev (separately)
+    step: "4"
+    column: 3
+    row: 0
+  - id: mergePairs
+    type: tool
+    label: mergePairs
+    subtitle: Merge forward + reverse
+    detail: Paired-end overlap
+    step: "5"
+    column: 0
+    row: 1
+  - id: makeSequenceTable
+    type: tool
+    label: makeSequenceTable
+    subtitle: Build ASV table
+    detail: Sample x sequence matrix
+    step: "6"
+    column: 1
+    row: 1
+  - id: removeBimeraDenovo
+    type: tool
+    label: removeBimeraDenovo
+    subtitle: Remove chimeras
+    detail: Consensus method
+    step: "7"
+    column: 2
+    row: 1
+  - id: assignTaxonomy
+    type: tool
+    label: assignTaxonomy
+    subtitle: Classify ASVs
+    detail: Reference database
+    step: "8"
+    column: 3
+    row: 1
+  - id: seqTracking
+    type: report
+    label: Sequence Tracking
+    subtitle: reads per step (QC)
+    column: 1
+    row: 2
+  - id: seqTable
+    type: output
+    label: Sequence Table
+    subtitle: dada2_sequencetable
+    column: 2
+    row: 2
+  - id: taxonomy
+    type: output
+    label: Taxonomy
+    subtitle: tabular
+    column: 3
+    row: 2
+edges:
+  - from: input
+    to: filterAndTrim
+  - from: filterAndTrim
+    to: learnErrors
+    style: dual
+  - from: learnErrors
+    to: dada
+    style: dual
+  - from: dada
+    to: mergePairs
+  - from: mergePairs
+    to: makeSequenceTable
+  - from: makeSequenceTable
+    to: removeBimeraDenovo
+  - from: removeBimeraDenovo
+    to: assignTaxonomy
+  - from: makeSequenceTable
+    to: seqTracking
+    style: qc
+  - from: removeBimeraDenovo
+    to: seqTable
+    style: secondary
+  - from: assignTaxonomy
+    to: taxonomy
+legend:
+  items: [input, primary, qc, output, report]

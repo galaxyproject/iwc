@@ -167,12 +167,6 @@ def find_and_load_compliant_workflows(directory):
                 workflow["diagram_svg"] = read_contents(
                     f"{os.path.splitext(workflow_path)[0]}-diagram.svg"
                 )
-                # Load structured JSON diagram if it exists
-                diagram_json_path = f"{os.path.splitext(workflow_path)[0]}-diagram.json"
-                diagram_json_content = read_contents(diagram_json_path)
-                workflow["diagram_data"] = (
-                    json.loads(diagram_json_content) if diagram_json_content else None
-                )
 
                 # Extract update date from changelog
                 update_date = extract_date_from_changelog(changelog_content)

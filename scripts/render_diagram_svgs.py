@@ -1,16 +1,16 @@
 """
-Build-time SVG renderer for workflow diagram JSON descriptors.
+Build-time SVG renderer for workflow diagram YAML descriptors.
 
-Reads *-diagram.json files and writes corresponding *-diagram.svg files
-using the same layout algorithms as website/src/components/WorkflowDiagram.vue.
+Reads *-diagram.yaml files and writes corresponding *-diagram.svg files.
 """
 
-import json
 import math
 import os
 from html import escape
 
-# --- Constants (matching WorkflowDiagram.vue exactly) ---
+import yaml
+
+# --- Constants ---
 
 COLORS = {
     "input": "#ffd700",
@@ -348,7 +348,7 @@ def collect_node_terminals(node_id, edge_terminals):
 
 
 def render_svg(data):
-    """Render a diagram JSON descriptor to an SVG string."""
+    """Render a diagram descriptor to an SVG string."""
     layouts = compute_layout(data)
     layout_map = {lay["node"]["id"]: lay for lay in layouts}
     edge_terms = compute_edge_terminals(data, layout_map)
@@ -552,16 +552,16 @@ def render_svg(data):
 
 
 def render_all_diagram_svgs(workflows_dir):
-    """Walk workflows_dir for *-diagram.json files and write corresponding SVGs."""
+    """Walk workflows_dir for *-diagram.yaml files and write corresponding SVGs."""
     count = 0
     for root, _, files in os.walk(workflows_dir):
         for filename in files:
-            if filename.endswith("-diagram.json"):
-                json_path = os.path.join(root, filename)
-                svg_path = json_path.replace("-diagram.json", "-diagram.svg")
+            if filename.endswith("-diagram.yaml"):
+                yaml_path = os.path.join(root, filename)
+                svg_path = yaml_path.replace("-diagram.yaml", "-diagram.svg")
 
-                with open(json_path) as f:
-                    data = json.load(f)
+                with open(yaml_path) as f:
+                    data = yaml.safe_load(f)
 
                 svg_content = render_svg(data)
                 with open(svg_path, "w") as f:
