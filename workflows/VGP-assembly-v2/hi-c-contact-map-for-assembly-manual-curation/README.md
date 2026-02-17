@@ -65,7 +65,7 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 6. **Compleasm hap2 - Busco** [GFF] - BUSCO-based gene predictions for haplotype 2
 7. **Compleasm hap2 - Miniprot** [GFF] - Miniprot-based gene predictions for haplotype 2
 8. **Merged Compleasm Gffs** [GFF] - Combined gene annotations from all Compleasm analyses
-9. **Egapx Genes track** [GFF] - Gene predictions from Egapx annotation pipeline
+
 
 ### Hi-C Alignment Outputs
 
