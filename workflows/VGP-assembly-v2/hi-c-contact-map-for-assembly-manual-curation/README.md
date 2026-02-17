@@ -95,7 +95,7 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 ### Pretext Map Outputs
 
 All Pretext outputs are generated in two versions:
-- **With MAPQ filtering** (default MAPQ ≥ 20): Cleaner maps with high-confidence contacts
+- **With MAPQ filtering** (default MAPQ ≥ 10): Cleaner maps with high-confidence contacts
 - **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments
 
 23. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)
