@@ -5,16 +5,19 @@ Reads *-diagram.yaml files and writes corresponding *-diagram.svg files.
 """
 
 import math
-import os
+from collections import defaultdict
 from html import escape
+from pathlib import Path
 
 import yaml
 
 # --- Constants ---
 
+TOOL_COLOR = "#25537b"
+
 COLORS = {
     "input": "#ffd700",
-    "tool": "#25537b",
+    "tool": TOOL_COLOR,
     "output": "#f97316",
     "report": "#10b981",
 }
@@ -37,17 +40,37 @@ BASE_WIDTHS = {
     "report": 80,
 }
 
+# Approximate character widths at font-size 11 for label width estimation
+CHAR_WIDTH_REPORT = 7
+CHAR_WIDTH_OUTPUT = 8
+LABEL_PADDING = 20
+
+DEFAULT_EDGE_STYLE = "primary"
+DEFAULT_LEGEND_ITEMS = ["input", "primary", "qc", "output", "report"]
+
+LEGEND_RECTS = {
+    "input": (COLORS["input"], "Input"),
+    "output": (COLORS["output"], "Output"),
+    "report": (COLORS["report"], "Report"),
+}
+
+LEGEND_LINES = {
+    "primary": ("4", "", "Data flow"),
+    "qc": ("3", ' stroke-dasharray="5 3"', "QC metrics"),
+    "secondary": ("3", "", "Secondary"),
+}
+
 
 def get_node_dimensions(node):
-    """Compute width, height, headerHeight for a node (matches Vue getNodeDimensions)."""
+    """Compute width, height, headerHeight for a node."""
     node_type = node["type"]
     width = BASE_WIDTHS.get(node_type, 200)
 
     label = node.get("label", "")
     if node_type == "report" and len(label) > 8:
-        width = max(80, len(label) * 7 + 20)
+        width = max(80, len(label) * CHAR_WIDTH_REPORT + LABEL_PADDING)
     if node_type == "output" and len(label) > 12:
-        width = max(140, len(label) * 8 + 20)
+        width = max(140, len(label) * CHAR_WIDTH_OUTPUT + LABEL_PADDING)
 
     header_height = HEADER_HEIGHT_SMALL if node_type in ("output", "report") else HEADER_HEIGHT
 
@@ -57,10 +80,8 @@ def get_node_dimensions(node):
     if node.get("detail"):
         text_lines += 1
 
-    if node_type in ("tool", "input"):
-        base_body = 42
-    else:
-        base_body = 26
+    # tool/input nodes get more body padding to accommodate subtitle+detail text
+    base_body = 42 if node_type in ("tool", "input") else 26
 
     height = header_height + base_body + text_lines * LINE_HEIGHT
     return width, height, header_height
@@ -72,37 +93,31 @@ def compute_layout(data):
     if not nodes:
         return []
 
-    all_rows = sorted(set(n["row"] for n in nodes))
-    all_cols = sorted(set(n["column"] for n in nodes))
+    nodes_by_row = defaultdict(list)
+    nodes_by_col = defaultdict(list)
+    for n in nodes:
+        nodes_by_row[n["row"]].append(n)
+        nodes_by_col[n["column"]].append(n)
 
-    # Global row heights
-    row_max_height = {}
-    for row in all_rows:
-        max_h = 0
-        for n in nodes:
-            if n["row"] == row:
-                _, h, _ = get_node_dimensions(n)
-                max_h = max(max_h, h)
-        row_max_height[row] = max_h
+    all_rows = sorted(nodes_by_row)
+    all_cols = sorted(nodes_by_col)
 
-    # Row Y positions
+    row_max_height = {
+        row: max(get_node_dimensions(n)[1] for n in row_nodes)
+        for row, row_nodes in sorted(nodes_by_row.items())
+    }
+
     row_y = {}
     current_y = TITLE_BAR_HEIGHT + PADDING
     for row in all_rows:
         row_y[row] = current_y
         current_y += row_max_height[row] + ROW_GAP
 
-    # Column widths
-    col_max_width = {}
-    for col in all_cols:
-        max_w = 0
-        for n in nodes:
-            if n["column"] == col:
-                w, _, _ = get_node_dimensions(n)
-                max_w = max(max_w, w)
-        col_max_width[col] = max_w
+    col_max_width = {
+        col: max(get_node_dimensions(n)[0] for n in col_nodes)
+        for col, col_nodes in sorted(nodes_by_col.items())
+    }
 
-    # Column X positions
     col_x = {}
     current_x = PADDING
     for col in all_cols:
@@ -112,7 +127,7 @@ def compute_layout(data):
     layouts = []
     for node in nodes:
         w, h, hh = get_node_dimensions(node)
-        color = COLORS.get(node["type"], COLORS["tool"])
+        color = COLORS.get(node["type"], TOOL_COLOR)
         col_w = col_max_width[node["column"]]
         x_offset = (col_w - w) / 2
         layouts.append({
@@ -129,7 +144,7 @@ def compute_layout(data):
 
 
 def classify_edge(edge, layout_map):
-    """Classify edge routing type (matches Vue classifyEdge)."""
+    """Classify edge routing type."""
     from_layout = layout_map.get(edge["from"])
     to_layout = layout_map.get(edge["to"])
     if not from_layout or not to_layout:
@@ -138,24 +153,17 @@ def classify_edge(edge, layout_map):
     from_node = from_layout["node"]
     to_node = to_layout["node"]
 
-    if to_node["column"] > from_node["column"] and to_node["row"] == from_node["row"]:
-        return "horizontal"
+    if to_node["column"] < from_node["column"]:
+        return "wrap-around"
     if to_node["column"] > from_node["column"]:
         return "horizontal"
-    if to_node["column"] == from_node["column"] and to_node["row"] > from_node["row"]:
-        return "downward"
-    if to_node["column"] < from_node["column"] and to_node["row"] >= from_node["row"]:
-        return "wrap-around"
     if to_node["row"] > from_node["row"]:
         return "downward"
     return "horizontal"
 
 
-def distribute_terminal(layout, edge_list, edge, side):
-    """Compute terminal position for an edge on a node side (matches Vue distributeTerminals)."""
-    idx = edge_list.index(edge)
-    count = len(edge_list)
-
+def distribute_terminal(layout, idx, count, side):
+    """Compute terminal position for edge at index idx (of count) on a node side."""
     if side in ("bottom", "top"):
         spacing = layout["width"] / (count + 1)
         return {
@@ -177,7 +185,7 @@ def distribute_terminal(layout, edge_list, edge, side):
 
 
 def compute_edge_terminals(data, layout_map):
-    """Compute from/to terminal points for all edges (matches Vue edgeTerminals)."""
+    """Compute from/to terminal points for all edges."""
     edges = data["edges"]
 
     edge_routes = [(e, classify_edge(e, layout_map)) for e in edges]
@@ -207,14 +215,20 @@ def compute_edge_terminals(data, layout_map):
             continue
 
         if route_type == "wrap-around":
-            from_pt = distribute_terminal(from_layout, bottom_out[edge["from"]], edge, "bottom")
-            to_pt = distribute_terminal(to_layout, top_in[edge["to"]], edge, "top")
+            from_group = bottom_out[edge["from"]]
+            to_group = top_in[edge["to"]]
+            from_pt = distribute_terminal(from_layout, from_group.index(edge), len(from_group), "bottom")
+            to_pt = distribute_terminal(to_layout, to_group.index(edge), len(to_group), "top")
         elif route_type == "downward":
-            from_pt = distribute_terminal(from_layout, bottom_out[edge["from"]], edge, "bottom")
-            to_pt = distribute_terminal(to_layout, left_in[edge["to"]], edge, "left")
+            from_group = bottom_out[edge["from"]]
+            to_group = left_in[edge["to"]]
+            from_pt = distribute_terminal(from_layout, from_group.index(edge), len(from_group), "bottom")
+            to_pt = distribute_terminal(to_layout, to_group.index(edge), len(to_group), "left")
         else:
-            from_pt = distribute_terminal(from_layout, right_out[edge["from"]], edge, "right")
-            to_pt = distribute_terminal(to_layout, left_in[edge["to"]], edge, "left")
+            from_group = right_out[edge["from"]]
+            to_group = left_in[edge["to"]]
+            from_pt = distribute_terminal(from_layout, from_group.index(edge), len(from_group), "right")
+            to_pt = distribute_terminal(to_layout, to_group.index(edge), len(to_group), "left")
 
         result.append({
             "edge": edge,
@@ -227,11 +241,10 @@ def compute_edge_terminals(data, layout_map):
 
 
 def connection_path(et):
-    """Generate bezier path string (matches Vue connectionPath)."""
+    """Generate bezier path string for an edge terminal pair."""
     from_pt = et["from"]
     to_pt = et["to"]
     route_type = et["routeType"]
-    dx = abs(to_pt["x"] - from_pt["x"])
 
     if route_type == "wrap-around":
         gap_mid_y = (from_pt["y"] + to_pt["y"]) / 2
@@ -251,6 +264,7 @@ def connection_path(et):
         )
 
     # Horizontal
+    dx = abs(to_pt["x"] - from_pt["x"])
     cp_offset = max(dx * 0.4, 30)
     return (
         f'M {from_pt["x"]:.1f} {from_pt["y"]:.1f} '
@@ -261,16 +275,16 @@ def connection_path(et):
 
 
 def connection_style_attrs(style):
-    """SVG stroke attributes for an edge style (matches Vue connectionStyleAttrs)."""
+    """SVG stroke attributes for an edge style."""
     if style == "qc":
-        return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="3" stroke-dasharray="5 3"'
+        return f'stroke="{TOOL_COLOR}" fill="none" stroke-linecap="round" stroke-width="3" stroke-dasharray="5 3"'
     if style == "secondary":
-        return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="3"'
-    return 'stroke="#25537b" fill="none" stroke-linecap="round" stroke-width="4"'
+        return f'stroke="{TOOL_COLOR}" fill="none" stroke-linecap="round" stroke-width="3"'
+    return f'stroke="{TOOL_COLOR}" fill="none" stroke-linecap="round" stroke-width="4"'
 
 
 def dual_paths(et):
-    """Compute offset path pair for dual-style edges (matches Vue dualPaths)."""
+    """Compute offset path pair for dual-style edges."""
     from_pt = et["from"]
     to_pt = et["to"]
     offset = 3
@@ -296,20 +310,15 @@ def dual_paths(et):
 
 
 def compute_viewbox(layouts):
-    """Compute SVG viewBox dimensions (matches Vue viewBox computed)."""
+    """Compute SVG viewBox width and height."""
     if not layouts:
-        return 0, 0, 400, 200
+        return 400, 200
 
-    max_x = 0
-    max_y = 0
-    for layout in layouts:
-        max_x = max(max_x, layout["x"] + layout["width"])
-        max_y = max(max_y, layout["y"] + layout["height"])
+    max_x = max(lay["x"] + lay["width"] for lay in layouts)
+    max_y = max(lay["y"] + lay["height"] for lay in layouts)
 
     legend_height = 30
-    width = max_x + PADDING
-    height = max_y + PADDING + legend_height
-    return 0, 0, int(width), int(height)
+    return int(max_x + PADDING), int(max_y + PADDING + legend_height)
 
 
 def header_text_color(node_type):
@@ -329,7 +338,7 @@ def terminal_radius(node_type):
 
 
 def collect_node_terminals(node_id, edge_terminals):
-    """Collect unique terminal points for a node (matches Vue nodeTerminals)."""
+    """Collect unique terminal points for a node."""
     points = []
     for et in edge_terminals:
         if et["edge"]["from"] == node_id:
@@ -349,15 +358,22 @@ def collect_node_terminals(node_id, edge_terminals):
 
 def render_svg(data):
     """Render a diagram descriptor to an SVG string."""
+    if "nodes" not in data or "edges" not in data:
+        raise ValueError("Diagram descriptor must contain 'nodes' and 'edges' keys")
+    for i, node in enumerate(data["nodes"]):
+        for field in ("id", "type", "column", "row"):
+            if field not in node:
+                raise ValueError(f"Node {i} missing required field '{field}'")
+
     layouts = compute_layout(data)
     layout_map = {lay["node"]["id"]: lay for lay in layouts}
     edge_terms = compute_edge_terminals(data, layout_map)
-    _, _, svg_width, svg_height = compute_viewbox(layouts)
+    svg_width, svg_height = compute_viewbox(layouts)
 
     title = escape(data.get("title", "Workflow Diagram"))
     subtitle = data.get("subtitle")
 
-    legend_items = (data.get("legend") or {}).get("items", ["input", "primary", "qc", "output", "report"])
+    legend_items = (data.get("legend") or {}).get("items", DEFAULT_LEGEND_ITEMS)
     legend_y = svg_height - 15
 
     lines = []
@@ -387,7 +403,7 @@ def render_svg(data):
     lines.append(f'  <rect width="{svg_width}" height="{svg_height}" fill="url(#wd-grid-major)"/>')
 
     # Title bar
-    lines.append(f'  <rect x="0" y="0" width="{svg_width}" height="{TITLE_BAR_HEIGHT}" fill="#25537b"/>')
+    lines.append(f'  <rect x="0" y="0" width="{svg_width}" height="{TITLE_BAR_HEIGHT}" fill="{TOOL_COLOR}"/>')
     lines.append(
         f'  <text x="20" y="28" font-family="{FONT_FAMILY}" font-size="16" '
         f'font-weight="600" fill="white">{title}</text>'
@@ -400,7 +416,7 @@ def render_svg(data):
 
     # Connections (behind nodes)
     for et in edge_terms:
-        style = et["edge"].get("style", "primary")
+        style = et["edge"].get("style", DEFAULT_EDGE_STYLE)
         if style == "dual":
             p1, p2 = dual_paths(et)
             lines.append(f'  <path d="{p1}" {connection_style_attrs("primary")}/>')
@@ -435,20 +451,17 @@ def render_svg(data):
         # Step badge + label
         step = node.get("step")
         label = escape(node.get("label", ""))
+        label_x = 10
         if step:
             lines.append(
                 f'    <text x="10" y="{hh - 9}" font-family="{FONT_FAMILY}" '
                 f'font-size="11" fill="{step_badge_color(ntype)}">{escape(str(step))}:</text>'
             )
-            lines.append(
-                f'    <text x="26" y="{hh - 9}" font-family="{FONT_FAMILY}" '
-                f'font-size="11" font-weight="600" fill="{header_text_color(ntype)}">{label}</text>'
-            )
-        else:
-            lines.append(
-                f'    <text x="10" y="{hh - 9}" font-family="{FONT_FAMILY}" '
-                f'font-size="11" font-weight="600" fill="{header_text_color(ntype)}">{label}</text>'
-            )
+            label_x = 26
+        lines.append(
+            f'    <text x="{label_x}" y="{hh - 9}" font-family="{FONT_FAMILY}" '
+            f'font-size="11" font-weight="600" fill="{header_text_color(ntype)}">{label}</text>'
+        )
 
         # Subtitle
         sub = node.get("subtitle")
@@ -490,59 +503,25 @@ def render_svg(data):
     for idx, item in enumerate(legend_items):
         ox = 60 + idx * 120
 
-        if item == "input":
+        if item in LEGEND_RECTS:
+            color, label = LEGEND_RECTS[item]
             lines.append(
                 f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
-                f'fill="white" stroke="#ffd700" stroke-width="1.5"/>'
+                f'fill="white" stroke="{color}" stroke-width="1.5"/>'
             )
             lines.append(
                 f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">Input</text>'
+                f'font-size="9" fill="#6c757d">{label}</text>'
             )
-        elif item == "primary":
+        elif item in LEGEND_LINES:
+            width, extra, label = LEGEND_LINES[item]
             lines.append(
                 f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
-                f'stroke="#25537b" stroke-width="4" stroke-linecap="round"/>'
+                f'stroke="{TOOL_COLOR}" stroke-width="{width}" stroke-linecap="round"{extra}/>'
             )
             lines.append(
                 f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">Data flow</text>'
-            )
-        elif item == "qc":
-            lines.append(
-                f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
-                f'stroke="#25537b" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 3"/>'
-            )
-            lines.append(
-                f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">QC metrics</text>'
-            )
-        elif item == "output":
-            lines.append(
-                f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
-                f'fill="white" stroke="#f97316" stroke-width="1.5"/>'
-            )
-            lines.append(
-                f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">Output</text>'
-            )
-        elif item == "report":
-            lines.append(
-                f'    <rect x="{ox}" y="-10" width="14" height="14" rx="2" '
-                f'fill="white" stroke="#10b981" stroke-width="1.5"/>'
-            )
-            lines.append(
-                f'    <text x="{ox + 20}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">Report</text>'
-            )
-        elif item == "secondary":
-            lines.append(
-                f'    <line x1="{ox}" y1="-4" x2="{ox + 40}" y2="-4" '
-                f'stroke="#25537b" stroke-width="3" stroke-linecap="round"/>'
-            )
-            lines.append(
-                f'    <text x="{ox + 48}" y="0" font-family="{FONT_FAMILY}" '
-                f'font-size="9" fill="#6c757d">Secondary</text>'
+                f'font-size="9" fill="#6c757d">{label}</text>'
             )
 
     lines.append("  </g>")
@@ -554,21 +533,18 @@ def render_svg(data):
 def render_all_diagram_svgs(workflows_dir):
     """Walk workflows_dir for *-diagram.yaml files and write corresponding SVGs."""
     count = 0
-    for root, _, files in os.walk(workflows_dir):
-        for filename in files:
-            if filename.endswith("-diagram.yaml"):
-                yaml_path = os.path.join(root, filename)
-                svg_path = yaml_path.replace("-diagram.yaml", "-diagram.svg")
+    for yaml_path in Path(workflows_dir).rglob("*-diagram.yaml"):
+        svg_path = yaml_path.with_name(yaml_path.name.replace("-diagram.yaml", "-diagram.svg"))
 
-                with open(yaml_path) as f:
-                    data = yaml.safe_load(f)
+        with open(yaml_path) as f:
+            data = yaml.safe_load(f)
 
-                svg_content = render_svg(data)
-                with open(svg_path, "w") as f:
-                    f.write(svg_content)
+        svg_content = render_svg(data)
+        with open(svg_path, "w") as f:
+            f.write(svg_content)
 
-                count += 1
-                print(f"Rendered {svg_path}")
+        count += 1
+        print(f"Rendered {svg_path}")
 
     print(f"Rendered {count} diagram SVG(s)")
     return count
