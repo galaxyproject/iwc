@@ -40,10 +40,13 @@ BASE_WIDTHS = {
     "report": 80,
 }
 
-# Approximate character widths at font-size 11 for label width estimation
-CHAR_WIDTH_REPORT = 7
-CHAR_WIDTH_OUTPUT = 8
-LABEL_PADDING = 20
+# Approximate character widths per font-size (px/char)
+CHAR_WIDTHS = {
+    11: 6.6,   # header label (bold)
+    10: 6.0,   # subtitle
+    9: 5.4,    # detail
+}
+TEXT_PADDING = 16  # horizontal padding on each side for centered text
 
 DEFAULT_EDGE_STYLE = "primary"
 DEFAULT_LEGEND_ITEMS = ["input", "primary", "qc", "output", "report"]
@@ -61,23 +64,36 @@ LEGEND_LINES = {
 }
 
 
+def estimate_text_width(text, font_size):
+    """Estimate rendered pixel width for a string at a given font size."""
+    return len(text) * CHAR_WIDTHS.get(font_size, 6.0)
+
+
 def get_node_dimensions(node):
     """Compute width, height, headerHeight for a node."""
     node_type = node["type"]
-    width = BASE_WIDTHS.get(node_type, 200)
+    base_width = BASE_WIDTHS.get(node_type, 200)
 
     label = node.get("label", "")
-    if node_type == "report" and len(label) > 8:
-        width = max(80, len(label) * CHAR_WIDTH_REPORT + LABEL_PADDING)
-    if node_type == "output" and len(label) > 12:
-        width = max(140, len(label) * CHAR_WIDTH_OUTPUT + LABEL_PADDING)
+    subtitle = node.get("subtitle", "")
+    detail = node.get("detail", "")
+
+    # label starts further right when a step badge is present
+    label_x_offset = 26 if node.get("step") else 10
+    label_width = label_x_offset + estimate_text_width(label, 11) + TEXT_PADDING
+
+    width = max(base_width, label_width)
+    if subtitle:
+        width = max(width, estimate_text_width(subtitle, 10) + 2 * TEXT_PADDING)
+    if detail:
+        width = max(width, estimate_text_width(detail, 9) + 2 * TEXT_PADDING)
 
     header_height = HEADER_HEIGHT_SMALL if node_type in ("output", "report") else HEADER_HEIGHT
 
     text_lines = 0
-    if node.get("subtitle"):
+    if subtitle:
         text_lines += 1
-    if node.get("detail"):
+    if detail:
         text_lines += 1
 
     # tool/input nodes get more body padding to accommodate subtitle+detail text
