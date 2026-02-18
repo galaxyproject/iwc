@@ -1,0 +1,152 @@
+title: "Scanpy Preprocessing and Clustering"
+subtitle: "Single-cell RNA-seq analysis"
+
+nodes:
+  - id: barcodes
+    type: input
+    label: Barcodes
+    subtitle: Cell barcodes
+    column: 0
+    row: 0
+
+  - id: genes
+    type: input
+    label: Genes
+    subtitle: Gene features
+    column: 0
+    row: 1
+
+  - id: matrix
+    type: input
+    label: Matrix
+    subtitle: Count matrix (MTX)
+    column: 0
+    row: 2
+
+  - id: import
+    type: tool
+    label: Import AnnData
+    subtitle: 10x → AnnData
+    step: "1"
+    column: 1
+    row: 0
+
+  - id: qcFilter
+    type: tool
+    label: QC Filtering
+    subtitle: Cells & genes
+    detail: Mito %, min/max genes
+    step: "2"
+    column: 2
+    row: 0
+
+  - id: normalize
+    type: tool
+    label: Normalize + Log
+    subtitle: Target-sum normalization
+    step: "3"
+    column: 3
+    row: 0
+
+  - id: hvg
+    type: tool
+    label: Variable Genes
+    subtitle: Select highly variable
+    step: "4"
+    column: 4
+    row: 0
+
+  - id: pca
+    type: tool
+    label: PCA
+    subtitle: Dimension reduction
+    step: "5"
+    column: 1
+    row: 1
+
+  - id: neighbors
+    type: tool
+    label: Neighbors
+    subtitle: Neighborhood graph
+    step: "6"
+    column: 2
+    row: 1
+
+  - id: umap
+    type: tool
+    label: UMAP
+    subtitle: 2D embedding
+    step: "7"
+    column: 3
+    row: 1
+
+  - id: louvain
+    type: tool
+    label: Louvain
+    subtitle: Cluster cells
+    step: "8"
+    column: 4
+    row: 1
+
+  - id: markerGenes
+    type: tool
+    label: Rank Genes
+    subtitle: Wilcoxon test
+    step: "9"
+    column: 4
+    row: 2
+
+  - id: anndata
+    type: output
+    label: Annotated AnnData
+    subtitle: With clusters & cell types
+    column: 3
+    row: 2
+
+  - id: qcPlots
+    type: report
+    label: QC Plots
+    subtitle: Violin, scatter, mito %
+    column: 2
+    row: 2
+
+  - id: clusterPlots
+    type: output
+    label: Cluster Plots
+    subtitle: UMAP, dotplot, heatmap
+    column: 4
+    row: 3
+
+edges:
+  - from: barcodes
+    to: import
+  - from: genes
+    to: import
+  - from: matrix
+    to: import
+  - from: import
+    to: qcFilter
+  - from: qcFilter
+    to: normalize
+  - from: normalize
+    to: hvg
+  - from: hvg
+    to: pca
+  - from: pca
+    to: neighbors
+  - from: neighbors
+    to: umap
+  - from: umap
+    to: louvain
+  - from: louvain
+    to: markerGenes
+  - from: louvain
+    to: anndata
+  - from: qcFilter
+    to: qcPlots
+    style: qc
+  - from: markerGenes
+    to: clusterPlots
+
+legend:
+  items: [input, primary, qc, output, report]
