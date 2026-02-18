@@ -1,0 +1,60 @@
+- doc: Test outline for paired-end-variant-calling-diploid.ga
+  job:
+    Paired Collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+        - class: Collection
+          type: paired
+          identifier: sample1
+          elements:
+            - identifier: forward
+              class: File
+              file: test-data/sample1_R1.fastq.gz
+              filetype: fastqsanger.gz
+            - identifier: reverse
+              class: File
+              file: test-data/sample1_R2.fastq.gz
+              filetype: fastqsanger.gz
+    Reference Genome fasta:
+      class: File
+      file: test-data/reference.fasta
+      filetype: fasta
+    Annotation GTF:
+      class: File
+      file: test-data/annotation.gtf
+      filetype: gtf
+    Set Ploidy for FreeBayes Variant Calling: 2
+  outputs:
+    report_html:
+      element_tests:
+        sample1:
+          asserts:
+            has_text:
+              text: "fastp report"
+    Preprocessing and mapping reports:
+      asserts:
+        has_text:
+          text: "MultiQC Report"
+    SnpEff variants:
+      element_tests:
+        sample1:
+          asserts:
+            has_text:
+              text: "##fileformat=VCFv4.2"
+            has_text:
+              text: "##contig=<ID=chr1,length=2000>"
+    SnpEff eff reports:
+      element_tests:
+        sample1:
+          asserts:
+            has_text:
+              text: "SnpEff"
+    Annotated Variants:
+      asserts:
+        has_text:
+          text: "chr1\t751\tC\tG\t60\t1.0\t0\t60\t0.0\t4.31318\tLOW	SILENT\tSYNONYMOUS_CODING\tSynGene1\tccC/ccG\tP184\tTRANS1"
+        has_n_lines:
+          n: 3
+        has_n_columns:
+          n: 19
