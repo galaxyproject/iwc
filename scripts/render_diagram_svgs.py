@@ -36,8 +36,8 @@ LINE_HEIGHT = 14
 BASE_WIDTHS = {
     "input": 180,
     "tool": 200,
-    "output": 140,
-    "report": 80,
+    "output": 160,
+    "report": 100,
 }
 
 # Approximate character widths per font-size (px/char)
@@ -47,6 +47,9 @@ CHAR_WIDTHS = {
     9: 5.4,    # detail
 }
 TEXT_PADDING = 16  # horizontal padding on each side for centered text
+
+MIN_TERMINAL_SPACING = 14
+MIN_SVG_HEIGHT = 300
 
 DEFAULT_EDGE_STYLE = "primary"
 DEFAULT_LEGEND_ITEMS = ["input", "primary", "qc", "output", "report"]
@@ -88,7 +91,7 @@ def get_node_dimensions(node):
     if detail:
         width = max(width, estimate_text_width(detail, 9) + 2 * TEXT_PADDING)
 
-    header_height = HEADER_HEIGHT_SMALL if node_type in ("output", "report") else HEADER_HEIGHT
+    header_height = HEADER_HEIGHT_SMALL if node_type == "report" else HEADER_HEIGHT
 
     text_lines = 0
     if subtitle:
@@ -96,14 +99,13 @@ def get_node_dimensions(node):
     if detail:
         text_lines += 1
 
-    # tool/input nodes get more body padding to accommodate subtitle+detail text
-    base_body = 42 if node_type in ("tool", "input") else 26
+    base_body = 42 if node_type in ("tool", "input") else 35 if node_type == "output" else 26
 
     height = header_height + base_body + text_lines * LINE_HEIGHT
     return width, height, header_height
 
 
-def compute_layout(data):
+def compute_layout(data, title_bar_height=TITLE_BAR_HEIGHT):
     """Compute node positions, column/row geometry. Returns list of layout dicts."""
     nodes = data["nodes"]
     if not nodes:
@@ -124,7 +126,7 @@ def compute_layout(data):
     }
 
     row_y = {}
-    current_y = TITLE_BAR_HEIGHT + PADDING
+    current_y = title_bar_height + PADDING
     for row in all_rows:
         row_y[row] = current_y
         current_y += row_max_height[row] + ROW_GAP
@@ -181,9 +183,13 @@ def classify_edge(edge, layout_map):
 def distribute_terminal(layout, idx, count, side):
     """Compute terminal position for edge at index idx (of count) on a node side."""
     if side in ("bottom", "top"):
-        spacing = layout["width"] / (count + 1)
+        extent = layout["width"]
+        natural_spacing = extent / (count + 1)
+        spacing = max(natural_spacing, MIN_TERMINAL_SPACING)
+        total = spacing * (count - 1) if count > 1 else 0
+        start = (extent - total) / 2
         return {
-            "x": layout["x"] + spacing * (idx + 1),
+            "x": layout["x"] + start + spacing * idx,
             "y": layout["y"] + layout["height"] if side == "bottom" else layout["y"],
             "side": side,
         }
@@ -196,8 +202,11 @@ def distribute_terminal(layout, idx, count, side):
     if count == 1:
         return {"x": x, "y": body_top + body_height / 2, "side": side}
 
-    spacing = body_height / (count + 1)
-    return {"x": x, "y": body_top + spacing * (idx + 1), "side": side}
+    natural_spacing = body_height / (count + 1)
+    spacing = max(natural_spacing, MIN_TERMINAL_SPACING)
+    total = spacing * (count - 1)
+    start = body_top + (body_height - total) / 2
+    return {"x": x, "y": start + spacing * idx, "side": side}
 
 
 def compute_edge_terminals(data, layout_map):
@@ -299,6 +308,12 @@ def connection_style_attrs(style):
     return f'stroke="{TOOL_COLOR}" fill="none" stroke-linecap="round" stroke-width="4"'
 
 
+def halo_style_attrs(style):
+    """White halo stroke attributes for edge crossing legibility."""
+    base_width = 3 if style in ("qc", "secondary") else 4
+    return f'stroke="white" fill="none" stroke-linecap="round" stroke-width="{base_width + 4}"'
+
+
 def dual_paths(et):
     """Compute offset path pair for dual-style edges."""
     from_pt = et["from"]
@@ -334,7 +349,8 @@ def compute_viewbox(layouts):
     max_y = max(lay["y"] + lay["height"] for lay in layouts)
 
     legend_height = 30
-    return int(max_x + PADDING), int(max_y + PADDING + legend_height)
+    content_height = int(max_y + PADDING + legend_height)
+    return int(max_x + PADDING), max(content_height, MIN_SVG_HEIGHT)
 
 
 def header_text_color(node_type):
@@ -342,7 +358,7 @@ def header_text_color(node_type):
 
 
 def step_badge_color(node_type):
-    return "rgba(44,49,67,0.6)" if node_type == "input" else "rgba(255,255,255,0.7)"
+    return "rgba(44,49,67,0.75)" if node_type == "input" else "rgba(255,255,255,0.85)"
 
 
 def node_stroke_width(node_type):
@@ -372,6 +388,25 @@ def collect_node_terminals(node_id, edge_terminals):
     return unique
 
 
+def compute_legend_positions(legend_items):
+    """Calculate x-offsets for legend items based on symbol + text width."""
+    SYMBOL_WIDTH = 48  # line symbol width (40) + gap (8)
+    RECT_SYMBOL_WIDTH = 20  # rect symbol width (14) + gap (6)
+    LABEL_GAP = 16  # gap after label text before next item
+
+    positions = []
+    x = 60  # after "Legend:" text
+    for item in legend_items:
+        positions.append(x)
+        if item in LEGEND_RECTS:
+            _, label = LEGEND_RECTS[item]
+            x += RECT_SYMBOL_WIDTH + estimate_text_width(label, 9) + LABEL_GAP
+        elif item in LEGEND_LINES:
+            _, _, label = LEGEND_LINES[item]
+            x += SYMBOL_WIDTH + estimate_text_width(label, 9) + LABEL_GAP
+    return positions
+
+
 def render_svg(data):
     """Render a diagram descriptor to an SVG string."""
     if "nodes" not in data or "edges" not in data:
@@ -381,13 +416,16 @@ def render_svg(data):
             if field not in node:
                 raise ValueError(f"Node {i} missing required field '{field}'")
 
-    layouts = compute_layout(data)
+    title = escape(data.get("title", "Workflow Diagram"))
+    subtitle = data.get("subtitle")
+
+    # Dynamic title bar height
+    title_bar_h = 55 if subtitle else TITLE_BAR_HEIGHT
+
+    layouts = compute_layout(data, title_bar_height=title_bar_h)
     layout_map = {lay["node"]["id"]: lay for lay in layouts}
     edge_terms = compute_edge_terminals(data, layout_map)
     svg_width, svg_height = compute_viewbox(layouts)
-
-    title = escape(data.get("title", "Workflow Diagram"))
-    subtitle = data.get("subtitle")
 
     legend_items = (data.get("legend") or {}).get("items", DEFAULT_LEGEND_ITEMS)
     legend_y = svg_height - 15
@@ -419,18 +457,29 @@ def render_svg(data):
     lines.append(f'  <rect width="{svg_width}" height="{svg_height}" fill="url(#wd-grid-major)"/>')
 
     # Title bar
-    lines.append(f'  <rect x="0" y="0" width="{svg_width}" height="{TITLE_BAR_HEIGHT}" fill="{TOOL_COLOR}"/>')
+    lines.append(f'  <rect x="0" y="0" width="{svg_width}" height="{title_bar_h}" fill="{TOOL_COLOR}"/>')
     lines.append(
         f'  <text x="20" y="28" font-family="{FONT_FAMILY}" font-size="16" '
         f'font-weight="600" fill="white">{title}</text>'
     )
     if subtitle:
         lines.append(
-            f'  <text x="20" y="40" font-family="{FONT_FAMILY}" font-size="10" '
-            f'fill="rgba(255,255,255,0.7)">{escape(subtitle)}</text>'
+            f'  <text x="20" y="44" font-family="{FONT_FAMILY}" font-size="11" '
+            f'fill="rgba(255,255,255,0.85)">{escape(subtitle)}</text>'
         )
 
-    # Connections (behind nodes)
+    # Connections — pass 1: white halos for crossing legibility
+    for et in edge_terms:
+        style = et["edge"].get("style", DEFAULT_EDGE_STYLE)
+        if style == "dual":
+            p1, p2 = dual_paths(et)
+            lines.append(f'  <path d="{p1}" {halo_style_attrs("primary")}/>')
+            lines.append(f'  <path d="{p2}" {halo_style_attrs("secondary")}/>')
+        else:
+            path = connection_path(et)
+            lines.append(f'  <path d="{path}" {halo_style_attrs(style)}/>')
+
+    # Connections — pass 2: colored strokes on top
     for et in edge_terms:
         style = et["edge"].get("style", DEFAULT_EDGE_STYLE)
         if style == "dual":
@@ -454,10 +503,11 @@ def render_svg(data):
 
         lines.append(f'  <g filter="url(#wd-shadow)" transform="translate({x:.1f}, {y:.1f})">')
 
-        # Card body
+        # Card body — report nodes get dashed border
+        dash_attr = ' stroke-dasharray="4 2"' if ntype == "report" else ""
         lines.append(
             f'    <rect width="{w:.1f}" height="{h:.1f}" rx="4" '
-            f'fill="white" stroke="{color}" stroke-width="{node_stroke_width(ntype)}"/>'
+            f'fill="white" stroke="{color}" stroke-width="{node_stroke_width(ntype)}"{dash_attr}/>'
         )
         # Header bar
         lines.append(f'    <rect width="{w:.1f}" height="{hh}" rx="4" fill="{color}"/>')
@@ -471,7 +521,7 @@ def render_svg(data):
         if step:
             lines.append(
                 f'    <text x="10" y="{hh - 9}" font-family="{FONT_FAMILY}" '
-                f'font-size="11" fill="{step_badge_color(ntype)}">{escape(str(step))}:</text>'
+                f'font-size="11" font-weight="500" fill="{step_badge_color(ntype)}">{escape(str(step))}:</text>'
             )
             label_x = 26
         lines.append(
@@ -516,8 +566,9 @@ def render_svg(data):
         f'font-weight="600" fill="#495057">Legend:</text>'
     )
 
+    legend_positions = compute_legend_positions(legend_items)
     for idx, item in enumerate(legend_items):
-        ox = 60 + idx * 120
+        ox = legend_positions[idx]
 
         if item in LEGEND_RECTS:
             color, label = LEGEND_RECTS[item]
