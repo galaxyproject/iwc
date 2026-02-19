@@ -44,18 +44,18 @@ of the organism (default: 2).
 
 ## Outputs
 
-report_html (fastp): per-sample HTML quality control report from fastp.
+Fastp HTML report: per-sample HTML quality control report from fastp.
 
-Preprocessing and mapping reports (MultiQC): aggregated HTML QC report
+Preprocessing and mapping MultiQC report: aggregated HTML QC report
 combining fastp, Samtools stats, and Picard MarkDuplicates metrics across
 all samples.
 
-SnpEff variants: annotated variants in VCF format, tagged VariantsasVCF.
+SnpEff annotated variants (VCF):: annotated variants in VCF format, tagged VariantsasVCF.
 
-SnpEff eff reports: HTML summary statistics from SnpEff describing the
+SnpEff HTML summary report: HTML summary statistics from SnpEff describing the
 distribution of variant effects across functional categories.
 
-Annotated Variants: a merged, tab-separated table of annotated variants
+Annotated variants table: a merged, tab-separated table of annotated variants
 across all samples, tagged VariantsAsTSV. Columns include CHROM, POS,
 FILTER, REF, ALT, DP, AF, DP4, SB, and per-effect fields for
 impact, functional class, effect type, gene name, codon change, amino acid
