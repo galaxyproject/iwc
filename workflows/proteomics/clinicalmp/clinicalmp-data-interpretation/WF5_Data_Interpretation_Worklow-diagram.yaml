@@ -1,0 +1,96 @@
+title: "Clinical Metaproteomics Data Interpretation"
+subtitle: "Taxonomic/functional annotation and statistical analysis"
+nodes:
+  - id: quantPeptides
+    type: input
+    label: Quantified Peptides
+    subtitle: From MaxQuant quantitation
+    column: 0
+    row: 0
+  - id: proteinGroups
+    type: input
+    label: Protein Groups
+    subtitle: MaxQuant protein groups
+    column: 0
+    row: 1
+  - id: evidence
+    type: input
+    label: Evidence File
+    subtitle: MaxQuant evidence
+    column: 0
+    row: 2
+  - id: annotation
+    type: input
+    label: Annotation / Matrix
+    subtitle: "MSstatsTMT config files"
+    column: 0
+    row: 3
+  - id: unipept
+    type: tool
+    label: Unipept
+    subtitle: Taxonomic & functional annotation
+    step: "1"
+    column: 1
+    row: 0
+  - id: filterProteins
+    type: tool
+    label: Filter Proteins
+    subtitle: "Split microbial vs human"
+    step: "2"
+    column: 1
+    row: 2
+  - id: msstatsMicrobial
+    type: tool
+    label: MSstatsTMT (Microbial)
+    subtitle: Differential abundance analysis
+    step: "3"
+    column: 2
+    row: 1
+  - id: msstatsHuman
+    type: tool
+    label: MSstatsTMT (Human)
+    subtitle: Differential abundance analysis
+    step: "4"
+    column: 2
+    row: 3
+  - id: taxonomyTree
+    type: output
+    label: Taxonomy & Function
+    subtitle: "GO, EC, InterPro annotations"
+    column: 3
+    row: 0
+  - id: volcanoPlots
+    type: output
+    label: Comparison Plots
+    subtitle: "Volcano & comparison plots"
+    column: 3
+    row: 2
+edges:
+  - from: quantPeptides
+    to: unipept
+  - from: proteinGroups
+    to: filterProteins
+  - from: filterProteins
+    to: msstatsMicrobial
+  - from: filterProteins
+    to: msstatsHuman
+  - from: evidence
+    to: msstatsMicrobial
+    style: secondary
+  - from: annotation
+    to: msstatsMicrobial
+    style: secondary
+  - from: evidence
+    to: msstatsHuman
+    style: secondary
+  - from: annotation
+    to: msstatsHuman
+    style: secondary
+  - from: unipept
+    to: taxonomyTree
+  - from: msstatsMicrobial
+    to: volcanoPlots
+  - from: msstatsHuman
+    to: volcanoPlots
+legend:
+  items: [input, primary, secondary, output]

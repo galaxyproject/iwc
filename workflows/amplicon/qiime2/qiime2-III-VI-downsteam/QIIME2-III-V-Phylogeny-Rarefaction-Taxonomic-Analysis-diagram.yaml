@@ -1,0 +1,145 @@
+title: "QIIME2 III-V: Phylogeny, Rarefaction, and Taxonomic Analysis"
+subtitle: "Build phylogenetic tree, assess rarefaction, classify taxonomy"
+nodes:
+  - id: repSeqs
+    type: input
+    label: Representative Sequences
+    subtitle: "From DADA2 (QZA)"
+    column: 0
+    row: 0
+  - id: featureTable
+    type: input
+    label: Feature Table
+    subtitle: "From DADA2 (QZA)"
+    column: 0
+    row: 1
+  - id: metadata
+    type: input
+    label: Metadata
+    subtitle: "Tab-separated file"
+    column: 0
+    row: 2
+  - id: seppRef
+    type: input
+    label: SEPP Reference
+    subtitle: "Fragment insertion reference"
+    column: 0
+    row: 3
+  - id: classifier
+    type: input
+    label: Taxonomic Classifier
+    subtitle: "e.g. Greengenes / SILVA"
+    column: 0
+    row: 4
+  - id: sepp
+    type: tool
+    label: SEPP Fragment Insertion
+    subtitle: "Build phylogenetic tree"
+    detail: "Insert fragments in reference"
+    step: "1"
+    column: 1
+    row: 0
+  - id: classify
+    type: tool
+    label: classify-sklearn
+    subtitle: "Taxonomic classification"
+    detail: "Pre-fitted sklearn classifier"
+    step: "2"
+    column: 1
+    row: 3
+  - id: rarefaction
+    type: tool
+    label: Alpha Rarefaction
+    subtitle: "Rarefaction curves"
+    detail: "Assess sampling depth"
+    step: "3"
+    column: 2
+    row: 1
+  - id: taxaBarplot
+    type: tool
+    label: Taxa Barplot
+    subtitle: "Interactive taxonomy view"
+    step: "4"
+    column: 2
+    row: 3
+  - id: taxaTable
+    type: tool
+    label: Tabulate Taxonomy
+    subtitle: "Classification metadata table"
+    step: "5"
+    column: 2
+    row: 4
+  - id: rootedTree
+    type: output
+    label: Rooted Tree
+    subtitle: "Phylogenetic tree (QZA)"
+    column: 3
+    row: 0
+  - id: taxonomyClass
+    type: output
+    label: Taxonomy Classification
+    subtitle: "Classified features (QZA)"
+    column: 3
+    row: 3
+  - id: rarefactionViz
+    type: report
+    label: Rarefaction Curves
+    subtitle: "Alpha rarefaction (QZV)"
+    column: 3
+    row: 1
+  - id: taxaBarplotViz
+    type: report
+    label: Taxa Barplot
+    subtitle: "Taxonomy visualization (QZV)"
+    column: 3
+    row: 4
+  - id: taxaTableViz
+    type: report
+    label: Taxonomy Table
+    subtitle: "Classification table (QZV)"
+    column: 3
+    row: 5
+edges:
+  - from: repSeqs
+    to: sepp
+  - from: seppRef
+    to: sepp
+    style: secondary
+  - from: sepp
+    to: rootedTree
+  - from: sepp
+    to: rarefaction
+  - from: featureTable
+    to: rarefaction
+    style: secondary
+  - from: metadata
+    to: rarefaction
+    style: secondary
+  - from: rarefaction
+    to: rarefactionViz
+    style: qc
+  - from: repSeqs
+    to: classify
+  - from: classifier
+    to: classify
+    style: secondary
+  - from: classify
+    to: taxonomyClass
+  - from: classify
+    to: taxaBarplot
+  - from: featureTable
+    to: taxaBarplot
+    style: secondary
+  - from: metadata
+    to: taxaBarplot
+    style: secondary
+  - from: classify
+    to: taxaTable
+  - from: taxaBarplot
+    to: taxaBarplotViz
+    style: qc
+  - from: taxaTable
+    to: taxaTableViz
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

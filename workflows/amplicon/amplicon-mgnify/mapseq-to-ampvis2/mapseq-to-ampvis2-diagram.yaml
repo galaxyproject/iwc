@@ -1,0 +1,98 @@
+title: "MAPseq to Ampvis2"
+subtitle: "Convert MAPseq OTU tables to Ampvis2 format"
+nodes:
+  - id: otuTables
+    type: input
+    label: MAPseq OTU Tables
+    subtitle: "list collection"
+    detail: Tab-separated OTU outputs
+    column: 0
+    row: 0
+  - id: metadata
+    type: input
+    label: OTU Table Metadata
+    subtitle: Contextual sample info
+    column: 0
+    row: 2
+  - id: otuProcessing
+    type: tool
+    label: OTU Table Building
+    subtitle: Query, reformat, join columns
+    detail: Relative abundance per sample
+    step: "1"
+    column: 1
+    row: 0
+  - id: taxProcessing
+    type: tool
+    label: Taxonomy Extraction
+    subtitle: Parse taxonomic ranks
+    detail: "sk__ through s__ levels"
+    step: "2"
+    column: 1
+    row: 1
+  - id: taxDedup
+    type: tool
+    label: Taxonomy Dedup
+    subtitle: Collapse &amp; deduplicate
+    detail: Query Tabular GROUP BY
+    step: "3"
+    column: 2
+    row: 1
+  - id: ampvisLoad
+    type: tool
+    label: ampvis2 load
+    subtitle: Build Ampvis2 object
+    detail: OTU + taxonomy + metadata
+    step: "4"
+    column: 3
+    row: 0
+  - id: otuTable
+    type: output
+    label: OTU Table
+    subtitle: Sample abundance matrix
+    column: 2
+    row: 0
+  - id: taxonomyTable
+    type: output
+    label: Taxonomy Table
+    subtitle: Deduplicated taxonomy
+    column: 3
+    row: 1
+  - id: ampvisObject
+    type: output
+    label: Ampvis2 Object
+    subtitle: Ready for visualization
+    column: 4
+    row: 0
+  - id: ampvisMeta
+    type: output
+    label: Ampvis2 Metadata
+    subtitle: Metadata table output
+    column: 4
+    row: 1
+edges:
+  - from: otuTables
+    to: otuProcessing
+  - from: otuTables
+    to: taxProcessing
+  - from: otuProcessing
+    to: otuTable
+  - from: taxProcessing
+    to: taxDedup
+  - from: taxDedup
+    to: taxonomyTable
+  - from: otuTable
+    to: ampvisLoad
+  - from: taxonomyTable
+    to: ampvisLoad
+    style: secondary
+  - from: metadata
+    to: ampvisLoad
+    style: secondary
+  - from: ampvisLoad
+    to: ampvisObject
+  - from: ampvisLoad
+    to: ampvisMeta
+    style: secondary
+legend:
+  items: [input, primary, output]

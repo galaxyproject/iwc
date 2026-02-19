@@ -1,0 +1,117 @@
+title: "Multiplex Tissue Microarray Analysis"
+nodes:
+  - id: images
+    type: input
+    label: Registered Images
+    subtitle: OME-TIFF collection
+    column: 0
+    row: 0
+  - id: markers
+    type: input
+    label: Markers File
+    subtitle: Background subtraction CSV
+    column: 0
+    row: 1
+  - id: phenotypeWf
+    type: input
+    label: Phenotype Workflow
+    subtitle: Scimap phenotyping CSV
+    column: 0
+    row: 2
+  - id: manualGates
+    type: input
+    label: Manual Gates
+    subtitle: Intensity thresholds CSV
+    column: 0
+    row: 3
+  - id: backsub
+    type: tool
+    label: Background Subtraction
+    subtitle: Remove autofluorescence
+    step: "1"
+    column: 1
+    row: 0
+  - id: mesmer
+    type: tool
+    label: Mesmer
+    subtitle: Nuclear segmentation
+    step: "2"
+    column: 2
+    row: 0
+  - id: mcquant
+    type: tool
+    label: MCQUANT
+    subtitle: Feature quantification
+    step: "3"
+    column: 3
+    row: 0
+  - id: phenotyping
+    type: tool
+    label: Scimap Phenotyping
+    subtitle: Cell type classification
+    step: "4"
+    column: 4
+    row: 0
+  - id: spatialAnalysis
+    type: tool
+    label: Squidpy Spatial
+    subtitle: Neighbors &amp; interactions
+    step: "5"
+    column: 5
+    row: 1
+  - id: vitessce
+    type: report
+    label: Vitessce
+    subtitle: Interactive dashboard
+    column: 5
+    row: 2
+  - id: scatterplot
+    type: output
+    label: Spatial Scatterplot
+    subtitle: Cell type montage
+    column: 6
+    row: 0
+  - id: barplot
+    type: output
+    label: Composition Barplot
+    subtitle: Multi-sample cell types
+    column: 6
+    row: 1
+  - id: interactionMatrix
+    type: output
+    label: Interaction Matrix
+    subtitle: Cell type interactions
+    column: 6
+    row: 2
+edges:
+  - from: images
+    to: backsub
+  - from: markers
+    to: backsub
+    style: secondary
+  - from: backsub
+    to: mesmer
+  - from: backsub
+    to: mcquant
+  - from: mesmer
+    to: mcquant
+  - from: mcquant
+    to: phenotyping
+  - from: phenotypeWf
+    to: phenotyping
+    style: secondary
+  - from: manualGates
+    to: phenotyping
+    style: secondary
+  - from: phenotyping
+    to: spatialAnalysis
+  - from: phenotyping
+    to: vitessce
+  - from: phenotyping
+    to: scatterplot
+  - from: spatialAnalysis
+    to: interactionMatrix
+  - from: phenotyping
+    to: barplot
+legend:
+  items: [input, primary, secondary, output, report]

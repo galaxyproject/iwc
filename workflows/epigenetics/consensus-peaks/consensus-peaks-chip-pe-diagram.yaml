@@ -1,0 +1,143 @@
+title: "Consensus Peaks: ChIP-seq Paired-End Replicates"
+nodes:
+  - id: bamInput
+    type: input
+    label: rmDup BAMPE
+    subtitle: "list collection"
+    detail: "n replicate PE BAM files"
+    step: "1"
+    column: 0
+    row: 1
+  - id: minOverlap
+    type: input
+    label: Min Overlap
+    subtitle: Integer parameter
+    detail: Min replicates for consensus
+    column: 0
+    row: 2
+  - id: genomeSize
+    type: input
+    label: Genome Size
+    subtitle: Effective genome size
+    column: 0
+    row: 3
+  - id: macs2Individual
+    type: tool
+    label: MACS2 (individual)
+    subtitle: Call peaks per replicate
+    detail: BAMPE mode
+    step: "2"
+    column: 1
+    row: 1
+  - id: multiIntersect
+    type: tool
+    label: Multi-Intersect
+    subtitle: Find shared peak regions
+    detail: "Filter by min replicate overlap"
+    step: "3"
+    column: 2
+    row: 0
+  - id: downsample
+    type: tool
+    label: Downsample BAM
+    subtitle: Equalize library sizes
+    detail: Subsample to smallest replicate
+    step: "4"
+    column: 2
+    row: 2
+  - id: macs2Merged
+    type: tool
+    label: MACS2 (merged)
+    subtitle: Call peaks on pooled reads
+    detail: Combined subsampled replicates
+    step: "5"
+    column: 3
+    row: 2
+  - id: consensusFilter
+    type: tool
+    label: Consensus Filter
+    subtitle: Intersect merged with shared
+    detail: Keep summits in shared regions
+    step: "6"
+    column: 4
+    row: 1
+  - id: bigwigAverage
+    type: tool
+    label: bigwigAverage
+    subtitle: Average normalized coverage
+    detail: deepTools mean across replicates
+    step: "7"
+    column: 3
+    row: 3
+  - id: consensusPeaks
+    type: output
+    label: Consensus Peaks
+    subtitle: narrowPeak shared by n reps
+    column: 5
+    row: 1
+  - id: individualPeaks
+    type: output
+    label: Individual Peaks
+    subtitle: Per-replicate narrowPeaks
+    column: 2
+    row: 1
+  - id: mergedPeaks
+    type: output
+    label: Merged Peaks
+    subtitle: Pooled-replicate narrowPeaks
+    column: 4
+    row: 2
+  - id: averageBigwig
+    type: output
+    label: Average Coverage
+    subtitle: Normalized BigWig
+    column: 4
+    row: 3
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: MACS2 peak calling summary
+    column: 5
+    row: 0
+edges:
+  - from: bamInput
+    to: macs2Individual
+  - from: genomeSize
+    to: macs2Individual
+    style: secondary
+  - from: macs2Individual
+    to: multiIntersect
+  - from: macs2Individual
+    to: individualPeaks
+    style: secondary
+  - from: minOverlap
+    to: multiIntersect
+    style: secondary
+  - from: bamInput
+    to: downsample
+  - from: downsample
+    to: macs2Merged
+  - from: genomeSize
+    to: macs2Merged
+    style: secondary
+  - from: macs2Merged
+    to: consensusFilter
+  - from: multiIntersect
+    to: consensusFilter
+  - from: macs2Merged
+    to: mergedPeaks
+    style: secondary
+  - from: consensusFilter
+    to: consensusPeaks
+  - from: macs2Individual
+    to: bigwigAverage
+  - from: bigwigAverage
+    to: averageBigwig
+  - from: macs2Individual
+    to: multiqc
+    style: qc
+  - from: macs2Merged
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

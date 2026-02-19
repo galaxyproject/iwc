@@ -1,0 +1,110 @@
+title: "QIIME2 IIa: Denoising and Feature Table Creation (Single-End)"
+subtitle: "DADA2 sequence quality control and feature table generation"
+nodes:
+  - id: demuxSeqs
+    type: input
+    label: Demultiplexed Sequences
+    subtitle: "QZA format"
+    column: 0
+    row: 0
+  - id: metadata
+    type: input
+    label: Metadata
+    subtitle: "Tab-separated file"
+    column: 0
+    row: 1
+  - id: truncLen
+    type: input
+    label: Truncation Length
+    subtitle: "3' end trim position"
+    column: 0
+    row: 2
+  - id: dada2
+    type: tool
+    label: DADA2 denoise-single
+    subtitle: "Denoise, dereplicate, filter chimeras"
+    detail: "Removes phiX, filters quality"
+    step: "1"
+    column: 1
+    row: 0
+  - id: tabulateSeqs
+    type: tool
+    label: Tabulate Sequences
+    subtitle: "View representative sequences"
+    step: "2"
+    column: 2
+    row: 0
+  - id: tabulateStats
+    type: tool
+    label: Tabulate Statistics
+    subtitle: "Denoising statistics metadata"
+    step: "3"
+    column: 2
+    row: 1
+  - id: summarizeTable
+    type: tool
+    label: Summarize Feature Table
+    subtitle: "Feature counts per sample"
+    step: "4"
+    column: 2
+    row: 2
+  - id: repSeqs
+    type: output
+    label: Representative Sequences
+    subtitle: "Denoised rep seqs (QZA)"
+    column: 3
+    row: 0
+  - id: featureTable
+    type: output
+    label: Feature Table
+    subtitle: "DADA2 output table (QZA)"
+    column: 3
+    row: 2
+  - id: seqViz
+    type: report
+    label: Sequences Visualization
+    subtitle: "Rep seq list (QZV)"
+    column: 3
+    row: 1
+  - id: statsViz
+    type: report
+    label: Denoising Stats
+    subtitle: "DADA2 statistics (QZV)"
+    column: 3
+    row: 3
+  - id: tableViz
+    type: report
+    label: Table Summary
+    subtitle: "Feature table overview (QZV)"
+    column: 3
+    row: 4
+edges:
+  - from: demuxSeqs
+    to: dada2
+  - from: truncLen
+    to: dada2
+    style: secondary
+  - from: dada2
+    to: tabulateSeqs
+  - from: dada2
+    to: tabulateStats
+  - from: dada2
+    to: summarizeTable
+  - from: metadata
+    to: summarizeTable
+    style: secondary
+  - from: dada2
+    to: repSeqs
+  - from: dada2
+    to: featureTable
+  - from: tabulateSeqs
+    to: seqViz
+    style: qc
+  - from: tabulateStats
+    to: statsViz
+    style: qc
+  - from: summarizeTable
+    to: tableViz
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

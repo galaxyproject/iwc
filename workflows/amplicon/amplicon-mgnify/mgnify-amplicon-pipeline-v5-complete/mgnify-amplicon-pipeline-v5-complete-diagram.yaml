@@ -1,0 +1,177 @@
+title: "MGnify Amplicon Pipeline v5.0 - Complete"
+subtitle: "End-to-end amplicon analysis: download, QC, rRNA prediction, ITS, and summarization"
+nodes:
+  - id: accessions
+    type: input
+    label: SRA Accessions
+    subtitle: Accession list file
+    detail: SRR / ERR / DRR IDs
+    column: 0
+    row: 1
+  - id: clanInfo
+    type: input
+    label: Clan Info File
+    subtitle: Rfam clan data
+    column: 0
+    row: 2
+  - id: qcParams
+    type: input
+    label: QC Parameters
+    subtitle: Trimming &amp; filter settings
+    column: 0
+    row: 3
+  - id: download
+    type: tool
+    label: fastq-dl
+    subtitle: SRA download
+    detail: SE + PE retrieval
+    step: "1"
+    column: 1
+    row: 1
+  - id: qcSE
+    type: tool
+    label: QC (Single-End)
+    subtitle: Trimmomatic + PRINSEQ
+    detail: Trim, length filter, ambiguity
+    step: "2"
+    column: 2
+    row: 0
+  - id: qcPE
+    type: tool
+    label: QC (Paired-End)
+    subtitle: fastp + SeqPrep + Trimmomatic
+    detail: Merge, trim, length filter
+    step: "3"
+    column: 2
+    row: 2
+  - id: rrna
+    type: tool
+    label: rRNA Prediction
+    subtitle: cmsearch + MAPseq
+    detail: SSU/LSU extraction &amp; classification
+    step: "4"
+    column: 3
+    row: 1
+  - id: its
+    type: tool
+    label: ITS Analysis
+    subtitle: ITSoneDB + UNITE
+    detail: ITS extraction &amp; classification
+    step: "5"
+    column: 4
+    row: 1
+  - id: ssuSummary
+    type: tool
+    label: SSU Summary Tables
+    subtitle: Taxonomic abundance
+    detail: Full + phylum level
+    step: "6"
+    column: 4
+    row: 0
+  - id: lsuSummary
+    type: tool
+    label: LSU Summary Tables
+    subtitle: Taxonomic abundance
+    detail: Full + phylum level
+    step: "7"
+    column: 5
+    row: 0
+  - id: itsSummary
+    type: tool
+    label: ITS Summary Tables
+    subtitle: ITSoneDB + UNITE summaries
+    step: "8"
+    column: 5
+    row: 2
+  - id: seFasta
+    type: output
+    label: SE QC FASTA
+    subtitle: Post-QC single-end
+    column: 3
+    row: 0
+  - id: peFasta
+    type: output
+    label: PE QC FASTA
+    subtitle: Post-QC paired-end
+    column: 3
+    row: 2
+  - id: ssuOutputs
+    type: output
+    label: SSU Results
+    subtitle: OTU tables + Krona
+    column: 5
+    row: 1
+  - id: lsuOutputs
+    type: output
+    label: LSU Results
+    subtitle: OTU tables + Krona
+    column: 6
+    row: 0
+  - id: itsOutputs
+    type: output
+    label: ITS Results
+    subtitle: Classifications + OTU tables
+    column: 6
+    row: 2
+  - id: multiqcSE
+    type: report
+    label: SE MultiQC
+    subtitle: Single-end QC report
+    column: 3
+    row: 3
+  - id: multiqcPE
+    type: report
+    label: PE MultiQC
+    subtitle: Paired-end QC report
+    column: 3
+    row: 4
+edges:
+  - from: accessions
+    to: download
+  - from: download
+    to: qcSE
+  - from: download
+    to: qcPE
+  - from: qcParams
+    to: qcSE
+    style: secondary
+  - from: qcParams
+    to: qcPE
+    style: secondary
+  - from: qcSE
+    to: seFasta
+  - from: qcPE
+    to: peFasta
+  - from: qcSE
+    to: rrna
+  - from: qcPE
+    to: rrna
+  - from: clanInfo
+    to: rrna
+    style: secondary
+  - from: rrna
+    to: ssuSummary
+  - from: rrna
+    to: lsuSummary
+  - from: rrna
+    to: its
+  - from: rrna
+    to: ssuOutputs
+  - from: its
+    to: itsOutputs
+  - from: its
+    to: itsSummary
+  - from: ssuSummary
+    to: lsuOutputs
+    style: secondary
+  - from: itsSummary
+    to: itsOutputs
+    style: secondary
+  - from: qcSE
+    to: multiqcSE
+    style: qc
+  - from: qcPE
+    to: multiqcPE
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

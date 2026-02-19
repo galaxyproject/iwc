@@ -1,0 +1,99 @@
+title: "MGnify Amplicon v5.0 - Quality Control (Single-End)"
+subtitle: "Trimming, length filtering, and ambiguity filtering for SE reads"
+nodes:
+  - id: seReads
+    type: input
+    label: SE FASTQ Reads
+    subtitle: "list collection"
+    detail: Single-end amplicon reads
+    column: 0
+    row: 0
+  - id: qcParams
+    type: input
+    label: QC Parameters
+    subtitle: Trimmomatic &amp; filter settings
+    detail: Sliding window, LEADING, TRAILING, MINLEN
+    column: 0
+    row: 1
+  - id: trimmomatic
+    type: tool
+    label: Trimmomatic
+    subtitle: Quality trimming
+    detail: Sliding window, leading/trailing
+    step: "1"
+    column: 1
+    row: 0
+  - id: lengthFilter
+    type: tool
+    label: Length Filtering
+    subtitle: Filter FASTQ by size
+    detail: "Min length threshold"
+    step: "2"
+    column: 2
+    row: 0
+  - id: prinseq
+    type: tool
+    label: PRINSEQ
+    subtitle: Ambiguity filtering
+    detail: N percentage threshold
+    step: "3"
+    column: 3
+    row: 0
+  - id: fastaConvert
+    type: tool
+    label: FASTQ to FASTA
+    subtitle: Format conversion
+    detail: With width formatting
+    step: "4"
+    column: 4
+    row: 0
+  - id: qcFasta
+    type: output
+    label: QC FASTA Files
+    subtitle: Post-QC sequences
+    column: 5
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregated QC report
+    detail: FastQC at each stage
+    column: 3
+    row: 2
+  - id: mqcStats
+    type: output
+    label: MultiQC Statistics
+    subtitle: Tabular QC metrics
+    column: 4
+    row: 2
+edges:
+  - from: seReads
+    to: trimmomatic
+  - from: qcParams
+    to: trimmomatic
+    style: secondary
+  - from: trimmomatic
+    to: lengthFilter
+  - from: lengthFilter
+    to: prinseq
+  - from: prinseq
+    to: fastaConvert
+  - from: fastaConvert
+    to: qcFasta
+  - from: seReads
+    to: multiqc
+    style: qc
+  - from: trimmomatic
+    to: multiqc
+    style: qc
+  - from: lengthFilter
+    to: multiqc
+    style: qc
+  - from: prinseq
+    to: multiqc
+    style: qc
+  - from: multiqc
+    to: mqcStats
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

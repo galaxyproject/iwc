@@ -1,0 +1,118 @@
+title: "Genome Annotation with BRAKER3"
+nodes:
+  - id: genomeMasked
+    type: input
+    label: Masked Genome
+    subtitle: Soft-masked FASTA
+    column: 0
+    row: 0
+  - id: rnaseqBam
+    type: input
+    label: RNA-seq Alignments
+    subtitle: BAM file
+    column: 0
+    row: 1
+  - id: proteinSeqs
+    type: input
+    label: Protein Sequences
+    subtitle: Reference proteins (FASTA)
+    column: 0
+    row: 2
+  - id: buscoLineage
+    type: input
+    label: BUSCO Lineage
+    subtitle: Lineage for completeness check
+    column: 0
+    row: 3
+  - id: braker3
+    type: tool
+    label: BRAKER3
+    subtitle: "Gene prediction (RNA-seq + protein)"
+    step: "1"
+    column: 1
+    row: 1
+  - id: buscoGenome
+    type: tool
+    label: BUSCO (Genome)
+    subtitle: Genome completeness check
+    step: "2"
+    column: 2
+    row: 3
+  - id: gffread
+    type: tool
+    label: gffread
+    subtitle: Extract protein sequences
+    step: "3"
+    column: 2
+    row: 1
+  - id: buscoProteins
+    type: tool
+    label: BUSCO (Proteins)
+    subtitle: Proteome completeness check
+    step: "4"
+    column: 3
+    row: 0
+  - id: omark
+    type: tool
+    label: OMArk
+    subtitle: Proteome quality assessment
+    step: "5"
+    column: 3
+    row: 1
+  - id: braker3Gff
+    type: output
+    label: BRAKER3 GFF
+    subtitle: Gene annotations
+    column: 2
+    row: 0
+  - id: predictedProteins
+    type: output
+    label: Predicted Proteins
+    subtitle: Protein FASTA
+    column: 2
+    row: 2
+  - id: jbrowse
+    type: report
+    label: JBrowse
+    subtitle: Genome browser visualization
+    column: 3
+    row: 2
+edges:
+  - from: genomeMasked
+    to: braker3
+  - from: rnaseqBam
+    to: braker3
+  - from: proteinSeqs
+    to: braker3
+  - from: braker3
+    to: braker3Gff
+  - from: braker3
+    to: gffread
+  - from: genomeMasked
+    to: gffread
+    style: secondary
+  - from: gffread
+    to: predictedProteins
+  - from: gffread
+    to: buscoProteins
+    style: qc
+  - from: buscoLineage
+    to: buscoProteins
+    style: secondary
+  - from: gffread
+    to: omark
+    style: qc
+  - from: genomeMasked
+    to: buscoGenome
+    style: secondary
+  - from: buscoLineage
+    to: buscoGenome
+    style: secondary
+  - from: braker3
+    to: jbrowse
+    style: secondary
+  - from: genomeMasked
+    to: jbrowse
+    style: secondary
+legend:
+  items: [input, primary, secondary, qc, output, report]

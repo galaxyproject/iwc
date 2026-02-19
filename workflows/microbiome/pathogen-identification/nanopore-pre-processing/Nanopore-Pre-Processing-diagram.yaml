@@ -1,0 +1,124 @@
+title: "Nanopore Preprocessing"
+subtitle: "QC, trimming, and host sequence removal"
+nodes:
+  - id: samples
+    type: input
+    label: Sample Reads
+    subtitle: "Nanopore FASTQ collection"
+    column: 0
+    row: 1
+  - id: hostGenome
+    type: input
+    label: Host Reference Genome
+    subtitle: "Human, chicken, cow, etc."
+    column: 0
+    row: 2
+  - id: samplesProfile
+    type: input
+    label: Samples Profile
+    subtitle: "PacBio / Oxford Nanopore"
+    column: 0
+    row: 3
+  - id: qcBefore
+    type: tool
+    label: QC Before Trimming
+    subtitle: "NanoPlot + FastQC"
+    step: "1"
+    column: 1
+    row: 0
+  - id: trimming
+    type: tool
+    label: Trim & Filter
+    subtitle: "Porechop + fastp"
+    step: "2"
+    column: 1
+    row: 1
+  - id: qcAfter
+    type: tool
+    label: QC After Trimming
+    subtitle: "NanoPlot + FastQC"
+    step: "3"
+    column: 2
+    row: 0
+  - id: hostRemovalMap
+    type: tool
+    label: Host Removal (Mapping)
+    subtitle: "Minimap2 + split BAM"
+    step: "4"
+    column: 2
+    row: 2
+  - id: hostRemovalKraken
+    type: tool
+    label: Host Removal (Kraken)
+    subtitle: "Kraken2 + KrakenTools"
+    step: "5"
+    column: 2
+    row: 3
+  - id: hostStats
+    type: tool
+    label: Host Removal Stats
+    subtitle: "Read counts & percentages"
+    step: "6"
+    column: 3
+    row: 2
+  - id: mqcBefore
+    type: report
+    label: MultiQC Before
+    subtitle: "Pre-trimming report"
+    column: 3
+    row: 0
+  - id: mqcAfter
+    type: report
+    label: MultiQC After
+    subtitle: "Post-trimming report"
+    column: 4
+    row: 0
+  - id: preprocessedSamples
+    type: output
+    label: Preprocessed Samples
+    subtitle: "Host-filtered reads"
+    column: 4
+    row: 3
+  - id: hostStatsTable
+    type: output
+    label: Host Removal Table
+    subtitle: "Reads & removal percentages"
+    column: 4
+    row: 2
+edges:
+  - from: samples
+    to: qcBefore
+    style: secondary
+  - from: samples
+    to: trimming
+  - from: trimming
+    to: qcAfter
+    style: qc
+  - from: trimming
+    to: hostRemovalMap
+  - from: trimming
+    to: hostRemovalKraken
+  - from: hostGenome
+    to: hostRemovalMap
+    style: secondary
+  - from: samplesProfile
+    to: hostRemovalMap
+    style: secondary
+  - from: hostRemovalMap
+    to: hostStats
+  - from: qcAfter
+    to: hostStats
+    style: secondary
+  - from: qcBefore
+    to: mqcBefore
+  - from: qcAfter
+    to: mqcAfter
+  - from: hostStats
+    to: mqcAfter
+    style: secondary
+  - from: hostRemovalKraken
+    to: preprocessedSamples
+  - from: hostStats
+    to: hostStatsTable
+legend:
+  items: [input, primary, secondary, qc, output, report]

@@ -1,0 +1,123 @@
+title: "Genome Annotation with Helixer"
+nodes:
+  - id: genomeMasked
+    type: input
+    label: Masked Genome
+    subtitle: Soft-masked FASTA
+    column: 0
+    row: 1
+  - id: helixerLineage
+    type: input
+    label: Helixer Lineage
+    subtitle: "fungi/invertebrate/vertebrate/plant"
+    column: 0
+    row: 0
+  - id: buscoLineage
+    type: input
+    label: BUSCO Lineage
+    subtitle: Lineage dataset for assessment
+    column: 0
+    row: 2
+  - id: helixer
+    type: tool
+    label: Helixer
+    subtitle: Deep learning gene prediction
+    step: "1"
+    column: 1
+    row: 0
+  - id: buscoGenome
+    type: tool
+    label: BUSCO (Genome)
+    subtitle: Genome completeness check
+    step: "2"
+    column: 2
+    row: 2
+  - id: annotStats
+    type: tool
+    label: Annotation Stats
+    subtitle: Gene structure statistics
+    step: "3"
+    column: 2
+    row: 0
+  - id: gffread
+    type: tool
+    label: gffread
+    subtitle: Extract protein sequences
+    step: "4"
+    column: 3
+    row: 0
+  - id: buscoProteins
+    type: tool
+    label: BUSCO (Proteins)
+    subtitle: Proteome completeness check
+    step: "5"
+    column: 4
+    row: 0
+  - id: omark
+    type: tool
+    label: OMArk
+    subtitle: Proteome quality assessment
+    step: "6"
+    column: 4
+    row: 1
+  - id: jbrowse
+    type: report
+    label: JBrowse
+    subtitle: Genome browser visualization
+    column: 2
+    row: 1
+  - id: helixerGff
+    type: output
+    label: Helixer GFF3
+    subtitle: Gene annotations
+    column: 1
+    row: 1
+  - id: proteins
+    type: output
+    label: Predicted Proteins
+    subtitle: Protein FASTA
+    column: 3
+    row: 1
+edges:
+  - from: genomeMasked
+    to: helixer
+  - from: helixerLineage
+    to: helixer
+    style: secondary
+  - from: helixer
+    to: helixerGff
+  - from: helixer
+    to: annotStats
+  - from: genomeMasked
+    to: annotStats
+    style: secondary
+  - from: genomeMasked
+    to: buscoGenome
+    style: secondary
+  - from: buscoLineage
+    to: buscoGenome
+    style: secondary
+  - from: helixer
+    to: gffread
+  - from: genomeMasked
+    to: gffread
+    style: secondary
+  - from: gffread
+    to: proteins
+  - from: gffread
+    to: buscoProteins
+    style: qc
+  - from: buscoLineage
+    to: buscoProteins
+    style: secondary
+  - from: gffread
+    to: omark
+    style: qc
+  - from: helixer
+    to: jbrowse
+    style: secondary
+  - from: genomeMasked
+    to: jbrowse
+    style: secondary
+legend:
+  items: [input, primary, secondary, qc, output, report]

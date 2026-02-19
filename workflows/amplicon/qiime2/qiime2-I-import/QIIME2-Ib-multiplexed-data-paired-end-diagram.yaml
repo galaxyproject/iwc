@@ -1,0 +1,93 @@
+title: "QIIME2 Ib: Import Multiplexed Data (Paired-End)"
+subtitle: "Import and demultiplex paired-end EMP protocol data"
+nodes:
+  - id: fwdSeqs
+    type: input
+    label: Forward Sequences
+    subtitle: "FASTQ forward reads"
+    column: 0
+    row: 0
+  - id: revSeqs
+    type: input
+    label: Reverse Sequences
+    subtitle: "FASTQ reverse reads"
+    column: 0
+    row: 1
+  - id: barcodes
+    type: input
+    label: Barcodes
+    subtitle: "FASTQ barcode reads"
+    column: 0
+    row: 2
+  - id: metadata
+    type: input
+    label: Metadata
+    subtitle: "Tab-separated sample info"
+    column: 0
+    row: 3
+  - id: importData
+    type: tool
+    label: QIIME2 Import
+    subtitle: "Convert to QZA artifact"
+    detail: "EMPPairedEndSequences format"
+    step: "1"
+    column: 1
+    row: 1
+  - id: importMetadata
+    type: tool
+    label: Import Metadata
+    subtitle: "Convert to QIIME2 artifact"
+    step: "2"
+    column: 1
+    row: 3
+  - id: demux
+    type: tool
+    label: Demultiplex (EMP)
+    subtitle: "Split by barcode"
+    detail: "Golay error correction"
+    step: "3"
+    column: 2
+    row: 1
+  - id: summarize
+    type: tool
+    label: Demux Summarize
+    subtitle: "Per-sample sequence counts"
+    step: "4"
+    column: 3
+    row: 0
+  - id: demuxOutput
+    type: output
+    label: Demultiplexed Sequences
+    subtitle: "Per-sample paired-end (QZA)"
+    column: 3
+    row: 1
+  - id: demuxViz
+    type: report
+    label: Demux Summary
+    subtitle: "Counts visualization (QZV)"
+    column: 4
+    row: 0
+edges:
+  - from: fwdSeqs
+    to: importData
+  - from: revSeqs
+    to: importData
+  - from: barcodes
+    to: importData
+  - from: metadata
+    to: importMetadata
+    style: secondary
+  - from: importData
+    to: demux
+  - from: importMetadata
+    to: demux
+    style: secondary
+  - from: demux
+    to: demuxOutput
+  - from: demux
+    to: summarize
+  - from: summarize
+    to: demuxViz
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

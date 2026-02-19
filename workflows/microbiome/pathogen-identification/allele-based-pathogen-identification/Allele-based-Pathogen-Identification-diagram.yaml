@@ -1,0 +1,128 @@
+title: "Allele-based Pathogen Identification"
+subtitle: "Variant calling and consensus building"
+nodes:
+  - id: preprocessedSamples
+    type: input
+    label: Preprocessed Samples
+    subtitle: "Post-QC reads collection"
+    column: 0
+    row: 0
+  - id: referenceGenome
+    type: input
+    label: Reference Genome
+    subtitle: "Pathogen strain FASTA"
+    column: 0
+    row: 1
+  - id: samplesProfile
+    type: input
+    label: Samples Profile
+    subtitle: "PacBio / Oxford Nanopore"
+    column: 0
+    row: 2
+  - id: minimap2
+    type: tool
+    label: Minimap2
+    subtitle: "Map reads to reference"
+    step: "1"
+    column: 1
+    row: 0
+  - id: clair3
+    type: tool
+    label: Clair3
+    subtitle: "Variant calling"
+    step: "2"
+    column: 2
+    row: 0
+  - id: bcftoolsNorm
+    type: tool
+    label: bcftools norm
+    subtitle: "Normalize variants"
+    step: "3"
+    column: 3
+    row: 0
+  - id: snpSiftFilter
+    type: tool
+    label: SnpSift Filter
+    subtitle: "Quality filter (QUAL > 2)"
+    step: "4"
+    column: 4
+    row: 0
+  - id: consensus
+    type: tool
+    label: bcftools consensus
+    subtitle: "Build consensus sequence"
+    step: "5"
+    column: 5
+    row: 1
+  - id: coverageStats
+    type: tool
+    label: Coverage Statistics
+    subtitle: "Depth & breadth of coverage"
+    step: "6"
+    column: 2
+    row: 2
+  - id: variantTable
+    type: output
+    label: Variant Table
+    subtitle: "All variants per sample"
+    column: 5
+    row: 0
+  - id: variantCounts
+    type: output
+    label: Variants Per Sample
+    subtitle: "SNP & variant counts"
+    column: 6
+    row: 0
+  - id: consensusSeq
+    type: output
+    label: Consensus Sequences
+    subtitle: "Per-sample FASTA"
+    column: 6
+    row: 1
+  - id: mappingDepth
+    type: output
+    label: Mapping Mean Depth
+    subtitle: "Per-sample depth table"
+    column: 4
+    row: 2
+  - id: mappingCoverage
+    type: output
+    label: Coverage Percentage
+    subtitle: "Per-sample breadth table"
+    column: 4
+    row: 3
+edges:
+  - from: preprocessedSamples
+    to: minimap2
+  - from: referenceGenome
+    to: minimap2
+    style: secondary
+  - from: samplesProfile
+    to: minimap2
+    style: secondary
+  - from: minimap2
+    to: clair3
+  - from: referenceGenome
+    to: clair3
+    style: secondary
+  - from: clair3
+    to: bcftoolsNorm
+  - from: bcftoolsNorm
+    to: snpSiftFilter
+  - from: snpSiftFilter
+    to: variantTable
+  - from: snpSiftFilter
+    to: consensus
+  - from: variantTable
+    to: variantCounts
+  - from: consensus
+    to: consensusSeq
+  - from: minimap2
+    to: coverageStats
+    style: qc
+  - from: coverageStats
+    to: mappingDepth
+  - from: coverageStats
+    to: mappingCoverage
+legend:
+  items: [input, primary, secondary, qc, output]

@@ -1,0 +1,79 @@
+title: "MGnify Amplicon Taxonomic Summary Tables"
+subtitle: "OTU table aggregation at full taxonomy and phylum level"
+nodes:
+  - id: otuTables
+    type: input
+    label: OTU Tables
+    subtitle: "list collection"
+    detail: MAPseq OTU output tables
+    column: 0
+    row: 0
+  - id: tableNameParam
+    type: input
+    label: Table Name Params
+    subtitle: Summary table naming
+    column: 0
+    row: 2
+  - id: queryReformat
+    type: tool
+    label: Query &amp; Reformat
+    subtitle: Extract taxonomy + counts
+    detail: SQL query, text reformatting
+    step: "1"
+    column: 1
+    row: 0
+  - id: phylumExtract
+    type: tool
+    label: Phylum Extraction
+    subtitle: Group by phylum-level taxa
+    detail: "sk__, k__, p__ levels"
+    step: "2"
+    column: 1
+    row: 1
+  - id: columnJoinTaxa
+    type: tool
+    label: Column Join
+    subtitle: Merge samples (full taxonomy)
+    step: "3"
+    column: 2
+    row: 0
+  - id: columnJoinPhylum
+    type: tool
+    label: Column Join
+    subtitle: Merge samples (phylum level)
+    step: "4"
+    column: 2
+    row: 1
+  - id: taxaSummary
+    type: output
+    label: Taxonomic Summary Table
+    subtitle: Full taxonomic abundance
+    column: 3
+    row: 0
+  - id: phylumSummary
+    type: output
+    label: Phylum Summary Table
+    subtitle: Phylum-level abundance
+    column: 3
+    row: 1
+edges:
+  - from: otuTables
+    to: queryReformat
+  - from: otuTables
+    to: phylumExtract
+  - from: queryReformat
+    to: columnJoinTaxa
+  - from: phylumExtract
+    to: columnJoinPhylum
+  - from: columnJoinTaxa
+    to: taxaSummary
+  - from: columnJoinPhylum
+    to: phylumSummary
+  - from: tableNameParam
+    to: taxaSummary
+    style: secondary
+  - from: tableNameParam
+    to: phylumSummary
+    style: secondary
+legend:
+  items: [input, primary, output]

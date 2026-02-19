@@ -1,0 +1,98 @@
+title: "Fragment-Based Docking & Scoring"
+subtitle: "Virtual screening with rDock and SuCOS pose scoring"
+nodes:
+  - id: receptor
+    type: input
+    label: Receptor (PDB)
+    subtitle: Protein target structure
+    column: 0
+    row: 0
+  - id: fragments
+    type: input
+    label: Fragments (SDF)
+    subtitle: Known binding fragments
+    column: 0
+    row: 1
+  - id: candidates
+    type: input
+    label: Candidates (SMILES)
+    subtitle: Compounds to screen
+    column: 0
+    row: 2
+  - id: scoringFrag
+    type: input
+    label: Scoring Fragment
+    subtitle: "Reference for SuCOS scoring"
+    column: 0
+    row: 3
+  - id: cavityDef
+    type: tool
+    label: rDock Cavity
+    subtitle: "Frankenstein ligand + cavity"
+    step: "1"
+    column: 1
+    row: 0
+  - id: prepLigands
+    type: tool
+    label: Prepare Ligands
+    subtitle: Enumerate charges & split
+    step: "2"
+    column: 1
+    row: 2
+  - id: docking
+    type: tool
+    label: rDock Docking
+    subtitle: Dock candidates into cavity
+    step: "3"
+    column: 2
+    row: 1
+  - id: sucosScore
+    type: tool
+    label: SuCOS Scoring
+    subtitle: Score poses against fragment
+    step: "4"
+    column: 3
+    row: 1
+  - id: filterPoses
+    type: tool
+    label: Filter & Sort
+    subtitle: Apply SuCOS threshold
+    step: "5"
+    column: 4
+    row: 1
+  - id: dockingPoses
+    type: output
+    label: Docking Poses
+    subtitle: All scored docking poses
+    column: 5
+    row: 0
+  - id: filteredPoses
+    type: output
+    label: Filtered Poses
+    subtitle: Top-scoring compounds
+    column: 5
+    row: 1
+edges:
+  - from: receptor
+    to: cavityDef
+  - from: fragments
+    to: cavityDef
+  - from: candidates
+    to: prepLigands
+  - from: cavityDef
+    to: docking
+  - from: prepLigands
+    to: docking
+  - from: docking
+    to: dockingPoses
+  - from: docking
+    to: sucosScore
+  - from: scoringFrag
+    to: sucosScore
+    style: secondary
+  - from: sucosScore
+    to: filterPoses
+  - from: filterPoses
+    to: filteredPoses
+legend:
+  items: [input, primary, secondary, output]

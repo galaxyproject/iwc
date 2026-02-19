@@ -1,0 +1,107 @@
+title: "End-to-End Tissue Microarray Analysis"
+nodes:
+  - id: rawImages
+    type: input
+    label: Raw Cycle Images
+    subtitle: Ordered TIFF collection
+    column: 0
+    row: 0
+  - id: markersFile
+    type: input
+    label: Markers CSV
+    subtitle: Channel marker names
+    column: 0
+    row: 1
+  - id: phenotypeWf
+    type: input
+    label: Phenotype Workflow
+    subtitle: Scimap phenotyping CSV
+    column: 0
+    row: 2
+  - id: illumination
+    type: tool
+    label: BaSiC Illumination
+    subtitle: Correct illumination artifacts
+    step: "1"
+    column: 1
+    row: 0
+  - id: ashlar
+    type: tool
+    label: ASHLAR
+    subtitle: Stitch &amp; register cycles
+    step: "2"
+    column: 2
+    row: 0
+  - id: coreograph
+    type: tool
+    label: UNetCoreograph
+    subtitle: TMA core dearray
+    step: "3"
+    column: 3
+    row: 0
+  - id: mesmer
+    type: tool
+    label: Mesmer
+    subtitle: Nuclear segmentation
+    step: "4"
+    column: 4
+    row: 0
+  - id: mcquant
+    type: tool
+    label: MCQUANT
+    subtitle: Feature quantification
+    step: "5"
+    column: 4
+    row: 1
+  - id: phenotyping
+    type: tool
+    label: Scimap Phenotyping
+    subtitle: Cell type classification
+    step: "6"
+    column: 5
+    row: 0
+  - id: vitessce
+    type: report
+    label: Vitessce
+    subtitle: Interactive dashboard
+    column: 6
+    row: 0
+  - id: phenotypedTable
+    type: output
+    label: Phenotyped Features
+    subtitle: Annotated h5ad table
+    column: 6
+    row: 1
+edges:
+  - from: rawImages
+    to: illumination
+  - from: illumination
+    to: ashlar
+  - from: rawImages
+    to: ashlar
+    style: secondary
+  - from: markersFile
+    to: ashlar
+    style: secondary
+  - from: ashlar
+    to: coreograph
+  - from: coreograph
+    to: mesmer
+  - from: coreograph
+    to: mcquant
+  - from: mesmer
+    to: mcquant
+  - from: markersFile
+    to: mcquant
+    style: secondary
+  - from: mcquant
+    to: phenotyping
+  - from: phenotypeWf
+    to: phenotyping
+    style: secondary
+  - from: phenotyping
+    to: vitessce
+  - from: phenotyping
+    to: phenotypedTable
+legend:
+  items: [input, primary, secondary, output, report]

@@ -1,0 +1,86 @@
+title: "Clinical Metaproteomics Database Generation"
+subtitle: "Build a compact search database with MetaNovo"
+nodes:
+  - id: humanDb
+    type: input
+    label: Human SwissProt
+    subtitle: Human protein database
+    column: 0
+    row: 0
+  - id: speciesDb
+    type: input
+    label: Species UniProt
+    subtitle: Microbial protein database
+    column: 0
+    row: 1
+  - id: crapDb
+    type: input
+    label: Contaminants (cRAP)
+    subtitle: Common contaminants
+    column: 0
+    row: 2
+  - id: msmsData
+    type: input
+    label: MS/MS Datasets
+    subtitle: Tandem MS spectra
+    column: 0
+    row: 3
+  - id: mergeInitial
+    type: tool
+    label: Merge FASTA
+    subtitle: Combine all protein databases
+    step: "1"
+    column: 1
+    row: 1
+  - id: metanovo
+    type: tool
+    label: MetaNovo
+    subtitle: Generate compact database
+    step: "2"
+    column: 2
+    row: 1
+  - id: mergeFinal
+    type: tool
+    label: Merge Final FASTA
+    subtitle: "Human + MetaNovo + cRAP"
+    step: "3"
+    column: 3
+    row: 1
+  - id: compactDb
+    type: output
+    label: Compact Database
+    subtitle: "MetaNovo FASTA for search"
+    column: 4
+    row: 0
+  - id: finalDb
+    type: output
+    label: Search Database
+    subtitle: "Complete merged FASTA"
+    column: 4
+    row: 1
+edges:
+  - from: humanDb
+    to: mergeInitial
+  - from: speciesDb
+    to: mergeInitial
+  - from: crapDb
+    to: mergeInitial
+  - from: mergeInitial
+    to: metanovo
+  - from: msmsData
+    to: metanovo
+    style: secondary
+  - from: metanovo
+    to: compactDb
+  - from: metanovo
+    to: mergeFinal
+  - from: humanDb
+    to: mergeFinal
+    style: secondary
+  - from: crapDb
+    to: mergeFinal
+    style: secondary
+  - from: mergeFinal
+    to: finalDb
+legend:
+  items: [input, primary, secondary, output]

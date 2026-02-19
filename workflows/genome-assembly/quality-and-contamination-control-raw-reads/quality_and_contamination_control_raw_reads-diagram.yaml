@@ -1,0 +1,92 @@
+title: "Raw Read Quality and Contamination Control"
+nodes:
+  - id: readsForward
+    type: input
+    label: Reads (Forward)
+    subtitle: FASTQ forward strand
+    column: 0
+    row: 0
+  - id: readsReverse
+    type: input
+    label: Reads (Reverse)
+    subtitle: FASTQ reverse strand
+    column: 0
+    row: 1
+  - id: taxonomyDb
+    type: input
+    label: Taxonomy DB
+    subtitle: Kraken2/Bracken database
+    column: 0
+    row: 2
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Adapter &amp; quality trimming
+    step: "1"
+    column: 1
+    row: 0
+  - id: kraken2
+    type: tool
+    label: Kraken2
+    subtitle: Taxonomy classification
+    step: "2"
+    column: 2
+    row: 1
+  - id: bracken
+    type: tool
+    label: Bracken
+    subtitle: Abundance estimation
+    step: "3"
+    column: 3
+    row: 1
+  - id: trimmedReads
+    type: output
+    label: Trimmed Reads
+    subtitle: "Cleaned R1 + R2"
+    column: 2
+    row: 0
+  - id: krakenReport
+    type: output
+    label: Kraken Report
+    subtitle: Taxonomy assignments
+    column: 3
+    row: 2
+  - id: brackenReport
+    type: output
+    label: Bracken Report
+    subtitle: Species abundances
+    column: 4
+    row: 1
+  - id: summaryJson
+    type: report
+    label: Summary JSON
+    subtitle: Aggregated QC results
+    column: 4
+    row: 0
+edges:
+  - from: readsForward
+    to: fastp
+  - from: readsReverse
+    to: fastp
+  - from: fastp
+    to: trimmedReads
+  - from: fastp
+    to: kraken2
+  - from: taxonomyDb
+    to: kraken2
+    style: secondary
+  - from: kraken2
+    to: bracken
+  - from: kraken2
+    to: krakenReport
+    style: secondary
+  - from: bracken
+    to: brackenReport
+  - from: taxonomyDb
+    to: bracken
+    style: secondary
+  - from: fastp
+    to: summaryJson
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

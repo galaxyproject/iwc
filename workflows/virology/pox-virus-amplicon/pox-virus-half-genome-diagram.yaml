@@ -1,0 +1,137 @@
+title: "Pox Virus Illumina Amplicon: Half-Genome Pipeline"
+nodes:
+  - id: reference
+    type: input
+    label: Reference FASTA
+    subtitle: Pox virus genome
+    column: 0
+    row: 1
+  - id: primerScheme
+    type: input
+    label: Primer Scheme
+    subtitle: BED with pool1/pool2
+    column: 0
+    row: 2
+  - id: pool1Reads
+    type: input
+    label: PE Reads Pool 1
+    subtitle: "list:paired collection"
+    column: 0
+    row: 0
+  - id: pool2Reads
+    type: input
+    label: PE Reads Pool 2
+    subtitle: "list:paired collection"
+    column: 0
+    row: 3
+  - id: maskRef
+    type: tool
+    label: Mask Reference
+    subtitle: Mask per-pool primer sites
+    step: "1"
+    column: 1
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: "Trim reads (both pools)"
+    step: "2"
+    column: 1
+    row: 0
+  - id: bwaMem
+    type: tool
+    label: BWA-MEM
+    subtitle: "Map each pool separately"
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterBam
+    type: tool
+    label: Filter BAM
+    subtitle: "MAPQ>=20, proper pairs"
+    step: "4"
+    column: 3
+    row: 0
+  - id: mergePool
+    type: tool
+    label: Samtools Merge
+    subtitle: Combine pool1 + pool2 BAMs
+    step: "5"
+    column: 4
+    row: 0
+  - id: ivarTrim
+    type: tool
+    label: ivar trim
+    subtitle: Trim primer sequences
+    step: "6"
+    column: 5
+    row: 0
+  - id: ivarConsensus
+    type: tool
+    label: ivar consensus
+    subtitle: Build consensus sequence
+    step: "7"
+    column: 6
+    row: 0
+  - id: consensusOutput
+    type: output
+    label: Consensus FASTA
+    subtitle: Per-sample consensus
+    column: 7
+    row: 0
+  - id: combinedFasta
+    type: output
+    label: Combined FASTA
+    subtitle: All samples concatenated
+    column: 7
+    row: 1
+  - id: multiqcPre
+    type: report
+    label: MultiQC (Pre-trim)
+    subtitle: Mapping QC per pool
+    column: 4
+    row: 2
+  - id: multiqcPost
+    type: report
+    label: MultiQC (Post-trim)
+    subtitle: Final alignment QC
+    column: 6
+    row: 2
+edges:
+  - from: pool1Reads
+    to: fastp
+  - from: pool2Reads
+    to: fastp
+  - from: primerScheme
+    to: maskRef
+  - from: reference
+    to: maskRef
+  - from: fastp
+    to: bwaMem
+  - from: maskRef
+    to: bwaMem
+    style: secondary
+  - from: bwaMem
+    to: filterBam
+  - from: filterBam
+    to: mergePool
+  - from: mergePool
+    to: ivarTrim
+  - from: primerScheme
+    to: ivarTrim
+    style: secondary
+  - from: ivarTrim
+    to: ivarConsensus
+  - from: ivarConsensus
+    to: consensusOutput
+  - from: ivarConsensus
+    to: combinedFasta
+    style: secondary
+  - from: filterBam
+    to: multiqcPre
+    style: qc
+  - from: ivarTrim
+    to: multiqcPost
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

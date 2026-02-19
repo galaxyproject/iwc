@@ -1,0 +1,158 @@
+title: "SARS-CoV-2 Illumina Amplicon Pipeline (iVar)"
+nodes:
+  - id: peReads
+    type: input
+    label: PE FASTQ Reads
+    subtitle: "list:paired collection"
+    detail: Illumina amplicon data
+    step: "1"
+    column: 0
+    row: 0
+  - id: reference
+    type: input
+    label: Reference FASTA
+    subtitle: SARS-CoV-2 genome
+    column: 0
+    row: 1
+  - id: primerBed
+    type: input
+    label: Primer BED
+    subtitle: ARTIC primer positions
+    column: 0
+    row: 2
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Adapter &amp; quality trimming
+    step: "2"
+    column: 1
+    row: 0
+  - id: bwaMem
+    type: tool
+    label: BWA-MEM
+    subtitle: Align to reference genome
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterBam
+    type: tool
+    label: Filter BAM
+    subtitle: "MAPQ>=20, proper pairs"
+    step: "4"
+    column: 3
+    row: 0
+  - id: ivarTrim
+    type: tool
+    label: ivar trim
+    subtitle: Trim ARTIC primers
+    step: "5"
+    column: 4
+    row: 0
+  - id: ivarVariants
+    type: tool
+    label: ivar variants
+    subtitle: Call variants from pileup
+    step: "6"
+    column: 5
+    row: 0
+  - id: ivarConsensus
+    type: tool
+    label: ivar consensus
+    subtitle: Build consensus sequence
+    step: "7"
+    column: 5
+    row: 2
+  - id: snpeff
+    type: tool
+    label: SnpEff
+    subtitle: Annotate variant effects
+    step: "8"
+    column: 6
+    row: 0
+  - id: pangolin
+    type: tool
+    label: Pangolin
+    subtitle: Lineage classification
+    step: "9"
+    column: 6
+    row: 2
+  - id: nextclade
+    type: tool
+    label: Nextclade
+    subtitle: Clade assignment &amp; QC
+    step: "10"
+    column: 6
+    row: 3
+  - id: annotatedVcf
+    type: output
+    label: Annotated Variants
+    subtitle: SnpEff-annotated VCF
+    column: 7
+    row: 0
+  - id: consensusGenome
+    type: output
+    label: Consensus Genome
+    subtitle: Depth-masked FASTA
+    column: 7
+    row: 1
+  - id: lineageReport
+    type: output
+    label: Lineage Report
+    subtitle: Pangolin + Nextclade
+    column: 7
+    row: 2
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: QC report
+    column: 4
+    row: 3
+edges:
+  - from: peReads
+    to: fastp
+  - from: fastp
+    to: bwaMem
+  - from: reference
+    to: bwaMem
+    style: secondary
+  - from: bwaMem
+    to: filterBam
+  - from: filterBam
+    to: ivarTrim
+  - from: primerBed
+    to: ivarTrim
+    style: secondary
+  - from: ivarTrim
+    to: ivarVariants
+  - from: ivarTrim
+    to: ivarConsensus
+  - from: reference
+    to: ivarVariants
+    style: secondary
+  - from: ivarVariants
+    to: snpeff
+  - from: snpeff
+    to: annotatedVcf
+  - from: ivarConsensus
+    to: consensusGenome
+  - from: ivarConsensus
+    to: pangolin
+  - from: ivarConsensus
+    to: nextclade
+  - from: pangolin
+    to: lineageReport
+    style: secondary
+  - from: nextclade
+    to: lineageReport
+    style: secondary
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: bwaMem
+    to: multiqc
+    style: qc
+  - from: filterBam
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

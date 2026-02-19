@@ -1,0 +1,81 @@
+title: "Clinical Metaproteomics Verification"
+subtitle: "Verify microbial peptides with PepQuery2"
+nodes:
+  - id: msmsData
+    type: input
+    label: MS/MS Datasets
+    subtitle: MGF spectra collection
+    column: 0
+    row: 0
+  - id: peptideReports
+    type: input
+    label: Peptide Reports
+    subtitle: "SGPS + MaxQuant reports"
+    column: 0
+    row: 1
+  - id: distinctPeptides
+    type: input
+    label: Distinct Peptides
+    subtitle: Candidate microbial peptides
+    column: 0
+    row: 2
+  - id: buildRefDb
+    type: tool
+    label: Build Reference DB
+    subtitle: "Human UniProt + cRAP FASTA"
+    step: "1"
+    column: 1
+    row: 0
+  - id: pepQuery
+    type: tool
+    label: PepQuery2
+    subtitle: Validate against reference
+    step: "2"
+    column: 2
+    row: 1
+  - id: filterVerified
+    type: tool
+    label: Filter & Map Proteins
+    subtitle: Extract verified peptides
+    step: "3"
+    column: 3
+    row: 1
+  - id: fetchProteins
+    type: tool
+    label: UniProt Fetch
+    subtitle: Download verified protein seqs
+    step: "4"
+    column: 4
+    row: 1
+  - id: quantDb
+    type: output
+    label: Quantitation Database
+    subtitle: "Verified protein FASTA"
+    column: 5
+    row: 1
+  - id: verifiedPeptides
+    type: output
+    label: Verified Peptides
+    subtitle: PepQuery-confirmed peptides
+    column: 5
+    row: 0
+edges:
+  - from: msmsData
+    to: pepQuery
+  - from: distinctPeptides
+    to: pepQuery
+  - from: buildRefDb
+    to: pepQuery
+  - from: peptideReports
+    to: filterVerified
+    style: secondary
+  - from: pepQuery
+    to: filterVerified
+  - from: filterVerified
+    to: verifiedPeptides
+  - from: filterVerified
+    to: fetchProteins
+  - from: fetchProteins
+    to: quantDb
+legend:
+  items: [input, primary, secondary, output]

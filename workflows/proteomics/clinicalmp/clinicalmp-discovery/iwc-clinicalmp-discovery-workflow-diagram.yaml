@@ -1,0 +1,86 @@
+title: "Clinical Metaproteomics Discovery"
+subtitle: "Dual-engine peptide identification for microbial discovery"
+nodes:
+  - id: msmsFiles
+    type: input
+    label: MS/MS Raw Files
+    subtitle: "Thermo .raw collection"
+    column: 0
+    row: 1
+  - id: proteinDb
+    type: input
+    label: Protein Database
+    subtitle: "MetaNovo + Human + cRAP"
+    column: 0
+    row: 0
+  - id: expDesign
+    type: input
+    label: Experimental Design
+    subtitle: MaxQuant design file
+    column: 0
+    row: 3
+  - id: searchGuiPs
+    type: tool
+    label: SearchGUI / PeptideShaker
+    subtitle: "X!Tandem + MSGF+ search"
+    step: "1"
+    column: 2
+    row: 0
+  - id: maxQuant
+    type: tool
+    label: MaxQuant
+    subtitle: "TMT11-plex quantification"
+    step: "2"
+    column: 2
+    row: 2
+  - id: filterSgps
+    type: tool
+    label: Filter Microbial (SGPS)
+    subtitle: Remove human/contaminant hits
+    step: "3"
+    column: 3
+    row: 0
+  - id: filterMq
+    type: tool
+    label: Filter Microbial (MQ)
+    subtitle: Remove human/contaminant hits
+    step: "4"
+    column: 3
+    row: 2
+  - id: mergePeptides
+    type: tool
+    label: Merge & Deduplicate
+    subtitle: Combine distinct peptides
+    step: "5"
+    column: 4
+    row: 1
+  - id: distinctPeptides
+    type: output
+    label: Distinct Peptides
+    subtitle: Verified microbial peptides
+    column: 5
+    row: 1
+edges:
+  - from: msmsFiles
+    to: searchGuiPs
+  - from: proteinDb
+    to: searchGuiPs
+  - from: msmsFiles
+    to: maxQuant
+  - from: proteinDb
+    to: maxQuant
+  - from: expDesign
+    to: maxQuant
+    style: secondary
+  - from: searchGuiPs
+    to: filterSgps
+  - from: maxQuant
+    to: filterMq
+  - from: filterSgps
+    to: mergePeptides
+  - from: filterMq
+    to: mergePeptides
+  - from: mergePeptides
+    to: distinctPeptides
+legend:
+  items: [input, primary, secondary, output]

@@ -1,0 +1,90 @@
+title: "K-mer Profiling & Read Statistics (VGP1)"
+nodes:
+  - id: pacbioReads
+    type: input
+    label: PacBio Reads
+    subtitle: HiFi read collection
+    column: 0
+    row: 0
+  - id: kmerLength
+    type: input
+    label: K-mer Length
+    subtitle: "Default: 21"
+    column: 0
+    row: 1
+  - id: ploidy
+    type: input
+    label: Ploidy
+    subtitle: "Default: 2"
+    column: 0
+    row: 2
+  - id: merylCount
+    type: tool
+    label: Meryl Count
+    subtitle: Build k-mer database
+    step: "1"
+    column: 1
+    row: 0
+  - id: merylUnion
+    type: tool
+    label: Meryl Union-Sum
+    subtitle: Merge k-mer databases
+    step: "2"
+    column: 2
+    row: 0
+  - id: genomescope
+    type: tool
+    label: GenomeScope
+    subtitle: Genome profiling
+    step: "3"
+    column: 3
+    row: 0
+  - id: rdeval
+    type: tool
+    label: RDeval
+    subtitle: Read length & quality stats
+    step: "4"
+    column: 2
+    row: 1
+  - id: merylDb
+    type: output
+    label: Meryl Database
+    subtitle: K-mer count database
+    column: 4
+    row: 0
+  - id: gsPlots
+    type: output
+    label: GenomeScope Plots
+    subtitle: Genome size & heterozygosity
+    column: 4
+    row: 1
+  - id: readStats
+    type: report
+    label: Read Statistics
+    subtitle: RDeval + Mash QC
+    column: 3
+    row: 1
+edges:
+  - from: pacbioReads
+    to: merylCount
+  - from: kmerLength
+    to: merylCount
+    style: secondary
+  - from: merylCount
+    to: merylUnion
+  - from: merylUnion
+    to: genomescope
+  - from: ploidy
+    to: genomescope
+    style: secondary
+  - from: pacbioReads
+    to: rdeval
+  - from: merylUnion
+    to: merylDb
+  - from: genomescope
+    to: gsPlots
+  - from: rdeval
+    to: readStats
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

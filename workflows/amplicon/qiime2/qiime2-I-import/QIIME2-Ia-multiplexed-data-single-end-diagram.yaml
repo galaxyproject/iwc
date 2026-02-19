@@ -1,0 +1,85 @@
+title: "QIIME2 Ia: Import Multiplexed Data (Single-End)"
+subtitle: "Import and demultiplex single-end EMP protocol data"
+nodes:
+  - id: sequences
+    type: input
+    label: Sequences
+    subtitle: "Single-end FASTQ"
+    column: 0
+    row: 0
+  - id: barcodes
+    type: input
+    label: Barcodes
+    subtitle: "FASTQ barcode reads"
+    column: 0
+    row: 1
+  - id: metadata
+    type: input
+    label: Metadata
+    subtitle: "Tab-separated sample info"
+    column: 0
+    row: 2
+  - id: importData
+    type: tool
+    label: QIIME2 Import
+    subtitle: "Convert to QZA artifact"
+    detail: "EMPSingleEndSequences format"
+    step: "1"
+    column: 1
+    row: 0
+  - id: importMetadata
+    type: tool
+    label: Import Metadata
+    subtitle: "Convert to QIIME2 artifact"
+    step: "2"
+    column: 1
+    row: 2
+  - id: demux
+    type: tool
+    label: Demultiplex (EMP)
+    subtitle: "Split by barcode"
+    detail: "Golay error correction"
+    step: "3"
+    column: 2
+    row: 0
+  - id: summarize
+    type: tool
+    label: Demux Summarize
+    subtitle: "Per-sample sequence counts"
+    step: "4"
+    column: 3
+    row: 0
+  - id: demuxOutput
+    type: output
+    label: Demultiplexed Sequences
+    subtitle: "Per-sample single-end (QZA)"
+    column: 3
+    row: 1
+  - id: demuxViz
+    type: report
+    label: Demux Summary
+    subtitle: "Counts visualization (QZV)"
+    column: 4
+    row: 0
+edges:
+  - from: sequences
+    to: importData
+  - from: barcodes
+    to: importData
+  - from: metadata
+    to: importMetadata
+    style: secondary
+  - from: importData
+    to: demux
+  - from: importMetadata
+    to: demux
+    style: secondary
+  - from: demux
+    to: demuxOutput
+  - from: demux
+    to: summarize
+  - from: summarize
+    to: demuxViz
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]
