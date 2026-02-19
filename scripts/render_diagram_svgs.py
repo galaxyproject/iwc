@@ -13,14 +13,14 @@ import yaml
 
 # --- Constants ---
 
-TOOL_COLOR = "#25537b"
-
 COLORS = {
-    "input": "#ffd700",
-    "tool": TOOL_COLOR,
-    "output": "#f97316",
-    "report": "#10b981",
+    "input": "#ffd700",   # gold
+    "tool": "#25537b",    # navy
+    "output": "#10b981",  # green
+    "report": "#5bc0de",  # light blue (Galaxy info)
 }
+
+TOOL_COLOR = COLORS["tool"]
 
 HEADER_HEIGHT = 28
 HEADER_HEIGHT_SMALL = 24
