@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1] 2026-02-07
+
+- User can decide if Tooldistillator should run or not (with and without Bakta)
+- Bakta output is feed to MultiQC
+- Bakta output will be formatted such that the annotation result are showed together for each inputted sequence in one file 
+
 ## [1.2.0] 2025-12-04
 
 ### Automatic update
