@@ -1,0 +1,64 @@
+- doc: Test outline for diploid-variant-calling-wgs-pe.ga
+  job:
+    Paired Collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+        - class: Collection
+          type: paired
+          identifier: sample1
+          elements:
+            - class: File
+              identifier: forward
+              path: test-data/sample1_R1.fastq.gz
+              filetype: fastqsanger.gz
+            - class: File
+              identifier: reverse
+              path: test-data/sample1_R2.fastq.gz
+              filetype: fastqsanger.gz
+    Reference Genome fasta:
+      class: File
+      path: test-data/reference.fasta
+      filetype: fasta
+    Annotation GTF:
+      class: File
+      path: test-data/annotation.gtf
+      filetype: gtf
+    Set Ploidy for FreeBayes Variant Calling: 2
+  outputs:
+    fastp HTML report:
+      element_tests:
+        sample1:
+          asserts:
+            has_text:
+              text: "<tr><td class='col1'>total reads:</td><td class='col2'>600</td></tr>"
+
+    Preprocessing and mapping reports:
+      asserts:
+        has_text:
+          text: "MultiQC Report"
+
+    SnpEff variants:
+      asserts:
+        has_text:
+          text: "##fileformat=VCFv4.2"
+        has_text:
+          text: "##contig=<ID=chr1,length=2000>"
+        has_n_lines:
+          n: 71
+
+    SnpEff eff reports:
+      asserts:
+        has_text:
+          text: "<td valign=top> <b> Number of variants processed <br> (i.e. after filter and non-variants) </b> </td>"
+        has_text:
+          text: "<td> 2 </td>"
+
+    Annotated Variants:
+      asserts:
+        has_n_lines:
+          n: 3
+        has_n_columns:
+          n: 19
+        has_text:
+          text: "chr1\t751\t\tC\tG\t60\t1.0\t0\t60\t0.0\t4.31318\tLOW\tSILENT\tSYNONYMOUS_CODING\tSynGene1\tccC/ccG\tP184\tTRANS1"
