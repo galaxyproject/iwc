@@ -1,0 +1,114 @@
+title: "COVID-19: SE WGS Variation Analysis"
+nodes:
+  - id: seReads
+    type: input
+    label: SE FASTQ Reads
+    subtitle: "list collection"
+    detail: Illumina single-end
+    step: "1"
+    column: 0
+    row: 0
+  - id: reference
+    type: input
+    label: SARS-CoV-2 Reference
+    subtitle: NC_045512.2 FASTA
+    column: 0
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Adapter &amp; quality trimming
+    step: "2"
+    column: 1
+    row: 0
+  - id: bowtie2
+    type: tool
+    label: Bowtie2
+    subtitle: Align to reference genome
+    step: "3"
+    column: 2
+    row: 0
+  - id: markdup
+    type: tool
+    label: MarkDuplicates
+    subtitle: Remove PCR duplicates
+    step: "4"
+    column: 3
+    row: 0
+  - id: lofreqProcess
+    type: tool
+    label: LoFreq Realign + IndelQual
+    subtitle: Realign reads, add indel quals
+    step: "5"
+    column: 4
+    row: 1
+  - id: lofreqCall
+    type: tool
+    label: LoFreq Call
+    subtitle: Sensitive variant calling
+    step: "6"
+    column: 5
+    row: 1
+  - id: lofreqFilter
+    type: tool
+    label: LoFreq Filter
+    subtitle: Strand-bias soft filtering
+    step: "7"
+    column: 5
+    row: 0
+  - id: snpeff
+    type: tool
+    label: SnpEff
+    subtitle: Annotate variant effects
+    step: "8"
+    column: 6
+    row: 0
+  - id: annotatedVcf
+    type: output
+    label: Annotated Variants
+    subtitle: SnpEff-annotated VCF
+    column: 7
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregate QC report
+    column: 4
+    row: 2
+edges:
+  - from: seReads
+    to: fastp
+  - from: fastp
+    to: bowtie2
+  - from: reference
+    to: bowtie2
+    style: secondary
+  - from: bowtie2
+    to: markdup
+  - from: markdup
+    to: lofreqProcess
+  - from: reference
+    to: lofreqProcess
+    style: secondary
+  - from: lofreqProcess
+    to: lofreqCall
+  - from: reference
+    to: lofreqCall
+    style: secondary
+  - from: lofreqCall
+    to: lofreqFilter
+  - from: lofreqFilter
+    to: snpeff
+  - from: snpeff
+    to: annotatedVcf
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: bowtie2
+    to: multiqc
+    style: qc
+  - from: markdup
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

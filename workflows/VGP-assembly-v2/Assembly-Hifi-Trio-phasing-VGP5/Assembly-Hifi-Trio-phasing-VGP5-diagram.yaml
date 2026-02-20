@@ -1,0 +1,117 @@
+title: "HiFi Trio-Phased Assembly (VGP5)"
+nodes:
+  - id: hifiReads
+    type: input
+    label: HiFi Reads
+    subtitle: PacBio child reads
+    column: 0
+    row: 0
+  - id: paternalReads
+    type: input
+    label: Paternal Reads
+    subtitle: Illumina (father)
+    column: 0
+    row: 1
+  - id: maternalReads
+    type: input
+    label: Maternal Reads
+    subtitle: Illumina (mother)
+    column: 0
+    row: 2
+  - id: merylDbs
+    type: input
+    label: Meryl Databases
+    subtitle: Child + hapmer DBs
+    column: 0
+    row: 3
+  - id: cutadapt
+    type: tool
+    label: Cutadapt
+    subtitle: Trim adapters
+    step: "1"
+    column: 1
+    row: 0
+  - id: hifiasm
+    type: tool
+    label: HiFiasm
+    subtitle: Trio-phased contigging
+    step: "2"
+    column: 2
+    row: 0
+  - id: gfastats
+    type: tool
+    label: gfastats
+    subtitle: Assembly statistics
+    step: "3"
+    column: 3
+    row: 1
+  - id: busco
+    type: tool
+    label: BUSCO
+    subtitle: Gene completeness
+    step: "4"
+    column: 4
+    row: 1
+  - id: merqury
+    type: tool
+    label: Merqury
+    subtitle: K-mer QC & QV scores
+    step: "5"
+    column: 4
+    row: 2
+  - id: hap1Asm
+    type: output
+    label: Hap1 Assembly
+    subtitle: Paternal contigs (GFA + FASTA)
+    column: 5
+    row: 0
+  - id: hap2Asm
+    type: output
+    label: Hap2 Assembly
+    subtitle: Maternal contigs (GFA + FASTA)
+    column: 5
+    row: 1
+  - id: qcReport
+    type: report
+    label: QC Reports
+    subtitle: "Stats, BUSCO, Merqury, Nx plots"
+    column: 2
+    row: 3
+edges:
+  - from: hifiReads
+    to: cutadapt
+  - from: cutadapt
+    to: hifiasm
+  - from: paternalReads
+    to: hifiasm
+    style: secondary
+  - from: maternalReads
+    to: hifiasm
+    style: secondary
+  - from: hifiasm
+    to: hap1Asm
+  - from: hifiasm
+    to: hap2Asm
+  - from: hifiasm
+    to: gfastats
+    style: qc
+  - from: hifiasm
+    to: busco
+    style: qc
+  - from: merylDbs
+    to: merqury
+    style: secondary
+  - from: hifiasm
+    to: merqury
+    style: qc
+  - from: gfastats
+    to: qcReport
+    style: qc
+  - from: busco
+    to: qcReport
+    style: qc
+  - from: merqury
+    to: qcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

@@ -1,0 +1,135 @@
+title: "COVID-19: ARTIC ONT Variation Analysis"
+nodes:
+  - id: ontReads
+    type: input
+    label: ONT Reads
+    subtitle: "list collection"
+    detail: ARTIC amplicon data
+    step: "1"
+    column: 0
+    row: 0
+  - id: reference
+    type: input
+    label: SARS-CoV-2 Reference
+    subtitle: NC_045512.2 FASTA
+    column: 0
+    row: 2
+  - id: primerBed
+    type: input
+    label: Primer BED
+    subtitle: ARTIC primer positions
+    column: 0
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Length filtering
+    step: "2"
+    column: 1
+    row: 0
+  - id: minimap2
+    type: tool
+    label: minimap2
+    subtitle: Map ONT reads
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterBam
+    type: tool
+    label: Filter BAM
+    subtitle: "MAPQ>=1, remove unmapped"
+    step: "4"
+    column: 3
+    row: 0
+  - id: leftAlign
+    type: tool
+    label: BamLeftAlign
+    subtitle: Left-align indels
+    step: "5"
+    column: 3
+    row: 1
+  - id: ivarTrim
+    type: tool
+    label: ivar trim
+    subtitle: Trim ARTIC primers
+    step: "6"
+    column: 4
+    row: 0
+  - id: medaka
+    type: tool
+    label: Medaka
+    subtitle: Consensus &amp; variant calling
+    step: "7"
+    column: 5
+    row: 0
+  - id: bcftoolsAnnotate
+    type: tool
+    label: bcftools annotate
+    subtitle: Merge general &amp; PBS variants
+    step: "8"
+    column: 6
+    row: 0
+  - id: snpeff
+    type: tool
+    label: SnpEff
+    subtitle: Annotate variant effects
+    step: "9"
+    column: 7
+    row: 0
+  - id: lofreqFilter
+    type: tool
+    label: LoFreq Filter
+    subtitle: Strand-bias soft filtering
+    step: "10"
+    column: 7
+    row: 1
+  - id: annotatedVcf
+    type: output
+    label: Annotated Variants
+    subtitle: Filtered &amp; annotated VCF
+    column: 8
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Mapping &amp; QC report
+    column: 4
+    row: 2
+edges:
+  - from: ontReads
+    to: fastp
+  - from: fastp
+    to: minimap2
+  - from: reference
+    to: minimap2
+    style: secondary
+  - from: minimap2
+    to: filterBam
+  - from: filterBam
+    to: leftAlign
+  - from: reference
+    to: leftAlign
+    style: secondary
+  - from: leftAlign
+    to: ivarTrim
+  - from: primerBed
+    to: ivarTrim
+    style: secondary
+  - from: ivarTrim
+    to: medaka
+  - from: medaka
+    to: bcftoolsAnnotate
+  - from: bcftoolsAnnotate
+    to: snpeff
+  - from: snpeff
+    to: lofreqFilter
+  - from: lofreqFilter
+    to: annotatedVcf
+  - from: filterBam
+    to: multiqc
+    style: qc
+  - from: ivarTrim
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

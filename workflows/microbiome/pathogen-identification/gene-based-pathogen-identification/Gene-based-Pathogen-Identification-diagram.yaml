@@ -1,0 +1,102 @@
+title: "Gene-based Pathogen Identification"
+subtitle: "Assembly, polishing, and AMR/VF detection"
+nodes:
+  - id: preprocessedSamples
+    type: input
+    label: Preprocessed Samples
+    subtitle: "Post-QC reads collection"
+    column: 0
+    row: 1
+  - id: flye
+    type: tool
+    label: Flye
+    subtitle: "De novo assembly"
+    step: "1"
+    column: 1
+    row: 1
+  - id: medaka
+    type: tool
+    label: Medaka
+    subtitle: "Assembly polishing"
+    step: "2"
+    column: 2
+    row: 1
+  - id: bandage
+    type: tool
+    label: Bandage Image
+    subtitle: "Assembly graph viz"
+    step: "3"
+    column: 2
+    row: 2
+  - id: abricateVfdb
+    type: tool
+    label: ABRicate (VFDB)
+    subtitle: "Virulence factor detection"
+    step: "4"
+    column: 3
+    row: 0
+  - id: abricateNcbi
+    type: tool
+    label: ABRicate (NCBI)
+    subtitle: "AMR gene detection"
+    step: "5"
+    column: 3
+    row: 2
+  - id: contigNaming
+    type: tool
+    label: Contig Renaming
+    subtitle: "Sample-specific IDs"
+    step: "6"
+    column: 3
+    row: 1
+  - id: contigs
+    type: output
+    label: Contigs
+    subtitle: "Named FASTA per sample"
+    column: 4
+    row: 1
+  - id: vfs
+    type: output
+    label: Virulence Factors
+    subtitle: "VFs per sample"
+    column: 4
+    row: 0
+  - id: amrs
+    type: output
+    label: AMR Genes
+    subtitle: "AMRs per sample"
+    column: 4
+    row: 2
+  - id: assemblyGraph
+    type: output
+    label: Assembly Graph
+    subtitle: "Bandage image"
+    column: 4
+    row: 3
+edges:
+  - from: preprocessedSamples
+    to: flye
+  - from: flye
+    to: medaka
+  - from: flye
+    to: bandage
+    style: qc
+  - from: preprocessedSamples
+    to: medaka
+    style: secondary
+  - from: medaka
+    to: abricateVfdb
+  - from: medaka
+    to: abricateNcbi
+  - from: medaka
+    to: contigNaming
+  - from: abricateVfdb
+    to: vfs
+  - from: abricateNcbi
+    to: amrs
+  - from: contigNaming
+    to: contigs
+  - from: bandage
+    to: assemblyGraph
+legend:
+  items: [input, primary, secondary, qc, output]

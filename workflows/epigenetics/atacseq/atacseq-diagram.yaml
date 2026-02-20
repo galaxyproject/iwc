@@ -1,0 +1,130 @@
+title: "ATAC-seq: Chromatin Accessibility Profiling"
+nodes:
+  - id: fastqInput
+    type: input
+    label: PE FASTQ Input
+    subtitle: Paired-end reads
+    detail: "list:paired collection"
+    step: "1"
+    column: 0
+    row: 0
+  - id: cutadapt
+    type: tool
+    label: Cutadapt
+    subtitle: Adapter + quality trimming
+    detail: Nextera adapters, Q30
+    step: "2"
+    column: 1
+    row: 0
+  - id: bowtie2
+    type: tool
+    label: Bowtie2
+    subtitle: Align to reference
+    detail: Very-sensitive, end-to-end
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterBam
+    type: tool
+    label: Filter BAM
+    subtitle: Remove low-quality reads
+    detail: "MAPQ>=30, no MT, concordant"
+    step: "4"
+    column: 3
+    row: 0
+  - id: markDups
+    type: tool
+    label: MarkDuplicates
+    subtitle: Remove PCR duplicates
+    step: "5"
+    column: 0
+    row: 1
+  - id: macs2
+    type: tool
+    label: MACS2 callpeak
+    subtitle: Call accessible regions
+    detail: Narrow peaks, shift -100/+200
+    step: "6"
+    column: 1
+    row: 1
+  - id: normTracks
+    type: tool
+    label: Normalize Coverage
+    subtitle: Per-million scaling
+    detail: Reads + reads-in-peaks
+    step: "7"
+    column: 2
+    row: 1
+  - id: multiQC
+    type: report
+    label: MultiQC
+    subtitle: Aggregated QC report
+    detail: Cutadapt, Bowtie2, MACS2, ...
+    column: 2
+    row: 2
+  - id: filteredBam
+    type: output
+    label: Filtered BAM
+    subtitle: Deduplicated, filtered
+    column: 4
+    row: 0
+  - id: narrowPeaks
+    type: output
+    label: MACS2 Peaks
+    subtitle: narrowPeak BED
+    column: 4
+    row: 1
+  - id: bigwigNorm
+    type: output
+    label: Normalized Bigwigs
+    subtitle: Coverage tracks
+    column: 4
+    row: 2
+  - id: fragHist
+    type: report
+    label: Fragment Lengths
+    subtitle: Size distribution plot
+    column: 1
+    row: 2
+  - id: summitRegions
+    type: output
+    label: Summit Regions
+    subtitle: "1kb merged windows"
+    column: 4
+    row: 3
+edges:
+  - from: fastqInput
+    to: cutadapt
+  - from: cutadapt
+    to: bowtie2
+  - from: bowtie2
+    to: filterBam
+  - from: filterBam
+    to: markDups
+  - from: markDups
+    to: macs2
+  - from: macs2
+    to: normTracks
+  - from: markDups
+    to: filteredBam
+    style: secondary
+  - from: macs2
+    to: narrowPeaks
+    style: secondary
+  - from: normTracks
+    to: bigwigNorm
+    style: secondary
+  - from: markDups
+    to: fragHist
+    style: qc
+  - from: macs2
+    to: summitRegions
+    style: secondary
+  - from: bowtie2
+    to: multiQC
+    style: qc
+  - from: macs2
+    to: multiQC
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

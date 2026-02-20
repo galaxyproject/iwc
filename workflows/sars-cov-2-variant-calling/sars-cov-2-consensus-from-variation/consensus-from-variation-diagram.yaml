@@ -1,0 +1,106 @@
+title: "COVID-19: Consensus Construction from Variation"
+nodes:
+  - id: variantCalls
+    type: input
+    label: Variant Calls
+    subtitle: VCF collection
+    detail: From upstream workflow
+    column: 0
+    row: 1
+  - id: alignedReads
+    type: input
+    label: Aligned Reads
+    subtitle: BAM collection
+    detail: For depth calculation
+    column: 0
+    row: 3
+  - id: afParams
+    type: input
+    label: AF Parameters
+    subtitle: Consensus &amp; failed thresholds
+    column: 0
+    row: 2
+  - id: reference
+    type: input
+    label: Reference Genome
+    subtitle: SARS-CoV-2 FASTA
+    column: 0
+    row: 0
+  - id: filterConsensus
+    type: tool
+    label: SnpSift Filter
+    subtitle: Select consensus variants
+    step: "1"
+    column: 1
+    row: 0
+  - id: filterFailed
+    type: tool
+    label: SnpSift Filter
+    subtitle: Identify ambiguous variants
+    step: "2"
+    column: 1
+    row: 1
+  - id: depthCoverage
+    type: tool
+    label: Genome Coverage
+    subtitle: Compute per-base depth
+    step: "3"
+    column: 2
+    row: 2
+  - id: maskRegions
+    type: tool
+    label: Build Mask Regions
+    subtitle: Merge low-cov &amp; failed sites
+    step: "4"
+    column: 3
+    row: 1
+  - id: bcftoolsConsensus
+    type: tool
+    label: bcftools consensus
+    subtitle: Apply variants &amp; mask
+    step: "5"
+    column: 5
+    row: 0
+  - id: consensusOutput
+    type: output
+    label: Consensus FASTA
+    subtitle: Masked consensus sequence
+    column: 6
+    row: 0
+  - id: multiFasta
+    type: output
+    label: Multisample FASTA
+    subtitle: All samples combined
+    column: 6
+    row: 1
+edges:
+  - from: variantCalls
+    to: filterConsensus
+  - from: variantCalls
+    to: filterFailed
+  - from: afParams
+    to: filterConsensus
+    style: secondary
+  - from: afParams
+    to: filterFailed
+    style: secondary
+  - from: alignedReads
+    to: depthCoverage
+  - from: depthCoverage
+    to: maskRegions
+  - from: filterFailed
+    to: maskRegions
+  - from: filterConsensus
+    to: bcftoolsConsensus
+  - from: maskRegions
+    to: bcftoolsConsensus
+  - from: reference
+    to: bcftoolsConsensus
+    style: secondary
+  - from: bcftoolsConsensus
+    to: consensusOutput
+  - from: bcftoolsConsensus
+    to: multiFasta
+    style: secondary
+legend:
+  items: [input, primary, secondary, output]

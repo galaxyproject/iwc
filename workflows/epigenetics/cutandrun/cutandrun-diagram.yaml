@@ -1,0 +1,107 @@
+title: "CUT&RUN/CUT&TAG: Protein-DNA Interaction Mapping"
+nodes:
+  - id: fastqInput
+    type: input
+    label: PE FASTQ Input
+    subtitle: "list:paired collection"
+    detail: CUT&RUN/CUT&TAG reads
+    step: "1"
+    column: 0
+    row: 0
+  - id: cutadapt
+    type: tool
+    label: Cutadapt
+    subtitle: Adapter + quality trimming
+    detail: "Q >= 30, min length 15"
+    step: "2"
+    column: 1
+    row: 0
+  - id: bowtie2
+    type: tool
+    label: Bowtie2
+    subtitle: Align to reference
+    detail: Very-sensitive, dovetail
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterDedup
+    type: tool
+    label: Filter & Dedup
+    subtitle: "MAPQ >= 30, remove PCR dups"
+    detail: SAMtools filter + Picard
+    step: "4"
+    column: 3
+    row: 0
+  - id: macs2
+    type: tool
+    label: MACS2 callpeak
+    subtitle: Peak calling
+    detail: Narrow peaks, no control
+    step: "5"
+    column: 4
+    row: 0
+  - id: filteredBam
+    type: output
+    label: Filtered BAM
+    subtitle: Deduplicated alignments
+    column: 5
+    row: 0
+  - id: narrowPeaks
+    type: output
+    label: Narrow Peaks
+    subtitle: MACS2 narrowPeak (BED)
+    column: 5
+    row: 1
+  - id: coverageBigwig
+    type: output
+    label: Coverage
+    subtitle: bigWig signal track
+    column: 5
+    row: 2
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregated QC report
+    detail: Cutadapt, Bowtie2, Picard, MACS2
+    column: 2
+    row: 1
+  - id: mappingStats
+    type: report
+    label: Mapping Stats
+    subtitle: Bowtie2 alignment rates
+    column: 3
+    row: 1
+  - id: macsReport
+    type: report
+    label: MACS2 Report
+    subtitle: Peak calling summary
+    column: 4
+    row: 1
+edges:
+  - from: fastqInput
+    to: cutadapt
+  - from: cutadapt
+    to: bowtie2
+  - from: bowtie2
+    to: filterDedup
+  - from: filterDedup
+    to: macs2
+  - from: filterDedup
+    to: filteredBam
+    style: secondary
+  - from: macs2
+    to: narrowPeaks
+  - from: macs2
+    to: coverageBigwig
+    style: secondary
+  - from: macs2
+    to: macsReport
+    style: qc
+  - from: bowtie2
+    to: mappingStats
+    style: qc
+  - from: macs2
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

@@ -1,0 +1,111 @@
+title: "Scaffolding with Hi-C (VGP8)"
+nodes:
+  - id: assemblyGfa
+    type: input
+    label: Assembly GFA
+    subtitle: Contigs from assembly step
+    column: 0
+    row: 0
+  - id: hicReads
+    type: input
+    label: Hi-C Reads
+    subtitle: "list:paired collection"
+    column: 0
+    row: 1
+  - id: genomeSize
+    type: input
+    label: Genome Size
+    subtitle: Estimated genome size
+    column: 0
+    row: 2
+  - id: bwaMem2
+    type: tool
+    label: BWA-MEM2
+    subtitle: Align Hi-C to contigs
+    step: "1"
+    column: 1
+    row: 0
+  - id: markdup
+    type: tool
+    label: MarkDuplicates
+    subtitle: Remove PCR duplicates
+    step: "2"
+    column: 2
+    row: 0
+  - id: yahs
+    type: tool
+    label: YAHS
+    subtitle: Hi-C scaffolding
+    step: "3"
+    column: 3
+    row: 0
+  - id: gfastats
+    type: tool
+    label: gfastats
+    subtitle: Scaffold statistics
+    step: "4"
+    column: 4
+    row: 1
+  - id: compleasm
+    type: tool
+    label: Compleasm
+    subtitle: Gene completeness
+    step: "5"
+    column: 4
+    row: 2
+  - id: pretextMap
+    type: tool
+    label: PretextMap
+    subtitle: Hi-C contact maps
+    step: "6"
+    column: 4
+    row: 0
+  - id: scaffolds
+    type: output
+    label: Scaffolds
+    subtitle: FASTA + GFA
+    column: 5
+    row: 1
+  - id: qcReport
+    type: report
+    label: QC Reports
+    subtitle: "Stats, Compleasm, Pretext, Nx"
+    column: 2
+    row: 3
+edges:
+  - from: assemblyGfa
+    to: bwaMem2
+  - from: hicReads
+    to: bwaMem2
+  - from: bwaMem2
+    to: markdup
+  - from: markdup
+    to: yahs
+  - from: assemblyGfa
+    to: yahs
+    style: secondary
+  - from: yahs
+    to: scaffolds
+  - from: yahs
+    to: gfastats
+    style: qc
+  - from: yahs
+    to: compleasm
+    style: qc
+  - from: yahs
+    to: pretextMap
+    style: qc
+  - from: genomeSize
+    to: gfastats
+    style: secondary
+  - from: gfastats
+    to: qcReport
+    style: qc
+  - from: compleasm
+    to: qcReport
+    style: qc
+  - from: pretextMap
+    to: qcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

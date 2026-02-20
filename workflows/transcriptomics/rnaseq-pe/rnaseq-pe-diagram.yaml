@@ -1,0 +1,133 @@
+title: "RNA-Seq Analysis: Paired-End Read Processing and Quantification"
+nodes:
+  - id: fastqInput
+    type: input
+    label: PE FASTQ Input
+    subtitle: "list:paired collection"
+    detail: Paired-end RNA-seq reads
+    step: "1"
+    column: 0
+    row: 0
+  - id: gtfInput
+    type: input
+    label: GTF Annotation
+    subtitle: Gene model reference
+    column: 0
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Adapter & quality trimming
+    detail: "Q30 filter, auto-detect adapters"
+    step: "2"
+    column: 1
+    row: 0
+  - id: star
+    type: tool
+    label: RNA STAR
+    subtitle: Splice-aware alignment
+    detail: ENCODE params, gene counts + coverage
+    step: "3"
+    column: 2
+    row: 0
+  - id: coverage
+    type: tool
+    label: Coverage Tracks
+    subtitle: Normalized bigWig generation
+    detail: Stranded + unstranded
+    step: "4"
+    column: 3
+    row: 0
+  - id: countProcessing
+    type: tool
+    label: Count Processing
+    subtitle: STAR or featureCounts counts
+    detail: Strand-aware extraction
+    step: "5"
+    column: 4
+    row: 0
+  - id: fpkm
+    type: tool
+    label: FPKM Estimation
+    subtitle: StringTie / Cufflinks
+    detail: Optional expression values
+    step: "6"
+    column: 4
+    row: 1
+  - id: mappedBam
+    type: output
+    label: Mapped BAM
+    subtitle: Aligned reads
+    column: 5
+    row: 0
+  - id: coverageOutput
+    type: output
+    label: Coverage Bigwigs
+    subtitle: Stranded + unstranded tracks
+    column: 5
+    row: 1
+  - id: countsTable
+    type: output
+    label: Counts Table
+    subtitle: Gene-level read counts
+    column: 5
+    row: 2
+  - id: fpkmOutput
+    type: output
+    label: FPKM / Expression
+    subtitle: Normalized expression values
+    column: 5
+    row: 3
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregated QC report
+    detail: "fastp, STAR, featureCounts"
+    column: 2
+    row: 2
+  - id: extendedQC
+    type: report
+    label: Extended QC
+    subtitle: "FastQC, gene body coverage"
+    detail: Optional additional QC
+    column: 3
+    row: 2
+edges:
+  - from: fastqInput
+    to: fastp
+  - from: fastp
+    to: star
+  - from: gtfInput
+    to: star
+    style: secondary
+  - from: star
+    to: coverage
+  - from: star
+    to: countProcessing
+  - from: star
+    to: fpkm
+    style: secondary
+  - from: star
+    to: mappedBam
+    style: secondary
+  - from: coverage
+    to: coverageOutput
+  - from: countProcessing
+    to: countsTable
+  - from: fpkm
+    to: fpkmOutput
+    style: secondary
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: star
+    to: multiqc
+    style: qc
+  - from: fastp
+    to: extendedQC
+    style: qc
+  - from: star
+    to: extendedQC
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

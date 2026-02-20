@@ -1,0 +1,98 @@
+title: "Paired-End Variant Calling in Haploid System"
+nodes:
+  - id: readsInput
+    type: input
+    label: PE Reads
+    subtitle: "list:paired collection"
+    detail: Illumina WGS reads
+    column: 0
+    row: 0
+  - id: gtfInput
+    type: input
+    label: Annotation GTF
+    subtitle: Gene annotations for SnpEff
+    column: 0
+    row: 1
+  - id: genomeInput
+    type: input
+    label: Genome FASTA
+    subtitle: Reference genome
+    column: 0
+    row: 2
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Read QC &amp; trimming
+    step: "1"
+    column: 1
+    row: 0
+  - id: bwaMem
+    type: tool
+    label: BWA-MEM
+    subtitle: Read alignment
+    step: "2"
+    column: 2
+    row: 0
+  - id: markDups
+    type: tool
+    label: MarkDuplicates
+    subtitle: Remove PCR duplicates
+    step: "3"
+    column: 3
+    row: 0
+  - id: lofreq
+    type: tool
+    label: LoFreq
+    subtitle: Realign &amp; call variants
+    step: "4"
+    column: 4
+    row: 0
+  - id: snpeff
+    type: tool
+    label: SnpEff
+    subtitle: Variant annotation
+    step: "5"
+    column: 5
+    row: 0
+  - id: variantsOutput
+    type: output
+    label: Annotated Variants
+    subtitle: VCF &amp; tabular reports
+    column: 6
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: QC across all steps
+    column: 3
+    row: 1
+edges:
+  - from: readsInput
+    to: fastp
+  - from: fastp
+    to: bwaMem
+  - from: genomeInput
+    to: bwaMem
+    style: secondary
+  - from: bwaMem
+    to: markDups
+  - from: markDups
+    to: lofreq
+  - from: genomeInput
+    to: lofreq
+    style: secondary
+  - from: lofreq
+    to: snpeff
+  - from: gtfInput
+    to: snpeff
+    style: secondary
+  - from: snpeff
+    to: variantsOutput
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: markDups
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

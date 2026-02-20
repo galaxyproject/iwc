@@ -1,0 +1,111 @@
+title: "Post-Assembly Bacterial QC and Contamination Control"
+nodes:
+  - id: contigs
+    type: input
+    label: Assembled Contigs
+    subtitle: FASTA file
+    column: 0
+    row: 1
+  - id: reads
+    type: input
+    label: Paired-End Reads
+    subtitle: Forward &amp; reverse FASTQ
+    column: 0
+    row: 0
+  - id: taxDb
+    type: input
+    label: Taxonomy Database
+    subtitle: Kraken2 / Bracken DB
+    column: 0
+    row: 2
+  - id: quast
+    type: tool
+    label: QUAST
+    subtitle: Assembly quality metrics
+    step: "1"
+    column: 1
+    row: 0
+  - id: checkm2
+    type: tool
+    label: CheckM2
+    subtitle: Completeness &amp; contamination
+    step: "2"
+    column: 1
+    row: 1
+  - id: kraken2
+    type: tool
+    label: Kraken2
+    subtitle: Taxonomy classification
+    step: "3"
+    column: 1
+    row: 2
+  - id: bracken
+    type: tool
+    label: Bracken
+    subtitle: Abundance estimation
+    step: "4"
+    column: 2
+    row: 2
+  - id: toolDistillator
+    type: tool
+    label: ToolDistillator
+    subtitle: Aggregate results to JSON
+    step: "5"
+    column: 3
+    row: 1
+  - id: quastReport
+    type: output
+    label: QUAST Report
+    subtitle: Assembly statistics
+    column: 4
+    row: 0
+  - id: checkm2Report
+    type: output
+    label: CheckM2 Report
+    subtitle: Quality assessment
+    column: 4
+    row: 1
+  - id: summaryJson
+    type: output
+    label: QC Summary
+    subtitle: Combined JSON report
+    column: 4
+    row: 2
+edges:
+  - from: contigs
+    to: quast
+  - from: reads
+    to: quast
+    style: secondary
+  - from: contigs
+    to: checkm2
+  - from: contigs
+    to: kraken2
+  - from: taxDb
+    to: kraken2
+    style: secondary
+  - from: kraken2
+    to: bracken
+  - from: taxDb
+    to: bracken
+    style: secondary
+  - from: quast
+    to: quastReport
+  - from: quast
+    to: toolDistillator
+    style: qc
+  - from: checkm2
+    to: checkm2Report
+  - from: checkm2
+    to: toolDistillator
+    style: qc
+  - from: kraken2
+    to: toolDistillator
+    style: qc
+  - from: bracken
+    to: toolDistillator
+    style: qc
+  - from: toolDistillator
+    to: summaryJson
+legend:
+  items: [input, primary, secondary, qc, output]

@@ -15,8 +15,6 @@ test.describe("Collection page search", () => {
         const workflowCards = page.locator('[id^="workflow-"]');
         await expect(workflowCards.first()).toBeVisible({ timeout: 15000 });
 
-        const initialCount = await workflowCards.count();
-
         // Type a search query
         const searchInput = page.locator('input[placeholder*="Search"]');
         await searchInput.fill("scanpy");

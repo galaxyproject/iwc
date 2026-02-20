@@ -1,0 +1,94 @@
+title: "lncRNA Annotation with FEELnc"
+nodes:
+  - id: rnaseqBam
+    type: input
+    label: RNA-seq Alignments
+    subtitle: BAM file
+    column: 0
+    row: 0
+  - id: genomeAssembly
+    type: input
+    label: Genome Assembly
+    subtitle: FASTA
+    column: 0
+    row: 1
+  - id: genomeAnnotation
+    type: input
+    label: Genome Annotation
+    subtitle: GFF3 reference annotation
+    column: 0
+    row: 2
+  - id: stringtie
+    type: tool
+    label: StringTie
+    subtitle: Transcript assembly from RNA-seq
+    step: "1"
+    column: 1
+    row: 0
+  - id: gffread
+    type: tool
+    label: gffread
+    subtitle: "GFF3 to GTF conversion"
+    step: "2"
+    column: 1
+    row: 2
+  - id: feelnc
+    type: tool
+    label: FEELnc
+    subtitle: "Filter, CodPot &amp; Classify lncRNAs"
+    step: "3"
+    column: 2
+    row: 1
+  - id: concatenate
+    type: tool
+    label: Concatenate
+    subtitle: "Merge mRNA + lncRNA annotation"
+    step: "4"
+    column: 3
+    row: 2
+  - id: candidateLncRNA
+    type: output
+    label: Candidate lncRNAs
+    subtitle: lncRNA annotation (GTF)
+    column: 4
+    row: 0
+  - id: candidateMrna
+    type: output
+    label: Candidate mRNAs
+    subtitle: mRNA annotation (GTF)
+    column: 4
+    row: 1
+  - id: mergedAnnotation
+    type: output
+    label: Merged Annotation
+    subtitle: "mRNA + lncRNA (GTF)"
+    column: 4
+    row: 2
+edges:
+  - from: rnaseqBam
+    to: stringtie
+  - from: genomeAnnotation
+    to: stringtie
+    style: secondary
+  - from: genomeAnnotation
+    to: gffread
+  - from: stringtie
+    to: feelnc
+  - from: gffread
+    to: feelnc
+    style: secondary
+  - from: genomeAssembly
+    to: feelnc
+    style: secondary
+  - from: feelnc
+    to: candidateLncRNA
+  - from: feelnc
+    to: candidateMrna
+  - from: gffread
+    to: concatenate
+  - from: feelnc
+    to: concatenate
+  - from: concatenate
+    to: mergedAnnotation
+legend:
+  items: [input, primary, secondary, output]

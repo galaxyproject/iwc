@@ -1,0 +1,144 @@
+title: "Capture Hi-C: FASTQ to Balanced Cool Matrix"
+nodes:
+  - id: fastqInput
+    type: input
+    label: PE FASTQ Input
+    subtitle: "list:paired collection"
+    detail: Capture Hi-C paired-end reads
+    step: "1"
+    column: 0
+    row: 0
+  - id: genomeName
+    type: input
+    label: Genome Name
+    subtitle: Bowtie2 reference index
+    column: 0
+    row: 1
+  - id: restrictionEnzyme
+    type: input
+    label: Restriction Enzyme
+    subtitle: "e.g. A^GATCT,BglII"
+    column: 0
+    row: 2
+  - id: captureRegion
+    type: input
+    label: Capture Region
+    subtitle: "chr, start, end coordinates"
+    detail: Genomic region of interest
+    column: 0
+    row: 3
+  - id: hicup
+    type: tool
+    label: HiCUP Pipeline
+    subtitle: Truncate, map, filter, dedup
+    detail: Full Hi-C read processing
+    step: "2"
+    column: 1
+    row: 0
+  - id: hicup2juicer
+    type: tool
+    label: HiCUP to Juicer
+    subtitle: "Convert &amp; MAPQ filter"
+    detail: Fragment midpoints, quality filter
+    step: "3"
+    column: 2
+    row: 0
+  - id: captureFilter
+    type: tool
+    label: Capture Filter
+    subtitle: Filter for capture region
+    detail: Both ends within target region
+    step: "4"
+    column: 3
+    row: 0
+  - id: csortTabix
+    type: tool
+    label: cooler csort
+    subtitle: Sort and index pairs
+    detail: Tabix-indexed output
+    step: "5"
+    column: 4
+    row: 0
+  - id: cloadBalance
+    type: tool
+    label: cooler cload + balance
+    subtitle: Build and normalize matrix
+    detail: ICE-balanced cool file
+    step: "6"
+    column: 5
+    row: 0
+  - id: pygenometracks
+    type: tool
+    label: pyGenomeTracks
+    subtitle: Plot contact matrix
+    detail: Visualize capture region
+    step: "7"
+    column: 5
+    row: 1
+  - id: sortedPairs
+    type: output
+    label: Sorted Pairs
+    subtitle: Filtered tabix file
+    column: 6
+    row: 0
+  - id: rawMatrix
+    type: output
+    label: Raw Cool Matrix
+    subtitle: Unbalanced contacts
+    column: 6
+    row: 1
+  - id: icedMatrix
+    type: output
+    label: Balanced Cool Matrix
+    subtitle: ICE-normalized contacts
+    column: 6
+    row: 1
+  - id: contactPlot
+    type: output
+    label: Contact Map Plot
+    subtitle: PNG visualization
+    column: 6
+    row: 2
+  - id: hicupReport
+    type: report
+    label: HiCUP Report
+    subtitle: "QC metrics (HTML + tabular)"
+    column: 3
+    row: 2
+edges:
+  - from: fastqInput
+    to: hicup
+  - from: genomeName
+    to: hicup
+    style: secondary
+  - from: restrictionEnzyme
+    to: hicup
+    style: secondary
+  - from: hicup
+    to: hicup2juicer
+  - from: hicup2juicer
+    to: captureFilter
+  - from: captureRegion
+    to: captureFilter
+    style: secondary
+  - from: captureFilter
+    to: csortTabix
+  - from: csortTabix
+    to: sortedPairs
+    style: secondary
+  - from: csortTabix
+    to: cloadBalance
+  - from: cloadBalance
+    to: rawMatrix
+    style: secondary
+  - from: cloadBalance
+    to: icedMatrix
+  - from: icedMatrix
+    to: pygenometracks
+  - from: pygenometracks
+    to: contactPlot
+  - from: hicup
+    to: hicupReport
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

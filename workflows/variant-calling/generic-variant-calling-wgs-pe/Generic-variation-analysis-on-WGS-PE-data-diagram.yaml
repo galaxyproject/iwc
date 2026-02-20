@@ -1,0 +1,112 @@
+title: "Generic Variation Analysis on WGS PE Data"
+subtitle: "Variant calling against a GenBank reference"
+
+nodes:
+  - id: fastqs
+    type: input
+    label: PE FASTQs
+    subtitle: "list:paired collection"
+    column: 0
+    row: 0
+
+  - id: genbank
+    type: input
+    label: GenBank Genome
+    subtitle: Reference genome
+    column: 0
+    row: 1
+
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Trim + QC
+    step: "1"
+    column: 1
+    row: 0
+
+  - id: snpeffBuild
+    type: tool
+    label: SnpEff Build
+    subtitle: Build annotation DB
+    detail: Extract reference FASTA
+    step: "2"
+    column: 1
+    row: 1
+
+  - id: bwa
+    type: tool
+    label: BWA-MEM
+    subtitle: Align reads
+    step: "3"
+    column: 2
+    row: 0
+
+  - id: filterDedup
+    type: tool
+    label: Filter & Dedup
+    subtitle: Samtools + MarkDuplicates
+    step: "4"
+    column: 3
+    row: 0
+
+  - id: lofreq
+    type: tool
+    label: LoFreq
+    subtitle: Realign, call & filter
+    detail: Viterbi + indelqual + call
+    step: "5"
+    column: 4
+    row: 0
+
+  - id: snpeff
+    type: tool
+    label: SnpEff
+    subtitle: Annotate variants
+    step: "6"
+    column: 4
+    row: 1
+
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Mapping & QC report
+    column: 2
+    row: 2
+
+  - id: variants
+    type: output
+    label: Annotated Variants
+    subtitle: VCF with effects
+    column: 5
+    row: 0
+
+edges:
+  - from: fastqs
+    to: fastp
+  - from: fastp
+    to: bwa
+  - from: genbank
+    to: snpeffBuild
+  - from: snpeffBuild
+    to: bwa
+    style: secondary
+  - from: bwa
+    to: filterDedup
+  - from: filterDedup
+    to: lofreq
+  - from: lofreq
+    to: snpeff
+  - from: snpeffBuild
+    to: snpeff
+    style: secondary
+  - from: snpeff
+    to: variants
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: bwa
+    to: multiqc
+    style: qc
+
+legend:
+  items: [input, primary, secondary, qc, output, report]

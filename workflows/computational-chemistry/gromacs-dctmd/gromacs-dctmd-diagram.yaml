@@ -1,0 +1,90 @@
+title: "dcTMD with GROMACS"
+subtitle: "Dissipation-corrected targeted MD free energy calculations"
+nodes:
+  - id: ligandSdf
+    type: input
+    label: Ligand SDF
+    subtitle: Small molecule structure
+    column: 0
+    row: 0
+  - id: proteinPdb
+    type: input
+    label: Protein PDB
+    subtitle: Apoprotein structure
+    column: 0
+    row: 1
+  - id: simParams
+    type: input
+    label: Simulation Parameters
+    subtitle: "Force field, water, temperature"
+    column: 0
+    row: 2
+  - id: parameterize
+    type: tool
+    label: Parameterize Complex
+    subtitle: "GRO/TOP from ligand + protein"
+    step: "1"
+    column: 1
+    row: 0
+  - id: solvate
+    type: tool
+    label: Solvate & Ionize
+    subtitle: Add water box and ions
+    step: "2"
+    column: 2
+    row: 0
+  - id: equilibrate
+    type: tool
+    label: Equilibration
+    subtitle: Energy minimization + NVT/NPT
+    step: "3"
+    column: 3
+    row: 0
+  - id: tmdEnsemble
+    type: tool
+    label: TMD Ensemble
+    subtitle: Targeted MD production runs
+    step: "4"
+    column: 4
+    row: 0
+  - id: dctmdAnalysis
+    type: tool
+    label: dcTMD Analysis
+    subtitle: Friction and free energy calc
+    step: "5"
+    column: 5
+    row: 0
+  - id: xvgFiles
+    type: output
+    label: XVG Files
+    subtitle: Force/distance trajectories
+    column: 6
+    row: 0
+  - id: frictionData
+    type: output
+    label: Friction Data
+    subtitle: "dcTMD free energy results"
+    column: 6
+    row: 1
+edges:
+  - from: ligandSdf
+    to: parameterize
+  - from: proteinPdb
+    to: parameterize
+  - from: simParams
+    to: parameterize
+    style: secondary
+  - from: parameterize
+    to: solvate
+  - from: solvate
+    to: equilibrate
+  - from: equilibrate
+    to: tmdEnsemble
+  - from: tmdEnsemble
+    to: dctmdAnalysis
+  - from: tmdEnsemble
+    to: xvgFiles
+  - from: dctmdAnalysis
+    to: frictionData
+legend:
+  items: [input, primary, secondary, output]

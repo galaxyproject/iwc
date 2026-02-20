@@ -1,0 +1,166 @@
+title: "Purging Duplicates - One Haplotype (VGP6b)"
+nodes:
+  - id: assembly
+    type: input
+    label: Assembly to Purge
+    subtitle: FASTA from contigging
+    column: 0
+    row: 2
+  - id: hifiReads
+    type: input
+    label: HiFi Reads
+    subtitle: Trimmed PacBio reads
+    column: 0
+    row: 0
+  - id: genomescopeParams
+    type: input
+    label: Genomescope Parameters
+    subtitle: Model from k-mer profiling
+    column: 0
+    row: 1
+  - id: merylDb
+    type: input
+    label: Meryl Database
+    subtitle: k-mer database for QC
+    column: 0
+    row: 3
+  - id: altAssembly
+    type: input
+    label: Unaltered Assembly
+    subtitle: Other haplotype for comparison
+    column: 0
+    row: 4
+  - id: minimap2Reads
+    type: tool
+    label: minimap2
+    subtitle: Map reads to assembly
+    step: "1"
+    column: 1
+    row: 0
+  - id: splitFa
+    type: tool
+    label: purge_dups
+    subtitle: Split assembly for self-align
+    step: "2"
+    column: 1
+    row: 1
+  - id: minimap2Self
+    type: tool
+    label: minimap2
+    subtitle: Self-alignment
+    step: "3"
+    column: 2
+    row: 1
+  - id: pbcstat
+    type: tool
+    label: purge_dups
+    subtitle: Coverage stats & cutoffs
+    step: "4"
+    column: 2
+    row: 0
+  - id: purgeDups
+    type: tool
+    label: purge_dups
+    subtitle: Identify duplicates
+    step: "5"
+    column: 3
+    row: 0
+  - id: getSeqs
+    type: tool
+    label: purge_dups
+    subtitle: Extract purged sequences
+    step: "6"
+    column: 4
+    row: 0
+  - id: merqury
+    type: tool
+    label: Merqury
+    subtitle: k-mer assembly QC
+    step: "7"
+    column: 5
+    row: 2
+  - id: gfastats
+    type: tool
+    label: gfastats
+    subtitle: Assembly statistics
+    step: "8"
+    column: 5
+    row: 3
+  - id: compleasm
+    type: tool
+    label: Compleasm
+    subtitle: Gene completeness
+    step: "9"
+    column: 5
+    row: 4
+  - id: purgedAsm
+    type: output
+    label: Purged Assembly
+    subtitle: FASTA + GFA
+    column: 6
+    row: 2
+  - id: haplotigs
+    type: output
+    label: Removed Haplotigs
+    subtitle: Purged duplicate contigs
+    column: 6
+    row: 3
+  - id: qcReport
+    type: report
+    label: QC Reports
+    subtitle: "Merqury, Compleasm, Nx plots"
+    column: 3
+    row: 5
+edges:
+  - from: assembly
+    to: minimap2Reads
+  - from: hifiReads
+    to: minimap2Reads
+  - from: assembly
+    to: splitFa
+  - from: splitFa
+    to: minimap2Self
+  - from: minimap2Reads
+    to: pbcstat
+  - from: genomescopeParams
+    to: pbcstat
+    style: secondary
+  - from: pbcstat
+    to: purgeDups
+  - from: minimap2Self
+    to: purgeDups
+  - from: purgeDups
+    to: getSeqs
+  - from: assembly
+    to: getSeqs
+    style: secondary
+  - from: getSeqs
+    to: purgedAsm
+  - from: getSeqs
+    to: haplotigs
+  - from: getSeqs
+    to: merqury
+    style: qc
+  - from: merylDb
+    to: merqury
+    style: secondary
+  - from: altAssembly
+    to: merqury
+    style: secondary
+  - from: getSeqs
+    to: gfastats
+    style: qc
+  - from: getSeqs
+    to: compleasm
+    style: qc
+  - from: merqury
+    to: qcReport
+    style: qc
+  - from: gfastats
+    to: qcReport
+    style: qc
+  - from: compleasm
+    to: qcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

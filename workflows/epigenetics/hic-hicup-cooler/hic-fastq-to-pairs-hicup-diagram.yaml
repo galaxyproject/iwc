@@ -1,0 +1,87 @@
+title: "Hi-C: FASTQ to Valid Interaction Pairs"
+nodes:
+  - id: fastqInput
+    type: input
+    label: PE FASTQ Input
+    subtitle: "list:paired collection"
+    detail: Hi-C paired-end reads
+    step: "1"
+    column: 0
+    row: 0
+  - id: genomeName
+    type: input
+    label: Genome Name
+    subtitle: Bowtie2 reference index
+    column: 0
+    row: 1
+  - id: restrictionEnzyme
+    type: input
+    label: Restriction Enzyme
+    subtitle: "e.g. A^GATCT,BglII"
+    column: 0
+    row: 2
+  - id: hicup
+    type: tool
+    label: HiCUP Pipeline
+    subtitle: Truncate, map, filter, dedup
+    detail: Full Hi-C read processing
+    step: "2"
+    column: 1
+    row: 0
+  - id: hicup2juicer
+    type: tool
+    label: HiCUP to Juicer
+    subtitle: Convert to Juicer format
+    detail: Fragment midpoint coordinates
+    step: "3"
+    column: 2
+    row: 0
+  - id: mapqFilter
+    type: tool
+    label: MAPQ Filter
+    subtitle: Filter by mapping quality
+    detail: User-defined threshold
+    step: "4"
+    column: 3
+    row: 0
+  - id: validPairs
+    type: output
+    label: Valid Pairs
+    subtitle: Juicebox format (unfiltered)
+    column: 4
+    row: 0
+  - id: filteredPairs
+    type: output
+    label: Filtered Pairs
+    subtitle: MAPQ-filtered valid pairs
+    column: 4
+    row: 1
+  - id: hicupReport
+    type: report
+    label: HiCUP Report
+    subtitle: "QC metrics (HTML + tabular)"
+    column: 2
+    row: 1
+edges:
+  - from: fastqInput
+    to: hicup
+  - from: genomeName
+    to: hicup
+    style: secondary
+  - from: restrictionEnzyme
+    to: hicup
+    style: secondary
+  - from: hicup
+    to: hicup2juicer
+  - from: hicup2juicer
+    to: validPairs
+    style: secondary
+  - from: hicup2juicer
+    to: mapqFilter
+  - from: mapqFilter
+    to: filteredPairs
+  - from: hicup
+    to: hicupReport
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]
