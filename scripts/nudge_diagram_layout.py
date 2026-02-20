@@ -75,43 +75,58 @@ def compute_nudges(data):
             changes.append((n["id"], old_col, old_row, new_col, new_row, n.get("label", n["id"])))
             n["column"], n["row"] = new_col, new_row
 
-    # --- Terminal outputs → output_col ---
+    # --- Pre-compute layout targets ---
     tool_input_cols = [n["column"] for n in nodes if n["type"] in ("tool", "input")]
     output_col = max(tool_input_cols) + 1 if tool_input_cols else 1
 
-    terminal_outputs.sort(key=lambda n: (n["row"], n["column"]))
-    occupied_rows = {n["row"] for n in nodes if n["column"] == output_col}
+    tool_rows = [n["row"] for n in nodes if n["type"] == "tool"]
+    report_row = max(tool_rows) + 1 if tool_rows else 1
 
+    # Reports that will be moved — exclude them from output collision check
+    report_ids_moving = {n["id"] for n in terminal_reports if n["row"] < report_row}
+
+    # --- Terminal outputs → output_col, rows packed from 0 ---
+    terminal_outputs.sort(key=lambda n: (n["row"], n["column"]))
+    occupied_rows = {n["row"] for n in nodes
+                     if n["column"] == output_col and n["id"] not in report_ids_moving}
+
+    next_row = 0
     for n in terminal_outputs:
         if n["column"] >= output_col:
             continue
         old_col, old_row = n["column"], n["row"]
-        new_row = old_row
-        while new_row in occupied_rows:
-            new_row += 1
-        occupied_rows.add(new_row)
-        if old_col != output_col or old_row != new_row:
-            changes.append((n["id"], old_col, old_row, output_col, new_row, n.get("label", n["id"])))
-            n["column"], n["row"] = output_col, new_row
+        while next_row in occupied_rows:
+            next_row += 1
+        occupied_rows.add(next_row)
+        if old_col != output_col or old_row != next_row:
+            changes.append((n["id"], old_col, old_row, output_col, next_row, n.get("label", n["id"])))
+            n["column"], n["row"] = output_col, next_row
+        next_row += 1
 
-    # --- Terminal reports → report_row ---
-    non_report_rows = [n["row"] for n in nodes if n["type"] != "report"]
-    report_row = max(non_report_rows) + 1 if non_report_rows else 1
+    # --- Terminal reports → report_row, centered under tool span ---
+    tool_cols = sorted(set(n["column"] for n in nodes if n["type"] == "tool"))
+    center = (tool_cols[0] + tool_cols[-1]) / 2 if tool_cols else 1
 
-    terminal_reports.sort(key=lambda n: (n["column"], n["row"]))
-    occupied_cols = {n["column"] for n in nodes if n["row"] == report_row}
+    reports_to_move = [n for n in terminal_reports if n["row"] < report_row]
+    reports_to_move.sort(key=lambda n: (n["column"], n["row"]))
 
-    for n in terminal_reports:
-        if n["row"] >= report_row:
-            continue
-        old_col, old_row = n["column"], n["row"]
-        new_col = old_col
-        while new_col in occupied_cols:
-            new_col += 1
-        occupied_cols.add(new_col)
-        if old_col != new_col or old_row != report_row:
-            changes.append((n["id"], old_col, old_row, new_col, report_row, n.get("label", n["id"])))
-            n["column"], n["row"] = new_col, report_row
+    if reports_to_move:
+        move_ids = {n["id"] for n in reports_to_move}
+        start_col = round(center - (len(reports_to_move) - 1) / 2)
+        start_col = max(0, start_col)
+        occupied_cols = {n["column"] for n in nodes
+                         if n["row"] == report_row and n["id"] not in move_ids}
+
+        next_col = start_col
+        for n in reports_to_move:
+            while next_col in occupied_cols:
+                next_col += 1
+            old_col, old_row = n["column"], n["row"]
+            if old_col != next_col or old_row != report_row:
+                changes.append((n["id"], old_col, old_row, next_col, report_row, n.get("label", n["id"])))
+                n["column"], n["row"] = next_col, report_row
+            occupied_cols.add(next_col)
+            next_col += 1
 
     return changes
 

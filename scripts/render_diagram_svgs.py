@@ -136,11 +136,14 @@ def compute_layout(data, title_bar_height=TITLE_BAR_HEIGHT):
         for col, col_nodes in sorted(nodes_by_col.items())
     }
 
+    num_cols = len(all_cols)
+    column_gap = max(COLUMN_GAP, 160 - num_cols * 15)
+
     col_x = {}
     current_x = PADDING
     for col in all_cols:
         col_x[col] = current_x
-        current_x += col_max_width[col] + COLUMN_GAP
+        current_x += col_max_width[col] + column_gap
 
     layouts = []
     for node in nodes:
