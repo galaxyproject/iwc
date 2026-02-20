@@ -1,0 +1,148 @@
+title: "Purge Duplicate Contigs (VGP6)"
+nodes:
+  - id: hifiReads
+    type: input
+    label: HiFi Reads
+    subtitle: Trimmed PacBio reads
+    column: 0
+    row: 0
+  - id: primaryAsm
+    type: input
+    label: Primary Assembly
+    subtitle: From contigging step
+    column: 0
+    row: 1
+  - id: alternateAsm
+    type: input
+    label: Alternate Assembly
+    subtitle: From contigging step
+    column: 0
+    row: 2
+  - id: merylDb
+    type: input
+    label: Meryl Database
+    subtitle: K-mer counts
+    column: 0
+    row: 3
+  - id: minimap2Pri
+    type: tool
+    label: minimap2
+    subtitle: Map reads to primary
+    step: "1"
+    column: 1
+    row: 0
+  - id: purgeDupsPri
+    type: tool
+    label: purge_dups
+    subtitle: Purge primary duplicates
+    step: "2"
+    column: 2
+    row: 1
+  - id: concat
+    type: tool
+    label: Concatenate
+    subtitle: Haplotigs + alternate
+    step: "3"
+    column: 3
+    row: 2
+  - id: purgeDupsAlt
+    type: tool
+    label: purge_dups
+    subtitle: Purge alternate duplicates
+    step: "4"
+    column: 4
+    row: 2
+  - id: merqury
+    type: tool
+    label: Merqury
+    subtitle: K-mer completeness & QV
+    step: "5"
+    column: 5
+    row: 3
+  - id: compleasm
+    type: tool
+    label: Compleasm
+    subtitle: Gene completeness (both)
+    step: "6"
+    column: 5
+    row: 4
+  - id: gfastats
+    type: tool
+    label: gfastats
+    subtitle: Assembly statistics (both)
+    step: "7"
+    column: 5
+    row: 5
+  - id: purgedPrimary
+    type: output
+    label: Purged Primary
+    subtitle: FASTA + GFA
+    column: 6
+    row: 1
+  - id: purgedAlternate
+    type: output
+    label: Purged Alternate
+    subtitle: FASTA + GFA
+    column: 6
+    row: 2
+  - id: qcReport
+    type: report
+    label: QC Reports
+    subtitle: "Merqury, Compleasm, Nx plots"
+    column: 3
+    row: 6
+edges:
+  - from: hifiReads
+    to: minimap2Pri
+  - from: primaryAsm
+    to: minimap2Pri
+  - from: primaryAsm
+    to: purgeDupsPri
+    style: secondary
+  - from: minimap2Pri
+    to: purgeDupsPri
+  - from: purgeDupsPri
+    to: purgedPrimary
+  - from: purgeDupsPri
+    to: concat
+  - from: alternateAsm
+    to: concat
+  - from: concat
+    to: purgeDupsAlt
+  - from: hifiReads
+    to: purgeDupsAlt
+    style: secondary
+  - from: purgeDupsAlt
+    to: purgedAlternate
+  - from: purgeDupsPri
+    to: merqury
+    style: qc
+  - from: purgeDupsAlt
+    to: merqury
+    style: qc
+  - from: merylDb
+    to: merqury
+    style: secondary
+  - from: purgeDupsPri
+    to: compleasm
+    style: qc
+  - from: purgeDupsAlt
+    to: compleasm
+    style: qc
+  - from: purgeDupsPri
+    to: gfastats
+    style: qc
+  - from: purgeDupsAlt
+    to: gfastats
+    style: qc
+  - from: merqury
+    to: qcReport
+    style: qc
+  - from: compleasm
+    to: qcReport
+    style: qc
+  - from: gfastats
+    to: qcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

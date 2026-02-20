@@ -1,0 +1,135 @@
+title: "Metagenomic Taxonomic and ARG Profiling"
+subtitle: "Taxonomy with Sylph, ARG detection with Groot and DeepARG, normalized with argNorm"
+nodes:
+  - id: reads
+    type: input
+    label: Metagenomic Reads
+    subtitle: "QC'd paired short reads"
+    column: 0
+    row: 2
+  - id: sylph
+    type: tool
+    label: Sylph Profile
+    subtitle: "Taxonomic profiling"
+    step: "1"
+    column: 1
+    row: 0
+  - id: groot
+    type: tool
+    label: Groot
+    subtitle: "ARG detection via graph alignment"
+    step: "2"
+    column: 1
+    row: 2
+  - id: deeparg
+    type: tool
+    label: DeepARG
+    subtitle: "Deep learning ARG prediction"
+    step: "3"
+    column: 1
+    row: 4
+  - id: argnormGroot
+    type: tool
+    label: argNorm
+    subtitle: "Normalize Groot ARGs to ARO"
+    step: "4"
+    column: 2
+    row: 2
+  - id: argnormDeeparg
+    type: tool
+    label: argNorm
+    subtitle: "Normalize DeepARG ARGs to ARO"
+    step: "5"
+    column: 2
+    row: 4
+  - id: toolDistillator
+    type: tool
+    label: ToolDistillator
+    subtitle: "Aggregate all results"
+    step: "6"
+    column: 3
+    row: 2
+  - id: toolDistillatorSummarize
+    type: tool
+    label: ToolDistillator Summarize
+    subtitle: "Summary JSON"
+    step: "7"
+    column: 4
+    row: 2
+  - id: taxonomyProfile
+    type: output
+    label: Taxonomy Profiles
+    subtitle: "Sylph genome & taxon profiles"
+    column: 5
+    row: 0
+  - id: grootReport
+    type: output
+    label: Groot ARG Report
+    subtitle: "Normalized ARG annotations"
+    column: 5
+    row: 1
+  - id: deepargResults
+    type: output
+    label: DeepARG Results
+    subtitle: "Detected ARGs & subtypes"
+    column: 5
+    row: 3
+  - id: summaryJson
+    type: output
+    label: Summary JSON
+    subtitle: "Aggregated results"
+    column: 5
+    row: 2
+  - id: multiqcReport
+    type: report
+    label: MultiQC Report
+    subtitle: "Combined QC dashboard"
+    column: 2
+    row: 5
+edges:
+  - from: reads
+    to: sylph
+  - from: reads
+    to: groot
+  - from: reads
+    to: deeparg
+  - from: groot
+    to: argnormGroot
+  - from: deeparg
+    to: argnormDeeparg
+  - from: sylph
+    to: taxonomyProfile
+  - from: argnormGroot
+    to: grootReport
+  - from: deeparg
+    to: deepargResults
+  - from: sylph
+    to: toolDistillator
+    style: secondary
+  - from: groot
+    to: toolDistillator
+    style: secondary
+  - from: deeparg
+    to: toolDistillator
+    style: secondary
+  - from: argnormGroot
+    to: toolDistillator
+    style: secondary
+  - from: argnormDeeparg
+    to: toolDistillator
+    style: secondary
+  - from: toolDistillator
+    to: toolDistillatorSummarize
+  - from: toolDistillatorSummarize
+    to: summaryJson
+  - from: argnormGroot
+    to: multiqcReport
+    style: qc
+  - from: argnormDeeparg
+    to: multiqcReport
+    style: qc
+  - from: sylph
+    to: multiqcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

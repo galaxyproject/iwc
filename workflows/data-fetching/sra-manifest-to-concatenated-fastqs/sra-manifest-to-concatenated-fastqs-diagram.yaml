@@ -1,0 +1,61 @@
+title: "SRA Manifest to Concatenated FASTQs"
+nodes:
+  - id: manifest
+    type: input
+    label: SRA Manifest
+    subtitle: Tabular from SRA Run Selector
+    column: 0
+    row: 0
+  - id: parseColumns
+    type: tool
+    label: Parse Manifest
+    subtitle: Extract SRA IDs + labels
+    detail: Cut columns, generate relabelling table
+    step: "1"
+    column: 1
+    row: 0
+  - id: splitDownload
+    type: tool
+    label: Split & Download
+    subtitle: fasterq-dump per accession
+    detail: Split manifest, fetch FASTQs from SRA
+    step: "2"
+    column: 2
+    row: 0
+  - id: relabelConcat
+    type: tool
+    label: Relabel & Concatenate
+    subtitle: Merge multi-run experiments
+    detail: Relabel identifiers, concatenate by sample
+    step: "3"
+    column: 3
+    row: 0
+  - id: peOutput
+    type: output
+    label: Paired-End FASTQs
+    subtitle: Concatenated PE reads per sample
+    column: 4
+    row: 0
+  - id: seOutput
+    type: output
+    label: Single-End FASTQs
+    subtitle: Concatenated SE reads per sample
+    column: 4
+    row: 1
+edges:
+  - from: manifest
+    to: parseColumns
+  - from: parseColumns
+    to: splitDownload
+  - from: splitDownload
+    to: relabelConcat
+  - from: parseColumns
+    to: relabelConcat
+    style: secondary
+  - from: relabelConcat
+    to: peOutput
+  - from: relabelConcat
+    to: seOutput
+    style: secondary
+legend:
+  items: [input, primary, secondary, output]

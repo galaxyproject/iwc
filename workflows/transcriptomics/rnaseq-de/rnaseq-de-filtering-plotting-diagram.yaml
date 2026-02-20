@@ -1,0 +1,117 @@
+title: "RNA-Seq Differential Expression Analysis with Visualization"
+nodes:
+  - id: changedCounts
+    type: input
+    label: Changed Condition
+    subtitle: Count tables (collection)
+    detail: Treatment / knockdown samples
+    column: 0
+    row: 0
+  - id: refCounts
+    type: input
+    label: Reference Condition
+    subtitle: Count tables (collection)
+    detail: Untreated / wildtype samples
+    column: 0
+    row: 1
+  - id: geneAnnotation
+    type: input
+    label: Gene Annotation
+    subtitle: GTF used for counting
+    column: 0
+    row: 2
+  - id: deseq2
+    type: tool
+    label: DESeq2
+    subtitle: Differential expression testing
+    detail: Normalized counts & statistics
+    step: "1"
+    column: 1
+    row: 0
+  - id: annotate
+    type: tool
+    label: Annotate DE Table
+    subtitle: Add gene names & coordinates
+    step: "2"
+    column: 2
+    row: 0
+  - id: filterPadj
+    type: tool
+    label: Filter (p-adj)
+    subtitle: Adjusted p-value threshold
+    step: "3"
+    column: 3
+    row: 0
+  - id: filterFC
+    type: tool
+    label: Filter (log2 FC)
+    subtitle: Fold change threshold
+    step: "4"
+    column: 4
+    row: 0
+  - id: deResults
+    type: output
+    label: Annotated DE Results
+    subtitle: Full annotated DESeq2 table
+    column: 5
+    row: 0
+  - id: sigGenes
+    type: output
+    label: Significant DE Genes
+    subtitle: Filtered by p-adj & log2 FC
+    column: 5
+    row: 1
+  - id: deseqPlots
+    type: report
+    label: DESeq2 Plots
+    subtitle: Dispersion, MA, PCA plots
+    column: 1
+    row: 2
+  - id: volcanoPlot
+    type: report
+    label: Volcano Plot
+    subtitle: Significance vs fold change
+    column: 3
+    row: 2
+  - id: heatmapCounts
+    type: report
+    label: Counts Heatmap
+    subtitle: Log-transformed normalized counts
+    column: 5
+    row: 2
+  - id: heatmapZscores
+    type: report
+    label: Z-scores Heatmap
+    subtitle: Row-scaled expression patterns
+    column: 5
+    row: 3
+edges:
+  - from: changedCounts
+    to: deseq2
+  - from: refCounts
+    to: deseq2
+  - from: geneAnnotation
+    to: annotate
+    style: secondary
+  - from: deseq2
+    to: annotate
+  - from: annotate
+    to: filterPadj
+  - from: annotate
+    to: deResults
+  - from: filterPadj
+    to: filterFC
+  - from: filterFC
+    to: sigGenes
+  - from: filterFC
+    to: heatmapCounts
+  - from: filterFC
+    to: heatmapZscores
+  - from: deseq2
+    to: deseqPlots
+    style: qc
+  - from: annotate
+    to: volcanoPlot
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

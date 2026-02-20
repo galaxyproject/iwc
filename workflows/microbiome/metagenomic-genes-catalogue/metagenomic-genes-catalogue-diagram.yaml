@@ -1,0 +1,223 @@
+title: "Metagenomic Genes Catalogue Analysis"
+nodes:
+  - id: trimmedReads
+    type: input
+    label: Trimmed Reads
+    subtitle: "list:paired collection"
+    detail: Metagenomic paired reads
+    column: 0
+    row: 0
+  - id: megahit
+    type: tool
+    label: MEGAHIT
+    subtitle: Metagenome assembly
+    detail: Per-sample contigs
+    step: "1"
+    column: 1
+    row: 0
+  - id: prodigal
+    type: tool
+    label: Prodigal
+    subtitle: Gene prediction
+    detail: CDS on concatenated contigs
+    step: "2"
+    column: 2
+    row: 0
+  - id: mmseqsCluster
+    type: tool
+    label: MMseqs2
+    subtitle: Sequence clustering
+    detail: 95% identity linclust
+    step: "3"
+    column: 3
+    row: 0
+  - id: coverm
+    type: tool
+    label: CoverM
+    subtitle: Gene coverage
+    detail: Per-sample abundance
+    step: "4"
+    column: 4
+    row: 0
+  - id: amrfinderplus
+    type: tool
+    label: AMRFinderPlus
+    subtitle: AMR gene detection
+    step: "5"
+    column: 3
+    row: 2
+  - id: abricate
+    type: tool
+    label: ABRicate
+    subtitle: Virulence detection
+    step: "6"
+    column: 3
+    row: 3
+  - id: staramr
+    type: tool
+    label: staramr
+    subtitle: AMR element detection
+    step: "7"
+    column: 3
+    row: 4
+  - id: argnorm
+    type: tool
+    label: argNorm
+    subtitle: Normalize AMR annotations
+    step: "8"
+    column: 4
+    row: 2
+  - id: eggnog
+    type: tool
+    label: eggNOG Mapper
+    subtitle: Functional annotation
+    step: "9"
+    column: 4
+    row: 5
+  - id: mmseqsTaxonomy
+    type: tool
+    label: MMseqs2 Taxonomy
+    subtitle: Taxonomic assignment
+    step: "10"
+    column: 4
+    row: 6
+  - id: krona
+    type: tool
+    label: Krona
+    subtitle: Taxonomy visualization
+    step: "11"
+    column: 5
+    row: 6
+  - id: quast
+    type: report
+    label: QUAST
+    subtitle: Assembly QC stats
+    column: 1
+    row: 1
+  - id: contigs
+    type: output
+    label: Contigs
+    subtitle: Assembled contigs
+    column: 6
+    row: 0
+  - id: geneSequences
+    type: output
+    label: Gene Sequences
+    subtitle: Prodigal CDS (nt + aa)
+    column: 6
+    row: 1
+  - id: repSequences
+    type: output
+    label: Representative Seqs
+    subtitle: MMseqs2 cluster reps
+    column: 6
+    row: 2
+  - id: covermOutput
+    type: output
+    label: Coverage Table
+    subtitle: Merged gene abundance
+    column: 6
+    row: 3
+  - id: amrReports
+    type: output
+    label: AMR Reports
+    subtitle: AMRFinder, ABRicate, staramr
+    column: 6
+    row: 4
+  - id: eggnogAnnotations
+    type: output
+    label: Functional Annotations
+    subtitle: eggNOG annotations
+    column: 6
+    row: 5
+  - id: taxonomyOutput
+    type: output
+    label: Taxonomy Results
+    subtitle: Tabular + Krona chart
+    column: 6
+    row: 6
+  - id: multiqc
+    type: report
+    label: MultiQC Report
+    subtitle: Integrated summary
+    detail: "QUAST, AMR, coverage, eggNOG, taxonomy"
+    column: 4
+    row: 7
+edges:
+  - from: trimmedReads
+    to: megahit
+  - from: megahit
+    to: prodigal
+  - from: prodigal
+    to: mmseqsCluster
+  - from: mmseqsCluster
+    to: coverm
+  - from: trimmedReads
+    to: coverm
+    style: secondary
+  - from: megahit
+    to: quast
+    style: qc
+  - from: trimmedReads
+    to: quast
+    style: secondary
+  - from: megahit
+    to: contigs
+  - from: prodigal
+    to: geneSequences
+  - from: mmseqsCluster
+    to: repSequences
+  - from: coverm
+    to: covermOutput
+  - from: prodigal
+    to: amrfinderplus
+  - from: prodigal
+    to: abricate
+  - from: prodigal
+    to: staramr
+  - from: amrfinderplus
+    to: argnorm
+  - from: argnorm
+    to: amrReports
+  - from: abricate
+    to: amrReports
+    style: secondary
+  - from: staramr
+    to: amrReports
+    style: secondary
+  - from: prodigal
+    to: eggnog
+  - from: prodigal
+    to: mmseqsTaxonomy
+  - from: mmseqsTaxonomy
+    to: krona
+  - from: eggnog
+    to: eggnogAnnotations
+  - from: krona
+    to: taxonomyOutput
+  - from: mmseqsTaxonomy
+    to: taxonomyOutput
+    style: secondary
+  - from: quast
+    to: multiqc
+    style: qc
+  - from: argnorm
+    to: multiqc
+    style: qc
+  - from: abricate
+    to: multiqc
+    style: qc
+  - from: staramr
+    to: multiqc
+    style: qc
+  - from: coverm
+    to: multiqc
+    style: qc
+  - from: eggnog
+    to: multiqc
+    style: qc
+  - from: mmseqsTaxonomy
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]
