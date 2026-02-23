@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.7] - 2026-02-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/openbabel_compound_convert/openbabel_compound_convert/3.1.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/openbabel_compound_convert/openbabel_compound_convert/3.1.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/chemteam/md_converter/md_converter/1.9.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/chemteam/md_converter/md_converter/1.9.7+galaxy0`
+
 ## [0.1.6] - 2026-01-19
 
 ### Automatic update
