@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.2] - 2025-01-13
+## [1.2.1] - 2026-02-23
+
+### Changed
+
+* Modify Quast parameter [`--max-ref-number`](https://quast.sourceforge.net/docs/manual.html#max_ref_num) from 50 to 0 because it causes error on Galaxy and the information provided with these settings is not necessarily essential.
+
+## [1.2] - 2026-01-13
 
 ### Automatic update
 
