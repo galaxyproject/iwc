@@ -1,31 +1,31 @@
-# Paired-End Variant Calling in Diploid Systems
+# Paired-End Variant and Ploidy-Aware Genotype Calling
 
-This workflow performs paired-end read mapping and germline variant calling for
-diploid organisms. It takes a collection of Illumina paired-end FASTQ files,
-a reference genome in FASTA format, a gene annotation in GTF format, and a
-ploidy parameter, and produces annotated variants both as VCF and as a
-tab-separated table.
+This workflow performs paired-end reads quality control, mapping and germline
+variant and genotype calling for organisms of any given ploidy.
 
-Reads are first quality-trimmed and adapter-removed with fastp. Trimmed reads
+It takes a collection of Illumina paired-end FASTQ files, a reference genome
+in FASTA format, a gene annotation in GTF format, and a ploidy parameter, and
+produces annotated variants both as VCF and as a tab-separated table.
+
+Reads are first quality- and adapter-trimmed with fastp. Trimmed reads
 are then mapped to the reference genome using BWA-MEM. The resulting
 alignments are filtered with Samtools view to retain only properly paired
 reads, and PCR duplicates are removed using Picard MarkDuplicates. QC metrics
 from fastp, Samtools stats, and MarkDuplicates are aggregated into a single
 MultiQC report.
 
-Variant calling is performed with FreeBayes, which operates in haplotype-based
-mode on the duplicate-free BAM. The ploidy used for calling is configurable
-and defaults to 2 (diploid). The raw VCF output is normalised and
-left-aligned with bcftools norm, splitting multi-allelic sites into
-individual biallelic records.
+Variant and genotype calling is performed with FreeBayes, which operates in
+haplotype-based mode on the duplicate-free BAM.
+The ploidy assumed for calling is configurable and defaults to 2 (diploid).
 
+The intial VCF output is normalised and left-aligned with bcftools norm,
+splitting multi-allelic sites into individual biallelic records.
 Variants are then functionally annotated using SnpEff, with a custom SnpEff
 database built on-the-fly from the provided reference FASTA and GTF annotation.
 Annotation is restricted to coding and splicing effects (downstream,
 intergenic, intronic, UTR, and upstream effects are excluded). The annotated
-VCF is subsequently parsed by SnpSift Extract Fields into a flat tabular
-format, and per-sample tables are merged into a single file using Collapse
-Collection.
+VCF is subsequently parsed with SnpSift Extract Fields into a flat tabular
+format, and per-sample tables are merged into a single file.
 
 ## Inputs
 
@@ -50,7 +50,7 @@ Preprocessing and mapping MultiQC report: aggregated HTML QC report
 combining fastp, Samtools stats, and Picard MarkDuplicates metrics across
 all samples.
 
-SnpEff annotated variants (VCF):: annotated variants in VCF format, tagged VariantsasVCF.
+SnpEff annotated variants (VCF): annotated variants in VCF format, tagged VariantsasVCF.
 
 SnpEff HTML summary report: HTML summary statistics from SnpEff describing the
 distribution of variant effects across functional categories.
