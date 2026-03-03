@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3] - 2026-02-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/openbabel_compound_convert/openbabel_compound_convert/3.1.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/openbabel_compound_convert/openbabel_compound_convert/3.1.1+galaxy2`
+
 ## [0.2] - 2025-12-15
 
 ### Automatic update
