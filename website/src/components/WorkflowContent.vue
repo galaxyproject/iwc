@@ -44,6 +44,11 @@ const dockstoreWorkflowPageUrl = computed(() => {
     return baseUrl + repoPath;
 });
 
+const githubWorkflowUrl = computed(() => {
+    const repoPath = props.workflow?.repoPath?.replace(/^\.\//, "");
+    return `https://github.com/galaxyproject/iwc/tree/main/${repoPath}`;
+});
+
 const doiResolverUrl = computed(() => {
     return `https://doi.org/${props.workflow?.doi}`;
 });
@@ -379,6 +384,12 @@ onMounted(() => {
                             target="_blank"
                             class="text-bay-of-many-700 hover:underline">
                             {{ workflow.trsID }} ↗
+                        </a>
+                    </li>
+                    <li>
+                        <strong class="text-ebony-clay-900">GitHub: </strong>
+                        <a :href="githubWorkflowUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
+                            {{ githubWorkflowUrl }} ↗
                         </a>
                     </li>
                 </ul>
