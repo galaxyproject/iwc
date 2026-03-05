@@ -4,9 +4,11 @@ This directory contains Galaxy workflows for running HyPhy (Hypothesis Testing u
 
 ## Workflows
 
+> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.
+
 ### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)
 
-The main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation.
+The main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.
 
 **Inputs:**
 - **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)
