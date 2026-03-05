@@ -5,22 +5,24 @@
     "creator": [
         {
             "class": "Person",
+            "identifier": "0009-0009-3690-8372",
             "name": "Danielle Callan"
         },
         {
             "class": "Person",
+            "identifier": "0000-0003-1967-4403",
             "name": "Hannah Verdonk"
         },
         {
             "class": "Person",
+            "identifier": "0000-0003-4817-4029",
             "name": "Sergei L. Kosakovsky Pond"
         }
     ],
     "format-version": "0.1",
     "license": "MIT",
     "name": "CAPHEINE: Combined HyPhy Core and Compare",
-    "release": "0.1",
-    "readme": "# CAPHEINE: Combined HyPhy Core & Compare Workflow (Galaxy)\n\n## Description\nCAPHEINE orchestrates the whole HyPhy pipeline: it runs the core codon-aware preprocessing (fasta cleanup, cawlign, IQ-TREE, MEME/PRIME/BUSTED/FEL) and, when configured, the branch-comparison module (label-tree + CFEL/RELAX). The workflow is inspired by the Nextflow implementation at [veg/capheine](https://github.com/veg/capheine).\n\n## Inputs\n1. Assemblies (list collection of FASTA). Unaligned coding sequences, one per sample.\n2. Reference CDS FASTA. Multi-gene CDS file (e.g. from NCBI).\n3. Foreground ID list (optional dataset). **Cleaned** sequence identifiers; used to tag branches as Foreground vs Reference.\n4. Foreground regex (optional text). Applied to the **cleaned** identifiers to build the Foreground list automatically.\n\n### Behavior:\nIf neither the list nor regex is supplied \u2192 run only the Core portion.\nIf a regex is supplied \u2192 derive the Foreground set from matches and run Compare.\nIf only a list is supplied \u2192 use it directly for Compare.\nIf both are supplied \u2192 the regex is applied and the explicit list is ignored.\n\n## Outputs\n\n### From the Core (always produced):\n1. Codon-aware alignments (collection, FASTA) \u2013 cawlign output.\n2. Gene trees (collection, Newick) \u2013 IQ-TREE output.\n3. HyPhy MEME results (collection, JSON).\n4. HyPhy PRIME results (collection, JSON).\n5. HyPhy BUSTED results (collection, JSON).\n6. HyPhy FEL results (collection, JSON).\n\n### From the Compare module (only when Foreground info is provided):\n1. Labeled trees (collection, Newick) \u2013 HyPhy Annotate marking {Foreground} vs {Reference}.\n2. HyPhy CFEL results (collection, JSON) \u2013 site-level comparison.\n3. HyPhy RELAX results (collection, JSON) \u2013 test for relaxed/intensified selection.\n\n## Reference & Inspiration\nThis Galaxy workflow mirrors the logic of the [CAPHEINE Nextflow implementation](https://github.com/veg/capheine); refer there for additional background on the methodology.",
+    "readme": "# CAPHEINE: Combined HyPhy Core & Compare Workflow\n\n## Description\nCAPHEINE orchestrates an evolutionary discovery and analysis pipeline: it runs the core codon-aware preprocessing (fasta cleanup, cawlign, IQ-TREE) and HyPhy analyses (FEL, MEME, PRIME, BUSTED). When configured, CAPHEINE also runs the branch-comparison module (label-tree + Contrast-FEL + RELAX). The workflow is inspired by the Nextflow implementation at [veg/capheine](https://github.com/veg/capheine).\n\n## Inputs\n1. Assemblies (list collection of FASTA). Unaligned coding sequences, one per sample.\n2. Reference CDS FASTA. Multi-gene CDS file (e.g. from NCBI).\n3. Foreground ID list (optional dataset). Sequence identifiers, one per line; used to tag branches as Foreground vs Reference.\n4. Foreground regex (optional text). Applied to the sequence identifiers to build the Foreground list automatically.\n\n### Behavior:\nIf neither the list nor regex is supplied \u2192 run only the Core portion.\nIf a regex is supplied \u2192 derive the Foreground set from matches and run Compare.\nIf only a list is supplied \u2192 use it directly for Compare.\nIf both are supplied \u2192 the regex is applied and the explicit list is ignored.\n\n## Outputs\n\n### From the Core (always produced):\n1. Codon-aware alignments (collection, FASTA) \u2013 cawlign output.\n2. Gene trees (collection, Newick) \u2013 IQ-TREE output.\n3. HyPhy MEME results (collection, JSON).\n4. HyPhy PRIME results (collection, JSON).\n5. HyPhy BUSTED results (collection, JSON).\n6. HyPhy FEL results (collection, JSON).\n\n### From the Compare module (only when Foreground info is provided):\n1. Labeled trees (collection, Newick) \u2013 HyPhy Annotate marking {Foreground} vs {Reference}.\n2. HyPhy CFEL results (collection, JSON) \u2013 site-level comparison.\n3. HyPhy RELAX results (collection, JSON) \u2013 test for relaxed/intensified selection.\n\n## Recommended Use\nMirrors the HyPhy Core workflow\u2019s preprocessing/analysis behavior with optional branch-comparison modules layered on top. It inherits the same limitations: reliable today for most viral datasets, but internal stop codons or recombination can cause outright failures or misleading FEL/MEME/BUSTED/PRIME/CFEL/RELAX calls, so be wary when pushing bacterial or eukaryotic genes through it.\n\n## Reference & Inspiration\nThis Galaxy workflow mirrors the logic of the [CAPHEINE Nextflow implementation](https://github.com/veg/capheine), version 1.1.0; refer there for additional background on the methodology.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -104,7 +106,13 @@
             "type": "parameter_input",
             "uuid": "0f08a268-d600-4e5e-8eab-1297a8f164bc",
             "when": null,
-            "workflow_outputs": []
+            "workflow_outputs": [
+                {
+                    "label": null,
+                    "output_name": "output",
+                    "uuid": "902a078d-3fdb-4370-9723-41d4fc87b967"
+                }
+            ]
         },
         "3": {
             "annotation": "File containing list of foreground sequence names (one per line). Leave empty to skip foreground sequence selection.",
@@ -163,21 +171,24 @@
                 "creator": [
                     {
                         "class": "Person",
+                        "identifier": "0009-0009-3690-8372",
                         "name": "Danielle Callan"
                     },
                     {
                         "class": "Person",
+                        "identifier": "0000-0003-1967-4403",
                         "name": "Hannah Verdonk"
                     },
                     {
                         "class": "Person",
+                        "identifier": "0000-0003-4817-4029",
                         "name": "Sergei L. Kosakovsky Pond"
                     }
                 ],
                 "format-version": "0.1",
                 "license": "MIT",
                 "name": "HyPhy: Core",
-                "readme": "# HyPhy Selection Workflow\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a multi-gene reference CDS FASTA, invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods\u2014MEME, PRIME, BUSTED, and FEL\u2014on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA  (downloadable directly from NCBI RefSeq/GenBank).\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) \u2013 Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) \u2013 Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) \u2013 One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) \u2013 One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) \u2013 One JSON per gene.\n6. HyPhy FEL results (collection, JSON) \u2013 One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.",
+                "readme": "# HyPhy: Core\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a multi-gene reference CDS FASTA, invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods\u2014MEME, PRIME, BUSTED, and FEL\u2014on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA  (downloadable directly from NCBI RefSeq/GenBank).\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) \u2013 Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) \u2013 Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) \u2013 One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) \u2013 One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) \u2013 One JSON per gene.\n6. HyPhy FEL results (collection, JSON) \u2013 One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.\n\n## Recommended Use\nBest suited for viral CDS panels where codon-aware alignment and tree building succeed cleanly. Genes containing internal stop codons or ongoing recombination will either produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
                 "report": {
                     "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                 },
@@ -266,12 +277,24 @@
                             "creator": [
                                 {
                                     "class": "Person",
+                                    "identifier": "0009-0009-3690-8372",
                                     "name": "Danielle Callan"
+                                },
+                                {
+                                    "class": "Person",
+                                    "identifier": "0000-0003-1967-4403",
+                                    "name": "Hannah Verdonk"
+                                },
+                                {
+                                    "class": "Person",
+                                    "identifier": "0000-0003-4817-4029",
+                                    "name": "Sergei L. Kosakovsky Pond"
                                 }
                             ],
                             "format-version": "0.1",
                             "license": "MIT",
                             "name": "HyPhy: Preprocessing ",
+                            "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
                             "report": {
                                 "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                             },
@@ -497,44 +520,48 @@
                                 },
                                 "6": {
                                     "annotation": "",
-                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_strike_ambigs/hyphy_strike_ambigs/2.5.83+galaxy0",
+                                    "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
                                     "errors": null,
                                     "id": 6,
                                     "input_connections": {
-                                        "alignment": {
+                                        "infile": {
                                             "id": 5,
                                             "output_name": "output"
                                         }
                                     },
                                     "inputs": [],
-                                    "label": null,
-                                    "name": "Replace ambiguous codons",
+                                    "label": "Remove ambiguous sequences",
+                                    "name": "Text reformatting",
                                     "outputs": [
                                         {
-                                            "name": "output",
-                                            "type": "fasta"
-                                        },
-                                        {
-                                            "name": "strike_ambigs_md_report",
-                                            "type": "markdown"
+                                            "name": "outfile",
+                                            "type": "input"
                                         }
                                     ],
                                     "position": {
-                                        "left": 1200,
-                                        "top": 170
+                                        "left": 1203.2700302458857,
+                                        "top": 168.585547085466
                                     },
-                                    "post_job_actions": {},
-                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_strike_ambigs/hyphy_strike_ambigs/2.5.83+galaxy0",
+                                    "post_job_actions": {
+                                        "ChangeDatatypeActionoutfile": {
+                                            "action_arguments": {
+                                                "newtype": "fasta"
+                                            },
+                                            "action_type": "ChangeDatatypeAction",
+                                            "output_name": "outfile"
+                                        }
+                                    },
+                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
                                     "tool_shed_repository": {
-                                        "changeset_revision": "ea698cd7e086",
-                                        "name": "hyphy_strike_ambigs",
-                                        "owner": "iuc",
+                                        "changeset_revision": "ab83aa685821",
+                                        "name": "text_processing",
+                                        "owner": "bgruening",
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
-                                    "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"gencodeid\": \"Universal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                                    "tool_version": "2.5.83+galaxy0",
+                                    "tool_state": "{\"code\": \"function emit(header, seq,    copy, gaps, len) {\\n    if (seq == \\\"\\\") return\\n    copy = seq\\n    gsub(/[-N.]/, \\\"\\\", copy)\\n    len  = length(seq)\\n    gaps = len - length(copy)\\n    if (len && gaps/len <= VAR1) {\\n        print header\\n        print seq\\n    }\\n}\\nBEGIN { header=\\\"\\\"; seq=\\\"\\\" }\\n/^>/ {\\n    emit(header, seq)\\n    header = $0\\n    seq = \\\"\\\"\\n    next\\n}\\n{ seq = seq $0 }\\nEND { emit(header, seq) }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": \"0.5\"}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_version": "9.5+galaxy3",
                                     "type": "tool",
-                                    "uuid": "ab356f8c-0e93-4a4d-a10a-4c648c55efe0",
+                                    "uuid": "ce43a8ff-6411-423f-b282-587292a6fd9f",
                                     "when": null,
                                     "workflow_outputs": []
                                 },
@@ -546,7 +573,7 @@
                                     "input_connections": {
                                         "input_file": {
                                             "id": 6,
-                                            "output_name": "output"
+                                            "output_name": "outfile"
                                         }
                                     },
                                     "inputs": [],
@@ -570,7 +597,7 @@
                                         "owner": "iuc",
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
-                                    "tool_state": "{\"filtering_method\": \"No/No\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_state": "{\"filtering_method\": \"Yes/Yes\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                                     "tool_version": "2.5.93+galaxy2",
                                     "type": "tool",
                                     "uuid": "f5425142-f3d9-4985-8eed-5436424e06af",
@@ -659,7 +686,7 @@
                                 }
                             },
                             "tags": [],
-                            "uuid": "1c6d1a72-383a-49d5-8e27-e2a95d5942aa"
+                            "uuid": "c723ea71-96a9-4264-ac2b-e8779e7dc46c"
                         },
                         "tool_id": null,
                         "type": "subworkflow",
@@ -892,7 +919,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "1b06133a-ecce-44b9-bb71-3b310f6fcce6"
+                "uuid": "d825c758-f443-4909-a390-1c5dc3329ae2"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -973,7 +1000,7 @@
             "workflow_outputs": []
         },
         "7": {
-            "annotation": "",
+            "annotation": "This step makes sure the regex is whitespace-trimmed, blank lines are dropped, and anything outside [0-9A-Za-z_] becomes _ to match HyPhy CLN behavior.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
             "errors": null,
             "id": 7,
@@ -984,7 +1011,7 @@
                 }
             },
             "inputs": [],
-            "label": "Trim Whitespace from RegEx",
+            "label": "Clean RegEx",
             "name": "Text reformatting",
             "outputs": [
                 {
@@ -1004,7 +1031,7 @@
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) print\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "f7fe775a-501d-4fba-96d7-6c457c0e2277",
@@ -1084,7 +1111,7 @@
             },
             "post_job_actions": {},
             "tool_id": "wc_gnu",
-            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"characters\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.0.0",
             "type": "tool",
             "uuid": "aaed3a94-0ffe-4140-9b8f-b7678e3da837",
@@ -1283,12 +1310,12 @@
             "id": 15,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 14,
-                    "output_name": "out_file1"
-                },
-                "style_cond|type_cond|pick_from_1|value": {
                     "id": 3,
                     "output_name": "output"
+                },
+                "style_cond|type_cond|pick_from_1|value": {
+                    "id": 14,
+                    "output_name": "out_file1"
                 }
             },
             "inputs": [],
@@ -1463,12 +1490,24 @@
                 "creator": [
                     {
                         "class": "Person",
+                        "identifier": "0009-0009-3690-8372",
                         "name": "Danielle Callan"
+                    },
+                    {
+                        "class": "Person",
+                        "identifier": "0000-0003-1967-4403",
+                        "name": "Hannah Verdonk"
+                    },
+                    {
+                        "class": "Person",
+                        "identifier": "0000-0003-4817-4029",
+                        "name": "Sergei L. Kosakovsky Pond"
                     }
                 ],
                 "format-version": "0.1",
                 "license": "MIT",
                 "name": "HyPhy: Compare",
+                "readme": "# HyPhy: Compare\n\n## Description\nThis workflow consumes the per-gene codon-aware alignments and IQ-TREE phylogenies produced by the HyPhy preprocessing workflow and compares two branch classes: Foreground branches defined by a user-provided list, and all remaining branches (Reference). It labels each tree with the HyPhy Annotate tool, then runs HyPhy Contrast-FEL (CFEL) and HyPhy RELAX on every gene to quantify site-wise and branch-wise selection differences.\n\n## Inputs\n1. Codon-aware alignments (collection, FASTA). Output of the preprocessing workflow; one alignment per gene.\n2. IQ-TREE phylogenies (collection, Newick). Matching tree collection output from the preprocessing workflow, with identical element identifiers.\n3. Foreground identifiers (dataset). Plain-text list of cleaned sequence names. Any branch whose label matches an entry becomes Foreground; all others become Reference.\n\n## Outputs\n1. Labeled trees (collection, Newick). Trees with {Foreground} or {Reference} tags suitable for downstream HyPhy tools.\n2. HyPhy CFEL results (collection, JSON). Site-level contrast of nonsynonymous vs synonymous rates between the two branch sets.\n3. HyPhy RELAX results (collection, JSON). Gene-level test for relaxation or intensification of selection on the Foreground branches.\n\n## Key Tools\n1. HyPhy Annotate (label-tree) \u2013 Marks Foreground vs Reference branches based on the identifier list.\n2. HyPhy CFEL \u2013 Site-level contrast between branch sets.\n3. HyPhy RELAX \u2013 Tests for relaxed/intensified selection between Foreground and Reference.\n\n## Recommended Use\nConsumes external codon-aware alignments and IQ-TREE phylogenies; it assumes those inputs already meet specific requirements (no internal stops, minimal recombination, matched element IDs). If you generated inputs with the HyPhy preprocessing workflow, all the same caveats apply; otherwise, ensure your own alignments/trees satisfy those constraints before contrasting branches.",
                 "report": {
                     "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                 },
@@ -1489,8 +1528,8 @@
                         "name": "Input dataset collection",
                         "outputs": [],
                         "position": {
-                            "left": 0.0,
-                            "top": 0.0
+                            "left": 0,
+                            "top": 0
                         },
                         "tool_id": null,
                         "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
@@ -1543,8 +1582,8 @@
                         "name": "Input dataset",
                         "outputs": [],
                         "position": {
-                            "left": 146.0996936453068,
-                            "top": 412.66874300494254
+                            "left": 0.64453125,
+                            "top": 417.9296875
                         },
                         "tool_id": null,
                         "tool_state": "{\"optional\": false, \"format\": [\"txt\", \"tabular\"], \"tag\": null}",
@@ -1555,18 +1594,57 @@
                         "workflow_outputs": []
                     },
                     "3": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "errors": null,
+                        "id": 3,
+                        "input_connections": {
+                            "infile": {
+                                "id": 2,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Clean Foreground Sequences List",
+                        "name": "Text reformatting",
+                        "outputs": [
+                            {
+                                "name": "outfile",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 338.5390625,
+                            "top": 418.1484375
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "tool_shed_repository": {
+                            "changeset_revision": "ab83aa685821",
+                            "name": "text_processing",
+                            "owner": "bgruening",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_version": "9.5+galaxy3",
+                        "type": "tool",
+                        "uuid": "0b8654fe-35ff-44ba-ad46-d55cc369ea7b",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "4": {
                         "annotation": "Label foreground branches in the phylogenetic tree",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
                         "errors": null,
-                        "id": 3,
+                        "id": 4,
                         "input_connections": {
                             "input_tree": {
                                 "id": 1,
                                 "output_name": "output"
                             },
                             "selection_method|list_file": {
-                                "id": 2,
-                                "output_name": "output"
+                                "id": 3,
+                                "output_name": "outfile"
                             }
                         },
                         "inputs": [
@@ -1606,19 +1684,19 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "4": {
+                    "5": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
                         "errors": null,
-                        "id": 4,
+                        "id": 5,
                         "input_connections": {
                             "input_tree": {
-                                "id": 3,
+                                "id": 4,
                                 "output_name": "labeled_tree"
                             },
                             "selection_method|list_file": {
-                                "id": 2,
-                                "output_name": "output"
+                                "id": 3,
+                                "output_name": "outfile"
                             }
                         },
                         "inputs": [
@@ -1656,20 +1734,26 @@
                         "type": "tool",
                         "uuid": "c417e72a-16e8-4f99-b451-d83a7f48a561",
                         "when": null,
-                        "workflow_outputs": []
+                        "workflow_outputs": [
+                            {
+                                "label": "labeled_tree",
+                                "output_name": "labeled_tree",
+                                "uuid": "58c97b53-c2cd-4dc3-90eb-f1776e6c6666"
+                            }
+                        ]
                     },
-                    "5": {
+                    "6": {
                         "annotation": "RELAX analysis comparing selection intensity between foreground and background",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.93+galaxy2",
                         "errors": null,
-                        "id": 5,
+                        "id": 6,
                         "input_connections": {
                             "input_type_cond|input_file": {
                                 "id": 0,
                                 "output_name": "output"
                             },
                             "input_type_cond|input_nhx": {
-                                "id": 4,
+                                "id": 5,
                                 "output_name": "labeled_tree"
                             }
                         },
@@ -1720,18 +1804,18 @@
                             }
                         ]
                     },
-                    "6": {
+                    "7": {
                         "annotation": "Contrast-FEL analysis comparing foreground vs background branches",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.93+galaxy2",
                         "errors": null,
-                        "id": 6,
+                        "id": 7,
                         "input_connections": {
                             "input_file": {
                                 "id": 0,
                                 "output_name": "output"
                             },
                             "input_nhx": {
-                                "id": 4,
+                                "id": 5,
                                 "output_name": "labeled_tree"
                             }
                         },
@@ -1775,7 +1859,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "5af05ec0-258f-489b-96fc-0ec8d3dfbc66"
+                "uuid": "f5aadb09-7c07-4481-9f05-3dd06557ee90"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1877,6 +1961,6 @@
         }
     },
     "tags": [],
-    "uuid": "72666197-8a5d-4189-9f06-998cda05a29c",
-    "version": 16
+    "uuid": "47a1c954-b024-462f-bf35-b505d0eb9fc3",
+    "version": 32
 }

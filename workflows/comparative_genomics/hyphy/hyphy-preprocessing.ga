@@ -5,21 +5,24 @@
     "creator": [
         {
             "class": "Person",
+            "identifier": "0009-0009-3690-8372",
             "name": "Danielle Callan"
         },
         {
             "class": "Person",
+            "identifier": "0000-0003-1967-4403",
             "name": "Hannah Verdonk"
         },
         {
             "class": "Person",
+            "identifier": "0000-0003-4817-4029",
             "name": "Sergei L. Kosakovsky Pond"
         }
     ],
     "format-version": "0.1",
     "license": "MIT",
     "name": "HyPhy: Preprocessing ",
-    "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.",
+    "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -245,44 +248,48 @@
         },
         "6": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_strike_ambigs/hyphy_strike_ambigs/2.5.83+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
             "errors": null,
             "id": 6,
             "input_connections": {
-                "alignment": {
+                "infile": {
                     "id": 5,
                     "output_name": "output"
                 }
             },
             "inputs": [],
-            "label": null,
-            "name": "Replace ambiguous codons",
+            "label": "Remove ambiguous sequences",
+            "name": "Text reformatting",
             "outputs": [
                 {
-                    "name": "output",
-                    "type": "fasta"
-                },
-                {
-                    "name": "strike_ambigs_md_report",
-                    "type": "markdown"
+                    "name": "outfile",
+                    "type": "input"
                 }
             ],
             "position": {
-                "left": 1200,
-                "top": 170
+                "left": 1203.2700302458857,
+                "top": 168.585547085466
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_strike_ambigs/hyphy_strike_ambigs/2.5.83+galaxy0",
+            "post_job_actions": {
+                "ChangeDatatypeActionoutfile": {
+                    "action_arguments": {
+                        "newtype": "fasta"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
             "tool_shed_repository": {
-                "changeset_revision": "ea698cd7e086",
-                "name": "hyphy_strike_ambigs",
-                "owner": "iuc",
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"gencodeid\": \"Universal\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "2.5.83+galaxy0",
+            "tool_state": "{\"code\": \"function emit(header, seq,    copy, gaps, len) {\\n    if (seq == \\\"\\\") return\\n    copy = seq\\n    gsub(/[-N.]/, \\\"\\\", copy)\\n    len  = length(seq)\\n    gaps = len - length(copy)\\n    if (len && gaps/len <= VAR1) {\\n        print header\\n        print seq\\n    }\\n}\\nBEGIN { header=\\\"\\\"; seq=\\\"\\\" }\\n/^>/ {\\n    emit(header, seq)\\n    header = $0\\n    seq = \\\"\\\"\\n    next\\n}\\n{ seq = seq $0 }\\nEND { emit(header, seq) }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": \"0.5\"}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "9.5+galaxy3",
             "type": "tool",
-            "uuid": "ab356f8c-0e93-4a4d-a10a-4c648c55efe0",
+            "uuid": "ce43a8ff-6411-423f-b282-587292a6fd9f",
             "when": null,
             "workflow_outputs": []
         },
@@ -294,7 +301,7 @@
             "input_connections": {
                 "input_file": {
                     "id": 6,
-                    "output_name": "output"
+                    "output_name": "outfile"
                 }
             },
             "inputs": [],
@@ -318,7 +325,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"filtering_method\": \"No/No\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"filtering_method\": \"Yes/Yes\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "2.5.93+galaxy2",
             "type": "tool",
             "uuid": "f5425142-f3d9-4985-8eed-5436424e06af",
@@ -407,6 +414,6 @@
         }
     },
     "tags": [],
-    "uuid": "7ac112ca-6c1f-4848-8ec0-940c832a1d0d",
-    "version": 8
+    "uuid": "c723ea71-96a9-4264-ac2b-e8779e7dc46c",
+    "version": 13
 }
