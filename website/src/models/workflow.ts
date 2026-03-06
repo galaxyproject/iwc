@@ -49,6 +49,7 @@ export interface Workflow {
     diagram_svg?: string;
     trsID: string;
     iwcID: string;
+    repoPath: string;
     categories: string[];
     collections: string[];
     doi?: string;

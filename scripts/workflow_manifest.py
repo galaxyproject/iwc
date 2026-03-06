@@ -184,6 +184,7 @@ def find_and_load_compliant_workflows(directory):
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
                 workflow["iwcID"] = create_safe_identifier(trsID)
+                workflow["repoPath"] = root
 
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
