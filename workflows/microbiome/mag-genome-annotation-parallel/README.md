@@ -1,6 +1,7 @@
 # MAG Genome Annotation Parallel
 
-This workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs).
+This workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs). Annotation is performed using Bakta, Integron Finder, PlasmidFinder, and ISEScan, with Bakta being optional. Bakta provides general annotation of bacterial genomes by predicting genes, coding sequences, and RNAs. Integron Finder detects integrons and their structural components, including integrases, attC recombination sites, and gene cassettes. PlasmidFinder identifies plasmid replicon sequences to determine whether contigs originate from plasmids and to classify plasmid types. ISEScan detects insertion sequences (IS elements), which are small transposable elements that can mediate genome rearrangements and facilitate horizontal gene transfer. 
+The workflow is targeted torwards prokarytoic genomes, annotations for archaea will likely miss genomic features.
 It processes multiple genome assemblies simultaneously and produces standardized annotation outputs, summary tables, and integrated quality reports.
 
 ## Workflow Logic
