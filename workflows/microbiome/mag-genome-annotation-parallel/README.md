@@ -12,6 +12,38 @@ The core logic includes:
 
 - Parallel processing of all input MAGs
 - Automated annotation per genome
+  - **Bakta:**
+    - Annotated genome files (e.g., GFF3, GenBank)
+    - Predicted coding sequences (CDS)
+    - tRNA annotations
+    - rRNA annotations
+    - tmRNA annotations
+    - Other ncRNA annotations and regions
+    - Pseudogene annotations
+    - sORF annotations
+    - CRISPR array annotations
+    - Genome gap detection
+    - Origin of replication (oriC/oriT) annotation
+
+  - **Integron Finder:**
+    - Detected integrons and integrase genes
+    - attC recombination sites
+    - Gene cassette annotations
+    - Tables detailing positions, sequences, and potential antibiotic resistance genes
+    - Visualizations of integron structure and gene cassette organization
+
+  - **PlasmidFinder:**
+    - Identified plasmid replicon sequences
+    - Plasmid type classification for contigs
+    - Tabular files with detected plasmids, replicon families, sequence coverage, and confidence scores
+    - Summary statistics of plasmid content per genome or assembly
+
+  - **ISEScan:**
+    - Detected insertion sequences (IS elements)
+    - Locations, family and subgroup annotations
+    - Predicted transposase genes
+    - Summary tables of IS element distribution
+    - Visualizations showing IS density or genomic context relative to coding sequences
 - Standardization of annotation formats
 - Merging and collapsing results across samples/genomes
 
