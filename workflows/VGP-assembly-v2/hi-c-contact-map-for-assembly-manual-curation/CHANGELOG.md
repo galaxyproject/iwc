@@ -6,7 +6,11 @@
 
 ### Changed
 - The gene tracks generation can now be skipped (Useful for large genomes running out of memory)
-- Replace MarkDuplicates with Samtools markdup.
+- Added option to generate high resolution Hi-C Pretext maps
+- Replace MarkDuplicates with Samtools markdup
+- Consolidated individual Compleasm outputs (hap1/hap2 Busco/Miniprot, Merged Compleasm Gffs) into a single "Compleasm Genes track" output
+- Renamed Hi-C and Pairtools outputs to clarify they are computed on scaffolds
+- Added new outputs: Precuration Hi-C alignments, Pairtools stats on scaffolds, Trimmed Hi-C data, HiFi reads trimming outputs
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`

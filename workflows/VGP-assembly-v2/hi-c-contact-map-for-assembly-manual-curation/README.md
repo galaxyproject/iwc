@@ -47,9 +47,13 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 18. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)
 19. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)
 
+### Hi-C Map Resolution
+
+20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)
+
 ### Visualization Options
 
-20. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)
+21. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)
 
 ## Outputs
 
@@ -65,37 +69,42 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 
 ### Hi-C Alignment Outputs
 
-5. **Merged Hi-C Alignments** [BAM] - Combined Hi-C read alignments
+5. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments
 6. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering
 7. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)
-8. **Hi-C duplication stats** [tabular] - Samtools markdup statistics (if duplicate removal enabled)
-9. **Hi-C duplication stats: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)
-10. **Hi-C duplication stats: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)
-11. **Pairtools Multiqc Stats** [tabular] - Pairtools statistics
-12. **Pairtools Multiqc: Plots** [HTML] - Pairtools MultiQC plots
+8. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)
+9. **Hi-C duplication stats on Scaffolds: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)
+10. **Hi-C duplication stats on Scaffolds: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)
+11. **Pairtools Multiqc Stats on Scaffolds** [tabular] - Pairtools statistics
+12. **Pairtools MultiQc on Scaffolds: Plots** [HTML] - Pairtools MultiQC plots
+
+### PacBio Processing Outputs
+
+13. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)
+14. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)
 
 ### PacBio Coverage Outputs
 
-13. **BigWig Coverage** [bigwig] - PacBio read coverage track
-14. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage
-15. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments
+15. **BigWig Coverage** [bigwig] - PacBio read coverage track
+16. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage
+17. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments
 
 ### Telomere Outputs
 
-16. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope
-17. **terminal telomeres** [bedgraph] - All detected telomeric regions
-18. **P telomeres bed** [BED] - P-arm (5') telomeres only
-19. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only
+18. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope
+19. **terminal telomeres** [bedgraph] - All detected telomeric regions
+20. **P telomeres bed** [BED] - P-arm (5') telomeres only
+21. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only
 
 ### Gap Outputs
 
-20. **Gaps Bed** [BED] - Assembly gap coordinates
-21. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext
+22. **Gaps Bed** [BED] - Assembly gap coordinates
+23. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext
 
 ### Assembly Haplotype Outputs
 
-22. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied
-23. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied
+24. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied
+25. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied
 
 ### Pretext Map Outputs
 
@@ -103,10 +112,10 @@ All Pretext outputs are generated in two versions:
 - **With MAPQ filtering** (default MAPQ ≥ 10): Cleaner maps with high-confidence contacts
 - **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments
 
-24. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)
-25. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)
-26. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)
-27. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)
+26. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)
+27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)
+28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)
+29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)
 
 ## Usage Notes
 
