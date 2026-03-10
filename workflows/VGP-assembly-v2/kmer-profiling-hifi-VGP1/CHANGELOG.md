@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.8] - 2026-01-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.2.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_heatmap2/ggplot2_heatmap2/3.3.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.7+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.8+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.7+galaxy7` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.8+galaxy0`
+
 ## [0.7] - 2025-11-10
 
 ### Automatic update
