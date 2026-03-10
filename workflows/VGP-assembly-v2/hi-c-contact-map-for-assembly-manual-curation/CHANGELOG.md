@@ -1,6 +1,12 @@
 # Changelog
 
-## [2.1] - 2026-03-02
+
+
+## [2.1] - 2026-03-10
+
+### Changed
+- The gene tracks generation can now be skipped (Useful for large genomes running out of memory)
+- Replace MarkDuplicates with Samtools markdup.
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`
