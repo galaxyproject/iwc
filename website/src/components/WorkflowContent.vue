@@ -388,7 +388,7 @@ onMounted(() => {
                     </li>
                     <li>
                         <strong class="text-ebony-clay-900">GitHub: </strong>
-                        <a :href="githubWorkflowUrl" target="_blank" class="text-bay-of-many-700 hover:underline">
+                        <a :href="githubWorkflowUrl" target="_blank" class="text-bay-of-many-700 hover:underline break-all">
                             {{ githubWorkflowUrl }} ↗
                         </a>
                     </li>
