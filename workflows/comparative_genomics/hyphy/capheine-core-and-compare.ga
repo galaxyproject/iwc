@@ -22,7 +22,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "CAPHEINE: Combined HyPhy Core and Compare",
-    "readme": "# CAPHEINE: Combined HyPhy Core & Compare Workflow\n\n## Description\nCAPHEINE orchestrates an evolutionary discovery and analysis pipeline: it runs the core codon-aware preprocessing (fasta cleanup, cawlign, IQ-TREE) and HyPhy analyses (FEL, MEME, PRIME, BUSTED). When configured, CAPHEINE also runs the branch-comparison module (label-tree + Contrast-FEL + RELAX). The workflow is inspired by the Nextflow implementation at [veg/capheine](https://github.com/veg/capheine).\n\n## Inputs\n1. Assemblies (list collection of FASTA). Unaligned coding sequences, one per sample.\n2. Reference CDS FASTA. Multi-gene CDS file (e.g. from NCBI).\n3. Foreground ID list (optional dataset). Sequence identifiers, one per line; used to tag branches as Foreground vs Reference.\n4. Foreground regex (optional text). Applied to the sequence identifiers to build the Foreground list automatically.\n\n### Behavior:\nIf neither the list nor regex is supplied \u2192 run only the Core portion.\nIf a regex is supplied \u2192 derive the Foreground set from matches and run Compare.\nIf only a list is supplied \u2192 use it directly for Compare.\nIf both are supplied \u2192 the regex is applied and the explicit list is ignored.\n\n## Outputs\n\n### From the Core (always produced):\n1. Codon-aware alignments (collection, FASTA) \u2013 cawlign output.\n2. Gene trees (collection, Newick) \u2013 IQ-TREE output.\n3. HyPhy MEME results (collection, JSON).\n4. HyPhy PRIME results (collection, JSON).\n5. HyPhy BUSTED results (collection, JSON).\n6. HyPhy FEL results (collection, JSON).\n\n### From the Compare module (only when Foreground info is provided):\n1. Labeled trees (collection, Newick) \u2013 HyPhy Annotate marking {Foreground} vs {Reference}.\n2. HyPhy CFEL results (collection, JSON) \u2013 site-level comparison.\n3. HyPhy RELAX results (collection, JSON) \u2013 test for relaxed/intensified selection.\n\n## Recommended Use\nMirrors the HyPhy Core workflow\u2019s preprocessing/analysis behavior with optional branch-comparison modules layered on top. It inherits the same limitations: reliable today for most viral datasets, but internal stop codons or recombination can cause outright failures or misleading FEL/MEME/BUSTED/PRIME/CFEL/RELAX calls, so be wary when pushing bacterial or eukaryotic genes through it.\n\n## Reference & Inspiration\nThis Galaxy workflow mirrors the logic of the [CAPHEINE Nextflow implementation](https://github.com/veg/capheine), version 1.1.0; refer there for additional background on the methodology.",
+    "readme": "# CAPHEINE: Combined HyPhy Core & Compare Workflow\n\n## Description\nCAPHEINE orchestrates an evolutionary discovery and analysis pipeline: it runs the core codon-aware preprocessing (fasta cleanup, cawlign, IQ-TREE) and HyPhy analyses (FEL, MEME, PRIME, BUSTED). When configured, CAPHEINE also runs the branch-comparison module (label-tree + Contrast-FEL + RELAX). The workflow is inspired by the Nextflow implementation at [veg/capheine](https://github.com/veg/capheine).\n\n## Inputs\n1. Assemblies (list collection of FASTA). Unaligned coding sequences, one per sample.\n2. Reference CDS FASTA. Multi-gene CDS file (e.g. from NCBI).\n3. Foreground ID list (optional dataset). Sequence identifiers, one per line; used to tag branches as Foreground vs Reference.\n4. Foreground regex (optional text). Applied to the sequence identifiers to build the Foreground list automatically.\n\n### Behavior:\nIf neither the list nor regex is supplied → run only the Core portion.\nIf a regex is supplied → derive the Foreground set from matches and run Compare.\nIf only a list is supplied → use it directly for Compare.\nIf both are supplied → the regex is applied and the explicit list is ignored.\n\n## Outputs\n\n### From the Core (always produced):\n1. Codon-aware alignments (collection, FASTA) – cawlign output.\n2. Gene trees (collection, Newick) – IQ-TREE output.\n3. HyPhy MEME results (collection, JSON).\n4. HyPhy PRIME results (collection, JSON).\n5. HyPhy BUSTED results (collection, JSON).\n6. HyPhy FEL results (collection, JSON).\n\n### From the Compare module (only when Foreground info is provided):\n1. Labeled trees (collection, Newick) – HyPhy Annotate marking {Foreground} vs {Reference}.\n2. HyPhy CFEL results (collection, JSON) – site-level comparison.\n3. HyPhy RELAX results (collection, JSON) – test for relaxed/intensified selection.\n\n## Recommended Use\nMirrors the HyPhy Core workflow’s preprocessing/analysis behavior with optional branch-comparison modules layered on top. It inherits the same limitations: reliable today for most viral datasets, but internal stop codons or recombination can cause outright failures or misleading FEL/MEME/BUSTED/PRIME/CFEL/RELAX calls, so be wary when pushing bacterial or eukaryotic genes through it.\n\n## Reference & Inspiration\nThis Galaxy workflow mirrors the logic of the [CAPHEINE Nextflow implementation](https://github.com/veg/capheine), version 1.1.0; refer there for additional background on the methodology.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -35,7 +35,7 @@
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "",
+                    "description": "reference cds",
                     "name": "reference cds"
                 }
             ],
@@ -62,7 +62,7 @@
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "",
+                    "description": "unaligned sequences",
                     "name": "unaligned sequences"
                 }
             ],
@@ -74,7 +74,7 @@
                 "top": 129.23970968710933
             },
             "tool_id": null,
-            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
             "tool_version": null,
             "type": "data_collection_input",
             "uuid": "bc274029-0e45-4df0-866f-b7c3aef39f81",
@@ -188,7 +188,7 @@
                 "format-version": "0.1",
                 "license": "MIT",
                 "name": "HyPhy: Core",
-                "readme": "# HyPhy: Core\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a multi-gene reference CDS FASTA, invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods\u2014MEME, PRIME, BUSTED, and FEL\u2014on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA  (downloadable directly from NCBI RefSeq/GenBank).\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) \u2013 Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) \u2013 Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) \u2013 One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) \u2013 One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) \u2013 One JSON per gene.\n6. HyPhy FEL results (collection, JSON) \u2013 One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.\n\n## Recommended Use\nBest suited for viral CDS panels where codon-aware alignment and tree building succeed cleanly. Genes containing internal stop codons or ongoing recombination will either produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+                "readme": "# HyPhy: Core\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a multi-gene reference CDS FASTA, invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods—MEME, PRIME, BUSTED, and FEL—on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA  (downloadable directly from NCBI RefSeq/GenBank).\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) – Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) – Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) – One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) – One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) – One JSON per gene.\n6. HyPhy FEL results (collection, JSON) – One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.\n\n## Recommended Use\nBest suited for viral CDS panels where codon-aware alignment and tree building succeed cleanly. Genes containing internal stop codons or ongoing recombination will either produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
                 "report": {
                     "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                 },
@@ -240,7 +240,7 @@
                             "top": 410
                         },
                         "tool_id": null,
-                        "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+                        "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
                         "uuid": "4d8cca43-9b73-4489-b97e-6321efc70bf2",
@@ -294,7 +294,7 @@
                             "format-version": "0.1",
                             "license": "MIT",
                             "name": "HyPhy: Preprocessing ",
-                            "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+                            "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign – codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE – maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
                             "report": {
                                 "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                             },
@@ -346,7 +346,7 @@
                                         "top": 0
                                     },
                                     "tool_id": null,
-                                    "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+                                    "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                                     "tool_version": null,
                                     "type": "data_collection_input",
                                     "uuid": "52042239-85e4-40f5-ae53-bdd13ac50618",
@@ -386,6 +386,7 @@
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"genetic_code\": \"1\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"no_check_internal\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_uuid": null,
                                     "tool_version": "1.0.0+galaxy0",
                                     "type": "tool",
                                     "uuid": "0c84c0dd-abe7-44a7-bd8b-e44b6b847610",
@@ -425,6 +426,7 @@
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_uuid": null,
                                     "tool_version": "5.1.0",
                                     "type": "tool",
                                     "uuid": "a46ed440-a63d-4eaa-bf55-3f73eede2916",
@@ -464,6 +466,7 @@
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"O\": {\"split_type\": \"byname\", \"__current_case__\": 3}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_uuid": null,
                                     "tool_version": "482",
                                     "type": "tool",
                                     "uuid": "a3ab5888-1950-46a1-828c-462facc66050",
@@ -472,7 +475,7 @@
                                 },
                                 "5": {
                                     "annotation": "",
-                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.14+galaxy0",
+                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
                                     "errors": null,
                                     "id": 5,
                                     "input_connections": {
@@ -504,15 +507,16 @@
                                         "top": 170
                                     },
                                     "post_job_actions": {},
-                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.14+galaxy0",
+                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
                                     "tool_shed_repository": {
-                                        "changeset_revision": "31df46f4274e",
+                                        "changeset_revision": "1cd8a25117c1",
                                         "name": "cawlign",
                                         "owner": "iuc",
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"affine_gap\": false, \"fasta\": {\"__class__\": \"ConnectedValue\"}, \"format\": \"refmap\", \"local_alignment\": \"trim\", \"reference_cond\": {\"reference_source\": \"history\", \"__current_case__\": 1, \"reference_history\": {\"__class__\": \"ConnectedValue\"}}, \"reverse_complement\": \"none\", \"scoring_matrix_cond\": {\"datatype\": \"codon\", \"__current_case__\": 0, \"scoring_matrix_source\": {\"matrix_source\": \"builtin\", \"__current_case__\": 0, \"scoring_matrix\": \"BLOSUM62\"}}, \"write_reference\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                                    "tool_version": "0.1.14+galaxy0",
+                                    "tool_uuid": null,
+                                    "tool_version": "0.1.15+galaxy0",
                                     "type": "tool",
                                     "uuid": "dcfe4e2c-e5a1-4df3-a93d-1417765775b4",
                                     "when": null,
@@ -559,6 +563,7 @@
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"code\": \"function emit(header, seq,    copy, gaps, len) {\\n    if (seq == \\\"\\\") return\\n    copy = seq\\n    gsub(/[-N.]/, \\\"\\\", copy)\\n    len  = length(seq)\\n    gaps = len - length(copy)\\n    if (len && gaps/len <= VAR1) {\\n        print header\\n        print seq\\n    }\\n}\\nBEGIN { header=\\\"\\\"; seq=\\\"\\\" }\\n/^>/ {\\n    emit(header, seq)\\n    header = $0\\n    seq = \\\"\\\"\\n    next\\n}\\n{ seq = seq $0 }\\nEND { emit(header, seq) }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": \"0.5\"}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_uuid": null,
                                     "tool_version": "9.5+galaxy3",
                                     "type": "tool",
                                     "uuid": "ce43a8ff-6411-423f-b282-587292a6fd9f",
@@ -567,7 +572,7 @@
                                 },
                                 "7": {
                                     "annotation": "",
-                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.93+galaxy2",
+                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
                                     "errors": null,
                                     "id": 7,
                                     "input_connections": {
@@ -590,15 +595,16 @@
                                         "top": 170
                                     },
                                     "post_job_actions": {},
-                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.93+galaxy2",
+                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
                                     "tool_shed_repository": {
-                                        "changeset_revision": "7381d4442b23",
+                                        "changeset_revision": "bf1ca3de3a76",
                                         "name": "hyphy_cln",
                                         "owner": "iuc",
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"filtering_method\": \"Yes/Yes\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                                    "tool_version": "2.5.93+galaxy2",
+                                    "tool_uuid": null,
+                                    "tool_version": "2.5.96+galaxy0",
                                     "type": "tool",
                                     "uuid": "f5425142-f3d9-4985-8eed-5436424e06af",
                                     "when": null,
@@ -672,6 +678,7 @@
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"bootstrap_parameters\": {\"ultrafast_bootstrap\": {\"ufboot\": null, \"ufjack\": null, \"jack_prop\": null, \"boot_trees\": false, \"wbtl\": false, \"nmax\": \"1000\", \"bcor\": \"0.99\", \"nstep\": \"100\", \"beps\": \"0.5\", \"sampling\": null, \"bnni\": false}, \"nonparametric_bootstrap\": {\"boot\": null, \"jack\": null, \"jack_prop\": null, \"bcon\": null, \"bonly\": null, \"tbe\": false}}, \"general_options\": {\"s\": {\"__class__\": \"ConnectedValue\"}, \"o\": null, \"short_alignments\": false, \"seqtype\": \"DNA\", \"t\": {\"__class__\": \"RuntimeValue\"}, \"seed\": null, \"keep_ident\": false, \"epsilon\": null, \"safe\": false}, \"likelihood_mapping\": {\"lmap\": null, \"lmclust\": {\"__class__\": \"RuntimeValue\"}, \"quartetlh\": false}, \"miscellaneous_options\": {\"fconst\": null, \"blmin\": null, \"blmax\": null}, \"modelling_parameters\": {\"automatic_model\": {\"cond_model\": {\"opt_custommodel\": \"true\", \"__current_case__\": 0, \"m\": null}, \"merge_strategy\": {\"merge\": \"none\", \"__current_case__\": 0}, \"mset\": null, \"msub\": \"nuclear\", \"mfreq\": null, \"mrate\": null, \"cmin\": \"2\", \"cmax\": \"10\", \"merit\": \"AIC\", \"mtree\": false, \"madd\": null, \"mdef\": {\"__class__\": \"RuntimeValue\"}, \"modelomatic\": false}, \"specifying_substitution\": {\"mix_opt\": false}, \"rate_heterogeneity\": {\"alpha_min\": null, \"gamma_median\": false, \"i\": null, \"opt_gamma_inv\": false, \"rate\": false, \"mlrate\": false}, \"partition_model\": {\"model_selection\": {\"model\": \"none\", \"__current_case__\": 0}}, \"site_specific_frequency\": {\"tree_freq\": {\"__class__\": \"RuntimeValue\"}, \"site_freq\": null, \"freq_max\": false}}, \"time_tree\": {\"date_source\": {\"select_source\": \"none\", \"__current_case__\": 0}, \"date_tip\": null, \"date_root\": null, \"date_ci\": null, \"clock_sd\": null, \"date_no_outgroup\": false, \"date_outlier\": null, \"date_options\": null}, \"tree_parameters\": {\"tree_search\": {\"n\": null, \"ninit\": \"100\", \"ntop\": \"20\", \"nbest\": \"5\", \"nstop\": \"100\", \"radius\": \"6\", \"perturb\": \"0.5\", \"allnni\": false, \"tree_fix\": false, \"g\": {\"__class__\": \"RuntimeValue\"}, \"fast\": false, \"polytomy\": false, \"treels\": false, \"show_lh\": false, \"terrace\": false}, \"single_branch\": {\"alrt\": null, \"abayes\": false, \"lbp\": null}, \"tree_topology\": {\"trees\": {\"__class__\": \"RuntimeValue\"}, \"test\": null, \"test_weight\": false, \"test_au\": false}, \"constructing_consensus\": {\"contree\": false, \"connet\": false, \"sup_min\": \"0.0\", \"burnin\": null, \"support\": {\"__class__\": \"RuntimeValue\"}, \"suptag\": null}, \"computing_robinson_foulds\": {\"tree_dist_all\": false, \"tree_dist\": {\"__class__\": \"RuntimeValue\"}, \"tree_dist2\": {\"__class__\": \"RuntimeValue\"}}, \"generating_random\": {\"r\": null, \"rand\": null, \"branch_min\": null, \"branch_mean\": null, \"branch_max\": null}, \"ancestral_state\": {\"ancestral\": false, \"asr_min\": null}, \"symmetry_test\": {\"symtest\": false, \"symtest_remove_bad\": false, \"symtest_remove_good\": false, \"symtest_type\": null, \"symtest_pval\": null, \"symtest_keep_zero\": false}, \"concordance_factor\": {\"gcf\": {\"__class__\": \"RuntimeValue\"}, \"df_tree\": false, \"scf\": null, \"cf_verbose\": false, \"cf_quartet\": false}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                                    "tool_uuid": null,
                                     "tool_version": "2.4.0+galaxy1",
                                     "type": "tool",
                                     "uuid": "ac7542a5-1352-4699-a54c-bef15be8ede0",
@@ -686,7 +693,7 @@
                                 }
                             },
                             "tags": [],
-                            "uuid": "c723ea71-96a9-4264-ac2b-e8779e7dc46c"
+                            "uuid": "17e07d94-656d-4f77-8a87-a4386ce80cf8"
                         },
                         "tool_id": null,
                         "type": "subworkflow",
@@ -707,7 +714,7 @@
                     },
                     "3": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_meme/hyphy_meme/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_meme/hyphy_meme/2.5.96+galaxy0",
                         "errors": null,
                         "id": 3,
                         "input_connections": {
@@ -738,15 +745,16 @@
                             "top": 0
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_meme/hyphy_meme/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_meme/hyphy_meme/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "6e7f144046c0",
+                            "changeset_revision": "67fe4f52c1e5",
                             "name": "hyphy_meme",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_options\": {\"resample\": \"0\", \"rates\": \"2\", \"multiple_hits_conditional\": {\"multiple_hits\": \"None\", \"__current_case__\": 2}, \"impute_states\": false, \"precision\": \"standard\", \"kill_zero_lengths\": \"Yes\", \"restrict_sites_conditional\": {\"restrict_sites_flag\": \"false\", \"__current_case__\": 1}, \"full_model\": true}, \"branch_cond\": {\"branch_sel\": \"All\", \"__current_case__\": 1}, \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"p_value\": \"0.1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "6f8f074d-235f-457d-80b0-54042395f93d",
                         "when": null,
@@ -760,7 +768,7 @@
                     },
                     "4": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_prime/hyphy_prime/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_prime/hyphy_prime/2.5.96+galaxy0",
                         "errors": null,
                         "id": 4,
                         "input_connections": {
@@ -791,15 +799,16 @@
                             "top": 290
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_prime/hyphy_prime/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_prime/hyphy_prime/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "987b688257a0",
+                            "changeset_revision": "3791d6afec1e",
                             "name": "hyphy_prime",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_options\": {\"impute_states\": false, \"save_intermediate\": \"false\", \"kill_zero_lengths\": \"Yes\"}, \"branch_cond\": {\"branch_sel\": \"All\", \"__current_case__\": 1}, \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"p_value\": \"0.1\", \"prop_source\": {\"prop_source_type\": \"builtin\", \"__current_case__\": 0, \"prop_set\": \"Atchley\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "3e0fca26-4846-4cc0-91aa-ae407de5783b",
                         "when": null,
@@ -813,7 +822,7 @@
                     },
                     "5": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_busted/hyphy_busted/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_busted/hyphy_busted/2.5.96+galaxy0",
                         "errors": null,
                         "id": 5,
                         "input_connections": {
@@ -844,15 +853,16 @@
                             "top": 580
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_busted/hyphy_busted/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_busted/hyphy_busted/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ff8b64ab5bf7",
+                            "changeset_revision": "38ac249e5d69",
                             "name": "hyphy_busted",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_options\": {\"syn_rates\": \"3\", \"rates\": \"3\", \"grid_size\": \"250\", \"starting_points\": \"1\", \"multiple_hits\": \"None\", \"error_sink\": true, \"save_alternative_model\": false, \"mss\": {\"enabled\": \"false\", \"__current_case__\": 0}, \"kill_zero_lengths\": \"Yes\"}, \"branch_cond\": {\"branch_sel\": \"All\", \"__current_case__\": 1}, \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "866649f3-afed-40a6-8566-22d2cbfcab63",
                         "when": null,
@@ -866,7 +876,7 @@
                     },
                     "6": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_fel/hyphy_fel/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_fel/hyphy_fel/2.5.96+galaxy0",
                         "errors": null,
                         "id": 6,
                         "input_connections": {
@@ -897,15 +907,16 @@
                             "top": 870
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_fel/hyphy_fel/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_fel/hyphy_fel/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "481704c36d6d",
+                            "changeset_revision": "b156ae1424fe",
                             "name": "hyphy_fel",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_options\": {\"include_srv\": \"Yes\", \"multiple_hits_conditional\": {\"multiple_hits\": \"None\", \"__current_case__\": 2}, \"ci\": false, \"resample\": \"0\", \"restrict_sites_conditional\": {\"restrict_sites_flag\": \"false\", \"__current_case__\": 1}, \"precision\": \"standard\", \"kill_zero_lengths\": \"Yes\", \"full_model\": true}, \"branch_cond\": {\"branch_sel\": \"All\", \"__current_case__\": 1}, \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"p_value\": \"0.1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "7f6b5554-8d82-4dfb-825c-a6510c58e139",
                         "when": null,
@@ -919,7 +930,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "d825c758-f443-4909-a390-1c5dc3329ae2"
+                "uuid": "d9ff8d46-05c5-4ba5-ab44-fbace76bc5b2"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -960,6 +971,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": {\"__class__\": \"ConnectedValue\"}, \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "fa7d8ad9-4e5f-412c-b793-daa41a0eca0c",
@@ -993,6 +1005,7 @@
             "post_job_actions": {},
             "tool_id": "Grep1",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"invert\": \"\", \"keep_header\": false, \"pattern\": \"^>\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "1.0.4",
             "type": "tool",
             "uuid": "a04b890d-dd57-4fe5-856f-971a5f12a635",
@@ -1032,6 +1045,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "f7fe775a-501d-4fba-96d7-6c457c0e2277",
@@ -1079,6 +1093,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "5.1.0",
             "type": "tool",
             "uuid": "9f4e133f-8fd5-4655-8247-da436afe97b3",
@@ -1112,6 +1127,7 @@
             "post_job_actions": {},
             "tool_id": "wc_gnu",
             "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"characters\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
             "uuid": "aaed3a94-0ffe-4140-9b8f-b7678e3da837",
@@ -1151,6 +1167,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"adv_opts\": {\"adv_opts_selector\": \"basic\", \"__current_case__\": 0}, \"header\": \"0\", \"ignore_case\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"is_numeric\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "47f100db-0ce8-4a71-9f67-897eebbb769a",
@@ -1190,6 +1207,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"{\\n    if ($1 == 0) {\\n        print \\\"false\\\"\\n    } else if ($1 > 0) {\\n        print \\\"true\\\"\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "1c16bda9-5b95-4c97-984d-6f3561b91969",
@@ -1223,6 +1241,7 @@
             "post_job_actions": {},
             "tool_id": "trimmer",
             "tool_state": "{\"col\": \"0\", \"end\": \"0\", \"fastq\": \"\", \"ignore\": null, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"start\": \"2\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "0.0.2",
             "type": "tool",
             "uuid": "9f03bd24-ed2f-469a-bee6-b9268d292e95",
@@ -1256,6 +1275,7 @@
             "post_job_actions": {},
             "tool_id": "param_value_from_file",
             "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"boolean\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "0.1.0",
             "type": "tool",
             "uuid": "32e4ac52-79d7-4d90-a88a-88e4303db3f9",
@@ -1297,6 +1317,7 @@
             "post_job_actions": {},
             "tool_id": "Grep1",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"invert\": \"\", \"keep_header\": false, \"pattern\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "1.0.4",
             "type": "tool",
             "uuid": "8f414a32-46b6-45eb-9b55-4697e6e6ebbc",
@@ -1340,6 +1361,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
             "uuid": "1689d6a3-ab40-4f51-b01d-06a883bf3730",
@@ -1373,6 +1395,7 @@
             "post_job_actions": {},
             "tool_id": "wc_gnu",
             "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
             "uuid": "04d10335-5c28-46be-bf73-1daf479e00a5",
@@ -1412,6 +1435,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"{\\n    if ($1 == 0) {\\n        print \\\"false\\\"\\n    } else if ($1 > 0) {\\n        print \\\"true\\\"\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "0fb43a3f-567f-46b0-bf79-3108a3f2106f",
@@ -1445,6 +1469,7 @@
             "post_job_actions": {},
             "tool_id": "param_value_from_file",
             "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"boolean\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "0.1.0",
             "type": "tool",
             "uuid": "873b1efc-76cf-4a69-b8cc-9346e6b46614",
@@ -1507,7 +1532,7 @@
                 "format-version": "0.1",
                 "license": "MIT",
                 "name": "HyPhy: Compare",
-                "readme": "# HyPhy: Compare\n\n## Description\nThis workflow consumes the per-gene codon-aware alignments and IQ-TREE phylogenies produced by the HyPhy preprocessing workflow and compares two branch classes: Foreground branches defined by a user-provided list, and all remaining branches (Reference). It labels each tree with the HyPhy Annotate tool, then runs HyPhy Contrast-FEL (CFEL) and HyPhy RELAX on every gene to quantify site-wise and branch-wise selection differences.\n\n## Inputs\n1. Codon-aware alignments (collection, FASTA). Output of the preprocessing workflow; one alignment per gene.\n2. IQ-TREE phylogenies (collection, Newick). Matching tree collection output from the preprocessing workflow, with identical element identifiers.\n3. Foreground identifiers (dataset). Plain-text list of cleaned sequence names. Any branch whose label matches an entry becomes Foreground; all others become Reference.\n\n## Outputs\n1. Labeled trees (collection, Newick). Trees with {Foreground} or {Reference} tags suitable for downstream HyPhy tools.\n2. HyPhy CFEL results (collection, JSON). Site-level contrast of nonsynonymous vs synonymous rates between the two branch sets.\n3. HyPhy RELAX results (collection, JSON). Gene-level test for relaxation or intensification of selection on the Foreground branches.\n\n## Key Tools\n1. HyPhy Annotate (label-tree) \u2013 Marks Foreground vs Reference branches based on the identifier list.\n2. HyPhy CFEL \u2013 Site-level contrast between branch sets.\n3. HyPhy RELAX \u2013 Tests for relaxed/intensified selection between Foreground and Reference.\n\n## Recommended Use\nConsumes external codon-aware alignments and IQ-TREE phylogenies; it assumes those inputs already meet specific requirements (no internal stops, minimal recombination, matched element IDs). If you generated inputs with the HyPhy preprocessing workflow, all the same caveats apply; otherwise, ensure your own alignments/trees satisfy those constraints before contrasting branches.",
+                "readme": "# HyPhy: Compare\n\n## Description\nThis workflow consumes the per-gene codon-aware alignments and IQ-TREE phylogenies produced by the HyPhy preprocessing workflow and compares two branch classes: Foreground branches defined by a user-provided list, and all remaining branches (Reference). It labels each tree with the HyPhy Annotate tool, then runs HyPhy Contrast-FEL (CFEL) and HyPhy RELAX on every gene to quantify site-wise and branch-wise selection differences.\n\n## Inputs\n1. Codon-aware alignments (collection, FASTA). Output of the preprocessing workflow; one alignment per gene.\n2. IQ-TREE phylogenies (collection, Newick). Matching tree collection output from the preprocessing workflow, with identical element identifiers.\n3. Foreground identifiers (dataset). Plain-text list of cleaned sequence names. Any branch whose label matches an entry becomes Foreground; all others become Reference.\n\n## Outputs\n1. Labeled trees (collection, Newick). Trees with {Foreground} or {Reference} tags suitable for downstream HyPhy tools.\n2. HyPhy CFEL results (collection, JSON). Site-level contrast of nonsynonymous vs synonymous rates between the two branch sets.\n3. HyPhy RELAX results (collection, JSON). Gene-level test for relaxation or intensification of selection on the Foreground branches.\n\n## Key Tools\n1. HyPhy Annotate (label-tree) – Marks Foreground vs Reference branches based on the identifier list.\n2. HyPhy CFEL – Site-level contrast between branch sets.\n3. HyPhy RELAX – Tests for relaxed/intensified selection between Foreground and Reference.\n\n## Recommended Use\nConsumes external codon-aware alignments and IQ-TREE phylogenies; it assumes those inputs already meet specific requirements (no internal stops, minimal recombination, matched element IDs). If you generated inputs with the HyPhy preprocessing workflow, all the same caveats apply; otherwise, ensure your own alignments/trees satisfy those constraints before contrasting branches.",
                 "report": {
                     "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                 },
@@ -1532,7 +1557,7 @@
                             "top": 0
                         },
                         "tool_id": null,
-                        "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+                        "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
                         "uuid": "42525c93-ad19-4d56-af31-83461a18625d",
@@ -1559,7 +1584,7 @@
                             "top": 156.78325450781793
                         },
                         "tool_id": null,
-                        "tool_state": "{\"optional\": false, \"format\": [\"nhx\", \"newick\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null}",
+                        "tool_state": "{\"optional\": false, \"format\": [\"nhx\", \"newick\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
                         "uuid": "adb2a9f5-918b-42af-9e79-3d7b289b891f",
@@ -1626,6 +1651,7 @@
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
                         "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "0b8654fe-35ff-44ba-ad46-d55cc369ea7b",
@@ -1634,7 +1660,7 @@
                     },
                     "4": {
                         "annotation": "Label foreground branches in the phylogenetic tree",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
                         "errors": null,
                         "id": 4,
                         "input_connections": {
@@ -1670,15 +1696,16 @@
                             "top": 162.66874300494254
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "2dbd8f857b5f",
+                            "changeset_revision": "3629cc0115ac",
                             "name": "hyphy_annotate",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"input_tree\": {\"__class__\": \"ConnectedValue\"}, \"internal_nodes\": \"All descendants\", \"invert\": false, \"label\": \"Foreground\", \"leaf_nodes\": \"Label\", \"reroot\": \"None\", \"selection_method\": {\"method\": \"list\", \"__current_case__\": 1, \"list_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy3",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "d749a762-d560-4dcb-87b8-6d4c49f5f4ff",
                         "when": null,
@@ -1686,7 +1713,7 @@
                     },
                     "5": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
                         "errors": null,
                         "id": 5,
                         "input_connections": {
@@ -1722,15 +1749,16 @@
                             "top": 392.66874300494254
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.93+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "2dbd8f857b5f",
+                            "changeset_revision": "3629cc0115ac",
                             "name": "hyphy_annotate",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"input_tree\": {\"__class__\": \"ConnectedValue\"}, \"internal_nodes\": \"All descendants\", \"invert\": true, \"label\": \"Reference\", \"leaf_nodes\": \"Label\", \"reroot\": \"None\", \"selection_method\": {\"method\": \"list\", \"__current_case__\": 1, \"list_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy3",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "c417e72a-16e8-4f99-b451-d83a7f48a561",
                         "when": null,
@@ -1744,7 +1772,7 @@
                     },
                     "6": {
                         "annotation": "RELAX analysis comparing selection intensity between foreground and background",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.96+galaxy0",
                         "errors": null,
                         "id": 6,
                         "input_connections": {
@@ -1784,15 +1812,16 @@
                             "top": 112.66874300494253
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "592fb9353702",
+                            "changeset_revision": "50551ca179d3",
                             "name": "hyphy_relax",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_options\": {\"mode_cond\": {\"mode\": \"Classic mode\", \"__current_case__\": 0}, \"grid_size\": \"250\", \"starting_points\": \"1\", \"syn_rates\": \"3\", \"rates\": \"3\", \"srv\": \"No\", \"multiple_hits\": \"None\", \"kill_zero_lengths\": \"Yes\"}, \"gencodeid\": \"Universal\", \"input_type_cond\": {\"input_type\": \"single\", \"__current_case__\": 0, \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}}, \"models\": \"All\", \"reference\": \"Reference\", \"test\": \"Foreground\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "2333facf-2b7c-4b91-b946-af0a48786c62",
                         "when": null,
@@ -1806,7 +1835,7 @@
                     },
                     "7": {
                         "annotation": "Contrast-FEL analysis comparing foreground vs background branches",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.93+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.96+galaxy0",
                         "errors": null,
                         "id": 7,
                         "input_connections": {
@@ -1837,15 +1866,16 @@
                             "top": 402.66874300494254
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.93+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.96+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "d76dca762da3",
+                            "changeset_revision": "34d2e58b8a1f",
                             "name": "hyphy_cfel",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"advanced_settings\": {\"limit_to_sites\": null, \"save_lf_for_sites\": null, \"intermediate_fits\": false, \"srv\": \"Yes\", \"permutations\": false, \"kill_zero_lengths\": \"Yes\"}, \"branch_repeat\": [{\"__index__\": 0, \"branch_label\": \"Foreground\"}, {\"__index__\": 1, \"branch_label\": \"Reference\"}], \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"pvalue\": \"0.05\", \"qvalue\": \"0.2\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_version": "2.5.93+galaxy2",
+                        "tool_uuid": null,
+                        "tool_version": "2.5.96+galaxy0",
                         "type": "tool",
                         "uuid": "53687d25-c8cf-4399-96fd-41f1c3cc827a",
                         "when": null,
@@ -1859,7 +1889,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "f5aadb09-7c07-4481-9f05-3dd06557ee90"
+                "uuid": "81799349-b595-46e0-8e32-cbfc7607e93b"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1932,6 +1962,7 @@
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"busted_files\": {\"__class__\": \"ConnectedValue\"}, \"contrastfel_files\": {\"__class__\": \"ConnectedValue\"}, \"fel_files\": {\"__class__\": \"ConnectedValue\"}, \"meme_files\": {\"__class__\": \"ConnectedValue\"}, \"prime_files\": {\"__class__\": \"ConnectedValue\"}, \"relax_files\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
             "tool_version": "0.1.4+galaxy0",
             "type": "tool",
             "uuid": "cd906370-6cc0-443d-9dae-eef94912195d",
@@ -1961,7 +1992,7 @@
         }
     },
     "tags": [],
-    "uuid": "47a1c954-b024-462f-bf35-b505d0eb9fc3",
-    "version": 32,
-    "release": "0.1"
+    "uuid": "e1fbea6f-563e-40d1-b580-f97883fca29f",
+    "version": 1,
+    "release": "0.2"
 }
