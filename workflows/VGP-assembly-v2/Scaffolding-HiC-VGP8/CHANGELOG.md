@@ -1,8 +1,29 @@
 # Changelog
 
+## [3.4] - 2026-03-09
+
+### Changes
+- Remove "Alignment General Stats 2" output that was incompatible with MultiQC v1.33 (element `general_stats_table` no longer exists in the `png_plot` output collection)
+- Set new PretextMap `high_res` parameter to `false`
+- Replace Picards MarkDuplicates tool by Samtools markdup
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.1.9+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.8` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.9`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bamtools_filter/bamFilter/2.5.2+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bamtools_filter/bamFilter/2.5.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0`
+
+
 ## [3.3] - 2025-12-10
 
-## Changes
+### Changes
 - Show PretextMap files in history for easier export. 
 
 ### Automatic update
