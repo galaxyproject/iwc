@@ -20,7 +20,7 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 
 ### Assembly Annotation Parameters
 
-6. **Generate gene annotations?** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)
+6. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)
 7. **Species Name** [text] - Species identifier for gene annotation
 8. **Assembly Name** [text] - Assembly identifier (e.g., toLid)
 9. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)
