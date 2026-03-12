@@ -67,7 +67,7 @@ def get_dockstore_details(trsID):
         else:
             print("No 'id' field found in the top-level data.")
     else:
-        print(f"Failed to retrieve details. Status code: {response.status_code}")
+        print(f"Failed to retrieve details for {trsID} from {url_details}. Status code: {response.status_code}")
     return details, categories, collections
 
 
