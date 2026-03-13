@@ -1,0 +1,385 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow runs HyPhy analyses Contrast-FEL and RELAX comparing foreground and reference branches. It consumes the per-gene codon-aware alignments and IQ-TREE phylogenies produced by the HyPhy preprocessing workflow.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0009-0009-3690-8372",
+            "name": "Danielle Callan"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-1967-4403",
+            "name": "Hannah Verdonk"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-4817-4029",
+            "name": "Sergei L. Kosakovsky Pond"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "HyPhy: Compare",
+    "readme": "# HyPhy: Compare\n\n## Description\nThis workflow consumes the per-gene codon-aware alignments and IQ-TREE phylogenies produced by the HyPhy preprocessing workflow and compares two branch classes: Foreground branches defined by a user-provided list, and all remaining branches (Reference). It labels each tree with the HyPhy Annotate tool, then runs HyPhy Contrast-FEL (CFEL) and HyPhy RELAX on every gene to quantify site-wise and branch-wise selection differences.\n\n## Inputs\n1. Codon-aware alignments (collection, FASTA). Output of the preprocessing workflow; one alignment per gene.\n2. IQ-TREE phylogenies (collection, Newick). Matching tree collection output from the preprocessing workflow, with identical element identifiers.\n3. Foreground identifiers (dataset). Plain-text list of cleaned sequence names. Any branch whose label matches an entry becomes Foreground; all others become Reference.\n\n## Outputs\n1. Labeled trees (collection, Newick). Trees with {Foreground} or {Reference} tags suitable for downstream HyPhy tools.\n2. HyPhy CFEL results (collection, JSON). Site-level contrast of nonsynonymous vs synonymous rates between the two branch sets.\n3. HyPhy RELAX results (collection, JSON). Gene-level test for relaxation or intensification of selection on the Foreground branches.\n\n## Key Tools\n1. HyPhy Annotate (label-tree) – Marks Foreground vs Reference branches based on the identifier list.\n2. HyPhy CFEL – Site-level contrast between branch sets.\n3. HyPhy RELAX – Tests for relaxed/intensified selection between Foreground and Reference.\n\n## Recommended Use\nConsumes external codon-aware alignments and IQ-TREE phylogenies; it assumes those inputs already meet specific requirements (no internal stops, minimal recombination, matched element IDs). If you generated inputs with the HyPhy preprocessing workflow, all the same caveats apply; otherwise, ensure your own alignments/trees satisfy those constraints before contrasting branches.",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "Codon-aware alignment(s)",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Codon-aware alignment(s)",
+                    "name": "Codon-aware alignment(s)"
+                }
+            ],
+            "label": "Codon-aware alignment(s)",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "42525c93-ad19-4d56-af31-83461a18625d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Phylogenetic tree(s)",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Phylogenetic tree(s)",
+                    "name": "Phylogenetic tree(s)"
+                }
+            ],
+            "label": "Phylogenetic tree(s)",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 3.6726974921616318,
+                "top": 156.78325450781793
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"nhx\", \"newick\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "adb2a9f5-918b-42af-9e79-3d7b289b891f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "File containing list of foreground sequence names (one per line). Leave empty to skip foreground sequence selection.",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "File containing list of foreground sequence names (one per line). Leave empty to skip foreground sequence selection.",
+                    "name": "Foreground Sequences List"
+                }
+            ],
+            "label": "Foreground Sequences List",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0.64453125,
+                "top": 417.9296875
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"txt\", \"tabular\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "e2affe9e-4c89-4d96-8ae9-de52b1092054",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Clean Foreground Sequences List",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "infile": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Clean Foreground Sequences List",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 338.5390625,
+                "top": 418.1484375
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "0b8654fe-35ff-44ba-ad46-d55cc369ea7b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Label foreground branches in the phylogenetic tree",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input_tree": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "selection_method|list_file": {
+                    "id": 3,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Annotate",
+                    "name": "selection_method"
+                }
+            ],
+            "label": "Label Foreground Branches",
+            "name": "Annotate",
+            "outputs": [
+                {
+                    "name": "labeled_tree",
+                    "type": "nhx"
+                },
+                {
+                    "name": "annotate_md_report",
+                    "type": "markdown"
+                }
+            ],
+            "position": {
+                "left": 446.0996936453068,
+                "top": 162.66874300494254
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "3629cc0115ac",
+                "name": "hyphy_annotate",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_tree\": {\"__class__\": \"ConnectedValue\"}, \"internal_nodes\": \"All descendants\", \"invert\": false, \"label\": \"Foreground\", \"leaf_nodes\": \"Label\", \"reroot\": \"None\", \"selection_method\": {\"method\": \"list\", \"__current_case__\": 1, \"list_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.96+galaxy0",
+            "type": "tool",
+            "uuid": "d749a762-d560-4dcb-87b8-6d4c49f5f4ff",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Label Reference Branches",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input_tree": {
+                    "id": 4,
+                    "output_name": "labeled_tree"
+                },
+                "selection_method|list_file": {
+                    "id": 3,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Annotate",
+                    "name": "selection_method"
+                }
+            ],
+            "label": "Label Reference Branches",
+            "name": "Annotate",
+            "outputs": [
+                {
+                    "name": "labeled_tree",
+                    "type": "nhx"
+                },
+                {
+                    "name": "annotate_md_report",
+                    "type": "markdown"
+                }
+            ],
+            "position": {
+                "left": 746.0996936453068,
+                "top": 392.66874300494254
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_annotate/hyphy_annotate/2.5.96+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "3629cc0115ac",
+                "name": "hyphy_annotate",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_tree\": {\"__class__\": \"ConnectedValue\"}, \"internal_nodes\": \"All descendants\", \"invert\": true, \"label\": \"Reference\", \"leaf_nodes\": \"Label\", \"reroot\": \"None\", \"selection_method\": {\"method\": \"list\", \"__current_case__\": 1, \"list_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.96+galaxy0",
+            "type": "tool",
+            "uuid": "c417e72a-16e8-4f99-b451-d83a7f48a561",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "labeled_tree",
+                    "output_name": "labeled_tree",
+                    "uuid": "58c97b53-c2cd-4dc3-90eb-f1776e6c6666"
+                }
+            ]
+        },
+        "6": {
+            "annotation": "RELAX analysis comparing selection intensity between foreground and background",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.96+galaxy0",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input_type_cond|input_file": {
+                    "id": 0,
+                    "output_name": "output"
+                },
+                "input_type_cond|input_nhx": {
+                    "id": 5,
+                    "output_name": "labeled_tree"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool HyPhy-RELAX",
+                    "name": "input_type_cond"
+                },
+                {
+                    "description": "runtime parameter for tool HyPhy-RELAX",
+                    "name": "input_type_cond"
+                }
+            ],
+            "label": "RELAX",
+            "name": "HyPhy-RELAX",
+            "outputs": [
+                {
+                    "name": "relax_output",
+                    "type": "hyphy_results.json"
+                },
+                {
+                    "name": "relax_md_report",
+                    "type": "markdown"
+                }
+            ],
+            "position": {
+                "left": 1096.0996936453068,
+                "top": 112.66874300494253
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_relax/hyphy_relax/2.5.96+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "50551ca179d3",
+                "name": "hyphy_relax",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"advanced_options\": {\"mode_cond\": {\"mode\": \"Classic mode\", \"__current_case__\": 0}, \"grid_size\": \"250\", \"starting_points\": \"1\", \"syn_rates\": \"3\", \"rates\": \"3\", \"srv\": \"No\", \"multiple_hits\": \"None\", \"kill_zero_lengths\": \"Yes\"}, \"gencodeid\": \"Universal\", \"input_type_cond\": {\"input_type\": \"single\", \"__current_case__\": 0, \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}}, \"models\": \"All\", \"reference\": \"Reference\", \"test\": \"Foreground\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.96+galaxy0",
+            "type": "tool",
+            "uuid": "2333facf-2b7c-4b91-b946-af0a48786c62",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "relax_output",
+                    "output_name": "relax_output",
+                    "uuid": "ab4e0d74-9d18-4313-b2b3-d73114705910"
+                }
+            ]
+        },
+        "7": {
+            "annotation": "Contrast-FEL analysis comparing foreground vs background branches",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.96+galaxy0",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input_file": {
+                    "id": 0,
+                    "output_name": "output"
+                },
+                "input_nhx": {
+                    "id": 5,
+                    "output_name": "labeled_tree"
+                }
+            },
+            "inputs": [],
+            "label": "Contrast-FEL",
+            "name": "HyPhy-CFEL",
+            "outputs": [
+                {
+                    "name": "cfel_output",
+                    "type": "hyphy_results.json"
+                },
+                {
+                    "name": "cfel_md_report",
+                    "type": "markdown"
+                }
+            ],
+            "position": {
+                "left": 1096.0996936453068,
+                "top": 402.66874300494254
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cfel/hyphy_cfel/2.5.96+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "34d2e58b8a1f",
+                "name": "hyphy_cfel",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"advanced_settings\": {\"limit_to_sites\": null, \"save_lf_for_sites\": null, \"intermediate_fits\": false, \"srv\": \"Yes\", \"permutations\": false, \"kill_zero_lengths\": \"Yes\"}, \"branch_repeat\": [{\"__index__\": 0, \"branch_label\": \"Foreground\"}, {\"__index__\": 1, \"branch_label\": \"Reference\"}], \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"input_nhx\": {\"__class__\": \"ConnectedValue\"}, \"pvalue\": \"0.05\", \"qvalue\": \"0.2\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.96+galaxy0",
+            "type": "tool",
+            "uuid": "53687d25-c8cf-4399-96fd-41f1c3cc827a",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "cfel_output",
+                    "output_name": "cfel_output",
+                    "uuid": "9b6c5d7f-e708-4987-8007-514be5a63079"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "9357601d-c7cf-4341-bf87-a5b0fca7e57b",
+    "version": 1,
+    "release": "0.1"
+}

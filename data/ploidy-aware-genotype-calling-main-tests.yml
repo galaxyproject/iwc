@@ -1,0 +1,57 @@
+- doc: Test outline for generic-genotype+variant-calling-wgs-pe.ga
+  job:
+    Annotation GTF:
+      class: File
+      filetype: gtf
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/ploidy-aware-genotype-calling/test-data/annotation.gtf
+    Paired Collection:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        elements:
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: forward
+          location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/ploidy-aware-genotype-calling/test-data/sample1_R1.fastq.gz
+        - class: File
+          filetype: fastqsanger.gz
+          identifier: reverse
+          location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/ploidy-aware-genotype-calling/test-data/sample1_R2.fastq.gz
+        identifier: sample1
+        type: paired
+    Reference Genome fasta:
+      class: File
+      filetype: fasta
+      location: https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/ploidy-aware-genotype-calling/test-data/reference.fasta
+    Set Ploidy for FreeBayes Variant Calling: 2
+  outputs:
+    Annotated Variants:
+      asserts:
+        has_n_columns:
+          n: 19
+        has_n_lines:
+          n: 3
+        has_text:
+          text: "chr1\t751\t.\tC\tG\t60\t1.0\t0\t60\t0.0\t4.31318\tLOW\tSILENT\tSYNONYMOUS_CODING\t\
+            SynGene1\tccC/ccG\tP184\tTRANS1"
+    Preprocessing and mapping reports:
+      asserts:
+        has_text:
+          text: MultiQC Report
+    SnpEff eff reports:
+      asserts:
+        has_text:
+          text: <td> 2 </td>
+    SnpEff variants:
+      asserts:
+        has_n_lines:
+          n: 71
+        has_text:
+          text: '##contig=<ID=chr1,length=2000>'
+    fastp HTML report:
+      element_tests:
+        sample1:
+          asserts:
+            has_text:
+              text: <tr><td class='col1'>total reads:</td><td class='col2'>600</td></tr>

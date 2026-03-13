@@ -1,0 +1,769 @@
+{
+    "name": "hyphy-preprocessing",
+    "subclass": "Galaxy",
+    "publish": true,
+    "primaryDescriptorPath": "/hyphy-preprocessing.ga",
+    "testParameterFiles": [
+        "/hyphy-preprocessing-tests.yml"
+    ],
+    "authors": [
+        {
+            "name": "Danielle Callan",
+            "orcid": "0009-0009-3690-8372"
+        },
+        {
+            "name": "Hannah Verdonk",
+            "orcid": "0000-0003-1967-4403"
+        },
+        {
+            "name": "Sergei L. Kosakovsky Pond",
+            "orcid": "0000-0003-4817-4029"
+        }
+    ],
+    "definition": {
+        "a_galaxy_workflow": "true",
+        "annotation": "Generates codon-aware alignments and phylogenetic trees compatible with downstream HyPhy analyses.",
+        "comments": [],
+        "creator": [
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0009-0009-3690-8372",
+                "name": "Danielle Callan"
+            },
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0000-0003-1967-4403",
+                "name": "Hannah Verdonk"
+            },
+            {
+                "class": "Person",
+                "identifier": "https://orcid.org/0000-0003-4817-4029",
+                "name": "Sergei L. Kosakovsky Pond"
+            }
+        ],
+        "format-version": "0.1",
+        "license": "MIT",
+        "name": "HyPhy: Preprocessing ",
+        "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+        "report": {
+            "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+        },
+        "steps": {
+            "0": {
+                "annotation": "reference cds",
+                "content_id": null,
+                "errors": null,
+                "id": 0,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "reference cds",
+                        "name": "reference cds"
+                    }
+                ],
+                "label": "reference cds",
+                "name": "Input dataset",
+                "outputs": [],
+                "position": {
+                    "left": 0,
+                    "top": 190
+                },
+                "tool_id": null,
+                "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null}",
+                "tool_version": null,
+                "type": "data_input",
+                "uuid": "0bbf4925-d024-4a9f-a49a-e0af90d2dff2",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "1": {
+                "annotation": "unaligned sequences",
+                "content_id": null,
+                "errors": null,
+                "id": 1,
+                "input_connections": {},
+                "inputs": [
+                    {
+                        "description": "unaligned sequences",
+                        "name": "unaligned sequences"
+                    }
+                ],
+                "label": "unaligned sequences",
+                "name": "Input dataset collection",
+                "outputs": [],
+                "position": {
+                    "left": 300,
+                    "top": 0
+                },
+                "tool_id": null,
+                "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+                "tool_version": null,
+                "type": "data_collection_input",
+                "uuid": "52042239-85e4-40f5-ae53-bdd13ac50618",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "2": {
+                "annotation": "Tool: 1.0.0+galaxy0",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/remove_terminal_stop_codons/remove_terminal_stop_codons/1.0.0+galaxy0",
+                "errors": null,
+                "id": 2,
+                "input_connections": {
+                    "input": {
+                        "id": 0,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": null,
+                "name": "Remove terminal stop codons",
+                "outputs": [
+                    {
+                        "name": "output",
+                        "type": "fasta"
+                    }
+                ],
+                "position": {
+                    "left": 300,
+                    "top": 190
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/remove_terminal_stop_codons/remove_terminal_stop_codons/1.0.0+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "0290a7285026",
+                    "name": "remove_terminal_stop_codons",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"genetic_code\": \"1\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"no_check_internal\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "1.0.0+galaxy0",
+                "type": "tool",
+                "uuid": "0c84c0dd-abe7-44a7-bd8b-e44b6b847610",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "3": {
+                "annotation": "Tool: 5.1.0",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+                "errors": null,
+                "id": 3,
+                "input_connections": {
+                    "input_list": {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": null,
+                "name": "Collapse Collection",
+                "outputs": [
+                    {
+                        "name": "output",
+                        "type": "input"
+                    }
+                ],
+                "position": {
+                    "left": 600,
+                    "top": 0
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+                "tool_shed_repository": {
+                    "changeset_revision": "90981f86000f",
+                    "name": "collapse_collections",
+                    "owner": "nml",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "5.1.0",
+                "type": "tool",
+                "uuid": "a46ed440-a63d-4eaa-bf55-3f73eede2916",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "4": {
+                "annotation": "Tool: 482",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482",
+                "errors": null,
+                "id": 4,
+                "input_connections": {
+                    "input": {
+                        "id": 2,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": null,
+                "name": "faSplit",
+                "outputs": [
+                    {
+                        "name": "output_list",
+                        "type": "input"
+                    }
+                ],
+                "position": {
+                    "left": 600,
+                    "top": 190
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482",
+                "tool_shed_repository": {
+                    "changeset_revision": "1add611a6018",
+                    "name": "ucsc_fasplit",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"O\": {\"split_type\": \"byname\", \"__current_case__\": 3}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "482",
+                "type": "tool",
+                "uuid": "a3ab5888-1950-46a1-828c-462facc66050",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "5": {
+                "annotation": "Tool: 0.1.14+galaxy0",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
+                "errors": null,
+                "id": 5,
+                "input_connections": {
+                    "fasta": {
+                        "id": 3,
+                        "output_name": "output"
+                    },
+                    "reference_cond|reference_history": {
+                        "id": 4,
+                        "output_name": "output_list"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool cawlign",
+                        "name": "reference_cond"
+                    }
+                ],
+                "label": null,
+                "name": "cawlign",
+                "outputs": [
+                    {
+                        "name": "output",
+                        "type": "fasta"
+                    }
+                ],
+                "position": {
+                    "left": 900,
+                    "top": 170
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "1cd8a25117c1",
+                    "name": "cawlign",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"affine_gap\": false, \"fasta\": {\"__class__\": \"ConnectedValue\"}, \"format\": \"refmap\", \"local_alignment\": \"trim\", \"reference_cond\": {\"reference_source\": \"history\", \"__current_case__\": 1, \"reference_history\": {\"__class__\": \"ConnectedValue\"}}, \"reverse_complement\": \"none\", \"scoring_matrix_cond\": {\"datatype\": \"codon\", \"__current_case__\": 0, \"scoring_matrix_source\": {\"matrix_source\": \"builtin\", \"__current_case__\": 0, \"scoring_matrix\": \"BLOSUM62\"}}, \"write_reference\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "0.1.15+galaxy0",
+                "type": "tool",
+                "uuid": "dcfe4e2c-e5a1-4df3-a93d-1417765775b4",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "6": {
+                "annotation": "Remove ambiguous sequences",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                "errors": null,
+                "id": 6,
+                "input_connections": {
+                    "infile": {
+                        "id": 5,
+                        "output_name": "output"
+                    }
+                },
+                "inputs": [],
+                "label": "Remove ambiguous sequences",
+                "name": "Text reformatting",
+                "outputs": [
+                    {
+                        "name": "outfile",
+                        "type": "input"
+                    }
+                ],
+                "position": {
+                    "left": 1203.2700302458857,
+                    "top": 168.585547085466
+                },
+                "post_job_actions": {
+                    "ChangeDatatypeActionoutfile": {
+                        "action_arguments": {
+                            "newtype": "fasta"
+                        },
+                        "action_type": "ChangeDatatypeAction",
+                        "output_name": "outfile"
+                    }
+                },
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                "tool_shed_repository": {
+                    "changeset_revision": "ab83aa685821",
+                    "name": "text_processing",
+                    "owner": "bgruening",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"code\": \"function emit(header, seq,    copy, gaps, len) {\\n    if (seq == \\\"\\\") return\\n    copy = seq\\n    gsub(/[-N.]/, \\\"\\\", copy)\\n    len  = length(seq)\\n    gaps = len - length(copy)\\n    if (len && gaps/len <= VAR1) {\\n        print header\\n        print seq\\n    }\\n}\\nBEGIN { header=\\\"\\\"; seq=\\\"\\\" }\\n/^>/ {\\n    emit(header, seq)\\n    header = $0\\n    seq = \\\"\\\"\\n    next\\n}\\n{ seq = seq $0 }\\nEND { emit(header, seq) }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": \"0.5\"}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "9.5+galaxy3",
+                "type": "tool",
+                "uuid": "ce43a8ff-6411-423f-b282-587292a6fd9f",
+                "when": null,
+                "workflow_outputs": []
+            },
+            "7": {
+                "annotation": "Tool: 2.5.93+galaxy2",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
+                "errors": null,
+                "id": 7,
+                "input_connections": {
+                    "input_file": {
+                        "id": 6,
+                        "output_name": "outfile"
+                    }
+                },
+                "inputs": [],
+                "label": null,
+                "name": "HyPhy-CLN",
+                "outputs": [
+                    {
+                        "name": "output_file",
+                        "type": "fasta"
+                    }
+                ],
+                "position": {
+                    "left": 1500,
+                    "top": 170
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
+                "tool_shed_repository": {
+                    "changeset_revision": "bf1ca3de3a76",
+                    "name": "hyphy_cln",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"filtering_method\": \"Yes/Yes\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "2.5.96+galaxy0",
+                "type": "tool",
+                "uuid": "f5425142-f3d9-4985-8eed-5436424e06af",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "output_file",
+                        "output_name": "output_file",
+                        "uuid": "7882789f-4324-475e-820e-09a5be16b0ac"
+                    }
+                ]
+            },
+            "8": {
+                "annotation": "Tool: 2.4.0+galaxy1",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1",
+                "errors": null,
+                "id": 8,
+                "input_connections": {
+                    "general_options|s": {
+                        "id": 7,
+                        "output_name": "output_file"
+                    }
+                },
+                "inputs": [
+                    {
+                        "description": "runtime parameter for tool IQ-TREE",
+                        "name": "general_options"
+                    },
+                    {
+                        "description": "runtime parameter for tool IQ-TREE",
+                        "name": "general_options"
+                    },
+                    {
+                        "description": "runtime parameter for tool IQ-TREE",
+                        "name": "likelihood_mapping"
+                    }
+                ],
+                "label": null,
+                "name": "IQ-TREE",
+                "outputs": [
+                    {
+                        "name": "bionj",
+                        "type": "nhx"
+                    },
+                    {
+                        "name": "treefile",
+                        "type": "nhx"
+                    },
+                    {
+                        "name": "mldist",
+                        "type": "mldist"
+                    },
+                    {
+                        "name": "splits",
+                        "type": "nex"
+                    },
+                    {
+                        "name": "iqtree",
+                        "type": "iqtree"
+                    }
+                ],
+                "position": {
+                    "left": 1800,
+                    "top": 170
+                },
+                "post_job_actions": {},
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1",
+                "tool_shed_repository": {
+                    "changeset_revision": "18a61a9c1601",
+                    "name": "iqtree",
+                    "owner": "iuc",
+                    "tool_shed": "toolshed.g2.bx.psu.edu"
+                },
+                "tool_state": "{\"bootstrap_parameters\": {\"ultrafast_bootstrap\": {\"ufboot\": null, \"ufjack\": null, \"jack_prop\": null, \"boot_trees\": false, \"wbtl\": false, \"nmax\": \"1000\", \"bcor\": \"0.99\", \"nstep\": \"100\", \"beps\": \"0.5\", \"sampling\": null, \"bnni\": false}, \"nonparametric_bootstrap\": {\"boot\": null, \"jack\": null, \"jack_prop\": null, \"bcon\": null, \"bonly\": null, \"tbe\": false}}, \"general_options\": {\"s\": {\"__class__\": \"ConnectedValue\"}, \"o\": null, \"short_alignments\": false, \"seqtype\": \"DNA\", \"t\": {\"__class__\": \"RuntimeValue\"}, \"seed\": null, \"keep_ident\": false, \"epsilon\": null, \"safe\": false}, \"likelihood_mapping\": {\"lmap\": null, \"lmclust\": {\"__class__\": \"RuntimeValue\"}, \"quartetlh\": false}, \"miscellaneous_options\": {\"fconst\": null, \"blmin\": null, \"blmax\": null}, \"modelling_parameters\": {\"automatic_model\": {\"cond_model\": {\"opt_custommodel\": \"true\", \"__current_case__\": 0, \"m\": null}, \"merge_strategy\": {\"merge\": \"none\", \"__current_case__\": 0}, \"mset\": null, \"msub\": \"nuclear\", \"mfreq\": null, \"mrate\": null, \"cmin\": \"2\", \"cmax\": \"10\", \"merit\": \"AIC\", \"mtree\": false, \"madd\": null, \"mdef\": {\"__class__\": \"RuntimeValue\"}, \"modelomatic\": false}, \"specifying_substitution\": {\"mix_opt\": false}, \"rate_heterogeneity\": {\"alpha_min\": null, \"gamma_median\": false, \"i\": null, \"opt_gamma_inv\": false, \"rate\": false, \"mlrate\": false}, \"partition_model\": {\"model_selection\": {\"model\": \"none\", \"__current_case__\": 0}}, \"site_specific_frequency\": {\"tree_freq\": {\"__class__\": \"RuntimeValue\"}, \"site_freq\": null, \"freq_max\": false}}, \"time_tree\": {\"date_source\": {\"select_source\": \"none\", \"__current_case__\": 0}, \"date_tip\": null, \"date_root\": null, \"date_ci\": null, \"clock_sd\": null, \"date_no_outgroup\": false, \"date_outlier\": null, \"date_options\": null}, \"tree_parameters\": {\"tree_search\": {\"n\": null, \"ninit\": \"100\", \"ntop\": \"20\", \"nbest\": \"5\", \"nstop\": \"100\", \"radius\": \"6\", \"perturb\": \"0.5\", \"allnni\": false, \"tree_fix\": false, \"g\": {\"__class__\": \"RuntimeValue\"}, \"fast\": false, \"polytomy\": false, \"treels\": false, \"show_lh\": false, \"terrace\": false}, \"single_branch\": {\"alrt\": null, \"abayes\": false, \"lbp\": null}, \"tree_topology\": {\"trees\": {\"__class__\": \"RuntimeValue\"}, \"test\": null, \"test_weight\": false, \"test_au\": false}, \"constructing_consensus\": {\"contree\": false, \"connet\": false, \"sup_min\": \"0.0\", \"burnin\": null, \"support\": {\"__class__\": \"RuntimeValue\"}, \"suptag\": null}, \"computing_robinson_foulds\": {\"tree_dist_all\": false, \"tree_dist\": {\"__class__\": \"RuntimeValue\"}, \"tree_dist2\": {\"__class__\": \"RuntimeValue\"}}, \"generating_random\": {\"r\": null, \"rand\": null, \"branch_min\": null, \"branch_mean\": null, \"branch_max\": null}, \"ancestral_state\": {\"ancestral\": false, \"asr_min\": null}, \"symmetry_test\": {\"symtest\": false, \"symtest_remove_bad\": false, \"symtest_remove_good\": false, \"symtest_type\": null, \"symtest_pval\": null, \"symtest_keep_zero\": false}, \"concordance_factor\": {\"gcf\": {\"__class__\": \"RuntimeValue\"}, \"df_tree\": false, \"scf\": null, \"cf_verbose\": false, \"cf_quartet\": false}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                "tool_uuid": null,
+                "tool_version": "2.4.0+galaxy1",
+                "type": "tool",
+                "uuid": "ac7542a5-1352-4699-a54c-bef15be8ede0",
+                "when": null,
+                "workflow_outputs": [
+                    {
+                        "label": "treefile",
+                        "output_name": "treefile",
+                        "uuid": "6cde83f8-75b4-411b-b0f0-a65670d982a2"
+                    }
+                ]
+            }
+        },
+        "tags": [],
+        "uuid": "c4344db0-eac2-4915-aaec-5d8ea386f109",
+        "version": 1,
+        "release": "0.1"
+    },
+    "workflow_job_input": {
+        "reference cds": {
+            "class": "File",
+            "path": "todo_test_data_path.ext"
+        },
+        "unaligned sequences": {
+            "class": "Collection",
+            "collection_type": "list",
+            "elements": [
+                {
+                    "class": "File",
+                    "identifier": "todo_element_name",
+                    "path": "todo_test_data_path.ext"
+                }
+            ]
+        }
+    },
+    "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1\n- `foreground_seqs_list.tabular`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference CDS + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
+    "changelog": "# Changelog\n\n## [0.1] - 2026-02-26\n\n### Added\n- Initial release of HyPhy workflows for comparative genomics\n- CAPHEINE: Combined HyPhy Core and Compare workflow\n  - Orchestrates complete HyPhy pipeline with codon-aware preprocessing\n  - Optional branch-comparison analyses (CFEL and RELAX)\n  - Supports foreground/background branch labeling via regex or explicit list\n- HyPhy Core subworkflow\n  - Codon-aware preprocessing and alignment\n  - Core selection analyses (MEME, PRIME, BUSTED, FEL)\n- HyPhy Compare subworkflow\n  - Branch-comparison analyses (CFEL and RELAX)\n- HyPhy Preprocessing subworkflow\n  - Sequence cleanup and codon-aware alignment\n- Comprehensive test suite with 4 scenarios for CAPHEINE workflow\n- Test data including DENV1 reference CDS and 39 unaligned sequences\n",
+    "diagrams": "# Workflow diagrams\n\n## HyPhy: Preprocessing \n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f reference cds\"]@{ shape: doc }\n1[\"\u2139\ufe0f unaligned sequences\"]@{ shape: docs }\n2[\"Remove terminal stop codons\"]@{ shape: process }\n0 --> 2\n3[\"Collapse Collection\"]@{ shape: process }\n1 --> 3\n4[\"faSplit\"]@{ shape: process }\n2 --> 4\n5[\"cawlign\"]@{ shape: process }\n3 --> 5\n4 --> 5\n6[\"Remove ambiguous sequences\"]@{ shape: process }\n5 --> 6\n7[\"HyPhy-CLN\"]@{ shape: process }\n6 --> 7\n8[\"IQ-TREE\"]@{ shape: process }\n7 --> 8\n```\n",
+    "diagram_svg": null,
+    "updated": "2026-02-26T00:00:00",
+    "trsID": "#workflow/github.com/iwc-workflows/hyphy/hyphy-preprocessing",
+    "iwcID": "hyphy-hyphy-preprocessing",
+    "repoPath": "./workflows/comparative_genomics/hyphy",
+    "dockstore_id": 35931,
+    "categories": [],
+    "collections": [],
+    "doi": "10.5281/zenodo.18991502",
+    "tests": [
+        {
+            "doc": "Test HyPhy preprocessing produces alignments and trees",
+            "job": {
+                "reference cds": {
+                    "class": "File",
+                    "filetype": "fasta",
+                    "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/denv1_ref_cds.fasta"
+                },
+                "unaligned sequences": {
+                    "class": "Collection",
+                    "collection_type": "list",
+                    "elements": [
+                        {
+                            "identifier": "AB178040.1|2002",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AB178040.1%7C2002.fasta"
+                        },
+                        {
+                            "identifier": "AB195673.1|2003",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AB195673.1%7C2003.fasta"
+                        },
+                        {
+                            "identifier": "AB204803.1|2004",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AB204803.1%7C2004.fasta"
+                        },
+                        {
+                            "identifier": "AF298807.1|1998",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AF298807.1%7C1998.fasta"
+                        },
+                        {
+                            "identifier": "AF298808.1|1998",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AF298808.1%7C1998.fasta"
+                        },
+                        {
+                            "identifier": "AY708047.1|2001",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY708047.1%7C2001.fasta"
+                        },
+                        {
+                            "identifier": "AY726552.1|2002",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY726552.1%7C2002.fasta"
+                        },
+                        {
+                            "identifier": "AY726553.1|2002",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY726553.1%7C2002.fasta"
+                        },
+                        {
+                            "identifier": "AY726555.1|1998",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY726555.1%7C1998.fasta"
+                        },
+                        {
+                            "identifier": "AY732474.1|1980",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732474.1%7C1980.fasta"
+                        },
+                        {
+                            "identifier": "AY732475.1|1994",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732475.1%7C1994.fasta"
+                        },
+                        {
+                            "identifier": "AY732476.1|1980",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732476.1%7C1980.fasta"
+                        },
+                        {
+                            "identifier": "AY732477.1|1991",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732477.1%7C1991.fasta"
+                        },
+                        {
+                            "identifier": "AY732478.1|1991",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732478.1%7C1991.fasta"
+                        },
+                        {
+                            "identifier": "AY732479.1|2001",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732479.1%7C2001.fasta"
+                        },
+                        {
+                            "identifier": "AY732480.1|1994",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732480.1%7C1994.fasta"
+                        },
+                        {
+                            "identifier": "AY732481.1|1982",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732481.1%7C1982.fasta"
+                        },
+                        {
+                            "identifier": "AY732482.1|2001",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732482.1%7C2001.fasta"
+                        },
+                        {
+                            "identifier": "AY732483.1|1981",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/AY732483.1%7C1981.fasta"
+                        },
+                        {
+                            "identifier": "PP563826.1|2023-08-21",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563826.1%7C2023-08-21.fasta"
+                        },
+                        {
+                            "identifier": "PP563827.1|2023-08-20",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563827.1%7C2023-08-20.fasta"
+                        },
+                        {
+                            "identifier": "PP563828.1|2023-09-04",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563828.1%7C2023-09-04.fasta"
+                        },
+                        {
+                            "identifier": "PP563829.1|2023-09-04",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563829.1%7C2023-09-04.fasta"
+                        },
+                        {
+                            "identifier": "PP563830.1|2023-09-02",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563830.1%7C2023-09-02.fasta"
+                        },
+                        {
+                            "identifier": "PP563831.1|2023-08-29",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563831.1%7C2023-08-29.fasta"
+                        },
+                        {
+                            "identifier": "PP563832.1|2023-08-28",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563832.1%7C2023-08-28.fasta"
+                        },
+                        {
+                            "identifier": "PP563833.1|2023-09-09",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563833.1%7C2023-09-09.fasta"
+                        },
+                        {
+                            "identifier": "PP563834.1|2023-09-14",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563834.1%7C2023-09-14.fasta"
+                        },
+                        {
+                            "identifier": "PP563835.1|2023-09-03",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563835.1%7C2023-09-03.fasta"
+                        },
+                        {
+                            "identifier": "PP563836.1|2023-09-06",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563836.1%7C2023-09-06.fasta"
+                        },
+                        {
+                            "identifier": "PP563837.1|2023-09-21",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563837.1%7C2023-09-21.fasta"
+                        },
+                        {
+                            "identifier": "PP563838.1|2023-09-30",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563838.1%7C2023-09-30.fasta"
+                        },
+                        {
+                            "identifier": "PP563839.1|2023-09-29",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563839.1%7C2023-09-29.fasta"
+                        },
+                        {
+                            "identifier": "PP563840.1|2023-10-08",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563840.1%7C2023-10-08.fasta"
+                        },
+                        {
+                            "identifier": "PP563841.1|2023-09-25",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563841.1%7C2023-09-25.fasta"
+                        },
+                        {
+                            "identifier": "PP563843.1|2023-10-02",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563843.1%7C2023-10-02.fasta"
+                        },
+                        {
+                            "identifier": "PP563844.1|2023-10-07",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563844.1%7C2023-10-07.fasta"
+                        },
+                        {
+                            "identifier": "PP563845.1|2023-10-22",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP563845.1%7C2023-10-22.fasta"
+                        },
+                        {
+                            "identifier": "PP564823.1|2023-10-06",
+                            "class": "File",
+                            "filetype": "fasta",
+                            "location": "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/comparative_genomics/hyphy/test-data/unaligned_seqs/PP564823.1%7C2023-10-06.fasta"
+                        }
+                    ]
+                }
+            },
+            "outputs": {
+                "output_file": {
+                    "element_tests": {
+                        "NC_001477.1|capsid_protein_C|95-394_DENV1": {
+                            "asserts": {
+                                "has_text": {
+                                    "text": ">"
+                                }
+                            }
+                        },
+                        "NC_001477.1|membrane_glycoprotein": {
+                            "asserts": {
+                                "has_text": {
+                                    "text": ">"
+                                }
+                            }
+                        }
+                    }
+                },
+                "treefile": {
+                    "element_tests": {
+                        "NC_001477.1|capsid_protein_C|95-394_DENV1": {
+                            "asserts": {
+                                "has_text": {
+                                    "text": "("
+                                }
+                            }
+                        },
+                        "NC_001477.1|membrane_glycoprotein": {
+                            "asserts": {
+                                "has_text": {
+                                    "text": "("
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
