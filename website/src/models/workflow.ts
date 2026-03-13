@@ -29,7 +29,7 @@ export interface SearchIndexEntry {
     tags: string[];
     release: string;
     collections: string[];
-    updated: string;
+    updated: string | null;
 }
 
 // Define the interface for a single workflow

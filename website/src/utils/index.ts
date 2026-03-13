@@ -4,7 +4,8 @@
  * @param isoString - The ISO timestamp string to format.
  * @returns A formatted date string in the format "Month Day, Year".
  */
-export function formatDate(isoString: string): string {
+export function formatDate(isoString: string | null): string {
+    if (!isoString) return "";
     const date = new Date(isoString);
     return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
