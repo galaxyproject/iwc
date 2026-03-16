@@ -28,4 +28,4 @@ Each line corresponds to a motif found in one of the annotated proteins. The mos
 - The following columns contain various identifiers that were assigned to the protein based on the match with the signature (Gene ontology term, Reactome, …)
 
 ## Output for KEGG Pathways completeness
-This tool calculates the completeness of a pathway from KOs that come from eggNOG. Together with the calculated completeness, the tools also classified the contig with a name and stated the class of the pathway, and also returned the matching KOs and the missing KOs of the pathway.
+This tool calculates the completeness of metabolic pathways based on KEGG Orthologs (KOs) obtained from eggNOG annotations. In addition to estimating pathway completeness, the tool assigns each contig to the corresponding pathway and reports the pathway name and class. It also lists the KOs detected on the contig as well as the KOs that are missing for the pathway, enabling users to assess how close the pathway is to being complete.
