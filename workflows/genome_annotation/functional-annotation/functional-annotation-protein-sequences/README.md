@@ -1,7 +1,7 @@
 # Functional annotation of protein or dna sequences Workflow
 
 This workflow utilizes eggNOG mapper and InterProScan for the functional annotation of protein or DNA sequences.
-It can be used on proteins from any organism.
+It can be used on proteins or DNA from any organism.
 
 EggNOG Mapper compares each protein sequence (or translated DNA sequence when nucleotide input is provided) of the annotation to a huge set of ortholog groups from the eggNOG database. In this database, each ortholog group is associated with functional annotations like Gene Ontology (GO) terms or KEGG pathways. When the protein sequence of a new gene is found to be very similar to one of these ortholog groups, the corresponding functional annotation is transferred to this new gene.
 
