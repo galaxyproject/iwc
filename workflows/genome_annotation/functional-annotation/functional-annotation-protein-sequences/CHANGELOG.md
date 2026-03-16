@@ -2,7 +2,7 @@
 
 ## [0.2] - 2026-02-07
 
-- Change the input to a collection such that multiple sequences can be run parallel
+- Change the input to a collection such that multiple sequences can be run in parallel
 - add a subworkflow to open the option to choose which input eggNOG will receive
 - add the option that eggNOG and/or InterProScan can be skipped
 - add the option to swap the input type for InterProScan 
