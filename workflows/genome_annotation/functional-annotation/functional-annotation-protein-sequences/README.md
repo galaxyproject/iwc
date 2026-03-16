@@ -1,4 +1,4 @@
-# Functional annotation of protein sequences Workflow
+# Functional annotation of protein or dna sequences Workflow
 
 This workflow utilizes eggNOG mapper and InterProScan for the functional annotation of protein sequences.
 It can be used on proteins from any organism.
