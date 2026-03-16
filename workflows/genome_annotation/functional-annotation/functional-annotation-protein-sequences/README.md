@@ -5,7 +5,7 @@ It can be used on proteins from any organism.
 
 EggNOG Mapper compares each protein sequence of the annotation to a huge set of ortholog groups from the eggNOG database. In this database, each ortholog group is associated with functional annotations like Gene Ontology (GO) terms or KEGG pathways. When the protein sequence of a new gene is found to be very similar to one of these ortholog groups, the corresponding functional annotation is transferred to this new gene.
 
-InterProScan is a tool that analyses each protein sequence from our annotation to determine if it contains one or several of the signatures from InterPro. When a protein contains a known signature, the corresponding functional annotation will be assigned to it by InterProScan.
+InterProScan is a tool that analyses each protein sequence ((or translated DNA sequence when nucleotide input is provided) from our annotation to determine if it contains one or several of the signatures from InterPro. When a protein contains a known signature, the corresponding functional annotation will be assigned to it by InterProScan.
 
 ## Input dataset
 This workflow requires a galaxy collection of type list with at least one file in fasta format.
