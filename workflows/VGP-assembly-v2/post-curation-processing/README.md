@@ -29,6 +29,11 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 15. **Minimum Mapping Quality** [integer] - Minimum mapping score for Hi-C alignments. Default: 10
 16. **Bin Size for Bigwig files** [integer] - Bin size for coverage tracks. Default: 100
 
+### Haplotype Naming
+
+17. **Name Haplotype 1** [text] - Label for haplotype 1 (used to prefix output names)
+18. **Name Haplotype 2** [text] - Label for haplotype 2 (used to prefix output names)
+
 ## Outputs
 
 ### Assembly Summary
@@ -56,7 +61,7 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 
 ### Rename and Reorient
 
-- **Mashmap Chrom level** - Mashmap alignment between haplotypes at chromosome level (from curation subworkflow)
+- **Mashmap for hap2 sync** - Mashmap alignment between haplotypes at chromosome level (from curation subworkflow)
 - **Mashmap Chromosome level** - Mashmap alignment between curated haplotypes
 - **Hap1 Hap2 orientation mapping** - Orientation mapping between haplotypes
 - **Reorientation and renaming instructions** - Instructions for renaming and reorienting hap2
@@ -64,9 +69,10 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 
 ### Visualization
 
-- **JBrowse2** - JBrowse2 interactive visualization of curated assemblies with mashmap alignments
-- **Hap1 Pretext Snapshot** - Pretext snapshot for haplotype 1
-- **Hap2 Pretext Snapshot** - Pretext snapshot for haplotype 2
+- **Jbrowse2 No gene Tracks** - JBrowse2 visualization without gene annotation tracks
+- **Jbrowse2 with gene Tracks** - JBrowse2 visualization with Compleasm gene annotation tracks
+- **Hi-C maps for each haplotype** - Combined Hi-C contact maps (MAPQ filtered)
+- **Hi-C maps for each haplotype - Multimapping** - Combined Hi-C contact maps (multimapping)
 
 ### Haplotype 1 QC
 
@@ -77,8 +83,11 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 - **Hap1 Gaps Bed** - Assembly gaps BED file
 - **Hap1 Gaps Bedgraph** - Assembly gaps bedgraph
 - **Hap1 Genes track** - Compleasm gene annotation track
+- **Hap1 Compleasm Summary** - Compleasm completeness summary
+- **Hap1 miniprot** - Miniprot protein-to-genome alignments
 - **Hap1 BigWig Coverage** - PacBio read coverage track
 - **Hap1 Coverage Gaps Track** - Coverage gaps track
+- **Hap1 Coverage gap bed for Jbrowse** - Coverage gaps BED for JBrowse2
 - **Hap1 Merged HiFi Alignments** - Merged PacBio HiFi alignments
 - **Hap1 Merged Hi-C Alignments on Curated Assembly** - Merged Hi-C alignments
 - **Hap1 Hi-C alignments on Curated Assembly** - Hi-C alignments
@@ -89,7 +98,8 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 - **Hap1 Pairtools MultiQc on Curated Assembly: Plots** - Pairtools MultiQC plots
 - **Hap1 Pretext All tracks** - Pretext map with all tracks (MAPQ filtered)
 - **Hap1 Pretext All tracks - Multimapping** - Pretext map with all tracks (multimapping)
-- **Hap1 Pretext Snapshot With tracks - Multimapping** - Pretext snapshot with tracks (multimapping)
+- **Hap1 Pretext Snapshot** - Pretext snapshot for haplotype 1
+- **Hap1 Pretext Snapshot - Multimapping** - Pretext snapshot with tracks (multimapping)
 
 ### Haplotype 2 QC
 
@@ -100,8 +110,11 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 - **Hap2 Gaps Bed** - Assembly gaps BED file
 - **Hap2 Gaps Bedgraph** - Assembly gaps bedgraph
 - **Hap2 Genes track** - Compleasm gene annotation track
+- **Hap2 Compleasm Summary** - Compleasm completeness summary
+- **Hap2 miniprot** - Miniprot protein-to-genome alignments
 - **Hap2 BigWig Coverage** - PacBio read coverage track
 - **Hap2 Coverage Gaps Track** - Coverage gaps track
+- **Hap2 Coverage gap bed for Jbrowse** - Coverage gaps BED for JBrowse2
 - **Hap2 Merged HiFi Alignments** - Merged PacBio HiFi alignments
 - **Hap2 Merged Hi-C Alignments on Curated Assembly** - Merged Hi-C alignments
 - **Hap2 Hi-C alignments on Curated Assembly** - Hi-C alignments
@@ -112,5 +125,5 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 - **Hap2 Pairtools MultiQc on Curated Assembly: Plots** - Pairtools MultiQC plots
 - **Hap2 Pretext All tracks** - Pretext map with all tracks (MAPQ filtered)
 - **Hap2 Pretext All tracks - Multimapping** - Pretext map with all tracks (multimapping)
-- **Hap2 Pretext Snapshot With tracks - Multimapping** - Pretext snapshot with tracks (multimapping)
 - **Hap2 Pretext Snapshot** - Pretext snapshot for haplotype 2
+- **Hap2 Pretext Snapshot - Multimapping** - Pretext snapshot with tracks (multimapping)
