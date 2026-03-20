@@ -477,7 +477,20 @@
         "readme": "# Quality and Contamination control workflow for paired end data\n\nThis workflow uses paired-end illumina fastq(.gz) files and executes the following steps:\n\n1. Quality control and trimming\n   - **fastp** QC control and trimming\n2. Taxonomic assignation on trimmed data\n   - **Kraken2** assignation\n   - **Bracken** to re-estimate abundance to the species level\n3. Aggregating outputs into a single JSON file\n   - **ToolDistillator** to extract and aggregate information from different tool outputs to JSON parsable files\n\n## Inputs\n\n1. Paired-end illumina raw reads in fastq(.gz) format.\n\n## Outputs\n\n1. Quality control:\n   - quality report\n   - trimmed raw reads\n2. Taxonomic assignation:\n   - Tabular report of identified species\n   - Tabular file with assigned read to a taxonomic level\n3. Aggregating outputs:\n   - JSON file with information about the outputs of **fastp**\n",
         "updated": "2025-11-28T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Bacterial Genomics"
+        ]
+    },
+    {
+        "name": "main",
+        "trsID": "#workflow/github.com/iwc-workflows/mag-genome-annotation-parallel/main",
+        "iwcID": "mag-genome-annotation-parallel-main",
+        "readme": "# MAG Genome Annotation Parallel\n\nThis workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs). Annotation is performed using Bakta, Integron Finder, PlasmidFinder, and ISEScan, with Bakta being optional. Bakta provides general annotation of bacterial genomes by predicting genes, coding sequences, and RNAs. Integron Finder detects integrons and their structural components, including integrases, attC recombination sites, and gene cassettes. PlasmidFinder identifies plasmid replicon sequences to determine whether contigs originate from plasmids and to classify plasmid types. ISEScan detects insertion sequences (IS elements), which are small transposable elements that can mediate genome rearrangements and facilitate horizontal gene transfer. \nThe workflow is targeted torwards prokarytoic genomes, annotations for archaea will likely miss genomic features.\nIt processes multiple genome assemblies simultaneously and produces standardized annotation outputs, summary tables, and integrated quality reports.\n\n## Workflow Logic\nThe workflow takes a collection of MAG genome assemblies as input and runs genome annotation in parallel for each genome.\nAnnotation outputs are then reformatted, normalized, and merged across all genomes to produce unified result files.\n\nThe core logic includes:\n\n- Parallel processing of all input MAGs\n- Automated annotation per genome\n  - **Bakta:**\n    - Annotated genome files (e.g., GFF3, GenBank)\n    - Predicted coding sequences (CDS)\n    - tRNA annotations\n    - rRNA annotations\n    - tmRNA annotations\n    - Other ncRNA annotations and regions\n    - Pseudogene annotations\n    - sORF annotations\n    - CRISPR array annotations\n    - Genome gap detection\n    - Origin of replication (oriC/oriT) annotation\n\n  - **Integron Finder:**\n    - Detected integrons and integrase genes\n    - attC recombination sites\n    - Gene cassette annotations\n    - Tables detailing positions, sequences, and potential antibiotic resistance genes\n    - Visualizations of integron structure and gene cassette organization\n\n  - **PlasmidFinder:**\n    - Identified plasmid replicon sequences\n    - Plasmid type classification for contigs\n    - Tabular files with detected plasmids, replicon families, sequence coverage, and confidence scores\n    - Summary statistics of plasmid content per genome or assembly\n\n  - **ISEScan:**\n    - Detected insertion sequences (IS elements)\n    - Locations, family and subgroup annotations\n    - Predicted transposase genes\n    - Summary tables of IS element distribution\n    - Visualizations showing IS density or genomic context relative to coding sequences\n- Standardization of annotation formats\n- Merging and collapsing results across samples/genomes\n\n## Annotation and Reporting\nAfter annotation, the workflow performs structured post-processing and reporting:\n\n- Genome annotation (per-MAG, in parallel)\n- Output normalization and reformatting\n- Merging of annotation results into consolidated tables\n- Summary statistics generation\n- Integrated reporting using MultiQC\n\nAll outputs are consolidated into a single MultiQC report providing a global overview of annotation completeness, gene content, and processing metrics across all genomes.\n\n## Input Requirements\nMAG assemblies (FASTA format) provided as a collection in Galaxy.\n\n## Expected Outputs\n\n- Per-MAG annotation files\n- Standardized annotation tables\n- Merged genome annotation matrices\n- Summary statistics files\n- A unified MultiQC report for all genomes",
+        "updated": "2026-03-01T00:00:00",
+        "categories": [],
+        "collections": [
+            "Microbiome"
+        ]
     },
     {
         "name": "main",
@@ -541,7 +554,10 @@
         "readme": "# Host or Contamination removal on short-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes paired-end Illumina fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Bowtie 2**\n2. Aggregation of the mapping reports using **MultiQC**\n\n## Input Datasets\n\n- A list of paired datasets corresponding to paired-end reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n\n## Output Datasets\n\n- A list of paired datasets corresponding to paired-end reads without the reads mapping to the reference genomes, in `fastqsanger` or `fastqsanger.gz`.\n- List of `JSON` reports of Bowtie2 for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML\n\n## When to use this workflow\n\nUse this workflow for **short-read paired-end Illumina sequencing data**. For long-read data (Nanopore, PacBio), see the [Host or Contamination removal on long-reads](../host-contamination-removal-long-reads/) workflow.",
         "updated": "2026-01-19T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Metagenomics",
+            "Microbiome"
+        ]
     },
     {
         "name": "main",
@@ -550,7 +566,10 @@
         "readme": "# Host or Contamination removal on long-reads\n\nThe extraction of microbiome DNA or RNA is usually contaminated by host and human DNA or RNA (but also other contaminant). It is an important to get rid of all host/contamination sequences and to only retain microbiome sequences, both in order to speed up further steps and to avoid host/contamination sequences compromising the analysis.\n\nThis workflow takes Nanopore fastq(.gz) files and executes the following steps:\n1. Mapping of the reads against a reference genome of the host or contaminant (e.g. human) using **Minimap 2**\n2. Filtering of the generated BAM using **BAMtools** and **Samtools** to keep only the reads that do not align\n3. Generation of mapping statistics using **QualiMap**\n4. Aggregation of the mapping statistics using **MultiQC**\n\n## Input Datasets\n\n- A list of datasets corresponding to reads in `fastqsanger` or `fastqsanger.gz` format.\n- Reference genome\n- Profile for mapping\n\n## Output Datasets\n\n- A list of datasets corresponding to unmapped reads in `fastqsanger` or `fastqsanger.gz`.\n- A list of reports of QualiMap for each sample that could be used as inputs for extra MultiQC\n- MultiQC report of the mapping statistics in HTML\n\n## When to use this workflow\n\nUse this workflow for **long-read sequencing data** (e.g., Nanopore, PacBio). For short-read Illumina data, see the [Host or Contamination removal on short-reads](../host-contamination-removal-short-reads/) workflow.",
         "updated": "2026-01-19T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Metagenomics",
+            "Microbiome"
+        ]
     },
     {
         "name": "main",
@@ -559,7 +578,9 @@
         "readme": "# MAGs Taxonomy Annotation\n\nThis workflow generates taxonomic annotations for MAGs using GTDB-Tk. With the integration of additional tools, MAGs also receive corresponding taxonomic classifications from NCBI.\n\n## Workflow logic\nThe workflow first runs GTDB-Tk to generate a summary file. From this file, it extracts the GTDB lineage for each MAG and reformats it so that the GTDB\u2013NCBI mapping tool can translate GTDB names into their corresponding NCBI names. These NCBI names are then passed to another tool, which resolves them into the corresponding NCBI taxIDs.\n\nIn parallel, an additional text-processing step extracts the taxonomic rank from the GTDB-Tk annotation. Finally, all collected information is merged into a single file with the following five columns:\n\n- BinID\n- GTDB name\n- Taxonomic rank\n- NCBI name\n- NCBI taxID\n\n## Input\nThis workflow takes a dataset collection (a Galaxy collection of type list) containing MAGs produced by binners (e.g. MetaBAT2, dRep) in FASTA format.\n\n## Output\nThis workflow produces the following main outputs:\n\n- GTDB-Tk summary file(s)\n- GTDB\u2013NCBI mapping file(s)\n- NCBI name-to-taxID mapping file(s)\n- A complete merged table containing all mappings\n- MultiQC HTML report with GTDB-Tk and the full mapping table as input",
         "updated": "2026-02-13T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Microbiome"
+        ]
     },
     {
         "name": "main",
@@ -568,7 +589,9 @@
         "readme": "# Raw read AMR analysis from metagenomic data\n\nFrom metagenomics short-read data, this workflow performs taxonomic profiling, predicts Antibiotic Resistance Genes (ARGs), and standardizes ARG annotations.\n\n## Raw read Annotation\n\nDirectly from metagenomics short-reads after quality control and host/contamination removal, the following processing steps are performed:\n\n* **Taxonomic Profiling** using Sylph and Sylph-tax\n* **Antibiotic Resistance Genes (ARGs) prediction** with Groot and deepARG\n* **ARG annotations normalization to the ARO** with argNorm\n\n## Input Requirements\n\nInput reads must be short reads that have been quality-filtered, with host/contaminant reads removed. They should be in fastqsanger(.gz) inside a paired collection.\n\n",
         "updated": "2026-02-20T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Metagenomics"
+        ]
     },
     {
         "name": "main",
@@ -577,7 +600,9 @@
         "readme": "# MAGs Binning Evaluation Workflow\n\nThis workflow bins paired short reads to generate Metagenome-Assembled Genomes (MAGs) and classifies them afterwards.\n**CAMI AMBER** will evaluate the binning of the MAGs.\n\n## Inputs\n\n- Paired short reads collection\n- List of corresponding `Assembly(s)`\n- List of `Gold Standard Biobox File(s)`\n\n## Biobox File\n\nThe Biobox File can be generated with the utility Tool named **CAMI AMBER convert to biobox**. \nThis tool can be found on Galaxy.\n\nThe `Gold Standard File` can also be written manually. Therefore, here is an example of this tab-separated file and the information that must be included:\n\n```\n@SampleID: <Anything>\n@@SEQUENCEID\tBINID\tTAXID\nSEQ1\tTEST1\t1\nSEQ2\tTEST1\t2\nSEQ3\tTEST2\t1\n```\n\nIt is important to keep this file like this otherwise **CAMI AMBER** might not work. The TAXID column is optional.\n\n\n## Workflow Logic\n\n- Reads and Assembly(s) will be preprocessed for binning\n- Binning with multiple Binners:\n    - CONCOCT\n    - MaxBin2\n    - MetaBAT2\n    - SemiBin\n    - DAS Tool\n    - Binette\n- **CAMI AMBER** will evaluate the result for all Binners in multiple output files together with a `HTML File` to visualize the result\n",
         "updated": "2026-03-09T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Microbiome"
+        ]
     },
     {
         "name": "main",
@@ -976,7 +1001,9 @@
         "readme": "# Genome annotation workflow with Braker3\n\nThis workflow allows annotation of a eukaryotic genome using Braker3 and evaluates the quality of the annotation using BUSCO and genome annotation statistics. The annotation can then be improved, normalized, and visualized using additional tools.\n\n**Braker3** is an automated bioinformatics tool that uses RNA-seq and protein data to annotate genomes. It integrates GeneMark-ETP and AUGUSTUS software to predict genes with a high degree of precision. By combining the results of these two tools, Braker3 generates a final file containing gene annotations with strong extrinsic support (i.e. based on external experimental data).\n\n## Workflow Steps\n\n- Annotation with Braker3: Braker3 uses the genome sequence, protein sequences, and alignments from RNA-seq.\n- Quality Evaluation:\n    - Run Fasta Statistics to assess genome assembly quality.\n    - Use BUSCO to evaluate annotation completeness.\n- Sequence Extraction: Extract predicted protein sequences using GFFRead for downstream analysis.\n- Visualization: Load the genome sequence and annotation into JBrowse for interactive browsing.\n\n## Input data\nThe following input files are required for the workflow:\n- Soft Masked genome sequence (FASTA format): The genome to be annotated. Used by Braker3, Fasta Statistics, and BUSCO.\n- Protein sequences (FASTA format): Evidence to assist annotation in Braker3.\n- Alignments from RNA-seq (BAM format): Alignments used as evidence by Braker3.\n\n## Output Data\nThe workflow generates the following outputs:\n- Annotation file (GFF3): Contains the final consensus gene models produced by Braker3.\n- Genome statistics: A tabular file summarizing contig sizes and base content, produced by Fasta Statistics.\n- BUSCO results: Assess the completeness of the annotation and include:\n    - A summary of results.\n    - A table of all searched BUSCO genes with their status.\n    - A table of missing BUSCO genes.\n- Protein sequences (FASTA): Predicted from the annotation using GFFRead.\n- Genome browser visualization (HTML): An interactive genome view produced by JBrowse.",
         "updated": "2025-12-05T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Genome Annotation"
+        ]
     },
     {
         "name": "main",
@@ -1042,7 +1069,9 @@
         "readme": "# Paired-End Variant and Ploidy-Aware Genotype Calling\n\nThis workflow performs paired-end reads quality control, mapping and germline\nvariant and genotype calling for organisms of any given ploidy.\n\nIt takes a collection of Illumina paired-end FASTQ files, a reference genome\nin FASTA format, a gene annotation in GTF format, and a ploidy parameter, and\nproduces annotated variants both as VCF and as a tab-separated table.\n\nReads are first quality- and adapter-trimmed with fastp. Trimmed reads\nare then mapped to the reference genome using BWA-MEM. The resulting\nalignments are filtered with Samtools view to retain only properly paired\nreads, and PCR duplicates are removed using Picard MarkDuplicates. QC metrics\nfrom fastp, Samtools stats, and MarkDuplicates are aggregated into a single\nMultiQC report.\n\nVariant and genotype calling is performed with FreeBayes, which operates in\nhaplotype-based mode on the duplicate-free BAM.\nThe ploidy assumed for calling is configurable and defaults to 2 (diploid).\n\nThe intial VCF output is normalised and left-aligned with bcftools norm,\nsplitting multi-allelic sites into individual biallelic records.\nVariants are then functionally annotated using SnpEff, with a custom SnpEff\ndatabase built on-the-fly from the provided reference FASTA and GTF annotation.\nAnnotation is restricted to coding and splicing effects (downstream,\nintergenic, intronic, UTR, and upstream effects are excluded). The annotated\nVCF is subsequently parsed with SnpSift Extract Fields into a flat tabular\nformat, and per-sample tables are merged into a single file.\n\n## Inputs\n\nPaired Collection: a list:paired dataset collection of Illumina paired-end\nreads in fastqsanger or fastqsanger.gz format.\n\nReference Genome FASTA: the reference genome sequence to use for mapping\nand variant calling.\n\nAnnotation GTF: a GTF gene annotation file corresponding to the reference\ngenome, used to build the SnpEff database.\n\nSet Ploidy for FreeBayes Variant Calling: an integer specifying the ploidy\nof the organism (default: 2).\n\n\n## Outputs\n\nFastp HTML report: per-sample HTML quality control report from fastp.\n\nPreprocessing and mapping MultiQC report: aggregated HTML QC report\ncombining fastp, Samtools stats, and Picard MarkDuplicates metrics across\nall samples.\n\nSnpEff annotated variants (VCF): annotated variants in VCF format, tagged VariantsasVCF.\n\nSnpEff HTML summary report: HTML summary statistics from SnpEff describing the\ndistribution of variant effects across functional categories.\n\nAnnotated variants table: a merged, tab-separated table of annotated variants\nacross all samples, tagged VariantsAsTSV. Columns include CHROM, POS,\nFILTER, REF, ALT, DP, AF, DP4, SB, and per-effect fields for\nimpact, functional class, effect type, gene name, codon change, amino acid\nchange, and transcript ID.\n",
         "updated": "2026-03-12T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Variant Calling"
+        ]
     },
     {
         "name": "main",
@@ -1051,7 +1080,9 @@
         "readme": "# Short-read quality control and trimming\n\nBefore starting any analysis, it is always a good idea to assess the quality of the input data and to discard poor-quality base content by trimming and filtering reads.\n\nThis workflow takes paired-end Illumina (**short-reads**) fastq(.gz) files and executes the following steps:\n1. Quality control and trimming using **fastp**\n2. Aggregation of the quality control reports using **MultiQC**\n\n## Input Datasets\n\n- A list of paired datasets corresponding to paired-end raw reads in `fastqsanger` or `fastqsanger.gz` format.\n- Qualified quality score: The quality value that a base is qualified to have.\n- Minimal read length: Reads shorter than this value will be discarded.\n- Cutting mean quality: The bases in the sliding window with mean quality below this value will be cut.\n- [Optional] Adapter to remove on forward reads and reverse reads\n\n## Output Datasets\n\n- A list of paired datasets corresponding to paired-end **trimmed** reads in `fastqsanger` or `fastqsanger.gz`, ready for further analysis.\n- List of `JSON` reports of fastp for each sample that could be used as inputs for extra MultiQC\n- MultiQC report in HTML",
         "updated": "2026-01-30T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Quality Control and Pre-processing"
+        ]
     },
     {
         "name": "main",
@@ -1084,7 +1115,8 @@
         "categories": [],
         "collections": [
             "Metagenomics",
-            "Microbiome"
+            "Microbiome",
+            "Bacterial Genomics"
         ]
     },
     {
@@ -1094,7 +1126,9 @@
         "readme": "# core genome Multilocus Sequence Typing (cgMLST) of Bacterial Genome workflow\n\nThis workflow performs core genome multilocus sequence typing (cgMLST) on contigs corresponding to one bacterial genome to characterize bacterial strains using curated reference schemes by:\n\n1. Assignment of a cgMLST allele profile on contigs using **CoreProfiler** and curated reference schemes (from pubMLST,  BIGSdb, Enterobase, or cgMLST.org) \n2. Extraction and aggregation of outputs into a single JSON file using **ToolDistillator**\n\n## Inputs\n\n1. Contigs of one assembled bacterial genome in FASTA format.\n\n## Outputs\n\n1. core genome MLST (cgMLST) results as:\n   - Tabular allele profile for each locus\n   - FASTA file of newly detected alleles\n   - JSON file with information on temporary alleles\n2. Aggregated outputs as a JSON file with information about the outputs of **CoreProfiler**\n",
         "updated": "2026-03-02T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Bacterial Genomics"
+        ]
     },
     {
         "name": "capheine-core-and-compare",
@@ -1103,7 +1137,9 @@
         "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1\n- `foreground_seqs_list.tabular`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference CDS + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
         "updated": "2026-02-26T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Comparative Genomics"
+        ]
     },
     {
         "name": "hyphy-core",
@@ -1112,7 +1148,9 @@
         "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1\n- `foreground_seqs_list.tabular`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference CDS + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
         "updated": "2026-02-26T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Comparative Genomics"
+        ]
     },
     {
         "name": "hyphy-compare",
@@ -1121,7 +1159,9 @@
         "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1\n- `foreground_seqs_list.tabular`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference CDS + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
         "updated": "2026-02-26T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Comparative Genomics"
+        ]
     },
     {
         "name": "hyphy-preprocessing",
@@ -1130,7 +1170,9 @@
         "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1\n- `foreground_seqs_list.tabular`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference CDS + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
         "updated": "2026-02-26T00:00:00",
         "categories": [],
-        "collections": []
+        "collections": [
+            "Comparative Genomics"
+        ]
     },
     {
         "name": "hic-fastq-to-cool-hicup-cooler",
