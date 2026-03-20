@@ -51,7 +51,7 @@ Post-curation processing workflow for VGP assemblies. Takes a curated AGP file a
 - **Hap1 unlocs** - Haplotype 1 unlocalized scaffolds
 - **Hap2 Unlocs** - Haplotype 2 unlocalized scaffolds
 - **Hap1 Haplotigs** - Haplotype 1 haplotigs
-- **Hap2 AG** - Haplotype 2 additional data
+- **Hap2 AGP** - Haplotype 2 additional data
 
 ### Chromosome Assignment
 
