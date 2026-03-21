@@ -25,17 +25,24 @@ jobs:
       - name: Run generate_manifest.py
         run: python ./scripts/workflow_manifest.py
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: website/pnpm-lock.yaml
 
-      - name: Install NPM Dependencies
-        run: npm install
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
         working-directory: ./website
 
       - name: Build Astro Static Site
-        run: npm run build
+        run: pnpm run build
         working-directory: ./website
 
       - name: Deploy to GitHub Pages
