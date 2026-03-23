@@ -51,7 +51,7 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Hap1 unlocs** - Haplotype 1 unlocalized scaffolds
 - **Hap2 Unlocs** - Haplotype 2 unlocalized scaffolds
 - **Hap1 Haplotigs** - Haplotype 1 haplotigs
-- **Hap2 AGP** - Haplotype 2 additional data
+- **Hap2 AGP** - Haplotype 2 AGP (primary AGP for haplotype 2)
 
 ### Chromosome Assignment
 
