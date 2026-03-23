@@ -77,6 +77,7 @@ async function createLandingPage() {
                 workflow_target_type: "trs_url",
                 request_state: job,
                 public: true,
+                origin: IWC_SITE_URL,
             }),
         });
 
