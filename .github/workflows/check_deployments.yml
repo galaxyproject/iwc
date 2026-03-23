@@ -1,0 +1,67 @@
+name: Check and fix missing deployments
+on:
+  schedule:
+    # Run weekly on Monday at 6 AM UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+env:
+  GITHUB_USER: iwc-workflows-bot
+jobs:
+  check:
+    name: Check for missing deployments
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      has-missing: ${{ steps.check.outputs.has-missing }}
+      missing-repos: ${{ steps.check.outputs.missing-repos }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install pyyaml
+    - name: Check for missing deployments
+      id: check
+      run: python scripts/check_missing_deployments.py
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+  deploy:
+    name: Deploy missing workflows
+    needs: check
+    if: github.ref == 'refs/heads/main' && needs.check.outputs.has-missing == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install requirements
+      run: pip install -r workflows/requirements.txt
+    - name: Generate RO-Crate metadata for workflow repositories
+      run: python workflows/gen_crates.py workflows
+    - name: Set git user
+      run: |
+        git config --global user.email "$GITHUB_USER@galaxyproject.org"
+        git config --global user.name "$GITHUB_USER"
+        git config --global init.defaultBranch main
+    - uses: fusion-engineering/setup-git-credentials@v2
+      with:
+        credentials: 'https://${{ env.GITHUB_USER }}:${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}@github.com/'
+    - name: Deploy missing workflows
+      run: |
+        while IFS= read -r repo_dir; do
+          [ -z "$repo_dir" ] && continue
+          echo "Deploying $repo_dir ..."
+          planemo workflow_upload --namespace iwc-workflows "$repo_dir"
+        done <<< "${{ needs.check.outputs.missing-repos }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
