@@ -11,7 +11,7 @@ import Tabs from "./ui/Tabs.vue";
 import TabsList from "./ui/TabsList.vue";
 import TabsTrigger from "./ui/TabsTrigger.vue";
 import TabsContent from "./ui/TabsContent.vue";
-import { formatDate, normalizeGalaxyUrl } from "../utils";
+import { formatDate, normalizeGalaxyUrl, IWC_SITE_URL } from "../utils";
 
 const props = defineProps<{
     workflow: Workflow;
@@ -286,7 +286,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
@@ -295,7 +295,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
