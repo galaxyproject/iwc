@@ -1,6 +1,6 @@
 # Post-curation assembly processing and evaluation
 
-Post-curation processing workflow for VGP assemblies. Takes a curated AGP file and combined haplotype FASTA, splits by haplotype, applies curation, assigns chromosome names, renames and reorients hap2 to match hap1, then generates QC outputs including Compleasm, Pretext maps, telomere analysis, and coverage tracks.
+This workflow performs post-curation processing and evaluation for VGP assemblies. It takes a curated AGP file and combined haplotype FASTA, splits by haplotype, applies curation, assigns chromosome names, renames and reorients hap2 to match hap1, and generates QC outputs including Compleasm results, Pretext maps, telomere analysis, and coverage tracks.
 
 ## Inputs
 
