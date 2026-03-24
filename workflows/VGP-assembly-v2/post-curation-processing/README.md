@@ -46,9 +46,9 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Curated Hap1** - Curated haplotype 1 FASTA
 - **Curated Hap2** - Curated haplotype 2 FASTA
 - **Hap1 AGP** - Haplotype 1 AGP
-- **Hap2 unlocs no hap dups AGP** - Haplotype 2 AGP without haplotypic duplicates in unlocalized scaffolds
-- **Hap1 unlocs no hap dups AGP** - Haplotype 1 AGP without haplotypic duplicates in unlocalized scaffolds
-- **Hap1 unlocs** - Haplotype 1 unlocalized scaffolds
+- **Hap2 Unlocs no hap dups AGP** - Haplotype 2 AGP without haplotypic duplicates in unlocalized scaffolds
+- **Hap1 Unlocs no hap dups AGP** - Haplotype 1 AGP without haplotypic duplicates in unlocalized scaffolds
+- **Hap1 Unlocs** - Haplotype 1 unlocalized scaffolds
 - **Hap2 Unlocs** - Haplotype 2 unlocalized scaffolds
 - **Hap1 Haplotigs** - Haplotype 1 haplotigs
 - **Hap2 AGP** - Haplotype 2 AGP (primary AGP for haplotype 2)
@@ -57,11 +57,11 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 
 - **Chromosome mapping Hap1** - Scaffold to chromosome mapping for haplotype 1 (SUPER_N naming)
 - **Chromosome mapping Hap2** - Scaffold to chromosome mapping for haplotype 2
-- **Chromosome level hap2** - Chromosome-level haplotype 2 FASTA
+- **Chromosome level Hap2** - Chromosome-level haplotype 2 FASTA
 
 ### Rename and Reorient
 
-- **Mashmap for hap2 sync** - Mashmap alignment between haplotypes at chromosome level (from curation subworkflow)
+- **Mashmap for Hap2 sync** - Mashmap alignment between haplotypes at chromosome level (from curation subworkflow)
 - **Mashmap Chromosome level** - Mashmap alignment between curated haplotypes
 - **Hap1 Hap2 orientation mapping** - Orientation mapping between haplotypes
 - **Reorientation and renaming instructions** - Instructions for renaming and reorienting hap2
@@ -81,7 +81,7 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Hap1 P telomeres BED** - P-arm telomere positions
 - **Hap1 Q telomeres BED** - Q-arm telomere positions
 - **Hap1 Gaps BED** - Assembly gaps BED file
-- **Hap1 Gaps bedgraph** - Assembly gaps bedgraph
+- **Hap1 Gaps BEDgraph** - Assembly gaps bedgraph
 - **Hap1 Genes track** - Compleasm gene annotation track
 - **Hap1 Compleasm Summary** - Compleasm completeness summary
 - **Hap1 miniprot** - Miniprot protein-to-genome alignments
@@ -108,7 +108,7 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Hap2 P telomeres BED** - P-arm telomere positions
 - **Hap2 Q telomeres BED** - Q-arm telomere positions
 - **Hap2 Gaps BED** - Assembly gaps BED file
-- **Hap2 Gaps bedgraph** - Assembly gaps bedgraph
+- **Hap2 Gaps BEDgraph** - Assembly gaps bedgraph
 - **Hap2 Genes track** - Compleasm gene annotation track
 - **Hap2 Compleasm Summary** - Compleasm completeness summary
 - **Hap2 miniprot** - Miniprot protein-to-genome alignments
