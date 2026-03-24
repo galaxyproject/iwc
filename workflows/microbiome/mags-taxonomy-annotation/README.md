@@ -17,7 +17,7 @@ In parallel, an additional text-processing step extracts the taxonomic rank from
 This workflow takes a dataset collection (a Galaxy collection of type list) containing MAGs produced by binners (e.g. MetaBAT2, dRep) in FASTA format.
 
 ## Output
-This workflow produces the following main outputs:
+This workflow produces the following main outputs: 
 
 - GTDB-Tk summary file(s)
 - kMetaSHot summary file (optional)
