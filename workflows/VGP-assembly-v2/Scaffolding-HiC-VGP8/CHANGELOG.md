@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.5] - 2026-03-30
+
+### Changes
+- Samtools markdup now removes duplicates instead of only marking them
+- Fix MultiQC input connections for Pairtools and Hi-C alignment stats
+
 ## [3.4] - 2026-03-09
 
 ### Changes
