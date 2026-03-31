@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9] - 2026-03-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval/0.0.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/richard-burhans/rdeval/rdeval_report/0.0.9+galaxy0`
+
 ## [0.8] - 2026-01-30
 
 ### Automatic update
