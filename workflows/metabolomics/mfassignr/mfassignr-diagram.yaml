@@ -1,0 +1,84 @@
+title: "Molecular Formula Assignment (MFAssignR)"
+subtitle: "Assign formulas to ultrahigh-resolution mass spectra"
+nodes:
+  - id: featureTable
+    type: input
+    label: Feature Table
+    subtitle: "Mass/intensity data"
+    column: 0
+    row: 1
+  - id: noiseEstim
+    type: tool
+    label: Noise Estimation
+    subtitle: "KMDNoise + HistNoise + SNplot"
+    step: "1"
+    column: 1
+    row: 2
+  - id: isoFiltR
+    type: tool
+    label: IsoFiltR
+    subtitle: Identify isotope masses
+    step: "2"
+    column: 1
+    row: 0
+  - id: mfAssignCho
+    type: tool
+    label: MFAssignCHO
+    subtitle: Initial CHO formula assignment
+    step: "3"
+    column: 2
+    row: 1
+  - id: recalibrate
+    type: tool
+    label: Recalibration
+    subtitle: "RecalList + FindRecalSeries + Recal"
+    step: "4"
+    column: 3
+    row: 1
+  - id: mfAssign
+    type: tool
+    label: MFAssign
+    subtitle: Final multi-element assignment
+    step: "5"
+    column: 4
+    row: 1
+  - id: snPlot
+    type: output
+    label: S/N Plot
+    subtitle: Signal-to-noise visualization
+    column: 5
+    row: 2
+  - id: choPlots
+    type: output
+    label: CHO Assignment Plots
+    subtitle: Initial assignment diagnostics
+    column: 5
+    row: 0
+  - id: finalAssignment
+    type: output
+    label: Final Assignments
+    subtitle: "Unambig, Ambig, Unassigned"
+    column: 5
+    row: 1
+edges:
+  - from: featureTable
+    to: noiseEstim
+  - from: featureTable
+    to: isoFiltR
+  - from: noiseEstim
+    to: snPlot
+  - from: isoFiltR
+    to: mfAssignCho
+  - from: mfAssignCho
+    to: choPlots
+  - from: mfAssignCho
+    to: recalibrate
+  - from: isoFiltR
+    to: recalibrate
+    style: secondary
+  - from: recalibrate
+    to: mfAssign
+  - from: mfAssign
+    to: finalAssignment
+legend:
+  items: [input, primary, secondary, output]

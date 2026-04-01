@@ -1,0 +1,169 @@
+title: "Non-Segmented Viral Variant Calling & Consensus (PE Illumina)"
+nodes:
+  - id: reads
+    type: input
+    label: PE Sequencing Data
+    subtitle: "list:paired collection"
+    detail: Illumina paired-end reads
+    column: 0
+    row: 0
+  - id: reference
+    type: input
+    label: Reference Genome
+    subtitle: Virus FASTA sequence
+    column: 0
+    row: 2
+  - id: annotation
+    type: input
+    label: Reference Annotation
+    subtitle: GTF format
+    column: 0
+    row: 3
+  - id: primerScheme
+    type: input
+    label: Primer Scheme
+    subtitle: BED format (optional)
+    detail: Triggers amplicon-mode trimming
+    column: 0
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Read quality trimming
+    step: "1"
+    column: 1
+    row: 0
+  - id: snpeffBuild
+    type: tool
+    label: SnpEff Build
+    subtitle: Build custom annotation DB
+    step: "2"
+    column: 1
+    row: 2
+  - id: bwaMem
+    type: tool
+    label: BWA-MEM
+    subtitle: Map reads to reference
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterRealign
+    type: tool
+    label: Filter & Realign
+    subtitle: "MAPQ>=20, LoFreq Viterbi"
+    detail: Samtools view + indel realignment
+    step: "4"
+    column: 3
+    row: 0
+  - id: ivarTrim
+    type: tool
+    label: ivar trim
+    subtitle: Primer trimming (conditional)
+    detail: Skipped without primer scheme
+    step: "5"
+    column: 4
+    row: 0
+  - id: ivarVariants
+    type: tool
+    label: ivar variants
+    subtitle: Call variants from BAM
+    step: "6"
+    column: 5
+    row: 0
+  - id: ivarConsensus
+    type: tool
+    label: ivar consensus
+    subtitle: Build consensus sequence
+    step: "7"
+    column: 5
+    row: 2
+  - id: snpeffAnnotate
+    type: tool
+    label: SnpEff + SnpSift
+    subtitle: Annotate & extract variant effects
+    step: "8"
+    column: 6
+    row: 0
+  - id: annotatedVariants
+    type: output
+    label: Annotated Variants
+    subtitle: SnpEff-annotated VCF
+    column: 7
+    row: 0
+  - id: variantReport
+    type: output
+    label: Combined Variant Report
+    subtitle: Tabular report (all samples)
+    column: 7
+    row: 1
+  - id: consensusGenomes
+    type: output
+    label: Consensus Genomes
+    subtitle: Per-sample & combined FASTA
+    column: 7
+    row: 3
+  - id: mappedReads
+    type: output
+    label: Processed BAMs
+    subtitle: Filtered & realigned reads
+    column: 7
+    row: 2
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: QC report
+    detail: fastp + Samtools + QualiMap
+    column: 4
+    row: 3
+edges:
+  - from: reads
+    to: fastp
+  - from: fastp
+    to: bwaMem
+  - from: reference
+    to: bwaMem
+    style: secondary
+  - from: reference
+    to: snpeffBuild
+    style: secondary
+  - from: annotation
+    to: snpeffBuild
+    style: secondary
+  - from: bwaMem
+    to: filterRealign
+  - from: filterRealign
+    to: ivarTrim
+  - from: primerScheme
+    to: ivarTrim
+    style: secondary
+  - from: ivarTrim
+    to: ivarVariants
+  - from: ivarTrim
+    to: ivarConsensus
+  - from: reference
+    to: ivarVariants
+    style: secondary
+  - from: ivarVariants
+    to: snpeffAnnotate
+  - from: snpeffBuild
+    to: snpeffAnnotate
+    style: secondary
+  - from: snpeffAnnotate
+    to: annotatedVariants
+  - from: snpeffAnnotate
+    to: variantReport
+  - from: ivarConsensus
+    to: consensusGenomes
+  - from: filterRealign
+    to: mappedReads
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: bwaMem
+    to: multiqc
+    style: qc
+  - from: filterRealign
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

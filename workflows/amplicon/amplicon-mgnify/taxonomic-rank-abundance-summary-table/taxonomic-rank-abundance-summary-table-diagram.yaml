@@ -1,0 +1,74 @@
+title: "Taxonomic Rank Abundance Summary Table"
+subtitle: "OTU table summarization at a user-specified taxonomic rank"
+nodes:
+  - id: otuTables
+    type: input
+    label: OTU Tables
+    subtitle: "list collection"
+    detail: MAPseq OTU output tables
+    column: 0
+    row: 0
+  - id: taxRank
+    type: input
+    label: Taxonomic Rank
+    subtitle: User-selected level
+    detail: "superkingdom through species"
+    column: 0
+    row: 1
+  - id: paramMapping
+    type: tool
+    label: Parameter Mapping
+    subtitle: Rank to AWK code
+    detail: Maps rank to aggregation logic
+    step: "1"
+    column: 1
+    row: 1
+  - id: taxExtract
+    type: tool
+    label: Taxa Extraction
+    subtitle: Aggregate at chosen rank
+    detail: Group and sum counts
+    step: "2"
+    column: 1
+    row: 0
+  - id: sampleJoin
+    type: tool
+    label: Column Join
+    subtitle: Merge across samples
+    detail: Fill missing with 0
+    step: "3"
+    column: 2
+    row: 0
+  - id: headerFormat
+    type: tool
+    label: Header Formatting
+    subtitle: Split taxa into columns
+    detail: Rank-aware column names
+    step: "4"
+    column: 3
+    row: 0
+  - id: summaryTable
+    type: output
+    label: Rank Summary Table
+    subtitle: Taxonomic abundance matrix
+    column: 4
+    row: 0
+edges:
+  - from: otuTables
+    to: taxExtract
+  - from: taxRank
+    to: paramMapping
+  - from: paramMapping
+    to: taxExtract
+    style: secondary
+  - from: paramMapping
+    to: headerFormat
+    style: secondary
+  - from: taxExtract
+    to: sampleJoin
+  - from: sampleJoin
+    to: headerFormat
+  - from: headerFormat
+    to: summaryTable
+legend:
+  items: [input, primary, output]

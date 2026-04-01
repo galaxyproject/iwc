@@ -1,0 +1,111 @@
+title: "GC-MS with metaMS"
+subtitle: "Untargeted metabolomics peak detection and annotation"
+nodes:
+  - id: msData
+    type: input
+    label: MS Dataset Collection
+    subtitle: Raw GC-MS data files
+    column: 0
+    row: 0
+  - id: sampleMeta
+    type: input
+    label: Sample Metadata
+    subtitle: Sample grouping info
+    column: 0
+    row: 1
+  - id: readMsData
+    type: tool
+    label: MSnbase readMSData
+    subtitle: Import raw MS data
+    step: "1"
+    column: 1
+    row: 0
+  - id: findPeaks
+    type: tool
+    label: XCMS findChromPeaks
+    subtitle: "Peak detection (MatchedFilter)"
+    step: "2"
+    column: 2
+    row: 0
+  - id: plotChrom
+    type: tool
+    label: Plot Chromatogram
+    subtitle: TIC and BPI visualization
+    step: "3"
+    column: 3
+    row: 1
+  - id: mergePeaks
+    type: tool
+    label: XCMS Merger
+    subtitle: Combine peak data
+    step: "4"
+    column: 3
+    row: 0
+  - id: metamsRunGc
+    type: tool
+    label: metaMS.runGC
+    subtitle: Pseudospectra & data matrix
+    step: "5"
+    column: 4
+    row: 0
+  - id: checkFormat
+    type: tool
+    label: Check Format
+    subtitle: Validate W4M format
+    step: "6"
+    column: 5
+    row: 0
+  - id: multivariate
+    type: tool
+    label: Multivariate (PCA)
+    subtitle: PCA analysis of samples
+    step: "7"
+    column: 6
+    row: 0
+  - id: chromatograms
+    type: output
+    label: Chromatograms
+    subtitle: "TIC/BPI plots (PDF)"
+    column: 7
+    row: 2
+  - id: dataMatrix
+    type: output
+    label: Data Matrix
+    subtitle: Peak intensity table
+    column: 7
+    row: 0
+  - id: pcaResults
+    type: output
+    label: PCA Results
+    subtitle: Multivariate analysis
+    column: 7
+    row: 1
+edges:
+  - from: msData
+    to: readMsData
+  - from: readMsData
+    to: findPeaks
+  - from: findPeaks
+    to: plotChrom
+  - from: sampleMeta
+    to: plotChrom
+    style: secondary
+  - from: findPeaks
+    to: mergePeaks
+  - from: sampleMeta
+    to: mergePeaks
+    style: secondary
+  - from: mergePeaks
+    to: metamsRunGc
+  - from: metamsRunGc
+    to: dataMatrix
+  - from: metamsRunGc
+    to: checkFormat
+  - from: plotChrom
+    to: chromatograms
+  - from: checkFormat
+    to: multivariate
+  - from: multivariate
+    to: pcaResults
+legend:
+  items: [input, primary, secondary, output]

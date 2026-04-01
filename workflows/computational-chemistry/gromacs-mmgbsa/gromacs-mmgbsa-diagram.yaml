@@ -1,0 +1,98 @@
+title: "MM/GBSA with GROMACS"
+subtitle: "Binding free energy estimation via MM/GBSA ensemble"
+nodes:
+  - id: ligandSdf
+    type: input
+    label: Ligand SDF
+    subtitle: Small molecule structure
+    column: 0
+    row: 0
+  - id: proteinPdb
+    type: input
+    label: Apoprotein PDB
+    subtitle: Protein structure
+    column: 0
+    row: 1
+  - id: simParams
+    type: input
+    label: Simulation Parameters
+    subtitle: "Force field, water, salt, pH"
+    column: 0
+    row: 2
+  - id: parameterize
+    type: tool
+    label: Parameterize Complex
+    subtitle: "GRO/TOP via ACPYPE + GROMACS"
+    step: "1"
+    column: 1
+    row: 0
+  - id: solvate
+    type: tool
+    label: Solvate & Ionize
+    subtitle: Add water box and ions
+    step: "2"
+    column: 2
+    row: 0
+  - id: equilibrate
+    type: tool
+    label: NVT / NPT Equilibration
+    subtitle: "Restrained MD equilibration"
+    step: "3"
+    column: 3
+    row: 0
+  - id: production
+    type: tool
+    label: Production MD Ensemble
+    subtitle: Multiple independent simulations
+    step: "4"
+    column: 4
+    row: 0
+  - id: mmgbsa
+    type: tool
+    label: MM/GBSA Calculation
+    subtitle: "gmx_MMPBSA energy decomposition"
+    step: "5"
+    column: 5
+    row: 0
+  - id: groFiles
+    type: output
+    label: GRO Files
+    subtitle: Trajectory snapshots
+    column: 6
+    row: 0
+  - id: mmgbsaStats
+    type: output
+    label: MMGBSA Statistics
+    subtitle: Binding energy results
+    column: 6
+    row: 1
+  - id: freeEnergy
+    type: output
+    label: Free Energy
+    subtitle: Binding free energy estimate
+    column: 6
+    row: 2
+edges:
+  - from: ligandSdf
+    to: parameterize
+  - from: proteinPdb
+    to: parameterize
+  - from: simParams
+    to: parameterize
+    style: secondary
+  - from: parameterize
+    to: solvate
+  - from: solvate
+    to: equilibrate
+  - from: equilibrate
+    to: production
+  - from: production
+    to: groFiles
+  - from: production
+    to: mmgbsa
+  - from: mmgbsa
+    to: mmgbsaStats
+  - from: mmgbsa
+    to: freeEnergy
+legend:
+  items: [input, primary, secondary, output]

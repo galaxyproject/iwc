@@ -1,0 +1,109 @@
+title: "Assembly Decontamination (VGP9)"
+nodes:
+  - id: assembly
+    type: input
+    label: Scaffolded Assembly
+    subtitle: FASTA from scaffolding
+    column: 0
+    row: 2
+  - id: fcsGxDb
+    type: input
+    label: FCS-GX Database
+    subtitle: NCBI contaminant DB
+    column: 0
+    row: 0
+  - id: taxonId
+    type: input
+    label: Taxonomic ID
+    subtitle: NCBI taxon identifier
+    column: 0
+    row: 1
+  - id: fcsAdaptor
+    type: tool
+    label: NCBI FCS Adaptor
+    subtitle: Detect adaptor contamination
+    step: "1"
+    column: 1
+    row: 0
+  - id: fcsGx
+    type: tool
+    label: NCBI FCS-GX
+    subtitle: Foreign contaminant screen
+    step: "2"
+    column: 2
+    row: 0
+  - id: dustmasker
+    type: tool
+    label: DustMasker
+    subtitle: Mask low-complexity regions
+    step: "3"
+    column: 2
+    row: 1
+  - id: blastn
+    type: tool
+    label: BLASTn
+    subtitle: Identify mitochondrial scaffolds
+    step: "4"
+    column: 3
+    row: 1
+  - id: parseMito
+    type: tool
+    label: Parse Mito BLAST
+    subtitle: Extract mito scaffold list
+    step: "5"
+    column: 4
+    row: 1
+  - id: cleanAsm
+    type: tool
+    label: Clean Assembly
+    subtitle: Remove contaminants
+    step: "6"
+    column: 4
+    row: 0
+  - id: decontamAsm
+    type: output
+    label: Decontaminated Assembly
+    subtitle: Clean FASTA
+    column: 5
+    row: 0
+  - id: contaminantReport
+    type: report
+    label: Contaminant Reports
+    subtitle: "Adaptors, foreign, mito"
+    column: 2
+    row: 2
+edges:
+  - from: assembly
+    to: fcsAdaptor
+  - from: fcsAdaptor
+    to: fcsGx
+  - from: fcsGxDb
+    to: fcsGx
+    style: secondary
+  - from: taxonId
+    to: fcsGx
+    style: secondary
+  - from: assembly
+    to: dustmasker
+  - from: dustmasker
+    to: blastn
+  - from: blastn
+    to: parseMito
+  - from: fcsGx
+    to: cleanAsm
+  - from: parseMito
+    to: cleanAsm
+    style: secondary
+  - from: cleanAsm
+    to: decontamAsm
+  - from: fcsAdaptor
+    to: contaminantReport
+    style: qc
+  - from: fcsGx
+    to: contaminantReport
+    style: qc
+  - from: parseMito
+    to: contaminantReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

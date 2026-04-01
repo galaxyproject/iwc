@@ -1,0 +1,80 @@
+title: "scRNA-seq Preprocessing: 10X CellPlex Multiplexed Samples"
+nodes:
+  - id: gexFastq
+    type: input
+    label: GEX FASTQ
+    subtitle: "paired collection"
+    detail: Gene expression reads
+    column: 0
+    row: 0
+  - id: cmoFastq
+    type: input
+    label: CMO FASTQ
+    subtitle: "paired collection"
+    detail: Cell Multiplexing Oligo reads
+    column: 0
+    row: 2
+  - id: refInputs
+    type: input
+    label: Reference Data
+    subtitle: Genome, GTF, barcodes
+    column: 0
+    row: 1
+  - id: starsolo
+    type: tool
+    label: RNA STARSolo
+    subtitle: Splice-aware scRNA-seq alignment
+    step: "1"
+    column: 1
+    row: 0
+  - id: citeseqCount
+    type: tool
+    label: CITE-seq-Count
+    subtitle: CMO tag quantification
+    step: "2"
+    column: 1
+    row: 2
+  - id: dropletutils
+    type: tool
+    label: DropletUtils
+    subtitle: Cell calling &amp; filtering
+    step: "3"
+    column: 2
+    row: 0
+  - id: matrixOutput
+    type: output
+    label: Filtered Matrix
+    subtitle: Seurat/Scanpy-ready format
+    column: 3
+    row: 0
+  - id: cmoMatrix
+    type: output
+    label: CMO Matrix
+    subtitle: Sample demultiplexing counts
+    column: 3
+    row: 1
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Alignment QC report
+    column: 2
+    row: 3
+edges:
+  - from: gexFastq
+    to: starsolo
+  - from: refInputs
+    to: starsolo
+    style: secondary
+  - from: cmoFastq
+    to: citeseqCount
+  - from: starsolo
+    to: dropletutils
+  - from: starsolo
+    to: multiqc
+    style: qc
+  - from: dropletutils
+    to: matrixOutput
+  - from: citeseqCount
+    to: cmoMatrix
+legend:
+  items: [input, primary, secondary, qc, output, report]

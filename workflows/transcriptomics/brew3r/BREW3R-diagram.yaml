@@ -1,0 +1,65 @@
+title: "BREW3R: Extending 3' Gene Annotations from RNA-seq"
+nodes:
+  - id: gtfInput
+    type: input
+    label: Input GTF
+    subtitle: Reference gene annotation
+    column: 0
+    row: 0
+  - id: bamInput
+    type: input
+    label: BAM Collection
+    subtitle: "list collection"
+    detail: STAR alignment output
+    column: 0
+    row: 1
+  - id: paramsInput
+    type: input
+    label: Parameters
+    subtitle: Strandedness, coverage, FPKM
+    column: 0
+    row: 2
+  - id: stringtie
+    type: tool
+    label: StringTie
+    subtitle: Transcript assembly per sample
+    step: "1"
+    column: 1
+    row: 1
+  - id: stringtieMerge
+    type: tool
+    label: StringTie Merge
+    subtitle: Merge assembled transcripts
+    step: "2"
+    column: 2
+    row: 1
+  - id: brew3r
+    type: tool
+    label: BREW3R.r
+    subtitle: Extend 3' UTR annotations
+    step: "3"
+    column: 3
+    row: 0
+  - id: extendedGtf
+    type: output
+    label: Extended GTF
+    subtitle: 3' UTR-enhanced annotation
+    column: 4
+    row: 0
+edges:
+  - from: bamInput
+    to: stringtie
+  - from: paramsInput
+    to: stringtie
+    style: secondary
+  - from: stringtie
+    to: stringtieMerge
+  - from: gtfInput
+    to: brew3r
+    style: secondary
+  - from: stringtieMerge
+    to: brew3r
+  - from: brew3r
+    to: extendedGtf
+legend:
+  items: [input, primary, secondary, output]

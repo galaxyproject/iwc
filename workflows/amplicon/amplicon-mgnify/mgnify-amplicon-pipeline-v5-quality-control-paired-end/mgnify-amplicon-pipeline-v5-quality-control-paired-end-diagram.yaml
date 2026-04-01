@@ -1,0 +1,127 @@
+title: "MGnify Amplicon v5.0 - Quality Control (Paired-End)"
+subtitle: "fastp, SeqPrep merging, Trimmomatic, and ambiguity filtering for PE reads"
+nodes:
+  - id: peReads
+    type: input
+    label: PE FASTQ Reads
+    subtitle: "list:paired collection"
+    detail: Paired-end amplicon reads
+    column: 0
+    row: 0
+  - id: fastpParams
+    type: input
+    label: fastp Parameters
+    subtitle: Quality &amp; length thresholds
+    column: 0
+    row: 1
+  - id: trimmomaticParams
+    type: input
+    label: Trimmomatic Parameters
+    subtitle: Sliding window &amp; trim settings
+    column: 0
+    row: 2
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Initial quality filtering
+    detail: Quality, length, adapter trim
+    step: "1"
+    column: 1
+    row: 0
+  - id: seqprep
+    type: tool
+    label: SeqPrep
+    subtitle: Merge overlapping pairs
+    detail: Adapter trimming + merge
+    step: "2"
+    column: 2
+    row: 0
+  - id: trimmomatic
+    type: tool
+    label: Trimmomatic
+    subtitle: Quality trimming
+    detail: Sliding window, leading/trailing
+    step: "3"
+    column: 3
+    row: 0
+  - id: lengthFilter
+    type: tool
+    label: Length Filtering
+    subtitle: Filter FASTQ by size
+    detail: Min length threshold
+    step: "4"
+    column: 4
+    row: 0
+  - id: prinseq
+    type: tool
+    label: PRINSEQ
+    subtitle: Ambiguity filtering
+    detail: N percentage threshold
+    step: "5"
+    column: 5
+    row: 0
+  - id: fastaConvert
+    type: tool
+    label: FASTQ to FASTA
+    subtitle: Format conversion
+    detail: With width formatting
+    step: "6"
+    column: 6
+    row: 0
+  - id: qcFasta
+    type: output
+    label: QC FASTA Files
+    subtitle: Post-QC sequences
+    column: 7
+    row: 0
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregated QC report
+    detail: FastQC at each stage
+    column: 5
+    row: 2
+  - id: mqcStats
+    type: output
+    label: MultiQC Statistics
+    subtitle: Tabular QC metrics
+    column: 7
+    row: 1
+edges:
+  - from: peReads
+    to: fastp
+  - from: fastpParams
+    to: fastp
+    style: secondary
+  - from: fastp
+    to: seqprep
+  - from: seqprep
+    to: trimmomatic
+  - from: trimmomaticParams
+    to: trimmomatic
+    style: secondary
+  - from: trimmomatic
+    to: lengthFilter
+  - from: lengthFilter
+    to: prinseq
+  - from: prinseq
+    to: fastaConvert
+  - from: fastaConvert
+    to: qcFasta
+  - from: seqprep
+    to: multiqc
+    style: qc
+  - from: trimmomatic
+    to: multiqc
+    style: qc
+  - from: lengthFilter
+    to: multiqc
+    style: qc
+  - from: prinseq
+    to: multiqc
+    style: qc
+  - from: multiqc
+    to: mqcStats
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

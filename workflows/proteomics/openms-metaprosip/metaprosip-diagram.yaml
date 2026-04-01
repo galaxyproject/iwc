@@ -1,0 +1,102 @@
+title: "MetaProSIP Stable Isotope Incorporation"
+subtitle: "Automated inference of isotope incorporation rates in proteins"
+nodes:
+  - id: lcmsData
+    type: input
+    label: LC-MS Datasets
+    subtitle: "Centroided spectra collection"
+    column: 0
+    row: 0
+  - id: fastaDb
+    type: input
+    label: FASTA Database
+    subtitle: Protein sequences
+    column: 0
+    row: 1
+  - id: params
+    type: input
+    label: Search Parameters
+    subtitle: "Tolerance, modifications, element"
+    column: 0
+    row: 2
+  - id: decoyDb
+    type: tool
+    label: DecoyDatabase
+    subtitle: Generate target-decoy DB
+    step: "1"
+    column: 1
+    row: 1
+  - id: msgfPlus
+    type: tool
+    label: MSGFPlusAdapter
+    subtitle: Peptide identification
+    step: "2"
+    column: 2
+    row: 1
+  - id: featureFinder
+    type: tool
+    label: FeatureFinderMultiplex
+    subtitle: Detect LC-MS features
+    step: "3"
+    column: 2
+    row: 0
+  - id: fdr
+    type: tool
+    label: FDR + PeptideIndexer
+    subtitle: Statistical validation
+    step: "4"
+    column: 3
+    row: 1
+  - id: idMapper
+    type: tool
+    label: IDMapper
+    subtitle: Map IDs to features
+    step: "5"
+    column: 4
+    row: 0
+  - id: metaProSip
+    type: tool
+    label: MetaProSIP
+    subtitle: Isotope incorporation analysis
+    step: "6"
+    column: 5
+    row: 0
+  - id: featureFitting
+    type: output
+    label: Feature Fitting Result
+    subtitle: Incorporation rates (CSV)
+    column: 6
+    row: 0
+  - id: peptideCentric
+    type: output
+    label: Peptide-Centric Result
+    subtitle: Per-peptide analysis (CSV)
+    column: 6
+    row: 1
+edges:
+  - from: fastaDb
+    to: decoyDb
+  - from: lcmsData
+    to: featureFinder
+  - from: lcmsData
+    to: msgfPlus
+    style: secondary
+  - from: decoyDb
+    to: msgfPlus
+  - from: params
+    to: msgfPlus
+    style: secondary
+  - from: msgfPlus
+    to: fdr
+  - from: featureFinder
+    to: idMapper
+  - from: fdr
+    to: idMapper
+  - from: idMapper
+    to: metaProSip
+  - from: metaProSip
+    to: featureFitting
+  - from: metaProSip
+    to: peptideCentric
+legend:
+  items: [input, primary, secondary, output]

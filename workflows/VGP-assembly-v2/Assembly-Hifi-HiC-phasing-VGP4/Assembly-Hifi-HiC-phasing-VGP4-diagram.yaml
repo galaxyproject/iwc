@@ -1,0 +1,117 @@
+title: "HiFi + Hi-C Phased Assembly (VGP4)"
+nodes:
+  - id: hifiReads
+    type: input
+    label: HiFi Reads
+    subtitle: PacBio read collection
+    column: 0
+    row: 0
+  - id: hicReads
+    type: input
+    label: Hi-C Reads
+    subtitle: "list:paired collection"
+    column: 0
+    row: 1
+  - id: merylDb
+    type: input
+    label: Meryl Database
+    subtitle: From VGP1 k-mer profiling
+    column: 0
+    row: 3
+  - id: genomescope
+    type: input
+    label: GenomeScope Summary
+    subtitle: Genome size estimate
+    column: 0
+    row: 2
+  - id: cutadapt
+    type: tool
+    label: Cutadapt
+    subtitle: Trim HiFi adapters
+    step: "1"
+    column: 1
+    row: 0
+  - id: hifiasm
+    type: tool
+    label: HiFiasm
+    subtitle: Hi-C integrated phasing
+    step: "2"
+    column: 2
+    row: 0
+  - id: gfastats
+    type: tool
+    label: gfastats
+    subtitle: Assembly statistics
+    step: "3"
+    column: 3
+    row: 2
+  - id: compleasm
+    type: tool
+    label: Compleasm
+    subtitle: Gene completeness
+    step: "4"
+    column: 4
+    row: 2
+  - id: merqury
+    type: tool
+    label: Merqury
+    subtitle: K-mer QC & QV scores
+    step: "5"
+    column: 4
+    row: 3
+  - id: hap1Asm
+    type: output
+    label: Hap1 Assembly
+    subtitle: Phased contigs (GFA + FASTA)
+    column: 5
+    row: 1
+  - id: hap2Asm
+    type: output
+    label: Hap2 Assembly
+    subtitle: Phased contigs (GFA + FASTA)
+    column: 5
+    row: 2
+  - id: qcReport
+    type: report
+    label: QC Reports
+    subtitle: "Stats, Compleasm, Merqury, Nx"
+    column: 2
+    row: 4
+edges:
+  - from: hifiReads
+    to: cutadapt
+  - from: cutadapt
+    to: hifiasm
+  - from: hicReads
+    to: hifiasm
+    style: secondary
+  - from: genomescope
+    to: hifiasm
+    style: secondary
+  - from: hifiasm
+    to: hap1Asm
+  - from: hifiasm
+    to: hap2Asm
+  - from: hifiasm
+    to: gfastats
+    style: qc
+  - from: hifiasm
+    to: compleasm
+    style: qc
+  - from: merylDb
+    to: merqury
+    style: secondary
+  - from: hifiasm
+    to: merqury
+    style: qc
+  - from: gfastats
+    to: qcReport
+    style: qc
+  - from: compleasm
+    to: qcReport
+    style: qc
+  - from: merqury
+    to: qcReport
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

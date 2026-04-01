@@ -1,0 +1,89 @@
+title: "Hi-C Contact Map for Manual Curation"
+nodes:
+  - id: hap1
+    type: input
+    label: Haplotype 1
+    subtitle: Assembly FASTA
+    column: 0
+    row: 0
+  - id: hap2
+    type: input
+    label: Haplotype 2
+    subtitle: Assembly FASTA (optional)
+    column: 0
+    row: 1
+  - id: hicReads
+    type: input
+    label: Hi-C Reads
+    subtitle: "list:paired collection"
+    column: 0
+    row: 3
+  - id: pacbioReads
+    type: input
+    label: PacBio Reads
+    subtitle: Coverage tracks
+    column: 0
+    row: 2
+  - id: mergeHaps
+    type: tool
+    label: Merge Haplotypes
+    subtitle: Concatenate assemblies
+    step: "1"
+    column: 1
+    row: 0
+  - id: bwaMem2
+    type: tool
+    label: BWA-MEM2
+    subtitle: Align Hi-C to assembly
+    step: "2"
+    column: 2
+    row: 1
+  - id: pretextMap
+    type: tool
+    label: PretextMap
+    subtitle: Generate Hi-C contact maps
+    step: "3"
+    column: 3
+    row: 0
+  - id: tracks
+    type: tool
+    label: PretextGraph
+    subtitle: "Coverage, gaps, telomeres"
+    step: "4"
+    column: 4
+    row: 0
+  - id: pretextMaps
+    type: output
+    label: Pretext Maps
+    subtitle: Multimap & MAPQ-filtered
+    column: 5
+    row: 0
+  - id: pretextSnapshot
+    type: report
+    label: Pretext Snapshot
+    subtitle: Hi-C map images
+    column: 2
+    row: 2
+edges:
+  - from: hap1
+    to: mergeHaps
+  - from: hap2
+    to: mergeHaps
+  - from: mergeHaps
+    to: bwaMem2
+  - from: hicReads
+    to: bwaMem2
+  - from: bwaMem2
+    to: pretextMap
+  - from: pretextMap
+    to: tracks
+  - from: pacbioReads
+    to: tracks
+    style: secondary
+  - from: tracks
+    to: pretextMaps
+  - from: pretextMaps
+    to: pretextSnapshot
+    style: qc
+legend:
+  items: [input, primary, secondary, qc, output, report]

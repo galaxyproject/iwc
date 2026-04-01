@@ -1,0 +1,178 @@
+title: "Influenza A: Subtyping & Consensus Sequences"
+nodes:
+  - id: references
+    type: input
+    label: References per Segment
+    subtitle: "list collection"
+    detail: Per-segment FASTA reference sequences
+    column: 0
+    row: 0
+  - id: reads
+    type: input
+    label: Sequenced PE Data
+    subtitle: "list:paired collection"
+    detail: Illumina paired-end isolate reads
+    column: 0
+    row: 1
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Read QC, trimming & filtering
+    step: "1"
+    column: 1
+    row: 1
+  - id: vapor
+    type: tool
+    label: VAPOR
+    subtitle: Find closest reference per segment
+    detail: K-mer-based reference matching
+    step: "2"
+    column: 2
+    row: 0
+  - id: subtyping
+    type: tool
+    label: Subtyping
+    subtitle: Extract HA/NA subtypes
+    detail: Parse VAPOR output for H & N types
+    step: "3"
+    column: 3
+    row: 2
+  - id: refCompile
+    type: tool
+    label: Compile Reference
+    subtitle: Build hybrid reference genome
+    detail: Best-matching segments per sample
+    step: "4"
+    column: 3
+    row: 0
+  - id: bwamem
+    type: tool
+    label: BWA-MEM
+    subtitle: Map reads to hybrid reference
+    step: "5"
+    column: 4
+    row: 0
+  - id: samtoolsView
+    type: tool
+    label: Samtools view
+    subtitle: "Filter mapped reads (MAPQ>=20)"
+    step: "6"
+    column: 5
+    row: 0
+  - id: ivarConsensus
+    type: tool
+    label: ivar consensus
+    subtitle: Per-sample per-segment consensus
+    step: "7"
+    column: 6
+    row: 0
+  - id: mafft
+    type: tool
+    label: MAFFT
+    subtitle: Multiple sequence alignment
+    detail: Per-segment across samples
+    step: "8"
+    column: 7
+    row: 0
+  - id: snipit
+    type: tool
+    label: Snipit
+    subtitle: SNP visualization plots
+    step: "9"
+    column: 7
+    row: 1
+  - id: iqtree
+    type: tool
+    label: IQ-TREE
+    subtitle: ML phylogenetic trees
+    detail: Per-segment trees & distance matrices
+    step: "10"
+    column: 7
+    row: 2
+  - id: subtypingResults
+    type: output
+    label: Subtyping Results
+    subtitle: HA/NA subtype per sample
+    column: 8
+    row: 3
+  - id: consensusSeqs
+    type: output
+    label: Consensus Sequences
+    subtitle: Per-sample & per-segment FASTA
+    column: 8
+    row: 0
+  - id: snipitPlots
+    type: output
+    label: Snipit Plots
+    subtitle: Per-segment SNP plots
+    column: 8
+    row: 2
+  - id: mlTrees
+    type: output
+    label: ML Trees & Distances
+    subtitle: IQ-TREE per-segment results
+    column: 8
+    row: 4
+  - id: fastpReport
+    type: report
+    label: fastp Reports
+    subtitle: Read QC statistics
+    column: 4
+    row: 3
+  - id: qualimapReport
+    type: report
+    label: QualiMap Reports
+    subtitle: Mapping QC metrics
+    column: 5
+    row: 3
+  - id: vaporRefs
+    type: output
+    label: VAPOR Closest References
+    subtitle: Top-matching references per segment
+    column: 8
+    row: 1
+edges:
+  - from: references
+    to: vapor
+    style: secondary
+  - from: reads
+    to: fastp
+  - from: fastp
+    to: vapor
+  - from: vapor
+    to: subtyping
+  - from: vapor
+    to: refCompile
+  - from: subtyping
+    to: subtypingResults
+  - from: refCompile
+    to: bwamem
+  - from: fastp
+    to: bwamem
+  - from: bwamem
+    to: samtoolsView
+  - from: samtoolsView
+    to: ivarConsensus
+  - from: ivarConsensus
+    to: mafft
+  - from: ivarConsensus
+    to: consensusSeqs
+  - from: mafft
+    to: snipit
+  - from: mafft
+    to: iqtree
+  - from: snipit
+    to: snipitPlots
+  - from: iqtree
+    to: mlTrees
+  - from: fastp
+    to: fastpReport
+    style: qc
+  - from: samtoolsView
+    to: qualimapReport
+    style: qc
+  - from: vapor
+    to: vaporRefs
+    style: secondary
+legend:
+  items: [input, primary, secondary, qc, output, report]

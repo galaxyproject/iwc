@@ -1,0 +1,90 @@
+title: "Protein-Ligand Complex Parameterization"
+subtitle: "Generate GROMACS topology files for protein-ligand systems"
+nodes:
+  - id: ligandSdf
+    type: input
+    label: Ligand SDF
+    subtitle: Small molecule structure
+    column: 0
+    row: 0
+  - id: proteinPdb
+    type: input
+    label: Apoprotein PDB
+    subtitle: Protein structure
+    column: 0
+    row: 1
+  - id: simParams
+    type: input
+    label: Simulation Parameters
+    subtitle: "Force field, water model, pH"
+    column: 0
+    row: 2
+  - id: ligandPrep
+    type: tool
+    label: Ligand Preparation
+    subtitle: "Convert, protonate, get charge"
+    step: "1"
+    column: 1
+    row: 0
+  - id: proteinSetup
+    type: tool
+    label: GROMACS Setup
+    subtitle: Generate protein topology
+    step: "2"
+    column: 1
+    row: 1
+  - id: antechamber
+    type: tool
+    label: AnteChamber
+    subtitle: Ligand parameterization (GAFF)
+    step: "3"
+    column: 2
+    row: 0
+  - id: acpype
+    type: tool
+    label: ACPYPE
+    subtitle: Generate GROMACS ligand files
+    step: "4"
+    column: 3
+    row: 0
+  - id: mergeTopology
+    type: tool
+    label: Merge Topologies
+    subtitle: Combine protein + ligand
+    step: "5"
+    column: 4
+    row: 0
+  - id: complexTop
+    type: output
+    label: Complex Topology
+    subtitle: "Merged TOP file"
+    column: 5
+    row: 0
+  - id: posRestraints
+    type: output
+    label: Position Restraints
+    subtitle: Restraint ITP file
+    column: 5
+    row: 1
+edges:
+  - from: ligandSdf
+    to: ligandPrep
+  - from: proteinPdb
+    to: proteinSetup
+  - from: simParams
+    to: proteinSetup
+    style: secondary
+  - from: ligandPrep
+    to: antechamber
+  - from: antechamber
+    to: acpype
+  - from: acpype
+    to: mergeTopology
+  - from: proteinSetup
+    to: mergeTopology
+  - from: mergeTopology
+    to: complexTop
+  - from: proteinSetup
+    to: posRestraints
+legend:
+  items: [input, primary, secondary, output]

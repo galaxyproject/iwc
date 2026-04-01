@@ -1,0 +1,101 @@
+title: "ChIP-seq Analysis: Paired-End Read Processing"
+nodes:
+  - id: input
+    type: input
+    label: PE FASTQ Input
+    subtitle: "list:paired collection"
+    detail: ChIP-seq reads
+    step: "1"
+    column: 0
+    row: 0
+  - id: fastp
+    type: tool
+    label: fastp
+    subtitle: Adapter & quality trimming
+    detail: "Remove adapters, filter Q<30"
+    step: "2"
+    column: 1
+    row: 0
+  - id: bowtie2
+    type: tool
+    label: Bowtie2
+    subtitle: Align to reference genome
+    detail: Default PE mapping
+    step: "3"
+    column: 2
+    row: 0
+  - id: filterBam
+    type: tool
+    label: Filter BAM
+    subtitle: "MAPQ>=30, concordant only"
+    detail: Samtools filter
+    step: "4"
+    column: 3
+    row: 0
+  - id: macs2
+    type: tool
+    label: MACS2 callpeak
+    subtitle: Call peaks (BAMPE mode)
+    detail: Removes PCR duplicates
+    step: "5"
+    column: 4
+    row: 0
+  - id: filteredBam
+    type: output
+    label: Filtered BAM
+    subtitle: High-quality alignments
+    column: 5
+    row: 0
+  - id: peakCalls
+    type: output
+    label: Peak Calls
+    subtitle: narrowPeak + summits
+    column: 5
+    row: 1
+  - id: coverage
+    type: output
+    label: Coverage
+    subtitle: bigWig signal track
+    column: 5
+    row: 2
+  - id: macs2Report
+    type: report
+    label: MACS2 Report
+    subtitle: Peak calling summary
+    column: 3
+    row: 1
+  - id: multiqc
+    type: report
+    label: MultiQC
+    subtitle: Aggregate QC report
+    detail: fastp + Bowtie2 + MACS2
+    column: 2
+    row: 1
+edges:
+  - from: input
+    to: fastp
+  - from: fastp
+    to: bowtie2
+  - from: bowtie2
+    to: filterBam
+  - from: filterBam
+    to: macs2
+  - from: filterBam
+    to: filteredBam
+    style: secondary
+  - from: macs2
+    to: peakCalls
+  - from: macs2
+    to: coverage
+    style: secondary
+  - from: macs2
+    to: macs2Report
+    style: qc
+  - from: fastp
+    to: multiqc
+    style: qc
+  - from: bowtie2
+    to: multiqc
+    style: qc
+legend:
+  items: [input, primary, qc, output, report]

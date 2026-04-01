@@ -1,0 +1,141 @@
+title: "MGnify Amplicon v5.0 - rRNA Prediction"
+subtitle: "Classification and extraction of SSU and LSU sequences"
+nodes:
+  - id: processedSeqs
+    type: input
+    label: Processed Sequences
+    subtitle: "list collection"
+    detail: Post-QC FASTA files
+    column: 0
+    row: 0
+  - id: clanInfo
+    type: input
+    label: Clan Information
+    subtitle: Rfam clan file
+    column: 0
+    row: 1
+  - id: cmsearch
+    type: tool
+    label: cmsearch
+    subtitle: Infernal rRNA search
+    detail: HMM-only mode, Rfam models
+    step: "1"
+    column: 1
+    row: 1
+  - id: deoverlap
+    type: tool
+    label: CMsearch Deoverlap
+    subtitle: Remove overlapping hits
+    detail: Clan-aware filtering
+    step: "2"
+    column: 2
+    row: 1
+  - id: coordExtract
+    type: tool
+    label: Coordinate Extraction
+    subtitle: SSU/LSU BED regions
+    detail: Forward + reverse strand
+    step: "3"
+    column: 3
+    row: 1
+  - id: ssuExtract
+    type: tool
+    label: SSU Extraction
+    subtitle: bedtools getfasta
+    detail: Small subunit sequences
+    step: "4"
+    column: 4
+    row: 0
+  - id: lsuExtract
+    type: tool
+    label: LSU Extraction
+    subtitle: bedtools getfasta
+    detail: Large subunit sequences
+    step: "5"
+    column: 4
+    row: 2
+  - id: ssuMapseq
+    type: tool
+    label: MAPseq (SSU)
+    subtitle: Taxonomic classification
+    detail: SILVA SSU database
+    step: "6"
+    column: 5
+    row: 0
+  - id: lsuMapseq
+    type: tool
+    label: MAPseq (LSU)
+    subtitle: Taxonomic classification
+    detail: SILVA LSU database
+    step: "7"
+    column: 5
+    row: 2
+  - id: ssuBed
+    type: output
+    label: LSU &amp; SSU BED
+    subtitle: Combined BED regions
+    column: 6
+    row: 2
+  - id: ssuOtu
+    type: output
+    label: SSU OTU Tables
+    subtitle: SSU classification results
+    column: 6
+    row: 0
+  - id: lsuOtu
+    type: output
+    label: LSU OTU Tables
+    subtitle: LSU classification results
+    column: 6
+    row: 3
+  - id: kronaSSU
+    type: output
+    label: SSU Krona
+    subtitle: Visualization input
+    column: 6
+    row: 1
+  - id: kronaLSU
+    type: output
+    label: LSU Krona
+    subtitle: Visualization input
+    column: 6
+    row: 4
+edges:
+  - from: processedSeqs
+    to: cmsearch
+  - from: clanInfo
+    to: deoverlap
+    style: secondary
+  - from: cmsearch
+    to: deoverlap
+  - from: deoverlap
+    to: coordExtract
+  - from: coordExtract
+    to: ssuExtract
+  - from: coordExtract
+    to: lsuExtract
+  - from: coordExtract
+    to: ssuBed
+    style: secondary
+  - from: processedSeqs
+    to: ssuExtract
+    style: secondary
+  - from: processedSeqs
+    to: lsuExtract
+    style: secondary
+  - from: ssuExtract
+    to: ssuMapseq
+  - from: lsuExtract
+    to: lsuMapseq
+  - from: ssuMapseq
+    to: ssuOtu
+  - from: ssuMapseq
+    to: kronaSSU
+    style: secondary
+  - from: lsuMapseq
+    to: lsuOtu
+  - from: lsuMapseq
+    to: kronaLSU
+    style: secondary
+legend:
+  items: [input, primary, output]

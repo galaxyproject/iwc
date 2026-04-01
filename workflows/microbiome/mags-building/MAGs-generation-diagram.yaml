@@ -1,0 +1,177 @@
+title: "Metagenome-Assembled Genomes (MAGs) Generation"
+nodes:
+  - id: trimmedReads
+    type: input
+    label: Trimmed Reads
+    subtitle: "list:paired collection"
+    detail: Per-sample reads
+    step: "1"
+    column: 0
+    row: 1
+  - id: groupedReads
+    type: input
+    label: Grouped Reads
+    subtitle: "list:paired collection"
+    detail: Co-assembly groups
+    step: "2"
+    column: 0
+    row: 0
+  - id: assembly
+    type: tool
+    label: Assembly
+    subtitle: MEGAHIT or metaSPAdes
+    detail: Metagenome assembly
+    step: "3"
+    column: 1
+    row: 0
+  - id: binning
+    type: tool
+    label: Binning
+    subtitle: "MaxBin2, MetaBAT2, SemiBin, CONCOCT"
+    detail: 4 binners in parallel
+    step: "4"
+    column: 2
+    row: 0
+  - id: binette
+    type: tool
+    label: Binette
+    subtitle: Bin refinement
+    detail: Consensus from all binners
+    step: "5"
+    column: 3
+    row: 0
+  - id: drep
+    type: tool
+    label: dRep
+    subtitle: Dereplicate MAGs
+    detail: ANI-based cross-sample
+    step: "6"
+    column: 4
+    row: 0
+  - id: gtdbtk
+    type: tool
+    label: GTDB-Tk
+    subtitle: Taxonomic classification
+    step: "7"
+    column: 0
+    row: 2
+  - id: bakta
+    type: tool
+    label: Bakta
+    subtitle: Genome annotation
+    step: "8"
+    column: 1
+    row: 2
+  - id: coverm
+    type: tool
+    label: CoverM
+    subtitle: Abundance estimation
+    detail: Per-sample coverage
+    step: "9"
+    column: 2
+    row: 2
+  - id: checkm
+    type: tool
+    label: CheckM / CheckM2
+    subtitle: Quality assessment
+    step: "10"
+    column: 3
+    row: 2
+  - id: quast
+    type: tool
+    label: QUAST
+    subtitle: Assembly statistics
+    step: "11"
+    column: 4
+    row: 2
+  - id: assemblyReport
+    type: report
+    label: Assembly Report
+    subtitle: QUAST HTML (contigs)
+    column: 3
+    row: 3
+  - id: dereplicatedBins
+    type: output
+    label: Dereplicated Bins
+    subtitle: Final MAG set
+    column: 5
+    row: 0
+  - id: clusterAssignment
+    type: output
+    label: Cluster Assignment
+    subtitle: dRep clustering CSV
+    column: 5
+    row: 1
+  - id: multiqc
+    type: report
+    label: MultiQC Report
+    subtitle: Integrated summary
+    detail: "QUAST, CheckM2, CoverM, GTDB-Tk, Bakta"
+    column: 2
+    row: 3
+  - id: baktaAnnotation
+    type: output
+    label: Bakta Annotation
+    subtitle: Merged gene tables
+    column: 5
+    row: 2
+  - id: covermOutput
+    type: output
+    label: CoverM Abundances
+    subtitle: Merged coverage table
+    column: 5
+    row: 3
+edges:
+  - from: groupedReads
+    to: assembly
+  - from: assembly
+    to: binning
+  - from: trimmedReads
+    to: binning
+    style: secondary
+  - from: binning
+    to: binette
+  - from: binette
+    to: drep
+  - from: assembly
+    to: assemblyReport
+    style: qc
+  - from: drep
+    to: dereplicatedBins
+  - from: drep
+    to: clusterAssignment
+    style: secondary
+  - from: drep
+    to: gtdbtk
+  - from: drep
+    to: bakta
+  - from: drep
+    to: coverm
+  - from: drep
+    to: checkm
+  - from: drep
+    to: quast
+  - from: trimmedReads
+    to: coverm
+    style: secondary
+  - from: gtdbtk
+    to: multiqc
+    style: qc
+  - from: bakta
+    to: multiqc
+    style: qc
+  - from: coverm
+    to: multiqc
+    style: qc
+  - from: checkm
+    to: multiqc
+    style: qc
+  - from: quast
+    to: multiqc
+    style: qc
+  - from: bakta
+    to: baktaAnnotation
+  - from: coverm
+    to: covermOutput
+legend:
+  items: [input, primary, qc, output, report]
