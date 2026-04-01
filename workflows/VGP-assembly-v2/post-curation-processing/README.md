@@ -17,7 +17,7 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 ### Processing Options
 
 8. **Generate Gene tracks with Compleasm?** [boolean] - Enable/disable Compleasm gene annotation tracks
-9. **Do you want to trim the Hi-C data?** [boolean] - Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy"
+9. **Trim the Hi-C data?** [boolean] - Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy"
 10. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C data
 11. **Remove adapters from HiFi reads?** [boolean] - Select no if using HiFi reads trimmed in a previous workflow
 12. **Generate high resolution Hi-C maps?** [boolean] - Generate high resolution Pretext maps
@@ -25,9 +25,9 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 ### Analysis Parameters
 
 13. **Canonical telomeric pattern** [text] - Default: TTAGGG (for vertebrate genomes)
-14. **Telomere patterns to explore (comma-separated), IUPAC allowed** [text] - Telomere repeat patterns to search for
+14. **Telomere patterns to explore** [text] - Telomere repeat patterns to search for (comma-separated, IUPAC allowed)
 15. **Minimum Mapping Quality** [integer] - Minimum mapping score for Hi-C alignments. Default: 10
-16. **Bin Size for Bigwig files** [integer] - Bin size for coverage tracks. Default: 100
+16. **Bin Size for BigWig files** [integer] - Bin size for coverage tracks. Default: 100
 
 ### Haplotype Naming
 
@@ -69,8 +69,8 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 
 ### Visualization
 
-- **JBrowse2 No gene Tracks** - JBrowse2 visualization without gene annotation tracks
-- **JBrowse2 with gene Tracks** - JBrowse2 visualization with Compleasm gene annotation tracks
+- **JBrowse2 without Gene tracks** - JBrowse2 visualization without gene annotation tracks
+- **JBrowse2 with Gene tracks** - JBrowse2 visualization with Compleasm gene annotation tracks
 - **Hi-C maps for each haplotype** - Combined Hi-C contact maps (MAPQ filtered)
 - **Hi-C maps for each haplotype - Multimapping** - Combined Hi-C contact maps (multimapping)
 
