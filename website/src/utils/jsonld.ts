@@ -1,4 +1,5 @@
 import type { Workflow } from "../models/workflow";
+import { IWC_SITE_URL } from ".";
 
 /**
  * Schema.org Person or Organization type
@@ -41,10 +42,7 @@ interface WorkflowJsonLd {
  * @param baseUrl - Base URL for the IWC website (e.g., "https://iwc.galaxyproject.org")
  * @returns JSON-LD object ready to be serialized
  */
-export function generateWorkflowJsonLd(
-    workflow: Workflow,
-    baseUrl: string = "https://iwc.galaxyproject.org",
-): WorkflowJsonLd {
+export function generateWorkflowJsonLd(workflow: Workflow, baseUrl: string = IWC_SITE_URL): WorkflowJsonLd {
     // Build Dockstore URL from TRS ID
     // TRS ID format: "#workflow/github.com/iwc-workflows/[name]/[version]"
     const dockstoreUrl = workflow.trsID
