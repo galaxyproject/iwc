@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.18] - 2026-04-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
+
 ## [0.17] - 2026-03-09
 
 ### Automatic update
