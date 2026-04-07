@@ -8,6 +8,11 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
 - `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2`
 
+### Manual update
+- Changed FastQC to Falco in the subworkflow More QC
+- Include the README in the workflow
+- Take advantage of the new MultiQC wrapper with optional inputs to simplify workflow and get a single Multi QC step and no "dummy featureCounts summary file".
+
 ## [1.3] - 2026-02-16
 
 ### Automatic update
