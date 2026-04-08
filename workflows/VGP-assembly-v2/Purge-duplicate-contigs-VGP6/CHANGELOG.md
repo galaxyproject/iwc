@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.6] - 2026-03-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.30+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
+
 ## [0.10.5] - 2026-01-26
 
 ### Manual changes
