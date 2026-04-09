@@ -14,6 +14,10 @@
 - Include the README in the workflow
 - Take advantage of the new MultiQC wrapper with optional inputs to simplify workflow and remove "dummy featureCounts summary file".
 
+### Fix
+
+- This new version solves the issue with MultiQC when `Use featureCounts for generating count tables` is set to `False`
+
 ## [1.3] - 2026-02-16
 
 ### Automatic update
