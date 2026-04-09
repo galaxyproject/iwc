@@ -18,7 +18,7 @@
 - toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1 to toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0
 - toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_slopbed/2.31.1 to toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_slopbed/2.31.1+galaxy2
 - toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_mergebed/2.31.1 to toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_mergebed/2.31.1+galaxy2
-- toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0 to toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4
+- toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.24.1+galaxy0 to toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2
 
 ### Manual changes
 
