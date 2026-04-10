@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9] - 2026-04-09
+
+### Manual update
+
+- Add the README in the workflow
+- Hide intermediate steps
+
 ## [0.8] - 2026-01-19
 
 ### Automatic update
