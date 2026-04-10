@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1] - 2026-04-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.2.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
+
 ## [1.0] - 2025-10-03
 
 ### Tool change
