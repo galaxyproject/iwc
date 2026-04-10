@@ -1,6 +1,10 @@
 # Changelog
 
+## [2.3] - 2026-03-30
 
+### Changed
+- Samtools markdup now removes duplicates instead of only marking them
+- Fix PretextMap input connections
 
 ## [2.2] - 2026-03-10
 
