@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1] - 2026-04-15
+
+### Manual update
+
+* Change shovill assembler from spades to skesa because spades causes job issues
+
 ## [2.0.1] - 2025-12-01
 
 ### Automatic update
