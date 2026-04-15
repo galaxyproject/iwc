@@ -4,7 +4,7 @@
 
 ### Manual update
 
-* Change shovill assembler from spades to skesa because spades causes job issues
+* Add CONVERTER_gz_to_uncompressed tool box because some fastq.gz files cause errors, decompressing them resolves the issue
 
 ## [2.0.1] - 2025-12-01
 
