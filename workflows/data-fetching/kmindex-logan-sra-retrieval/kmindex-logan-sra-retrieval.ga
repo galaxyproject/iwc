@@ -1,0 +1,830 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "run kmindex over logan unitigs, parse results for SRA accessions that matched the query sequence, and download them",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0009-0009-3690-8372",
+            "name": "Danielle Callan"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "KMIndex / Logan SRA Hit Retrieval",
+    "readme": "# KMIndex / Logan SRA Hit Retrieval\n\n## Overview\n\nSearch a query sequence against a KMIndex/Logan index and rapidly download matching SRA runs into your Galaxy history.\n\nThis workflow uses k-mer\u2013based matching for fast identification of highly similar sequences.\n\n## Inputs\n\n- Query sequence (FASTA)\n- Index to query\n- Max hits to download\n- Minimum shared k-mer proportion (0.0\u20131.0, default: 0.5)\n- Z-value (k-mer extension factor) (default: 6) Controls k-mer matching sensitivity. Default is recommended for most use cases.\n\n## Outputs\n\n - Accession list (TXT) \u2014 downloaded SRA IDs\n - Paired-end reads (collection)\n - Single-end reads (collection)\n\n## Parameter Tips\n\nMore stringent (fewer, closer matches):\n - \u2191 shared k-mer proportion\n\nMore permissive (more, broader matches):\n - \u2193 shared k-mer proportion\n\nZ-value:\n - Higher \u2192 more specific, may miss distant matches\n - Lower \u2192 more sensitive, may include weaker matches\n\n## When to Use KMIndex / Logan\n\nUse this workflow when you need:\n\n - Fast searches at scale\n - Exact or near-exact matches\n - Minimal parameter tuning\n\n Use the LexicMap workflow if you need:\n\n - Approximate matching (mismatches/gaps)\n - Sensitivity to divergent sequences\n - BLAST-like alignment scoring\n\n## Rule of thumb:\n\n - High similarity \u2192 use KMIndex / Logan\n - Unknown or divergent sequences \u2192 use LexicMap\n\n## Notes\n\n - Designed for speed; less sensitive to divergent sequences than alignment-based methods\n - Very low thresholds may return weak or spurious matches\n - Outputs are split into paired-end and single-end collections for downstream use",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "KMIndex index/database to search against. Determines the set of sequences that will be queried for matches.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "KMIndex index/database to search against. Determines the set of sequences that will be queried for matches.",
+                    "name": "Index To Query"
+                }
+            ],
+            "label": "Index To Query",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 320
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": \"VIRALRNA_ROD\", \"multiple\": false, \"validators\": [], \"restrictions\": [\"VIRALRNA_ROD\"], \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "5ff7f185-a300-421b-8600-b9a12c8b2524",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Nucleotide sequence (FASTA) to search against the selected index.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Nucleotide sequence (FASTA) to search against the selected index.",
+                    "name": "Query Sequence"
+                }
+            ],
+            "label": "Query Sequence",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 440
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "45d87a46-75ca-4dcf-8b4e-0bc8b6d7ae57",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Controls k-mer matching sensitivity. Higher values increase specificity but may miss more divergent matches. Default is recommended for most use cases.",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Controls k-mer matching sensitivity. Higher values increase specificity but may miss more divergent matches. Default is recommended for most use cases.",
+                    "name": "Z-value (k-mer extension factor)"
+                }
+            ],
+            "label": "Z-value (k-mer extension factor)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 580
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 6, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "dce92ce8-b592-4560-9207-b5bd9af5973f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Minimum fraction of k-mers shared between the query and a target sequence. Higher values require more similar sequences.",
+            "content_id": null,
+            "errors": null,
+            "id": 3,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Minimum fraction of k-mers shared between the query and a target sequence. Higher values require more similar sequences.",
+                    "name": "Minimum shared k-mer proportion"
+                }
+            ],
+            "label": "Minimum shared k-mer proportion",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 720
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 0.5, \"validators\": [{\"min\": 0.1, \"max\": 1.0, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "4f1b843c-2b97-45ff-8352-2714c8f5eb9b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Integer representing the first N SRA accessions to keep from the kmindex query",
+            "content_id": null,
+            "errors": null,
+            "id": 4,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Integer representing the first N SRA accessions to keep from the kmindex query",
+                    "name": "How many accessions to keep"
+                }
+            ],
+            "label": "How many accessions to keep",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 1250,
+                "top": 210
+            },
+            "tool_id": null,
+            "tool_state": "{\"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "0320b827-5a19-47b7-b470-fece6e02d22e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/kmindex/kmindex_query/0.6.0+galaxy2",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "db_opts|kmindex": {
+                    "id": 0,
+                    "output_name": "output"
+                },
+                "fastx": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "threshold": {
+                    "id": 3,
+                    "output_name": "output"
+                },
+                "zvalue": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool kmindex query",
+                    "name": "db_opts"
+                }
+            ],
+            "label": null,
+            "name": "kmindex query",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 350,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/kmindex/kmindex_query/0.6.0+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "40066bb1d9ed",
+                "name": "kmindex",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"db_opts\": {\"db_opts_selector\": \"db\", \"__current_case__\": 1, \"kmindex\": {\"__class__\": \"ConnectedValue\"}}, \"fast\": false, \"fastx\": {\"__class__\": \"ConnectedValue\"}, \"format\": \"json\", \"threshold\": {\"__class__\": \"ConnectedValue\"}, \"verbose\": \"info\", \"zvalue\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.6.0+galaxy2",
+            "type": "tool",
+            "uuid": "d92335e4-bc1c-4d6d-b70b-3362d0bdab7d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "If number of accessions to keep is 0 we should keep all of them, and this boolean indicating whether to take a subset should be false.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 4,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
+            "label": "(Boolean) Subset Accessions",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1550,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "5ac8a4bf7a8d",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"0\", \"to\": \"false\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "8711c5a8-d252-4863-85e7-bb84b4f34150",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Parse JSON list for SRA accessions",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "infile": {
+                    "id": 5,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Parse SRA Accessions",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 650,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"match($0, /\\\"(SRR[0-9]+)\\\"[[:space:]]*:[[:space:]]*([0-9.]+)/, m) {\\n  print m[1] \\\"\\\\t\\\" m[2]\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "b06f7633-3909-4d3c-8ad4-429c23acc7db",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "input_list": {
+                    "id": 7,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Collapse Collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 950,
+                "top": 420
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutput": {
+                    "action_arguments": {
+                        "newtype": "tabular"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "90981f86000f",
+                "name": "collapse_collections",
+                "owner": "nml",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "5.1.0",
+            "type": "tool",
+            "uuid": "bb9c901e-ad3d-4b1b-a8fe-9e961385536d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "infile": {
+                    "id": 8,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Sort Accessions By Best Match",
+            "name": "Sort",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1250,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"header\": \"0\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"sortkeys\": [{\"__index__\": 0, \"column\": \"2\", \"start_charpos\": null, \"end_charpos\": null, \"order\": \"r\", \"style\": \"V\", \"ignore_case\": false, \"ignore_leading_blanks\": false}], \"unique\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "8831fd1a-2d9a-4a73-8243-cf3d32f84d9a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "10": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "input": {
+                    "id": 9,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Cut",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1550,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "Cut1",
+            "tool_state": "{\"columnList\": \"c1\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "cc718211-11d2-4eeb-bd27-d8cebda4aebc",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
+            "annotation": "",
+            "content_id": "Show beginning1",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "input": {
+                    "id": 10,
+                    "output_name": "out_file1"
+                },
+                "lineNum": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 6,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Subset Accessions",
+            "name": "Select first",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1850,
+                "top": 190
+            },
+            "post_job_actions": {},
+            "tool_id": "Show beginning1",
+            "tool_state": "{\"header\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"lineNum\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "d1c89953-bf19-4225-81a8-9630b19d90d4",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "style_cond|type_cond|pick_from_0|value": {
+                    "id": 11,
+                    "output_name": "out_file1"
+                },
+                "style_cond|type_cond|pick_from_1|value": {
+                    "id": 10,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Choose Subset or Full Set of Accessions",
+            "name": "Pick parameter value",
+            "outputs": [
+                {
+                    "name": "data_param",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2150,
+                "top": 400
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "b19e21af9c52",
+                "name": "pick_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "00f29b97-cf31-40b7-aa89-ae3fb3512582",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "KMIndex/ Logan Matching Accessions List",
+                    "output_name": "data_param",
+                    "uuid": "3d52298d-da10-4aca-8e72-1c1ed5460103"
+                }
+            ]
+        },
+        "13": {
+            "annotation": "",
+            "id": 13,
+            "input_connections": {
+                "Run accessions": {
+                    "id": 12,
+                    "input_subworkflow_step_id": 0,
+                    "output_name": "data_param"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parallel Accession Download",
+            "outputs": [],
+            "position": {
+                "left": 2450,
+                "top": 400
+            },
+            "subworkflow": {
+                "a_galaxy_workflow": "true",
+                "annotation": "",
+                "comments": [],
+                "creator": [
+                    {
+                        "class": "Person",
+                        "identifier": "https://orcid.org/0000-0002-9676-7032",
+                        "name": "Marius van den Beek"
+                    },
+                    {
+                        "class": "Organization",
+                        "name": "IWC",
+                        "url": "https://github.com/galaxyproject/iwc"
+                    }
+                ],
+                "format-version": "0.1",
+                "license": "MIT",
+                "name": "Parallel Accession Download",
+                "report": {
+                    "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+                },
+                "steps": {
+                    "0": {
+                        "annotation": "Text file containing run accessions (starting with SRR, ERR or DRR), one per line.",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 0,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "Text file containing run accessions (starting with SRR, ERR or DRR), one per line.",
+                                "name": "Run accessions"
+                            }
+                        ],
+                        "label": "Run accessions",
+                        "name": "Input dataset",
+                        "outputs": [],
+                        "position": {
+                            "left": 0,
+                            "top": 0
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"optional\": false, \"format\": [\"txt\"], \"tag\": null}",
+                        "tool_version": null,
+                        "type": "data_input",
+                        "uuid": "e9e5605e-29e1-4f90-9693-0e40a2ddfd8f",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "1": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+                        "errors": null,
+                        "id": 1,
+                        "input_connections": {
+                            "split_parms|input": {
+                                "id": 0,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Split file",
+                                "name": "split_parms"
+                            }
+                        ],
+                        "label": "Split accessions to collection",
+                        "name": "Split file",
+                        "outputs": [
+                            {
+                                "name": "list_output_txt",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 300,
+                            "top": 0
+                        },
+                        "post_job_actions": {
+                            "HideDatasetActionlist_output_txt": {
+                                "action_arguments": {},
+                                "action_type": "HideDatasetAction",
+                                "output_name": "list_output_txt"
+                            }
+                        },
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+                        "tool_shed_repository": {
+                            "changeset_revision": "2dae863c8f42",
+                            "name": "split_file_to_collection",
+                            "owner": "bgruening",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"split_parms\": {\"select_ftype\": \"txt\", \"__current_case__\": 5, \"input\": {\"__class__\": \"ConnectedValue\"}, \"select_mode\": {\"mode\": \"chunk\", \"__current_case__\": 0, \"chunksize\": \"1\"}, \"newfilenames\": \"split_file\", \"select_allocate\": {\"allocate\": \"byrow\", \"__current_case__\": 2}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "0.5.2",
+                        "type": "tool",
+                        "uuid": "f8d776ff-e1ba-4bde-9b4b-392d825fd2b7",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "2": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.1.1+galaxy0",
+                        "errors": null,
+                        "id": 2,
+                        "input_connections": {
+                            "input|file_list": {
+                                "id": 1,
+                                "output_name": "list_output_txt"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Faster Download and Extract Reads in FASTQ",
+                                "name": "input"
+                            }
+                        ],
+                        "label": "fasterq-dump",
+                        "name": "Faster Download and Extract Reads in FASTQ",
+                        "outputs": [
+                            {
+                                "name": "list_paired",
+                                "type": "input"
+                            },
+                            {
+                                "name": "output_collection",
+                                "type": "input"
+                            },
+                            {
+                                "name": "output_collection_other",
+                                "type": "input"
+                            },
+                            {
+                                "name": "log",
+                                "type": "txt"
+                            }
+                        ],
+                        "position": {
+                            "left": 600,
+                            "top": 0
+                        },
+                        "post_job_actions": {
+                            "HideDatasetActionlist_paired": {
+                                "action_arguments": {},
+                                "action_type": "HideDatasetAction",
+                                "output_name": "list_paired"
+                            },
+                            "HideDatasetActionlog": {
+                                "action_arguments": {},
+                                "action_type": "HideDatasetAction",
+                                "output_name": "log"
+                            },
+                            "HideDatasetActionoutput_collection": {
+                                "action_arguments": {},
+                                "action_type": "HideDatasetAction",
+                                "output_name": "output_collection"
+                            },
+                            "HideDatasetActionoutput_collection_other": {
+                                "action_arguments": {},
+                                "action_type": "HideDatasetAction",
+                                "output_name": "output_collection_other"
+                            }
+                        },
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.1.1+galaxy0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "516a54ddf218",
+                            "name": "sra_tools",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"adv\": {\"seq_defline\": \"@$sn/$ri\", \"minlen\": null, \"split\": \"--split-3\", \"skip_technical\": true}, \"input\": {\"input_select\": \"file_list\", \"__current_case__\": 2, \"file_list\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "3.1.1+galaxy0",
+                        "type": "tool",
+                        "uuid": "4d328e7b-df7d-4d3e-a60f-1ea12925f317",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "3": {
+                        "annotation": "",
+                        "content_id": "__APPLY_RULES__",
+                        "errors": null,
+                        "id": 3,
+                        "input_connections": {
+                            "input": {
+                                "id": 2,
+                                "output_name": "list_paired"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "flatten paired output",
+                        "name": "Apply rules",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 900,
+                            "top": 0
+                        },
+                        "post_job_actions": {
+                            "TagDatasetActionoutput": {
+                                "action_arguments": {
+                                    "tags": "name:PE"
+                                },
+                                "action_type": "TagDatasetAction",
+                                "output_name": "output"
+                            }
+                        },
+                        "tool_id": "__APPLY_RULES__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [2], \"connectable\": true, \"is_workflow\": false, \"type\": \"paired_identifier\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier2\", \"warn\": null}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "924d2152-5640-40cd-bec3-0ced45469d84",
+                        "when": null,
+                        "workflow_outputs": [
+                            {
+                                "label": "Paired End Reads",
+                                "output_name": "output",
+                                "uuid": "b431f0a1-391e-45e1-b739-27dd0fc83087"
+                            }
+                        ]
+                    },
+                    "4": {
+                        "annotation": "",
+                        "content_id": "__APPLY_RULES__",
+                        "errors": null,
+                        "id": 4,
+                        "input_connections": {
+                            "input": {
+                                "id": 2,
+                                "output_name": "output_collection"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "flatten single end output",
+                        "name": "Apply rules",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 900,
+                            "top": 210
+                        },
+                        "post_job_actions": {
+                            "TagDatasetActionoutput": {
+                                "action_arguments": {
+                                    "tags": "name:SE"
+                                },
+                                "action_type": "TagDatasetAction",
+                                "output_name": "output"
+                            }
+                        },
+                        "tool_id": "__APPLY_RULES__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "946d9610-c363-4915-b93a-f074169ef812",
+                        "when": null,
+                        "workflow_outputs": [
+                            {
+                                "label": "Single End Reads",
+                                "output_name": "output",
+                                "uuid": "e2bf276c-0956-473e-a778-b3b3df7351f5"
+                            }
+                        ]
+                    }
+                },
+                "tags": [],
+                "uuid": "cfd98148-1d4a-4100-b016-2f307e0184ee"
+            },
+            "tool_id": null,
+            "type": "subworkflow",
+            "uuid": "9fb319f7-0b94-4dd1-b267-a591be41b242",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Paired End Reads",
+                    "output_name": "Paired End Reads",
+                    "uuid": "40cf268a-9b0a-4ab7-ac57-3db83bba0920"
+                },
+                {
+                    "label": "Single End Reads",
+                    "output_name": "Single End Reads",
+                    "uuid": "5f0ef3c1-5893-42e1-bb5b-d136c713adc8"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "6d7736a4-66d8-4724-a8a2-050e7dfefbf4",
+    "version": 24,
+    "release": "0.1"
+}
