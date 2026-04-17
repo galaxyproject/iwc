@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4] - 2026-04-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.1.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2`
+
+
+### Manual update
+- Changed FastQC to Falco in the subworkflow More QC
+- Include the README in the workflow
+- Take advantage of the new MultiQC wrapper with optional inputs to simplify workflow and remove "dummy featureCounts summary file".
+
+### Fix
+
+- This new version solves the issue with MultiQC when `Use featureCounts for generating count tables` is set to `False`
+
 ## [1.3] - 2026-02-16
 
 ### Automatic update
