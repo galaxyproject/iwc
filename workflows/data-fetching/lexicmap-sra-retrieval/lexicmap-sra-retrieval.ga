@@ -1,6 +1,6 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "run kmindex over logan unitigs, parse results for SRA accessions that matched the query sequence, and download them",
+    "annotation": "run LexicMap search, parse results for SRA accessions that matched the query sequence, and download them",
     "comments": [],
     "creator": [
         {
@@ -11,44 +11,17 @@
     ],
     "format-version": "0.1",
     "license": "MIT",
-    "name": "KMIndex / Logan SRA Hit Retrieval",
-    "readme": "# KMIndex / Logan SRA Hit Retrieval\n\n## Overview\n\nSearch a query sequence against a KMIndex/Logan index and rapidly download matching SRA runs into your Galaxy history.\n\nThis workflow uses k-mer\u2013based matching for fast identification of highly similar sequences.\n\n## Inputs\n\n- Query sequence (FASTA)\n- Index to query\n- Max hits to download\n- Minimum shared k-mer proportion (0.0\u20131.0, default: 0.5)\n- Z-value (k-mer extension factor) (default: 6) Controls k-mer matching sensitivity. Default is recommended for most use cases.\n\n## Outputs\n\n - Accession list (TXT) \u2014 downloaded SRA IDs\n - Paired-end reads (collection)\n - Single-end reads (collection)\n\n## Parameter Tips\n\nMore stringent (fewer, closer matches):\n - \u2191 shared k-mer proportion\n\nMore permissive (more, broader matches):\n - \u2193 shared k-mer proportion\n\nZ-value:\n - Higher \u2192 more specific, may miss distant matches\n - Lower \u2192 more sensitive, may include weaker matches\n\n## When to Use KMIndex / Logan\n\nUse this workflow when you need:\n\n - Fast searches at scale\n - Exact or near-exact matches\n - Minimal parameter tuning\n\n Use the LexicMap workflow if you need:\n\n - Approximate matching (mismatches/gaps)\n - Sensitivity to divergent sequences\n - BLAST-like alignment scoring\n\n## Rule of thumb:\n\n - High similarity \u2192 use KMIndex / Logan\n - Unknown or divergent sequences \u2192 use LexicMap\n\n## Notes\n\n - Designed for speed; less sensitive to divergent sequences than alignment-based methods\n - Very low thresholds may return weak or spurious matches\n - Outputs are split into paired-end and single-end collections for downstream use",
+    "name": "LexicMap SRA Hit Retrieval",
+    "readme": "# LexicMap SRA Hit Retrieval Workflow\n\n## Overview\n\nSearch a query sequence against a LexicMap index and automatically download matching SRA runs into your Galaxy history.\n\nThis workflow supports BLAST-like matching with configurable thresholds for identity, alignment length, and significance.\n\n## Inputs\n\n*Required*\n - Query sequence (FASTA)\n - Index to query\n - Max hits to download\n - Minimum percent identity (%) (default: 70)\n - Minimum alignment length (bp) (default: 50)\n - Maximum E-value (default: 10)\n\n*Optional*\n - Minimum query coverage per alignment (%)\n - Minimum total query coverage per genome (%)\n\n## Outputs\n\n - Accession list (TXT) \u2014 downloaded SRA IDs\n - Paired-end reads (collection)\n - Single-end reads (collection)\n\n## Parameter Tips\n\nMore stringent (fewer, higher-confidence hits):\n - \u2191 identity\n - \u2191 alignment length\n - \u2193 E-value\n - \u2191 coverage thresholds\n\nMore permissive (more, broader hits):\n - \u2193 identity\n - \u2193 alignment length\n - \u2191 E-value\n - \u2193/omit coverage thresholds\n\n## When to Use LexicMap\n\nUse this workflow when you need:\n\n - Approximate matching (not exact sequence identity)\n - Sensitivity to divergent sequences\n - Control over alignment thresholds\n\nUse the KMIndex/Logan workflow if you want:\n\n - Fast, exact or near-exact matches\n - High-throughput searches with minimal tuning\n\nRule of thumb:\n\n - High similarity \u2192 use KMIndex / Logan\n - Unknown or divergent sequences \u2192 use LexicMap\n\n## Notes\n - Strict filters may return fewer than the requested number of hits\n - Coverage thresholds help avoid short/fragmentary matches\n - Outputs are split into paired-end and single-end collections for downstream use",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
     "steps": {
         "0": {
-            "annotation": "KMIndex index/database to search against. Determines the set of sequences that will be queried for matches.",
-            "content_id": null,
-            "errors": null,
-            "id": 0,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "KMIndex index/database to search against. Determines the set of sequences that will be queried for matches.",
-                    "name": "Index To Query"
-                }
-            ],
-            "label": "Index To Query",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 0,
-                "top": 320
-            },
-            "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "5ff7f185-a300-421b-8600-b9a12c8b2524",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "1": {
             "annotation": "Nucleotide sequence (FASTA) to search against the selected index.",
             "content_id": null,
             "errors": null,
-            "id": 1,
+            "id": 0,
             "input_connections": {},
             "inputs": [
                 {
@@ -61,79 +34,133 @@
             "outputs": [],
             "position": {
                 "left": 0,
-                "top": 440
+                "top": 60
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null}",
             "tool_version": null,
             "type": "data_input",
-            "uuid": "45d87a46-75ca-4dcf-8b4e-0bc8b6d7ae57",
+            "uuid": "ea7fe9b8-16ea-4de0-b843-65d2918a65f1",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "LexicMap index/database to search against. Determines the set of sequences that will be queried for matches.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "LexicMap index/database to search against. Determines the set of sequences that will be queried for matches.",
+                    "name": "LexicMap Index"
+                }
+            ],
+            "label": "LexicMap Index",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 200
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "83ca02d8-0ad5-4f7f-82f6-d30e0f55b41a",
             "when": null,
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "Controls k-mer matching sensitivity. Higher values increase specificity but may miss more divergent matches. Default is recommended for most use cases.",
+            "annotation": "Minimum length of an aligned segment. Short matches below this threshold are ignored.",
             "content_id": null,
             "errors": null,
             "id": 2,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Controls k-mer matching sensitivity. Higher values increase specificity but may miss more divergent matches. Default is recommended for most use cases.",
-                    "name": "Z-value (k-mer extension factor)"
+                    "description": "Minimum length of an aligned segment. Short matches below this threshold are ignored.",
+                    "name": "Minimum alignment length (bp)"
                 }
             ],
-            "label": "Z-value (k-mer extension factor)",
+            "label": "Minimum alignment length (bp)",
             "name": "Input parameter",
             "outputs": [],
             "position": {
                 "left": 0,
-                "top": 580
+                "top": 340
             },
             "tool_id": null,
-            "tool_state": "{\"default\": 6, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_state": "{\"default\": 50, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "dce92ce8-b592-4560-9207-b5bd9af5973f",
+            "uuid": "0fcb6f30-d4bf-44d7-a2cf-9e0faab4c148",
             "when": null,
             "workflow_outputs": []
         },
         "3": {
-            "annotation": "Minimum fraction of k-mers shared between the query and a target sequence. Higher values require more similar sequences.",
+            "annotation": "Minimum sequence identity required for an alignment segment to be considered a hit. Increase to restrict results to more similar sequences.",
             "content_id": null,
             "errors": null,
             "id": 3,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Minimum fraction of k-mers shared between the query and a target sequence. Higher values require more similar sequences.",
-                    "name": "Minimum shared k-mer proportion"
+                    "description": "Minimum sequence identity required for an alignment segment to be considered a hit. Increase to restrict results to more similar sequences.",
+                    "name": "Minimum percent identity (%)"
                 }
             ],
-            "label": "Minimum shared k-mer proportion",
+            "label": "Minimum percent identity (%)",
             "name": "Input parameter",
             "outputs": [],
             "position": {
                 "left": 0,
-                "top": 720
+                "top": 480
             },
             "tool_id": null,
-            "tool_state": "{\"default\": 0.5, \"validators\": [{\"min\": 0.1, \"max\": 1.0, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+            "tool_state": "{\"default\": 70.0, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "4f1b843c-2b97-45ff-8352-2714c8f5eb9b",
+            "uuid": "75c733ee-2ef8-4c9c-a217-5efbfcec32af",
             "when": null,
             "workflow_outputs": []
         },
         "4": {
-            "annotation": "Integer representing the first N SRA accessions to keep from the kmindex query",
+            "annotation": "Maximum expected number of random matches. Lower values are more stringent (e.g., 1e-5 is stricter than 1e-2).",
             "content_id": null,
             "errors": null,
             "id": 4,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Integer representing the first N SRA accessions to keep from the kmindex query",
+                    "description": "Maximum expected number of random matches. Lower values are more stringent (e.g., 1e-5 is stricter than 1e-2).",
+                    "name": "Maximum E-value"
+                }
+            ],
+            "label": "Maximum E-value",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 620
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 10.0, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "48708a6a-92a6-42c2-adf7-1f32af2bd35f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Number of top-scoring matches to retrieve and download from SRA after filtering.",
+            "content_id": null,
+            "errors": null,
+            "id": 5,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Number of top-scoring matches to retrieve and download from SRA after filtering.",
                     "name": "How many accessions to keep"
                 }
             ],
@@ -141,82 +168,79 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 1250,
+                "left": 700,
                 "top": 210
             },
             "tool_id": null,
-            "tool_state": "{\"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_state": "{\"default\": 10, \"validators\": [{\"min\": 1, \"max\": 1000, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "0320b827-5a19-47b7-b470-fece6e02d22e",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "5": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/kmindex/kmindex_query/0.6.0+galaxy2",
-            "errors": null,
-            "id": 5,
-            "input_connections": {
-                "db_opts|kmindex": {
-                    "id": 0,
-                    "output_name": "output"
-                },
-                "fastx": {
-                    "id": 1,
-                    "output_name": "output"
-                },
-                "threshold": {
-                    "id": 3,
-                    "output_name": "output"
-                },
-                "zvalue": {
-                    "id": 2,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool kmindex query",
-                    "name": "db_opts"
-                }
-            ],
-            "label": null,
-            "name": "kmindex query",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 350,
-                "top": 420
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/kmindex/kmindex_query/0.6.0+galaxy2",
-            "tool_shed_repository": {
-                "changeset_revision": "40066bb1d9ed",
-                "name": "kmindex",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"db_opts\": {\"db_opts_selector\": \"db\", \"__current_case__\": 1, \"kmindex\": {\"__class__\": \"ConnectedValue\"}}, \"fast\": false, \"fastx\": {\"__class__\": \"ConnectedValue\"}, \"format\": \"json\", \"threshold\": {\"__class__\": \"ConnectedValue\"}, \"verbose\": \"info\", \"zvalue\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.6.0+galaxy2",
-            "type": "tool",
-            "uuid": "d92335e4-bc1c-4d6d-b70b-3362d0bdab7d",
+            "uuid": "6be1ae7c-0754-4e60-bd95-25790d0552c6",
             "when": null,
             "workflow_outputs": []
         },
         "6": {
-            "annotation": "If number of accessions to keep is 0 we should keep all of them, and this boolean indicating whether to take a subset should be false.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "annotation": "Minimum fraction of the query covered across all alignments to a genome. Useful for requiring broader support across the sequence.",
+            "content_id": null,
             "errors": null,
             "id": 6,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Minimum fraction of the query covered across all alignments to a genome. Useful for requiring broader support across the sequence.",
+                    "name": "Minimum total query coverage per genome (%)"
+                }
+            ],
+            "label": "Minimum total query coverage per genome (%)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 760
+            },
+            "tool_id": null,
+            "tool_state": "{\"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": true}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "14d9eac0-aa33-4869-87a9-34b31d5158c8",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Minimum fraction of the query sequence covered by a single alignment segment. Helps filter out short, local matches.",
+            "content_id": null,
+            "errors": null,
+            "id": 7,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Minimum fraction of the query sequence covered by a single alignment segment. Helps filter out short, local matches.",
+                    "name": "Minimum query coverage per alignment (%)"
+                }
+            ],
+            "label": "Minimum query coverage per alignment (%)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 920
+            },
+            "tool_id": null,
+            "tool_state": "{\"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": true}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "060b86b2-8e38-4f3c-b4ac-46edb9b49c95",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 8,
             "input_connections": {
                 "input_param_type|input_param": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 }
             },
@@ -235,7 +259,7 @@
                 }
             ],
             "position": {
-                "left": 1550,
+                "left": 1000,
                 "top": 0
             },
             "post_job_actions": {},
@@ -250,151 +274,146 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "8711c5a8-d252-4863-85e7-bb84b4f34150",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "7": {
-            "annotation": "Parse JSON list for SRA accessions",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
-            "errors": null,
-            "id": 7,
-            "input_connections": {
-                "infile": {
-                    "id": 5,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Parse SRA Accessions",
-            "name": "Text reformatting",
-            "outputs": [
-                {
-                    "name": "outfile",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 650,
-                "top": 420
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
-            "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
-                "name": "text_processing",
-                "owner": "bgruening",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"code\": \"match($0, /\\\"(SRR[0-9]+)\\\"[[:space:]]*:[[:space:]]*([0-9.]+)/, m) {\\n  print m[1] \\\"\\\\t\\\" m[2]\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
-            "type": "tool",
-            "uuid": "b06f7633-3909-4d3c-8ad4-429c23acc7db",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "8": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
-            "errors": null,
-            "id": 8,
-            "input_connections": {
-                "input_list": {
-                    "id": 7,
-                    "output_name": "outfile"
-                }
-            },
-            "inputs": [],
-            "label": null,
-            "name": "Collapse Collection",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 950,
-                "top": 420
-            },
-            "post_job_actions": {
-                "ChangeDatatypeActionoutput": {
-                    "action_arguments": {
-                        "newtype": "tabular"
-                    },
-                    "action_type": "ChangeDatatypeAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
-            "tool_shed_repository": {
-                "changeset_revision": "90981f86000f",
-                "name": "collapse_collections",
-                "owner": "nml",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "5.1.0",
-            "type": "tool",
-            "uuid": "bb9c901e-ad3d-4b1b-a8fe-9e961385536d",
+            "uuid": "9605aac1-adcf-4ccd-b4b2-67bf193bbab3",
             "when": null,
             "workflow_outputs": []
         },
         "9": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/lexicmap/lexicmap_search/0.8.1+galaxy0",
             "errors": null,
             "id": 9,
             "input_connections": {
-                "infile": {
-                    "id": 8,
+                "advanced_settings|align_min_match_len": {
+                    "id": 2,
+                    "output_name": "output"
+                },
+                "advanced_settings|align_min_match_pident": {
+                    "id": 3,
+                    "output_name": "output"
+                },
+                "advanced_settings|max_evalue": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "advanced_settings|min_qcov_per_genome": {
+                    "id": 6,
+                    "output_name": "output"
+                },
+                "advanced_settings|min_qcov_per_hsp": {
+                    "id": 7,
+                    "output_name": "output"
+                },
+                "db_opts|lexicmap_index": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "query": {
+                    "id": 0,
                     "output_name": "output"
                 }
             },
-            "inputs": [],
-            "label": "Sort Accessions By Best Match",
-            "name": "Sort",
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "advanced_settings"
+                },
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "advanced_settings"
+                },
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "advanced_settings"
+                },
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "advanced_settings"
+                },
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "advanced_settings"
+                },
+                {
+                    "description": "runtime parameter for tool LexicMap Search",
+                    "name": "db_opts"
+                }
+            ],
+            "label": null,
+            "name": "LexicMap Search",
             "outputs": [
                 {
-                    "name": "outfile",
-                    "type": "input"
+                    "name": "out_file",
+                    "type": "tabular"
                 }
             ],
             "position": {
-                "left": 1250,
+                "left": 400,
                 "top": 420
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/lexicmap/lexicmap_search/0.8.1+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
-                "name": "text_processing",
-                "owner": "bgruening",
+                "changeset_revision": "f0e5afff062b",
+                "name": "lexicmap",
+                "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"header\": \"0\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"sortkeys\": [{\"__index__\": 0, \"column\": \"2\", \"start_charpos\": null, \"end_charpos\": null, \"order\": \"r\", \"style\": \"V\", \"ignore_case\": false, \"ignore_leading_blanks\": false}], \"unique\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"advanced_settings\": {\"align_band\": \"100\", \"align_ext_len\": \"1000\", \"align_max_gap\": \"20\", \"align_min_match_len\": {\"__class__\": \"ConnectedValue\"}, \"align_min_match_pident\": {\"__class__\": \"ConnectedValue\"}, \"all\": false, \"load_whole_seeds\": false, \"max_evalue\": {\"__class__\": \"ConnectedValue\"}, \"max_query_conc\": \"12\", \"min_qcov_per_genome\": {\"__class__\": \"ConnectedValue\"}, \"min_qcov_per_hsp\": {\"__class__\": \"ConnectedValue\"}, \"seed_max_dist\": \"1000\", \"seed_max_gap\": \"1000\", \"seed_min_prefix\": \"17\", \"seed_min_single_prefix\": \"19\"}, \"db_opts\": {\"db_opts_selector\": \"db\", \"__current_case__\": 1, \"lexicmap_index\": {\"__class__\": \"ConnectedValue\"}}, \"query\": {\"__class__\": \"ConnectedValue\"}, \"top_n_genomes\": \"0\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "0.8.1+galaxy0",
             "type": "tool",
-            "uuid": "8831fd1a-2d9a-4a73-8243-cf3d32f84d9a",
+            "uuid": "41fb9c27-4c86-4ba9-b5ab-ed4e1b5a2caf",
             "when": null,
             "workflow_outputs": []
         },
         "10": {
             "annotation": "",
-            "content_id": "Cut1",
+            "content_id": "Remove beginning1",
             "errors": null,
             "id": 10,
             "input_connections": {
                 "input": {
                     "id": 9,
-                    "output_name": "outfile"
+                    "output_name": "out_file"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Remove Header Line",
+            "name": "Remove beginning",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 700,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "Remove beginning1",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"num_lines\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "8c1b487d-1f05-4123-9f16-bebc5aef00dc",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "input": {
+                    "id": 10,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Extract Accessions",
             "name": "Cut",
             "outputs": [
                 {
@@ -403,35 +422,41 @@
                 }
             ],
             "position": {
-                "left": 1550,
+                "left": 1000,
                 "top": 420
             },
             "post_job_actions": {},
             "tool_id": "Cut1",
-            "tool_state": "{\"columnList\": \"c1\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"columnList\": \"c4\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.0.2",
             "type": "tool",
-            "uuid": "cc718211-11d2-4eeb-bd27-d8cebda4aebc",
+            "uuid": "99864d8c-3c33-4d28-8a8a-4595d556f4ee",
             "when": null,
-            "workflow_outputs": []
+            "workflow_outputs": [
+                {
+                    "label": "LexicMap Matched Accessions List",
+                    "output_name": "out_file1",
+                    "uuid": "3efdd58f-28b3-442f-bba6-bdfe3e39aca7"
+                }
+            ]
         },
-        "11": {
+        "12": {
             "annotation": "",
             "content_id": "Show beginning1",
             "errors": null,
-            "id": 11,
+            "id": 12,
             "input_connections": {
                 "input": {
-                    "id": 10,
+                    "id": 11,
                     "output_name": "out_file1"
                 },
                 "lineNum": {
-                    "id": 4,
+                    "id": 5,
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 6,
+                    "id": 8,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -445,7 +470,7 @@
                 }
             ],
             "position": {
-                "left": 1850,
+                "left": 1300,
                 "top": 190
             },
             "post_job_actions": {},
@@ -454,22 +479,22 @@
             "tool_uuid": null,
             "tool_version": "1.0.2",
             "type": "tool",
-            "uuid": "d1c89953-bf19-4225-81a8-9630b19d90d4",
+            "uuid": "047c9abc-9429-4a4f-983e-3de5981a3248",
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "12": {
+        "13": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 12,
+            "id": 13,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 11,
+                    "id": 12,
                     "output_name": "out_file1"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 10,
+                    "id": 11,
                     "output_name": "out_file1"
                 }
             },
@@ -483,7 +508,7 @@
                 }
             ],
             "position": {
-                "left": 2150,
+                "left": 1600,
                 "top": 400
             },
             "post_job_actions": {},
@@ -498,22 +523,16 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "00f29b97-cf31-40b7-aa89-ae3fb3512582",
+            "uuid": "06bfa374-6fdd-4eb2-b66b-f4d13b156204",
             "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "KMIndex/ Logan Matching Accessions List",
-                    "output_name": "data_param",
-                    "uuid": "3d52298d-da10-4aca-8e72-1c1ed5460103"
-                }
-            ]
+            "workflow_outputs": []
         },
-        "13": {
+        "14": {
             "annotation": "",
-            "id": 13,
+            "id": 14,
             "input_connections": {
                 "Run accessions": {
-                    "id": 12,
+                    "id": 13,
                     "input_subworkflow_step_id": 0,
                     "output_name": "data_param"
                 }
@@ -523,7 +542,7 @@
             "name": "Parallel Accession Download",
             "outputs": [],
             "position": {
-                "left": 2450,
+                "left": 1900,
                 "top": 400
             },
             "subworkflow": {
@@ -807,24 +826,24 @@
             },
             "tool_id": null,
             "type": "subworkflow",
-            "uuid": "9fb319f7-0b94-4dd1-b267-a591be41b242",
+            "uuid": "c38de79c-affd-46f0-adc1-b95496631d96",
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "Single End Reads",
-                    "output_name": "Single End Reads",
-                    "uuid": "5f0ef3c1-5893-42e1-bb5b-d136c713adc8"
-                },
-                {
                     "label": "Paired End Reads",
                     "output_name": "Paired End Reads",
-                    "uuid": "40cf268a-9b0a-4ab7-ac57-3db83bba0920"
+                    "uuid": "d2f919ae-37d7-435e-9a7a-672fd31449c2"
+                },
+                {
+                    "label": "Single End Reads",
+                    "output_name": "Single End Reads",
+                    "uuid": "663c4ec2-9fe2-49ec-b317-4fee840b9641"
                 }
             ]
         }
     },
     "tags": [],
-    "uuid": "6d7736a4-66d8-4724-a8a2-050e7dfefbf4",
-    "version": 24,
+    "uuid": "05d4f54d-8cbe-4beb-afd6-8f63578e7f28",
+    "version": 29,
     "release": "0.1"
 }
