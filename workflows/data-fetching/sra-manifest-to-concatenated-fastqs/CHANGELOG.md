@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.1.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/3.1.1+galaxy1`
+
 ## [0.9] - 2026-04-09
 
 ### Manual update
