@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.7` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.8`
+- `toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.17+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.17+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.17+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.17+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.2.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.2.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/2.5.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/gtdbtk_classify_wf/gtdbtk_classify_wf/2.7.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/1.2.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/1.2.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+
 ## [0.4] - 2025-10-07
 
 ### Changed
