@@ -8,14 +8,14 @@
 Workflows are categorized in the [workflows](workflows/) directory, and listed in [Dockstore](https://dockstore.org/organizations/iwc) and [WorkflowHub](https://workflowhub.eu/search?utf8=%E2%9C%93&q=IWC#workflows).
 
 All workflows are reviewed and tested before publication and with every new Galaxy release.
-Deposited workflows follow [best practices](https://planemo.readthedocs.io/en/latest/best_practices_workflows.html) and are versioned using github releases.
+Deposited workflows follow [best practices](https://planemo.readthedocs.io/en/latest/best_practices_workflows.html) and are versioned using GitHub releases.
 Workflows also contain important metadata, such as:
 
 - License
 - Author
 - Institutes
 
-Additionally the IWC will collect further best practices, tips and tricks, FAQs and assist the community in designing high-quality Galaxy workflows.
+Additionally, the IWC will collect further best practices, tips and tricks, FAQs and assist the community in designing high-quality Galaxy workflows.
 
 ## Importing Workflows into Galaxy
 
@@ -45,3 +45,9 @@ If linting passes, tests pass, and human review passes, the PR is merged and
 ## Becoming a IWC member
 
 Everyone is welcome and can help out with reviewing workflows. Post a comment [here](https://github.com/galaxyproject/iwc/issues/4) with your expertise and we will add you to the IWC organization.
+
+## License
+
+The workflows in this repository have their own license mentioned for every workflow separately.
+The code behind the infrastructure and the website is licensed under the MIT License.
+
