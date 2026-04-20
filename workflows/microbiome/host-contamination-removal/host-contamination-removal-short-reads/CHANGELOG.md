@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+
 ## [0.3] - 2026-01-19
 
 ### Automatic update
