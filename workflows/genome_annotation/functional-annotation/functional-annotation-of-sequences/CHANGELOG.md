@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/interproscan/interproscan/5.59-91.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/interproscan/interproscan/1.2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/kegg_pathways_completeness/kegg_pathways_completeness/1.3.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/kegg_pathways_completeness/kegg_pathways_completeness/1.4.3+galaxy0`
+
 ## [0.3] - 2026-03-27
 
 - Set a parameter from Add toolshed.g2.bx.psu.edu/repos/iuc/kegg_pathways_completeness/kegg_pathways_completeness/1.3.0+galaxy0 to true to have a second and more detailed per contig output
