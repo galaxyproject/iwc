@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.2] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/17-b804f+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/17-b804f+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.11.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/staramr/staramr_search/0.12.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_translate/seqkit_translate/2.12.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_translate/seqkit_translate/2.13.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/2.1.8+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/galaxyp/eggnog_mapper/eggnog_mapper/2.1.13+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_taxonomy_assignment/mmseqs2_taxonomy_assignment/17-b804f+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_taxonomy_assignment/mmseqs2_taxonomy_assignment/17-b804f+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+
 ## [1.2.1] - 2026-02-23
 
 ### Changed
