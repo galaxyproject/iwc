@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9] - 2026-03-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
+
 ## [0.1.8] - 2025-08-25
 
 ### Automatic update
