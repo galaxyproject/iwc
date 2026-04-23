@@ -16,6 +16,13 @@ PRJNA1425252
 PRJEB1417616
 ````
 
+Other input options are booleans related to the *pysradb* tool functioning and can be explained as in its tool help:
+
+- **assay (metadata download)**&emsp;&emsp;&emsp;&emsp;Include assay type in output
+- **desc (metadata download)**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be included
+- **detailed (metadata download)**&emsp;&emsp;&emsp;&emsp;Display detailed metadata table
+- **expand (metadata download)**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be expanded
+
 
 ## Outputs
 
