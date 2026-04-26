@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3] - 2026-04-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+
 ## [0.2] - 2026-04-06
 
 ### Automatic update
