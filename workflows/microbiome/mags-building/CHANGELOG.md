@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5] - 2026-26-04
+
+- **metaSPAdes** now can use optional long reads as input
+- remove certain steps of the workflow into sub-workflows for example taxonomy annotation
+- Change COMEBin to be a optional binner
+
+### Changed
+
 ## [0.4] - 2025-10-07
 
 ### Changed
