@@ -1,0 +1,1659 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow identifies viral contigs from metagenomic assemblies using geNomad and supports taxonomy, functional annotation, binning, and host prediction.",
+    "comments": [
+        {
+            "child_steps": [
+                5,
+                6,
+                7,
+                9,
+                4,
+                3,
+                2,
+                0,
+                8
+            ],
+            "color": "none",
+            "data": {
+                "title": "Viral contigs prediction"
+            },
+            "id": 0,
+            "position": [
+                0,
+                0
+            ],
+            "size": [
+                1800,
+                720
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                10,
+                13,
+                11,
+                12
+            ],
+            "color": "orange",
+            "data": {
+                "title": "Proviruses check"
+            },
+            "id": 1,
+            "position": [
+                1862,
+                17.69999999999999
+            ],
+            "size": [
+                1087,
+                705
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                15,
+                16,
+                14
+            ],
+            "color": "green",
+            "data": {
+                "title": "Clustering"
+            },
+            "id": 2,
+            "position": [
+                3029.6,
+                99.49999999999997
+            ],
+            "size": [
+                515,
+                613
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                21,
+                17,
+                19
+            ],
+            "color": "blue",
+            "data": {
+                "title": "Quality check &amp; Filtering"
+            },
+            "id": 3,
+            "position": [
+                3605,
+                237.39999999999998
+            ],
+            "size": [
+                742,
+                356
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                24
+            ],
+            "color": "yellow",
+            "data": {
+                "title": "Host prediction"
+            },
+            "id": 4,
+            "position": [
+                4523.799999999999,
+                36.5
+            ],
+            "size": [
+                370,
+                294.9
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                22
+            ],
+            "color": "pink",
+            "data": {
+                "title": "Functional prediction"
+            },
+            "id": 5,
+            "position": [
+                4517.299999999999,
+                357.4
+            ],
+            "size": [
+                309,
+                260
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                23,
+                25
+            ],
+            "color": "orange",
+            "data": {
+                "title": "Coverage calculation"
+            },
+            "id": 6,
+            "position": [
+                4511.599999999999,
+                644.9
+            ],
+            "size": [
+                468.1,
+                224.3
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                18,
+                20
+            ],
+            "color": "red",
+            "data": {
+                "title": "Binning viral genomes-vMAGs"
+            },
+            "id": 7,
+            "position": [
+                4510.299999999999,
+                903
+            ],
+            "size": [
+                505,
+                641
+            ],
+            "type": "frame"
+        }
+    ],
+    "creator": [
+        {
+            "class": "Person",
+            "name": "Niklas Stahl"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0002-3602-7884",
+            "name": "Mina Hojat Ansari"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "release": "1.0",
+    "name": "Viral detection from bulk metagenomes",
+    "readme": "# Viral detection from bulk metagenomes\n\n## Overview\n\nThis workflow identifies viral contigs from metagenomic assemblies using **geNomad** and performs downstream analyses including **taxonomy**, **functional annotation**, **binning**, **host prediction**, and **coverage estimation**.\n\n---\n\n## Inputs\n\n- **Assembled contigs** (FASTA, collection)\n- **Trimmed paired-end reads** (list:paired)\n\n### Requirements\n\n- Reads must be quality-controlled (trimmed, adapters removed)\n- Host contamination should be removed\n\n---\n\n## Workflow steps\n\n### 1. Viral contig prediction\nViral sequences are identified from assembled contigs using **geNomad**.\n\n### 2. Provirus detection and refinement\n**CheckV** is used to identify proviruses. Extracted proviruses are re-analysed with **geNomad**.\n\n### 3. Merging viral predictions\nViral contigs from both geNomad runs are combined.\n\n### 4. Clustering and dereplication\nRedundant sequences are removed using **MMseqs2** clustering.\n\n### 5. Quality assessment and filtering\n**CheckV** is used to assess sequence quality. Only sequences classified as:\n\n- Complete  \n- High-quality  \n- Medium-quality  \n\nare retained for downstream analysis.\n\n### 6. Host prediction\nViral contigs are analysed using **iPHoP**.\n\n### 7. Functional annotation\nViral genomes are annotated using **Pharokka**.\n\n### 8. Coverage estimation\nReads are mapped using **Bowtie2** and coverage is calculated with **CoverM**.\n\n### 9. Viral genome binning (vMAGs)\nViral contigs and coverage profiles are used by **vRhyme** to recover viral genomes.\n\n---\n\n## Outputs\n\n- Viral contigs (geNomad)\n- Taxonomy annotations\n- Gene annotations\n- Nonredundant viral sequences\n- CheckV quality reports\n- Filtered viral contigs\n- Host predictions (iPHoP)\n- Functional annotations (Pharokka)\n- Coverage table (CoverM)\n- vMAG bins (vRhyme)\n\n---\n\n## Notes\n\n- Only **medium- and high-quality sequences** are used for biological interpretation\n\n---\n\n## License\n\nMIT License",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "A list of assembled contigs from which to detect virus genomes. You may want to employ co-assembly to improve the sensitivity of viral detections.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "A list of assembled contigs from which to detect virus genomes. You may want to employ co-assembly to improve the sensitivity of viral detections.",
+                    "name": "Assembled contigs"
+                }
+            ],
+            "label": "Assembled contigs",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 19.995445984582375,
+                "top": 67.28403681543367
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "43e313cc-a415-46c8-a520-f55449fa7edc",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Sample reads are used for abundance estimation and should be trimmed, adapters removed, and cleaned of host or other contaminants.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Sample reads are used for abundance estimation and should be trimmed, adapters removed, and cleaned of host or other contaminants.",
+                    "name": "Trimmed reads"
+                }
+            ],
+            "label": "Trimmed reads",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 4084.264095421806,
+                "top": 655.5927852421926
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "2d387778-836a-4ed6-856f-a580aaff5d2e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "infile": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 241.39371310958268,
+                "top": 43.90149261760183
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"/^>/ {print \\\">\\\" FILENAME \\\"_\\\" ++i} !/^>/ {print}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "b9c69689-2d73-44c2-8148-8db9db3ecc36",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "split_parms|input": {
+                    "id": 2,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Split file",
+                    "name": "split_parms"
+                }
+            ],
+            "label": null,
+            "name": "Split file",
+            "outputs": [
+                {
+                    "name": "list_output_fasta",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 509.85305942102536,
+                "top": 46.54536843297882
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "tool_shed_repository": {
+                "changeset_revision": "2dae863c8f42",
+                "name": "split_file_to_collection",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"split_parms\": {\"select_ftype\": \"fasta\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}, \"select_mode\": {\"mode\": \"chunk\", \"__current_case__\": 0, \"chunksize\": \"50000\"}, \"newfilenames\": \"chunk_\", \"select_allocate\": {\"allocate\": \"byrow\", \"__current_case__\": 2}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.5.2",
+            "type": "tool",
+            "uuid": "19cc0397-e783-4d3e-a892-c0ccfaccd859",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/1.11.1+galaxy0",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "INPUT": {
+                    "id": 3,
+                    "output_name": "list_output_fasta"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "geNomad",
+            "outputs": [
+                {
+                    "name": "summary_plasmid_fna",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_plasmid_genes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_plasmid_proteins",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_plasmid_summary",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_virus_fna",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_virus_genes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_virus_proteins",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_virus_summary",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 780,
+                "top": 50
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/1.11.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "26f5822743aa",
+                "name": "genomad_end_to_end",
+                "owner": "ufz",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"DATABASE\": \"1.9\", \"INPUT\": {\"__class__\": \"ConnectedValue\"}, \"annotation\": {\"lenient_taxonomy\": true, \"full_ictv_lineage\": false, \"sensitivity\": \"4.2\", \"splits\": \"8\"}, \"basic\": {\"disable_find_proviruses\": true, \"disable_nn_classification\": true, \"enable_score_calibration\": false}, \"filter_cond\": {\"filtering_preset\": \"--conservative\", \"__current_case__\": 0}, \"license\": true, \"provirus\": {\"skip_integrase_identification\": false, \"skip_trna_identification\": false}, \"score\": {\"composition\": \"auto\", \"force_auto\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.11.1+galaxy0",
+            "type": "tool",
+            "uuid": "0c99aaab-b08b-4d04-9f1c-7c03eaa27b9b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Additional filtering of geNomad contigs using complex custom rules. If all conditions are AND-conditions you may be able to set them on the tool directly.\nBy default this step does nothing beyond the conservative preset applied by geNomad.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/query_tabular/query_tabular/3.3.2",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "tables_0|table": {
+                    "id": 4,
+                    "output_name": "summary_virus_summary"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Query Tabular",
+                    "name": "add_to_database"
+                }
+            ],
+            "label": null,
+            "name": "Query Tabular",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1040,
+                "top": 60
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "geNomad filtered scores"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/query_tabular/query_tabular/3.3.2",
+            "tool_shed_repository": {
+                "changeset_revision": "cf4397560712",
+                "name": "query_tabular",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"add_to_database\": {\"withdb\": {\"__class__\": \"RuntimeValue\"}}, \"addqueries\": {\"queries\": []}, \"modify_database\": {\"sql_stmts\": []}, \"query_result\": {\"header\": \"yes\", \"__current_case__\": 0, \"header_prefix\": \"\"}, \"save_db\": false, \"sqlquery\": \"SELECT * from t1;\", \"tables\": [{\"__index__\": 0, \"table\": {\"__class__\": \"ConnectedValue\"}, \"input_opts\": {\"linefilters\": []}, \"tbl_opts\": {\"table_name\": \"\", \"column_names_from_first_line\": true, \"col_names\": \"\", \"load_named_columns\": false, \"pkey_autoincr\": \"\", \"indexes\": []}}], \"workdb\": \"workdb.sqlite\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.3.2",
+            "type": "tool",
+            "uuid": "6f07aa83-23eb-40ff-8d80-c3bda0a8dba2",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input_list": {
+                    "id": 4,
+                    "output_name": "summary_virus_genes"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Collapse Collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1080,
+                "top": 380
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "geNomad initial gene annotations"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "90981f86000f",
+                "name": "collapse_collections",
+                "owner": "nml",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "5.1.0",
+            "type": "tool",
+            "uuid": "9ffbaefd-7ca4-4293-8b28-2ce72ecce978",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input_list": {
+                    "id": 4,
+                    "output_name": "summary_virus_summary"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Collapse Collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1080,
+                "top": 530
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "geNomad initial taxonomy"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "90981f86000f",
+                "name": "collapse_collections",
+                "owner": "nml",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "5.1.0",
+            "type": "tool",
+            "uuid": "f89553d1-2df6-474f-848d-621412fc9df2",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/qiime_filter_fasta/qiime_filter_fasta/1.9.1.0",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "input_fasta_fp": {
+                    "id": 4,
+                    "output_name": "summary_virus_fna"
+                },
+                "selection|seq_id_fp": {
+                    "id": 5,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter fasta",
+                    "name": "selection"
+                }
+            ],
+            "label": null,
+            "name": "Filter fasta",
+            "outputs": [
+                {
+                    "name": "fitered_fasta",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 1320,
+                "top": 170
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/qiime_filter_fasta/qiime_filter_fasta/1.9.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "11b19edeb3af",
+                "name": "qiime_filter_fasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_fasta_fp\": {\"__class__\": \"ConnectedValue\"}, \"negate\": false, \"selection\": {\"type\": \"seq_list\", \"__current_case__\": 1, \"seq_id_fp\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.9.1.0",
+            "type": "tool",
+            "uuid": "57503892-ed49-41ef-a16e-339afed93270",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "input_list": {
+                    "id": 8,
+                    "output_name": "fitered_fasta"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Collapse Collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1580,
+                "top": 240
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "geNomad sequences"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "90981f86000f",
+                "name": "collapse_collections",
+                "owner": "nml",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "5.1.0",
+            "type": "tool",
+            "uuid": "c38f9178-c61e-47c7-9b93-2fe1e5106a95",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "genomad fasta",
+                    "output_name": "output",
+                    "uuid": "8bc262c6-2be8-4dc8-9553-afe1a067aa59"
+                }
+            ]
+        },
+        "10": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ufz/checkv_end_to_end/checkv_end_to_end/1.0.3+galaxy0",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "input": {
+                    "id": 9,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "CheckV: Separate proviruses",
+            "name": "CheckV end to end",
+            "outputs": [
+                {
+                    "name": "quality summary",
+                    "type": "tabular"
+                },
+                {
+                    "name": "complete genomes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "proviruses",
+                    "type": "fasta"
+                },
+                {
+                    "name": "viruses",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 1881.9763511796455,
+                "top": 361.6856474246922
+            },
+            "post_job_actions": {
+                "HideDatasetActioncomplete_genomes": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "complete genomes"
+                },
+                "HideDatasetActionquality_summary": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "quality summary"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ufz/checkv_end_to_end/checkv_end_to_end/1.0.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "e523d50513a4",
+                "name": "checkv_end_to_end",
+                "owner": "ufz",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"optional_outputs\": null, \"reference\": \"1.5\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.3+galaxy0",
+            "type": "tool",
+            "uuid": "ba443f12-57c1-4c82-a0bf-7178dc9de71d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
+            "annotation": "",
+            "content_id": "__FILTER_EMPTY_DATASETS__",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "input": {
+                    "id": 10,
+                    "output_name": "proviruses"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter empty datasets",
+                    "name": "replacement"
+                }
+            ],
+            "label": null,
+            "name": "Filter empty datasets",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2174.0800945063515,
+                "top": 57.749708626126534
+            },
+            "post_job_actions": {},
+            "tool_id": "__FILTER_EMPTY_DATASETS__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "5f77a82a-979f-40bf-8134-92b4c8c650e0",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/1.11.1+galaxy0",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "INPUT": {
+                    "id": 11,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "geNomad",
+            "outputs": [
+                {
+                    "name": "summary_plasmid_fna",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_plasmid_genes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_plasmid_proteins",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_plasmid_summary",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_virus_fna",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_virus_genes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "summary_virus_proteins",
+                    "type": "fasta"
+                },
+                {
+                    "name": "summary_virus_summary",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2420,
+                "top": 90
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ufz/genomad_end_to_end/genomad_end_to_end/1.11.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "26f5822743aa",
+                "name": "genomad_end_to_end",
+                "owner": "ufz",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"DATABASE\": \"1.9\", \"INPUT\": {\"__class__\": \"ConnectedValue\"}, \"annotation\": {\"lenient_taxonomy\": true, \"full_ictv_lineage\": true, \"sensitivity\": \"4.2\", \"splits\": \"4\"}, \"basic\": {\"disable_find_proviruses\": true, \"disable_nn_classification\": true, \"enable_score_calibration\": false}, \"filter_cond\": {\"filtering_preset\": \"--conservative\", \"__current_case__\": 0}, \"license\": true, \"provirus\": {\"skip_integrase_identification\": false, \"skip_trna_identification\": false}, \"score\": {\"composition\": \"auto\", \"force_auto\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.11.1+galaxy0",
+            "type": "tool",
+            "uuid": "3a1e9e1a-b2c8-4acf-a56f-fae383674536",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
+            "errors": null,
+            "id": 13,
+            "input_connections": {
+                "inputs": {
+                    "id": 12,
+                    "output_name": "summary_virus_fna"
+                },
+                "queries_0|inputs2": {
+                    "id": 10,
+                    "output_name": "viruses"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Concatenate datasets",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2720,
+                "top": 420
+            },
+            "post_job_actions": {
+                "RenameDatasetActionout_file1": {
+                    "action_arguments": {
+                        "newname": "All viral predictions"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"inputs\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [{\"__index__\": 0, \"inputs2\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "ee98372c-aac2-4623-bc08-79f25ffd3697",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "14": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_fix-fasta-headers/smf-v1.7-0_utils-v2.1.1-1",
+            "errors": null,
+            "id": 14,
+            "input_connections": {
+                "fasta_input": {
+                    "id": 13,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "fix-fasta-headers",
+            "outputs": [
+                {
+                    "name": "fasta_output",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 3082.6318180040385,
+                "top": 182.9941495308109
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/yhoogstrate/segmentation_fold/smf_utils_fix-fasta-headers/smf-v1.7-0_utils-v2.1.1-1",
+            "tool_shed_repository": {
+                "changeset_revision": "4d16cf9414cf",
+                "name": "segmentation_fold",
+                "owner": "yhoogstrate",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"fasta_input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "smf-v1.7-0_utils-v2.1.1-1",
+            "type": "tool",
+            "uuid": "fc71e43a-f90d-4fc0-a4c1-41783a118868",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "15": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/17-b804f+galaxy0",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
+                "input_fasta": {
+                    "id": 14,
+                    "output_name": "fasta_output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "MMseqs2 Sequence Clustering",
+            "outputs": [
+                {
+                    "name": "output_rep_seq",
+                    "type": "fasta"
+                },
+                {
+                    "name": "output cluster",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3170.21574724644,
+                "top": 326.77994775895024
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_rep_seq": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_rep_seq"
+                },
+                "RenameDatasetActionoutput_cluster": {
+                    "action_arguments": {
+                        "newname": "MMseqs2: Adjecency list"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output cluster"
+                },
+                "RenameDatasetActionoutput_rep_seq": {
+                    "action_arguments": {
+                        "newname": "MMseqs2: Dereplicated sequences (has trailing spaces)"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output_rep_seq"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/17-b804f+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "b174c3405549",
+                "name": "mmseqs2_easy_linclust_clustering",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"align\": {\"convertalis\": false, \"alignment_output_mode\": \"0\", \"wrapped_scoring\": false, \"min_aln_len\": \"0\", \"seq_id_mode\": \"0\", \"alt_ali\": \"0\", \"score_bias\": \"0.0\", \"realign\": false, \"realign_score_bias\": \"-0.2\", \"realign_max_seqs\": \"2147483647\", \"corr_score_weight\": \"0.0\", \"alignment_mode\": \"0\", \"evalue\": \"0.001\", \"max_rejected\": \"2147483647\", \"max_accept\": \"2147483647\"}, \"alph_type\": {\"dbtype\": \"0\", \"__current_case__\": 0}, \"cluster\": {\"cluster_mode\": \"0\", \"max_iterations\": \"1000\", \"similarity_type\": \"2\"}, \"common\": {\"max_seq_len\": \"65535\"}, \"cov\": \"0.85\", \"cov_mode\": \"0\", \"expert\": {\"filter_hits\": false, \"sort_results\": \"0\"}, \"input_fasta\": {\"__class__\": \"ConnectedValue\"}, \"kmermatcher\": {\"cluster_weight_threshold\": \"0.9\", \"kmer_per_seq\": \"21\", \"hash_shift\": \"67\", \"include_only_extendable\": false, \"ignore_multi_kmer\": false}, \"min_seq_id\": \"0.95\", \"misc\": {\"rescore_mode\": \"0\", \"shuffle\": true, \"id_offset\": \"0\"}, \"output_files\": {\"output_selection\": [\"file_rep_seq\", \"file_cluster_tsv\"]}, \"prefilter\": {\"add_self_matches\": false, \"kmer_length\": \"0\", \"mask\": \"1\", \"mask_prob\": \"0.9\", \"mask_lower_case\": \"0\", \"mask_n_repeat\": \"0\", \"spaced_kmer_mode\": \"0\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "17-b804f+galaxy0",
+            "type": "tool",
+            "uuid": "1459a99e-c209-4b8e-91a2-e541cc51fefc",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "output cluster",
+                    "output_name": "output cluster",
+                    "uuid": "ee93c9f9-66e1-435d-a57a-3204efa076dd"
+                }
+            ]
+        },
+        "16": {
+            "annotation": "Strip trailing spaces added by MMseqs2.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/regex_find_replace/regex1/1.0.3",
+            "errors": null,
+            "id": 16,
+            "input_connections": {
+                "input": {
+                    "id": 15,
+                    "output_name": "output_rep_seq"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Regex Find And Replace",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 3308.9571775826985,
+                "top": 520.4733430628843
+            },
+            "post_job_actions": {
+                "RenameDatasetActionout_file1": {
+                    "action_arguments": {
+                        "newname": "Final nonredundant virus sequences"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/regex_find_replace/regex1/1.0.3",
+            "tool_shed_repository": {
+                "changeset_revision": "503bcd6ebe4b",
+                "name": "regex_find_replace",
+                "owner": "galaxyp",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"checks\": [{\"__index__\": 0, \"pattern\": \" +\\\\n\", \"replacement\": \"\\\\n\"}], \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.3",
+            "type": "tool",
+            "uuid": "d1c9852c-53c0-4051-9917-4da70b00b7a9",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "output seqs",
+                    "output_name": "out_file1",
+                    "uuid": "d6a81aa1-2777-4e1f-9834-4f9e762a6494"
+                }
+            ]
+        },
+        "17": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ufz/checkv_end_to_end/checkv_end_to_end/1.0.3+galaxy0",
+            "errors": null,
+            "id": 17,
+            "input_connections": {
+                "input": {
+                    "id": 16,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "CheckV end to end",
+            "outputs": [
+                {
+                    "name": "quality summary",
+                    "type": "tabular"
+                },
+                {
+                    "name": "complete genomes",
+                    "type": "tabular"
+                },
+                {
+                    "name": "proviruses",
+                    "type": "fasta"
+                },
+                {
+                    "name": "viruses",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 3625.04858992705,
+                "top": 277.43579463867934
+            },
+            "post_job_actions": {
+                "RenameDatasetActioncomplete_genomes": {
+                    "action_arguments": {
+                        "newname": "CheckV: Complete Genomes"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "complete genomes"
+                },
+                "RenameDatasetActionquality_summary": {
+                    "action_arguments": {
+                        "newname": "CheckV: Quality summary"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "quality summary"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ufz/checkv_end_to_end/checkv_end_to_end/1.0.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "e523d50513a4",
+                "name": "checkv_end_to_end",
+                "owner": "ufz",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"optional_outputs\": null, \"reference\": \"1.5\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.3+galaxy0",
+            "type": "tool",
+            "uuid": "2f497eab-34ab-4a70-a916-7efbcb92f907",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "quality summary",
+                    "output_name": "quality summary",
+                    "uuid": "cd5769f7-22af-4587-bda1-5c0be3365a2c"
+                },
+                {
+                    "label": "complete genomes",
+                    "output_name": "complete genomes",
+                    "uuid": "2d12da96-c84f-44e8-b5ad-a740436f5624"
+                }
+            ]
+        },
+        "18": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+            "errors": null,
+            "id": 18,
+            "input_connections": {
+                "library|input_1": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "reference_genome|own_file": {
+                    "id": 16,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Bowtie2",
+                    "name": "library"
+                },
+                {
+                    "description": "runtime parameter for tool Bowtie2",
+                    "name": "reference_genome"
+                }
+            ],
+            "label": null,
+            "name": "Bowtie2",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "bam"
+                }
+            ],
+            "position": {
+                "left": 4533.227954896794,
+                "top": 972.5366890982673
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Bowtie2: alignments"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "f76cbb84d67f",
+                "name": "bowtie2",
+                "owner": "devteam",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"simple\", \"__current_case__\": 0, \"presets\": \"no_presets\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 1, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"unaligned_file\": false, \"aligned_file\": false, \"paired_options\": {\"paired_options_selector\": \"yes\", \"__current_case__\": 0, \"I\": \"0\", \"X\": \"500\", \"fr_rf_ff\": \"--fr\", \"no_mixed\": false, \"no_discordant\": true, \"dovetail\": false, \"no_contain\": false, \"no_overlap\": false}}, \"reference_genome\": {\"source\": \"history\", \"__current_case__\": 1, \"own_file\": {\"__class__\": \"ConnectedValue\"}}, \"rg\": {\"rg_selector\": \"set_id_auto\", \"__current_case__\": 2}, \"sam_options\": {\"sam_options_selector\": \"yes\", \"__current_case__\": 0, \"sam_opt\": false, \"no_unal\": true, \"omit_sec_seq\": false, \"sam_no_qname_trunc\": false, \"xeq\": false, \"soft_clipped_unmapped_tlen\": false, \"reorder\": false}, \"save_mapping_stats\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.4+galaxy0",
+            "type": "tool",
+            "uuid": "abdb17f7-9b80-4436-86ca-a349566c313c",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "bam for vRhyme",
+                    "output_name": "output",
+                    "uuid": "a20e4d10-0f40-4878-8dd9-7d446b41344b"
+                }
+            ]
+        },
+        "19": {
+            "annotation": "Additional filtering of VirSorter contigs using complex custom rules. If all conditions are AND-conditions you may be able to set them on the tool directly.\nBy default this step imposes a stricter score threshold of 0.9 on sequences shorter than 3000 bp, instead of the standard threshold of 0.5.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/query_tabular/query_tabular/3.3.2",
+            "errors": null,
+            "id": 19,
+            "input_connections": {
+                "tables_0|table": {
+                    "id": 17,
+                    "output_name": "quality summary"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Query Tabular",
+                    "name": "add_to_database"
+                }
+            ],
+            "label": null,
+            "name": "Query Tabular",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3869.375509068681,
+                "top": 307.2337817706831
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "VirSorter filtered scores"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/query_tabular/query_tabular/3.3.2",
+            "tool_shed_repository": {
+                "changeset_revision": "cf4397560712",
+                "name": "query_tabular",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"add_to_database\": {\"withdb\": {\"__class__\": \"RuntimeValue\"}}, \"addqueries\": {\"queries\": []}, \"modify_database\": {\"sql_stmts\": []}, \"query_result\": {\"header\": \"yes\", \"__current_case__\": 0, \"header_prefix\": \"\"}, \"save_db\": false, \"sqlquery\": \"SELECT *\\nFROM t1\\nWHERE \\\"checkv_quality\\\" IN ('Complete', 'High-quality', 'Medium-quality');\", \"tables\": [{\"__index__\": 0, \"table\": {\"__class__\": \"ConnectedValue\"}, \"input_opts\": {\"linefilters\": []}, \"tbl_opts\": {\"table_name\": \"\", \"column_names_from_first_line\": true, \"col_names\": \"\", \"load_named_columns\": false, \"pkey_autoincr\": \"\", \"indexes\": []}}], \"workdb\": \"workdb.sqlite\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.3.2",
+            "type": "tool",
+            "uuid": "ce48ba6e-ecfc-41bd-bf62-50973968a76b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "20": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/vrhyme/vrhyme/1.1.0+galaxygalaxy2",
+            "errors": null,
+            "id": 20,
+            "input_connections": {
+                "input_fasta": {
+                    "id": 16,
+                    "output_name": "out_file1"
+                },
+                "input_types|input|BAM_inputs": {
+                    "id": 18,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool vRhyme",
+                    "name": "optional_genes"
+                },
+                {
+                    "description": "runtime parameter for tool vRhyme",
+                    "name": "optional_proteins"
+                }
+            ],
+            "label": null,
+            "name": "vRhyme",
+            "outputs": [
+                {
+                    "name": "best bins fasta",
+                    "type": "input"
+                },
+                {
+                    "name": "best bins genes",
+                    "type": "input"
+                },
+                {
+                    "name": "best bins proteins",
+                    "type": "input"
+                },
+                {
+                    "name": "circular",
+                    "type": "tabular"
+                },
+                {
+                    "name": "best bins membership",
+                    "type": "tabular"
+                },
+                {
+                    "name": "best bins summery",
+                    "type": "tabular"
+                },
+                {
+                    "name": "machine",
+                    "type": "tabular"
+                },
+                {
+                    "name": "logfile",
+                    "type": "txt"
+                },
+                {
+                    "name": "bin_scoring",
+                    "type": "tabular"
+                },
+                {
+                    "name": "coverage file",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 4769.420068128869,
+                "top": 943.146638863737
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/vrhyme/vrhyme/1.1.0+galaxygalaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "b7edb37100af",
+                "name": "vrhyme",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"bin_filters\": {\"bin\": {\"customize_bin_output\": \"default_options\", \"__current_case__\": 1}}, \"dereplication_options\": {\"dereplication\": {\"customize_dereplication\": \"default_options\", \"__current_case__\": 1}}, \"input_fasta\": {\"__class__\": \"ConnectedValue\"}, \"input_types\": {\"input\": {\"selector\": \"BAM_input\", \"__current_case__\": 0, \"BAM_inputs\": {\"__class__\": \"ConnectedValue\"}}}, \"min_length\": \"2000\", \"optional_genes\": {\"__class__\": \"RuntimeValue\"}, \"optional_proteins\": {\"__class__\": \"RuntimeValue\"}, \"read_alignment\": {\"alignment\": {\"customize_read_alignment\": \"default_options\", \"__current_case__\": 1}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0+galaxygalaxy2",
+            "type": "tool",
+            "uuid": "4eeabe48-db0d-4765-9f22-8e661721d2ed",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "best bins summery",
+                    "output_name": "best bins summery",
+                    "uuid": "b25af276-eaa7-4b76-ab21-3bde63fa5ea9"
+                },
+                {
+                    "label": "coverage file",
+                    "output_name": "coverage file",
+                    "uuid": "dfaca211-afab-4366-a8d5-7208366fd340"
+                },
+                {
+                    "label": "best bins fasta",
+                    "output_name": "best bins fasta",
+                    "uuid": "c6378a6d-bdbb-47b3-aad3-6b9c9233e02d"
+                },
+                {
+                    "label": "best bins genes",
+                    "output_name": "best bins genes",
+                    "uuid": "17ec40b2-bf58-4227-a30b-fd7e62241107"
+                },
+                {
+                    "label": "best bins membership",
+                    "output_name": "best bins membership",
+                    "uuid": "873f42c1-4285-4a4a-bb69-ab27e1140775"
+                },
+                {
+                    "label": "best bins proteins",
+                    "output_name": "best bins proteins",
+                    "uuid": "85e02f14-04ed-47f3-b7d1-9563a6b07c19"
+                }
+            ]
+        },
+        "21": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/qiime_filter_fasta/qiime_filter_fasta/1.9.1.0",
+            "errors": null,
+            "id": 21,
+            "input_connections": {
+                "input_fasta_fp": {
+                    "id": 17,
+                    "output_name": "viruses"
+                },
+                "selection|seq_id_fp": {
+                    "id": 19,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter fasta",
+                    "name": "selection"
+                }
+            ],
+            "label": null,
+            "name": "Filter fasta",
+            "outputs": [
+                {
+                    "name": "fitered_fasta",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 4115.842618683897,
+                "top": 318.55527508289947
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/qiime_filter_fasta/qiime_filter_fasta/1.9.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "11b19edeb3af",
+                "name": "qiime_filter_fasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_fasta_fp\": {\"__class__\": \"ConnectedValue\"}, \"negate\": false, \"selection\": {\"type\": \"seq_list\", \"__current_case__\": 1, \"seq_id_fp\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.9.1.0",
+            "type": "tool",
+            "uuid": "d2376dc7-ba7b-451e-a9d2-a0c728157142",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "22": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pharokka/pharokka/1.3.2+galaxy0",
+            "errors": null,
+            "id": 22,
+            "input_connections": {
+                "fasta": {
+                    "id": 21,
+                    "output_name": "fitered_fasta"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "pharokka",
+            "outputs": [
+                {
+                    "name": "pharokka gbk",
+                    "type": "genbank"
+                },
+                {
+                    "name": "pharokka gff",
+                    "type": "gff"
+                },
+                {
+                    "name": "archive_output",
+                    "type": "zip"
+                }
+            ],
+            "position": {
+                "left": 4535.593895679425,
+                "top": 401.61772335355647
+            },
+            "post_job_actions": {
+                "RenameDatasetActionpharokka_gbk": {
+                    "action_arguments": {
+                        "newname": "Pharokka: Genome annotations (Genbank)"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "pharokka gbk"
+                },
+                "RenameDatasetActionpharokka_gff": {
+                    "action_arguments": {
+                        "newname": "Pharokka: Genome annotations (GFF)"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "pharokka gff"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pharokka/pharokka/1.3.2+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "2f40d2ccb0eb",
+                "name": "pharokka",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"db_cached\": \"db_from_2023-08-27T050123Z\", \"evalue\": \"1e-05\", \"fasta\": {\"__class__\": \"ConnectedValue\"}, \"gene_predictor\": \"-g phanotate\", \"meta\": true, \"terminase\": {\"terminase_selector\": \"no_terminase\", \"__current_case__\": 0}, \"zip_output\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.3.2+galaxy0",
+            "type": "tool",
+            "uuid": "5d0ffbdb-8ae8-4f6e-895b-a2c940b3745b",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "pharokka gff",
+                    "output_name": "pharokka gff",
+                    "uuid": "9f7059be-0524-4da1-819e-5a951f73746c"
+                },
+                {
+                    "label": "pharokka gbk",
+                    "output_name": "pharokka gbk",
+                    "uuid": "d5ba6663-f58e-480c-afa4-06a95966b46f"
+                }
+            ]
+        },
+        "23": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+            "errors": null,
+            "id": 23,
+            "input_connections": {
+                "library|input_1": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "reference_genome|own_file": {
+                    "id": 21,
+                    "output_name": "fitered_fasta"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Bowtie2",
+                    "name": "library"
+                },
+                {
+                    "description": "runtime parameter for tool Bowtie2",
+                    "name": "reference_genome"
+                }
+            ],
+            "label": null,
+            "name": "Bowtie2",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "bam"
+                }
+            ],
+            "position": {
+                "left": 4531.567180702245,
+                "top": 684.9071348381411
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Bowtie2: alignments"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "f76cbb84d67f",
+                "name": "bowtie2",
+                "owner": "devteam",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"simple\", \"__current_case__\": 0, \"presets\": \"no_presets\"}, \"library\": {\"type\": \"paired_collection\", \"__current_case__\": 1, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"unaligned_file\": false, \"aligned_file\": false, \"paired_options\": {\"paired_options_selector\": \"yes\", \"__current_case__\": 0, \"I\": \"0\", \"X\": \"500\", \"fr_rf_ff\": \"--fr\", \"no_mixed\": false, \"no_discordant\": true, \"dovetail\": false, \"no_contain\": false, \"no_overlap\": false}}, \"reference_genome\": {\"source\": \"history\", \"__current_case__\": 1, \"own_file\": {\"__class__\": \"ConnectedValue\"}}, \"rg\": {\"rg_selector\": \"set_id_auto\", \"__current_case__\": 2}, \"sam_options\": {\"sam_options_selector\": \"yes\", \"__current_case__\": 0, \"sam_opt\": false, \"no_unal\": true, \"omit_sec_seq\": false, \"sam_no_qname_trunc\": false, \"xeq\": false, \"soft_clipped_unmapped_tlen\": false, \"reorder\": false}, \"save_mapping_stats\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.4+galaxy0",
+            "type": "tool",
+            "uuid": "ffc1c233-921b-4748-a7f4-c6cc4e55a877",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "bam for CoverM",
+                    "output_name": "output",
+                    "uuid": "96542944-6883-4f4f-81de-8613b4938252"
+                }
+            ]
+        },
+        "24": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/ufz/iphop_predict/iphop_predict/1.4.2+galaxy0",
+            "errors": null,
+            "id": 24,
+            "input_connections": {
+                "fa_file": {
+                    "id": 21,
+                    "output_name": "fitered_fasta"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "iPHoP predict",
+            "outputs": [
+                {
+                    "name": "detailed_per_tool",
+                    "type": "csv"
+                },
+                {
+                    "name": "host_genome",
+                    "type": "csv"
+                },
+                {
+                    "name": "host_genus",
+                    "type": "csv"
+                }
+            ],
+            "position": {
+                "left": 4605.5315171229,
+                "top": 88.77053687137217
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/ufz/iphop_predict/iphop_predict/1.4.2+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "be0d13020aec",
+                "name": "iphop_predict",
+                "owner": "ufz",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"db_dir\": \"iPHoP_db_Jun25_rw\", \"fa_file\": {\"__class__\": \"ConnectedValue\"}, \"min_score\": \"90\", \"no_qc\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.4.2+galaxy0",
+            "type": "tool",
+            "uuid": "911e9ff7-7eb1-4bb6-9d0d-aecfd1ce8721",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "25": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.7.0+galaxy0",
+            "errors": null,
+            "id": 25,
+            "input_connections": {
+                "mapped|mode|bam_files": {
+                    "id": 23,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "CoverM contig",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 4760,
+                "top": 690
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "CoverM_coverage"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "28d740f2c0b0",
+                "name": "coverm_contig",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"alignment\": {\"min_read_aligned_length\": \"0\", \"min_read_percent_identity\": \"0.0\", \"min_read_aligned_percent\": \"0.0\", \"proper_pairs_only\": {\"proper_pairs_only\": \"\", \"__current_case__\": 1}, \"exclude_supplementary\": false}, \"cov\": {\"methods\": [\"count\"], \"trim_min\": \"5\", \"trim_max\": \"95\", \"min_covered_fraction\": \"0\", \"contig_end_exclusion\": \"75\"}, \"mapped\": {\"mapped\": \"mapped\", \"__current_case__\": 0, \"mode\": {\"mode\": \"co\", \"__current_case__\": 1, \"bam_files\": {\"__class__\": \"ConnectedValue\"}}, \"sharded\": false}, \"output_format\": \"dense\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "475e8080-1b4c-4a8d-8bfa-184b4e419fef",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "coverage",
+                    "output_name": "output",
+                    "uuid": "18d8dff8-2c54-4284-b416-229943013604"
+                }
+            ]
+        }
+    },
+    "tags": [
+        "name:FAIRyMAGs",
+        "microbiome",
+        "name:metagenomics",
+        "virus"
+    ],
+    "uuid": "3c3c4954-890c-4c12-a45e-f3fbf06d32c4",
+    "version": 1
+}
