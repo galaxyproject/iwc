@@ -1,4 +1,4 @@
-## Metagenome-Assembled Genomes (MAGs) Generation
+# Metagenome-Assembled Genomes (MAGs) Generation
 
 This workflow generates Metagenome-Assembled Genomes (MAGs) from paired short reads and optional long reads.
 The use of long reads is only supported for assembly with **metaSPADES**.
@@ -27,7 +27,8 @@ All results are consolidated into a single **MultiQC report**.
 
 ## Input Requirements
 
-Input reads must be quality-filtered, with host reads removed.\nSee other MAG workflows in IWC for quality filtering and host removal.
+Input reads must be quality-filtered, with host reads removed.
+See other MAG workflows in IWC for quality filtering and host removal.
 
 **Short reads:**
 
@@ -44,12 +45,12 @@ Input reads must be quality-filtered, with host reads removed.\nSee other MAG wo
 * **Trimmed reads**: Quality-trimmed reads from individual samples.
 * **Trimmed reads from grouped samples**: These reads need to be grouped based on the desired MAGs generation approach. The tool [fastq_groupmerge](toolshed.g2.bx.psu.edu/repos/iuc/fastq_groupmerge/fastq_groupmerge/1.0.1+galaxy0) can be used to perform the grouping. Long reads and short reads must be grouped using the same logic.
 
-* **Individual MAGs Generation**: Use the same input as `Trimmed Reads` to generate MAGs per sample.
-* **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all reads into one file for a fully pooled MAGs approach.
-* **Grouped MAGs Generation (Co-assembly/Binning)**: Merge samples based on predefined groups.
-* **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.
+  * **Individual MAGs Generation**: Use the same input as `Trimmed Reads` to generate MAGs per sample.
+  * **Pooled MAGs Generation (Co-assembly/Binning)**: Merge all reads into one file for a fully pooled MAGs approach.
+  * **Grouped MAGs Generation (Co-assembly/Binning)**: Merge samples based on predefined groups.
+  * **Hybrid MAGs Generation**: Combine individual and grouped reads for a mixed approach.
 
-**Note**: Merging reads can result in large input files, significantly increasing computational demands\u2014especially during assembly and binning, which may require substantial RAM. Our tests with synthetic samples up to **50 GB** showed feasible performance. For larger datasets, we recommend limiting the approach to **individual or pooled MAGs generation**.
+> **Note**: Merging reads can result in large input files, significantly increasing computational demands—especially during assembly and binning, which may require substantial RAM. Our tests with synthetic samples up to **50 GB** showed feasible performance. For larger datasets, we recommend limiting the approach to **individual or pooled MAGs generation**.
 
 ## Optional Modifications
 
