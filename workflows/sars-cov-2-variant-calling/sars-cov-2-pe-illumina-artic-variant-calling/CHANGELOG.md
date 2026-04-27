@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.5] - 2026-04-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.18` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.19`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.5` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.9`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/4.3+t.galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/5.4.0c+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_removereads/ivar_removereads/1.4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_removereads/ivar_removereads/1.4.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.15.1+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.22+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`
+
 ## [0.5.4] - 2025-03-17
 
 ### Automatic update
