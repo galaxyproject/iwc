@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4] - 2026-04-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.1+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/devteam/fastq_filter/fastq_filter/1.1.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/fastq_filter/fastq_filter/1.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/fastqtofasta/fastq_to_fasta_python/1.1.5+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/fastqtofasta/fastq_to_fasta_python/1.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/rnateam/cmsearch_deoverlap/cmsearch_deoverlap/0.08+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/rnateam/cmsearch_deoverlap/cmsearch_deoverlap/0.09+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
+
 ## [0.3] - 2025-05-05
 
 - `toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.1+galaxy0`
