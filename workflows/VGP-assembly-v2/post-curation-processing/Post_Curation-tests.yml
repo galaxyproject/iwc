@@ -1,0 +1,150 @@
+- doc: Test post-curation processing with synthetic data
+  job:
+    Species Name: Test_species
+    Assembly Name: testAsm
+    Curated AGP file:
+      class: File
+      location: https://zenodo.org/records/19101571/files/test_curation.agp
+      filetype: tabular
+      hashes:
+      - hash_function: SHA-1
+        hash_value: 5185f176d2d92c10e02f26e578603aec0c1baca4
+    Fasta file with both haplotypes:
+      class: File
+      location: https://zenodo.org/records/19101571/files/test_assembly.fasta
+      filetype: fasta
+      hashes:
+      - hash_function: SHA-1
+        hash_value: f2c93e14f10f9525d120a942316203d213805ba4
+    Database for Compleasm Genes: vertebrata_odb10
+    Hi-C reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: HiC_set_1
+        elements:
+        - identifier: forward
+          class: File
+          location: https://zenodo.org/records/19101571/files/HiC_forward.fastqsanger.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 5e531589f9248ccf7c4d677edffc060683167dba
+        - identifier: reverse
+          class: File
+          location: https://zenodo.org/records/19101571/files/HiC_reverse.fastqsanger.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: aaaeec9daf27cfee04ee46feb28c3d202b21a86c
+    "Trim the Hi-C data?": false
+    "Remove duplicated Hi-C reads?": true
+    PacBio reads:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: PacBio_set_1
+        location: https://zenodo.org/records/19101571/files/PacBio_reads.fastq.gz
+        filetype: fastqsanger.gz
+        hashes:
+        - hash_function: SHA-1
+          hash_value: 9c7c1af0887a9825d5391c783127aaa7321b6401
+    "Remove adapters from HiFi reads?": false
+    "Generate Gene tracks with Compleasm?": true
+    Canonical telomeric pattern: TTAGGG
+    Telomere patterns to explore: "TTAGGG,CCCTAA"
+    Minimum Mapping Quality: 10
+    Bin Size for BigWig files: 100
+    "Generate high resolution Hi-C maps?": false
+  outputs:
+    # --- Curation results ---
+    Corrected AGP:
+      asserts:
+      - has_text:
+          text: "scaffold_1.H1"
+      - has_text:
+          text: "scaffold_5.H1"
+    Curated Hap1:
+      asserts:
+      - has_size:
+          value: 270000
+          delta: 50000
+    Curated Hap2:
+      asserts:
+      - has_size:
+          value: 410000
+          delta: 50000
+    Hap1 AGP:
+      asserts:
+      - has_text:
+          text: "Scaffold_1"
+      - has_text:
+          text: "Hap_1"
+    # --- Chromosome assignment: correct number and sex chroms ---
+    Chromosome mapping Hap1:
+      asserts:
+      - has_text:
+          text: "SUPER_1"
+      - has_n_lines:
+          n: 4
+    Chromosome mapping Hap2:
+      asserts:
+      - has_text:
+          text: "SUPER_1"
+      - has_text:
+          text: "SUPER_Z"
+      - has_text:
+          text: "SUPER_W"
+      - has_n_lines:
+          n: 5
+    # --- Rename/reorient: verify both RENAME and RVCP happened ---
+    Reorientation and renaming instructions:
+      asserts:
+      - has_text:
+          text: "RENAME"
+      - has_text:
+          text: "RVCP"
+      - has_n_lines:
+          n: 4
+    # --- Orientation mapping: inversion detected ---
+    Hap1 Hap2 orientation mapping:
+      asserts:
+      - has_text:
+          text: "Main Orientation"
+      - has_text:
+          text: "-"
+    # --- No missing sequences in mashmap ---
+    Sequences missing in mashmap:
+      asserts:
+      - has_n_lines:
+          n: 0
+    # --- Telomere detection (Hap1): 5 telomeres found ---
+    Hap1 Telomere Report:
+      asserts:
+      - has_text:
+          text: "Total paths:\t4"
+      - has_text:
+          text: "Total telomeres:\t5"
+      - has_text:
+          text: "Two telomeres:\t2"
+      - has_text:
+          text: "One telomere:\t1"
+    # --- Telomere detection (Hap2): paths include sex chroms ---
+    Hap2 Telomere Report:
+      asserts:
+      - has_text:
+          text: "Total paths:\t5"
+      - has_text:
+          text: "SUPER_Z"
+      - has_text:
+          text: "SUPER_W"
+    # --- Hi-C dedup stats exist with real data ---
+    "Hap1 Hi-C duplication stats on Curated Assembly: Raw":
+      asserts:
+      - has_text:
+          text: "cis"
+      - has_text:
+          text: "chrom_freq"
