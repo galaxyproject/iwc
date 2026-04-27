@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3] - 2026-04-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.11.4+galaxy3`
+
 ## [0.1.2] - 2026-01-19
 
 ### Automatic update
