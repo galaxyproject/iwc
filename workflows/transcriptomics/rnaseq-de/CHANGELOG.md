@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.9] - 2026-04-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.3+galaxy0`
+
 ## [0.8] - 2026-02-23
 
 ### Automatic update
