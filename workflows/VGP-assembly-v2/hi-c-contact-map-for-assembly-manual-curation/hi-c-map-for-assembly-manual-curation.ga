@@ -176,9 +176,9 @@
         },
         {
             "child_steps": [
+                34,
                 43,
                 44,
-                34,
                 50,
                 55,
                 67,
@@ -219,7 +219,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "PretextMap Generation from 1 or 2 haplotypes",
-    "readme": "# Hi-C Contact Map Generation for Manual Curation of Genome Assemblies\n\nThis workflow generates Hi-C contact maps for diploid genome assemblies in the Pretext format. It includes tracks for:\n- **Gene annotations** (Compleasm)\n- **PacBio read coverage** and coverage gaps\n- **Telomeres** (with flexible pattern detection)\n- **Assembly gaps**\n\nThe Pretext files can be opened in PretextView for manual curation of genome assemblies.\n\n## Inputs\n\n### Required Inputs\n\n1. **Haplotype 1** [fasta] - Primary haplotype assembly\n2. **Will you use a second haplotype?** [boolean] - Set to true for diploid assemblies\n3. **Haplotype 2** [fasta] - Secondary haplotype assembly (required if using two haplotypes)\n4. **Hi-C reads** [fastq] - Paired collection containing Hi-C data\n5. **PacBio reads** [fastq] - Collection of PacBio HiFi reads\n\n### Assembly Annotation Parameters\n\n6. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)\n7. **Species Name** [text] - Species identifier for gene annotation\n8. **Assembly Name** [text] - Assembly identifier (e.g., toLid)\n9. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)\n10. **Database for Compleasm** [text] - Compleasm database version (default: v5)\n\n### Scaffold Naming Options\n\n11. **Do you want to add suffixes to the scaffold names?** [boolean] - Select yes if scaffold names do not contain haplotype information\n12. **First Haplotype suffix** [text] - Suffix for haplotype 1 scaffolds (default: H1)\n13. **Second Haplotype suffix** [text] - Suffix for haplotype 2 scaffolds (default: H2)\n\n### Hi-C Processing Options\n\n14. **Do you want to trim the Hi-C data?** [boolean] - If yes, removes 5bp at the end of Hi-C reads (recommended for Arima Hi-C data if the map looks \"noisy\")\n15. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C alignments using Samtools markdup\n16. **Minimum Mapping Quality** [integer] - Minimum MAPQ score for filtered PretextMap (default: 10; set to 0 to keep all mapped reads)\n\n### PacBio Processing Options\n\n17. **Remove adapters from HiFi reads?** [boolean] - Trim adapters from PacBio HiFi reads using Cutadapt\n\n### Telomere Detection\n\n18. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)\n19. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)\n\n### Hi-C Map Resolution\n\n20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)\n\n### Visualization Options\n\n21. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)\n\n## Outputs\n\n### Assembly Outputs\n\n1. **Assembly for curation** [fasta] - Merged assembly (if two haplotypes used) or single haplotype with optional suffix\n2. **Assembly Info** [tabular] - Summary statistics from gfastats\n3. **Both Haplotypes merged** [fasta] - Concatenated assembly file\n\n### Gene Annotation Outputs\n\n4. **Compleasm Genes track** [GFF] - Combined gene annotations for Pretext track (if gene annotations enabled)\n\n### Hi-C Alignment Outputs\n\n5. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments\n6. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering\n7. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)\n8. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)\n9. **Hi-C duplication stats on Scaffolds: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)\n10. **Hi-C duplication stats on Scaffolds: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)\n11. **Pairtools Multiqc Stats on Scaffolds** [tabular] - Pairtools statistics\n12. **Pairtools MultiQc on Scaffolds: Plots** [HTML] - Pairtools MultiQC plots\n\n### PacBio Processing Outputs\n\n13. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)\n14. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)\n\n### PacBio Coverage Outputs\n\n15. **BigWig Coverage** [bigwig] - PacBio read coverage track\n16. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage\n17. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments\n\n### Telomere Outputs\n\n18. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope\n19. **terminal telomeres** [bedgraph] - All detected telomeric regions\n20. **P telomeres bed** [BED] - P-arm (5') telomeres only\n21. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only\n\n### Gap Outputs\n\n22. **Gaps Bed** [BED] - Assembly gap coordinates\n23. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext\n\n### Assembly Haplotype Outputs\n\n24. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied\n25. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied\n\n### Pretext Map Outputs\n\nAll Pretext outputs are generated in two versions:\n- **With MAPQ filtering** (default MAPQ \u2265 10): Cleaner maps with high-confidence contacts\n- **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments\n\n26. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)\n27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)\n28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)\n29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)\n\n## Usage Notes\n\n### When to trim Hi-C data\nEnable trimming if you're using Arima Hi-C kits and notice a \"noisy\" contact map pattern.\n\n### MAPQ filtering\nThe default MAPQ threshold of 10 removes ambiguously mapped Hi-C contacts, resulting in cleaner contact maps. Compare both filtered and unfiltered outputs to assess mapping quality.\n\n### Choosing Compleasm lineage\nSelect the most specific lineage available for your species:\n- Vertebrates: `vertebrata_odb10`\n- Mammals: `mammalia_odb10`\n- Primates: `primates_odb10`\n- Birds: `aves_odb10`\n- See [BUSCO datasets](https://busco-data.ezlab.org/v5/data/lineages/) for complete list\n\n### Telomere patterns\n- Vertebrates typically use TTAGGG\n- Some species have variant patterns - check the literature\n- IUPAC codes are supported (e.g., TTAGGK for TTAGGG/TTAGGC)\n\n## Citation\n\nIf you use this workflow, please cite:\n- PretextMap and PretextView tools\n- Compleasm for gene completeness assessment\n- Teloscope for telomere detection\n- Other tools as listed in the workflow\n",
+    "readme": "# Hi-C Contact Map Generation for Manual Curation of Genome Assemblies\n\nThis workflow generates Hi-C contact maps for diploid genome assemblies in the Pretext format. It includes tracks for:\n- **Gene annotations** (Compleasm)\n- **PacBio read coverage** and coverage gaps\n- **Telomeres** (with flexible pattern detection)\n- **Assembly gaps**\n\nThe Pretext files can be opened in PretextView for manual curation of genome assemblies.\n\n## Inputs\n\n### Required Inputs\n\n1. **Haplotype 1** [fasta] - Primary haplotype assembly\n2. **Will you use a second haplotype?** [boolean] - Set to true for diploid assemblies\n3. **Haplotype 2** [fasta] - Secondary haplotype assembly (required if using two haplotypes)\n4. **Hi-C reads** [fastq] - Paired collection containing Hi-C data\n5. **PacBio reads** [fastq] - Collection of PacBio HiFi reads\n\n### Assembly Annotation Parameters\n\n6. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)\n7. **Species Name** [text] - Species identifier for gene annotation\n8. **Assembly Name** [text] - Assembly identifier (e.g., toLid)\n9. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)\n10. **Database for Compleasm** [text] - Compleasm database version (default: v5)\n\n### Scaffold Naming Options\n\n11. **Do you want to add suffixes to the scaffold names?** [boolean] - Select yes if scaffold names do not contain haplotype information\n12. **First Haplotype suffix** [text] - Suffix for haplotype 1 scaffolds (default: H1)\n13. **Second Haplotype suffix** [text] - Suffix for haplotype 2 scaffolds (default: H2)\n\n### Hi-C Processing Options\n\n14. **Do you want to trim the Hi-C data?** [boolean] - If yes, removes 5bp at the end of Hi-C reads (recommended for Arima Hi-C data if the map looks \"noisy\")\n15. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C alignments using Samtools markdup\n16. **Minimum Mapping Quality** [integer] - Minimum MAPQ score for filtered PretextMap (default: 10; set to 0 to keep all mapped reads)\n\n### PacBio Processing Options\n\n17. **Remove adapters from HiFi reads?** [boolean] - Trim adapters from PacBio HiFi reads using Cutadapt\n\n### Telomere Detection\n\n18. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)\n19. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)\n\n### Hi-C Map Resolution\n\n20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)\n\n### Visualization Options\n\n21. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)\n\n## Outputs\n\n### Assembly Outputs\n\n1. **Assembly for curation** [fasta] - Merged assembly (if two haplotypes used) or single haplotype with optional suffix\n2. **Assembly Info** [tabular] - Summary statistics from gfastats\n3. **Both Haplotypes merged** [fasta] - Concatenated assembly file\n\n### Gene Annotation Outputs\n\n4. **Compleasm Genes track** [GFF] - Combined gene annotations for Pretext track (if gene annotations enabled)\n\n### Hi-C Alignment Outputs\n\n5. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments\n6. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering\n7. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)\n8. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)\n9. **Hi-C duplication stats on Scaffolds: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)\n10. **Hi-C duplication stats on Scaffolds: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)\n11. **Pairtools Multiqc Stats on Scaffolds** [tabular] - Pairtools statistics\n12. **Pairtools MultiQc on Scaffolds: Plots** [HTML] - Pairtools MultiQC plots\n\n### PacBio Processing Outputs\n\n13. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)\n14. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)\n\n### PacBio Coverage Outputs\n\n15. **BigWig Coverage** [bigwig] - PacBio read coverage track\n16. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage\n17. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments\n\n### Telomere Outputs\n\n18. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope\n19. **terminal telomeres** [bedgraph] - All detected telomeric regions\n20. **P telomeres bed** [BED] - P-arm (5') telomeres only\n21. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only\n\n### Gap Outputs\n\n22. **Gaps Bed** [BED] - Assembly gap coordinates\n23. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext\n\n### Assembly Haplotype Outputs\n\n24. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied\n25. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied\n\n### Pretext Map Outputs\n\nAll Pretext outputs are generated in two versions:\n- **With MAPQ filtering** (default MAPQ ≥ 10): Cleaner maps with high-confidence contacts\n- **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments\n\n26. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)\n27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)\n28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)\n29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)\n\n## Usage Notes\n\n### When to trim Hi-C data\nEnable trimming if you're using Arima Hi-C kits and notice a \"noisy\" contact map pattern.\n\n### MAPQ filtering\nThe default MAPQ threshold of 10 removes ambiguously mapped Hi-C contacts, resulting in cleaner contact maps. Compare both filtered and unfiltered outputs to assess mapping quality.\n\n### Choosing Compleasm lineage\nSelect the most specific lineage available for your species:\n- Vertebrates: `vertebrata_odb10`\n- Mammals: `mammalia_odb10`\n- Primates: `primates_odb10`\n- Birds: `aves_odb10`\n- See [BUSCO datasets](https://busco-data.ezlab.org/v5/data/lineages/) for complete list\n\n### Telomere patterns\n- Vertebrates typically use TTAGGG\n- Some species have variant patterns - check the literature\n- IUPAC codes are supported (e.g., TTAGGK for TTAGGG/TTAGGC)\n\n## Citation\n\nIf you use this workflow, please cite:\n- PretextMap and PretextView tools\n- Compleasm for gene completeness assessment\n- Teloscope for telomere detection\n- Other tools as listed in the workflow\n",
     "report": {
         "markdown": "# Precuration  workflow on:\n\n```galaxy\nhistory_dataset_embedded(output=\"Assembly Info\")\n```\n\n## Duplication Stats\n\nSamtools markdup deduplication stats (if applicable)\n\n\n```galaxy\nhistory_dataset_as_table(output=\"Hi-C duplication stats\")\n```\n\n\n\nPairtools stats\n```galaxy\nhistory_dataset_as_table(output=\"Hi-C duplication stats: MultiQC\")\n```\n\n## Telomere report\n\n```galaxy\nhistory_dataset_embedded(output=\"Telomere Report\")\n```\n\n## Pretext Snapshots\n\nWith Multimapping\n\n\n```galaxy\nhistory_dataset_as_image(output=\"Pretext Snapshot With tracks - Multimapping\")\n```\n\n\nWith MAPQ filtering\n\n\n```galaxy\nhistory_dataset_as_image(output=\"Pretext Snapshot With tracks\")\n```\n\n\n"
     },
@@ -865,7 +865,12 @@
                     "output_name": "output"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
             "label": "Hap2 not provided",
             "name": "Map parameter value",
             "outputs": [
@@ -1479,7 +1484,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "82b7bed7-29f9-45fb-a0e9-607fdcad3656"
+                "uuid": "981c39a4-4f6b-47d1-ac30-08ce1d6a9394"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1545,7 +1550,7 @@
                     },
                     "1": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
                         "errors": null,
                         "id": 1,
                         "input_connections": {
@@ -1574,16 +1579,16 @@
                                 "output_name": "output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
                         "tool_shed_repository": {
-                            "changeset_revision": "d3c07d270a50",
+                            "changeset_revision": "3e27acfa4830",
                             "name": "collection_element_identifiers",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "0.0.2",
+                        "tool_version": "0.0.3",
                         "type": "tool",
                         "uuid": "50f53cad-f20d-4497-bcfd-98085c5a86ee",
                         "when": null,
@@ -1720,7 +1725,12 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Map parameter value",
+                                "name": "input_param_type"
+                            }
+                        ],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1772,7 +1782,12 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Map parameter value",
+                                "name": "input_param_type"
+                            }
+                        ],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1824,7 +1839,12 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Map parameter value",
+                                "name": "input_param_type"
+                            }
+                        ],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1867,7 +1887,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "f3cd0c6f-9666-4d4c-b6b0-d7e107fba5b0"
+                "uuid": "dddd606b-1301-4fa4-bde5-0281131c064d"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1877,7 +1897,7 @@
         },
         "25": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy2",
             "errors": null,
             "id": 25,
             "input_connections": {
@@ -1890,7 +1910,12 @@
                     "output_name": "output"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Cutadapt",
+                    "name": "library"
+                }
+            ],
             "label": null,
             "name": "Cutadapt",
             "outputs": [
@@ -1932,16 +1957,16 @@
                     "output_name": "report"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy2",
             "tool_shed_repository": {
-                "changeset_revision": "5d00fd7847eb",
+                "changeset_revision": "f6168dd17f82",
                 "name": "cutadapt",
                 "owner": "lparsons",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"adapter_options\": {\"action\": \"trim\", \"error_rate\": \"0.1\", \"no_indels\": false, \"times\": \"1\", \"overlap\": \"3\", \"match_read_wildcards\": false, \"no_match_adapter_wildcards\": true, \"revcomp\": false}, \"filter_options\": {\"discard_trimmed\": false, \"discard_untrimmed\": false, \"minimum_length\": \"1\", \"minimum_length2\": null, \"maximum_length\": null, \"maximum_length2\": null, \"max_n\": null, \"max_expected_errors\": null, \"max_average_error_rate\": null, \"discard_casava\": false, \"pair_filter\": \"any\"}, \"library\": {\"type\": \"single\", \"__current_case__\": 0, \"input_1\": {\"__class__\": \"ConnectedValue\"}, \"r1\": {\"adapters\": [], \"front_adapters\": [], \"anywhere_adapters\": [{\"__index__\": 0, \"adapter_source\": {\"adapter_source_list\": \"user\", \"__current_case__\": 0, \"adapter_name\": \"\", \"adapter\": \"ATCTCTCTCAACAACAACAACGGAGGAGGAGGAAAAGAGAGAGAT\"}, \"single_noindels\": false}, {\"__index__\": 1, \"adapter_source\": {\"adapter_source_list\": \"user\", \"__current_case__\": 0, \"adapter_name\": \"\", \"adapter\": \"ATCTCTCTCTTTTCCTCCTCCTCCGTTGTTGTTGTTGAGAGAGAT\"}, \"single_noindels\": false}]}}, \"other_trimming_options\": {\"cut\": \"0\", \"cut2\": \"0\", \"quality_cutoff\": \"0\", \"quality_cutoff2\": \"\", \"nextseq_trim\": \"0\", \"trim_n\": false, \"poly_a\": false, \"shorten_options\": {\"shorten_values\": \"False\", \"__current_case__\": 1}, \"shorten_options_r2\": {\"shorten_values_r2\": \"False\", \"__current_case__\": 1}}, \"output_selector\": [\"report\", \"json_stats\"], \"read_mod_options\": {\"strip_suffix\": null, \"length_tag\": null, \"rename\": null, \"zero_cap\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "5.2+galaxy1",
+            "tool_version": "5.2+galaxy2",
             "type": "tool",
             "uuid": "e8774c1b-de76-4199-8d6a-0e3b37625469",
             "when": "$(inputs.when)",
@@ -2243,7 +2268,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "247a97c1-a0ec-4308-9280-a2ae4a42a18c"
+                "uuid": "3b32e78f-36dd-4dc9-94c6-2b62613fb166"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -2804,7 +2829,7 @@
                                 },
                                 "1": {
                                     "annotation": "",
-                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+                                    "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
                                     "errors": null,
                                     "id": 1,
                                     "input_connections": {
@@ -2833,16 +2858,16 @@
                                             "output_name": "output"
                                         }
                                     },
-                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2",
+                                    "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
                                     "tool_shed_repository": {
-                                        "changeset_revision": "d3c07d270a50",
+                                        "changeset_revision": "3e27acfa4830",
                                         "name": "collection_element_identifiers",
                                         "owner": "iuc",
                                         "tool_shed": "toolshed.g2.bx.psu.edu"
                                     },
                                     "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                                     "tool_uuid": null,
-                                    "tool_version": "0.0.2",
+                                    "tool_version": "0.0.3",
                                     "type": "tool",
                                     "uuid": "50f53cad-f20d-4497-bcfd-98085c5a86ee",
                                     "when": null,
@@ -2979,7 +3004,12 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [],
+                                    "inputs": [
+                                        {
+                                            "description": "runtime parameter for tool Map parameter value",
+                                            "name": "input_param_type"
+                                        }
+                                    ],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3031,7 +3061,12 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [],
+                                    "inputs": [
+                                        {
+                                            "description": "runtime parameter for tool Map parameter value",
+                                            "name": "input_param_type"
+                                        }
+                                    ],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3083,7 +3118,12 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [],
+                                    "inputs": [
+                                        {
+                                            "description": "runtime parameter for tool Map parameter value",
+                                            "name": "input_param_type"
+                                        }
+                                    ],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3126,7 +3166,7 @@
                                 }
                             },
                             "tags": [],
-                            "uuid": "f3cd0c6f-9666-4d4c-b6b0-d7e107fba5b0"
+                            "uuid": "5f125eb2-c713-4df4-8a71-e49ba9852fc8"
                         },
                         "tool_id": null,
                         "type": "subworkflow",
@@ -3149,7 +3189,12 @@
                                 "output_name": "output"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Cutadapt",
+                                "name": "library"
+                            }
+                        ],
                         "label": "Trim Hi-C reads 2",
                         "name": "Cutadapt",
                         "outputs": [
@@ -3218,7 +3263,12 @@
                                 "output_name": "output"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Map parameter value",
+                                "name": "input_param_type"
+                            }
+                        ],
                         "label": "False when removal is true",
                         "name": "Map parameter value",
                         "outputs": [
@@ -3333,7 +3383,16 @@
                                 "output_name": "index"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool BWA-MEM2",
+                                "name": "fastq_input"
+                            },
+                            {
+                                "description": "runtime parameter for tool BWA-MEM2",
+                                "name": "reference_source"
+                            }
+                        ],
                         "label": null,
                         "name": "BWA-MEM2",
                         "outputs": [
@@ -3377,7 +3436,7 @@
                     },
                     "11": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3",
                         "errors": null,
                         "id": 11,
                         "input_connections": {
@@ -3413,16 +3472,16 @@
                                 "output_name": "output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "84819580b8a5",
+                            "changeset_revision": "2f395ebff85f",
                             "name": "samtools_fixmate",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"addms\": true, \"bamfile\": {\"__class__\": \"ConnectedValue\"}, \"noprop\": false, \"remsec\": false, \"tempcigar\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.22+galaxy2",
+                        "tool_version": "1.22+galaxy3",
                         "type": "tool",
                         "uuid": "1db82bd3-3108-4f39-a0f0-f9e5450e1f4f",
                         "when": null,
@@ -3461,7 +3520,7 @@
                         },
                         "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_sort/samtools_sort/2.0.8",
                         "tool_shed_repository": {
-                            "changeset_revision": "69dca890852c",
+                            "changeset_revision": "2ce517eb9af2",
                             "name": "samtools_sort",
                             "owner": "devteam",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -3579,7 +3638,7 @@
                     },
                     "15": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2",
                         "errors": null,
                         "id": 15,
                         "input_connections": {
@@ -3592,7 +3651,16 @@
                                 "output_name": "Has multiple samples"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Samtools merge",
+                                "name": "bed_file"
+                            },
+                            {
+                                "description": "runtime parameter for tool Samtools merge",
+                                "name": "headerbam"
+                            }
+                        ],
                         "label": null,
                         "name": "Samtools merge",
                         "outputs": [
@@ -3612,16 +3680,16 @@
                                 "output_name": "output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2",
                         "tool_shed_repository": {
-                            "changeset_revision": "c8bc9d08b0e3",
+                            "changeset_revision": "37c8eb55315d",
                             "name": "samtools_merge",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"bamfiles\": {\"__class__\": \"ConnectedValue\"}, \"bed_file\": {\"__class__\": \"RuntimeValue\"}, \"headerbam\": {\"__class__\": \"RuntimeValue\"}, \"idpg\": false, \"idrg\": false, \"region\": null, \"seed\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.22+galaxy1",
+                        "tool_version": "1.22+galaxy2",
                         "type": "tool",
                         "uuid": "03cf4998-54d1-43b4-9005-828e8e1da14c",
                         "when": "$(inputs.when)",
@@ -3803,7 +3871,7 @@
                     },
                     "19": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3",
                         "errors": null,
                         "id": 19,
                         "input_connections": {
@@ -3812,7 +3880,12 @@
                                 "output_name": "dedup_pairs_stats"
                             }
                         },
-                        "inputs": [],
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool MultiQC",
+                                "name": "image_content_input"
+                            }
+                        ],
                         "label": "Pairtools Multiqc",
                         "name": "MultiQC",
                         "outputs": [
@@ -3886,16 +3959,16 @@
                                 "output_name": "stats"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "26ee5e11ecbe",
+                            "changeset_revision": "862943c10425",
                             "name": "multiqc",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"comment\": \"\", \"export\": true, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": true, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"pairtools\", \"__current_case__\": 39, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Hi-C alignements to Scaffold stats\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"comment\": \"\", \"export\": true, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": true, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"pairtools\", \"__current_case__\": 40, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Hi-C alignements to Scaffold stats\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.33+galaxy0",
+                        "tool_version": "1.33+galaxy3",
                         "type": "tool",
                         "uuid": "66905684-e6a1-4d2a-91ad-4809ca5e864a",
                         "when": null,
@@ -3919,7 +3992,7 @@
                     },
                     "20": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3",
                         "errors": null,
                         "id": 20,
                         "input_connections": {
@@ -3968,16 +4041,16 @@
                                 "output_name": "output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "ef678e1f70a2",
+                            "changeset_revision": "a50321bc1a90",
                             "name": "samtools_markdup",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"bamfile\": {\"__class__\": \"RuntimeValue\"}, \"existing_tags\": false, \"include_fails\": false, \"maxlen\": null, \"mode\": \"s\", \"odist\": \"2500\", \"output_options\": {\"stats\": \"yes\", \"output_format\": {\"select_oformat\": \"BAM\", \"__current_case__\": 1}}, \"remove\": true, \"supp\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"bamfile\": {\"__class__\": \"ConnectedValue\"}, \"existing_tags\": false, \"include_fails\": false, \"maxlen\": null, \"mode\": \"s\", \"odist\": \"2500\", \"output_options\": {\"stats\": \"yes\", \"output_format\": {\"select_oformat\": \"BAM\", \"__current_case__\": 1}}, \"remove\": true, \"supp\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.22+galaxy2",
+                        "tool_version": "1.22+galaxy3",
                         "type": "tool",
                         "uuid": "294a749f-e96a-45d7-9e2b-fd71d0afe5b2",
                         "when": "$(inputs.when)",
@@ -3985,7 +4058,7 @@
                     },
                     "21": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3",
                         "errors": null,
                         "id": 21,
                         "input_connections": {
@@ -4027,16 +4100,16 @@
                                 "output_name": "stats_output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "ef678e1f70a2",
+                            "changeset_revision": "a50321bc1a90",
                             "name": "samtools_markdup",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"bamfile\": {\"__class__\": \"ConnectedValue\"}, \"existing_tags\": false, \"include_fails\": false, \"maxlen\": null, \"mode\": \"s\", \"odist\": \"2500\", \"output_options\": {\"stats\": \"yes\", \"output_format\": {\"select_oformat\": \"BAM\", \"__current_case__\": 1}}, \"remove\": true, \"supp\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.22+galaxy2",
+                        "tool_version": "1.22+galaxy3",
                         "type": "tool",
                         "uuid": "9172e934-6ce0-4bc6-a526-e3d3fe539e58",
                         "when": "$(inputs.when)",
@@ -4174,7 +4247,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "c7542d02-e14a-48e5-b968-12782e345189"
+                "uuid": "747d7425-0083-4ca6-b079-087fa62ae482"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -4317,7 +4390,7 @@
         },
         "33": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2",
             "errors": null,
             "id": 33,
             "input_connections": {
@@ -4362,16 +4435,16 @@
                     "output_name": "stats"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2",
             "tool_shed_repository": {
-                "changeset_revision": "0fe699ced54f",
+                "changeset_revision": "10dc0f5a82e2",
                 "name": "gfastats",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"mode_condition\": {\"selector\": \"statistics\", \"__current_case__\": 1, \"statistics_condition\": {\"selector\": \"coordinates\", \"__current_case__\": 1, \"out_coord\": \"g\"}, \"locale\": false, \"tabular\": true, \"discover_paths\": false}, \"target_condition\": {\"target_option\": \"false\", \"__current_case__\": 0}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.3.11+galaxy1",
+            "tool_version": "1.3.11+galaxy2",
             "type": "tool",
             "uuid": "7ef0994f-1ebf-4d9d-8799-cd6f42cb0c0c",
             "when": null,
@@ -4385,7 +4458,7 @@
         },
         "34": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.30+galaxy0",
             "errors": null,
             "id": 34,
             "input_connections": {
@@ -4398,7 +4471,16 @@
                     "output_name": "data_param"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map with minimap2",
+                    "name": "fastq_input"
+                },
+                {
+                    "description": "runtime parameter for tool Map with minimap2",
+                    "name": "reference_source"
+                }
+            ],
             "label": null,
             "name": "Map with minimap2",
             "outputs": [
@@ -4418,16 +4500,16 @@
                     "output_name": "alignment_output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.30+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "539de907fd99",
+                "changeset_revision": "3faf9a2bf58d",
                 "name": "minimap2",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"alignment_options\": {\"splicing\": {\"splice_mode\": \"preset\", \"__current_case__\": 0}, \"A\": null, \"B\": null, \"O\": null, \"O2\": null, \"E\": null, \"E2\": null, \"z\": null, \"z2\": null, \"s\": null, \"no_end_flt\": true}, \"fastq_input\": {\"fastq_input_selector\": \"single\", \"__current_case__\": 0, \"fastq_input1\": {\"__class__\": \"ConnectedValue\"}, \"analysis_type_selector\": \"map-hifi\"}, \"indexing_options\": {\"H\": false, \"k\": null, \"w\": null, \"I\": null}, \"io_options\": {\"output_format\": \"BAM\", \"Q\": false, \"L\": false, \"K\": null, \"cs\": null, \"c\": false, \"eqx\": false, \"Y\": false}, \"mapping_options\": {\"N\": null, \"F\": null, \"f\": null, \"kmer_ocurrence_interval\": {\"interval\": \"\", \"__current_case__\": 1}, \"min_occ_floor\": null, \"q_occ_frac\": \"0.01\", \"g\": null, \"r\": null, \"n\": null, \"m\": null, \"max_chain_skip\": null, \"max_chain_iter\": null, \"X\": false, \"p\": null, \"mask_len\": null}, \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1, \"ref_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"alignment_options\": {\"splicing\": {\"splice_mode\": \"preset\", \"__current_case__\": 0}, \"A\": null, \"B\": null, \"b\": null, \"O\": null, \"O2\": null, \"E\": null, \"E2\": null, \"z\": null, \"z2\": null, \"s\": null, \"end_bonus\": \"0\", \"score_N\": \"1\", \"no_end_flt\": true, \"jump_min_match\": \"3\", \"end_seed_pen\": \"6\", \"cap_sw_mem\": \"100m\", \"cap_kalloc\": \"500m\"}, \"fastq_input\": {\"fastq_input_selector\": \"single\", \"__current_case__\": 0, \"fastq_input1\": {\"__class__\": \"ConnectedValue\"}, \"analysis_type_selector\": \"map-hifi\"}, \"indexing_options\": {\"H\": false, \"k\": null, \"w\": null, \"I\": null}, \"io_options\": {\"output_format\": \"BAM\", \"Q\": false, \"L\": false, \"K\": null, \"cs\": null, \"c\": false, \"eqx\": false, \"Y\": false, \"copy_comments\": false, \"ds_tag\": false, \"secondary_seq\": false, \"two_io_threads\": false, \"seed\": null}, \"mapping_options\": {\"N\": null, \"F\": null, \"f\": null, \"kmer_ocurrence_interval\": {\"interval\": \"\", \"__current_case__\": 1}, \"min_occ_floor\": null, \"q_occ_frac\": \"0.01\", \"g\": null, \"r\": null, \"n\": null, \"m\": null, \"max_chain_skip\": null, \"max_chain_iter\": null, \"X\": false, \"p\": null, \"mask_len\": null, \"rmq_inner\": \"1000\", \"no_hash_name\": false, \"pairing\": null}, \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1, \"ref_file\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.28+galaxy2",
+            "tool_version": "2.30+galaxy0",
             "type": "tool",
             "uuid": "9c9cf464-20c0-457f-9c37-8a7018546bd1",
             "when": null,
@@ -5126,7 +5208,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "7fc536e9-da91-49ef-b42c-32ae1d0ac00c"
+                "uuid": "18b64162-46a2-4251-bfa5-961b9be0e794"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -5142,7 +5224,7 @@
         },
         "36": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "errors": null,
             "id": 36,
             "input_connections": {
@@ -5186,16 +5268,16 @@
                     "output_name": "pretext_map_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "056f86469460",
+                "changeset_revision": "bd07b0d0f568",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"filter\": {\"filter_type\": \"\", \"__current_case__\": 0}, \"highRes\": {\"__class__\": \"ConnectedValue\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"map_qual\": {\"__class__\": \"ConnectedValue\"}, \"sorting\": {\"sortby\": \"length\", \"__current_case__\": 1, \"sortorder\": \"descend\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.2.3+galaxy0",
+            "tool_version": "0.2.4+galaxy0",
             "type": "tool",
             "uuid": "2bc11d1e-ba89-4a9c-80c9-2b83aa638457",
             "when": null,
@@ -5203,7 +5285,7 @@
         },
         "37": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "errors": null,
             "id": 37,
             "input_connections": {
@@ -5243,16 +5325,16 @@
                     "output_name": "pretext_map_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "056f86469460",
+                "changeset_revision": "bd07b0d0f568",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"filter\": {\"filter_type\": \"\", \"__current_case__\": 0}, \"highRes\": {\"__class__\": \"ConnectedValue\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"map_qual\": \"0\", \"sorting\": {\"sortby\": \"length\", \"__current_case__\": 1, \"sortorder\": \"descend\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.2.3+galaxy0",
+            "tool_version": "0.2.4+galaxy0",
             "type": "tool",
             "uuid": "b7934163-451f-4cab-9f11-2b88bc88f535",
             "when": null,
@@ -5260,7 +5342,7 @@
         },
         "38": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "errors": null,
             "id": 38,
             "input_connections": {
@@ -5289,16 +5371,16 @@
                     "output_name": "pretext_map_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "056f86469460",
+                "changeset_revision": "bd07b0d0f568",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"filter\": {\"filter_type\": \"\", \"__current_case__\": 0}, \"highRes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"map_qual\": \"0\", \"sorting\": {\"sortby\": \"length\", \"__current_case__\": 1, \"sortorder\": \"descend\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.2.3+galaxy0",
+            "tool_version": "0.2.4+galaxy0",
             "type": "tool",
             "uuid": "5a5244b8-55c5-454f-89a0-34e156f18a98",
             "when": null,
@@ -5306,7 +5388,7 @@
         },
         "39": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "errors": null,
             "id": 39,
             "input_connections": {
@@ -5339,16 +5421,16 @@
                     "output_name": "pretext_map_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "056f86469460",
+                "changeset_revision": "bd07b0d0f568",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"filter\": {\"filter_type\": \"\", \"__current_case__\": 0}, \"highRes\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"map_qual\": {\"__class__\": \"ConnectedValue\"}, \"sorting\": {\"sortby\": \"length\", \"__current_case__\": 1, \"sortorder\": \"descend\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.2.3+galaxy0",
+            "tool_version": "0.2.4+galaxy0",
             "type": "tool",
             "uuid": "e70fec59-6087-46ec-964c-aece775f69ca",
             "when": null,
@@ -5450,7 +5532,7 @@
         },
         "42": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0",
             "errors": null,
             "id": 42,
             "input_connections": {
@@ -5495,16 +5577,16 @@
                     "output_name": "out_file1"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "aff5135563c6",
+                "changeset_revision": "61f9ddbc63ca",
                 "name": "column_maker",
                 "owner": "devteam",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"avoid_scientific_notation\": false, \"error_handling\": {\"auto_col_types\": true, \"fail_on_non_existent_columns\": true, \"non_computable\": {\"action\": \"--fail-on-non-computable\", \"__current_case__\": 0}}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"ops\": {\"header_lines_select\": \"no\", \"__current_case__\": 0, \"expressions\": [{\"__index__\": 0, \"cond\": \"abs(int(c3)-int(c2))\", \"add_column\": {\"mode\": \"\", \"__current_case__\": 0, \"pos\": \"\"}}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.1",
+            "tool_version": "2.1+galaxy0",
             "type": "tool",
             "uuid": "659f271c-28fd-4b7d-807a-06c7189b159d",
             "when": null,
@@ -5518,7 +5600,7 @@
         },
         "43": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2",
             "errors": null,
             "id": 43,
             "input_connections": {
@@ -5531,7 +5613,16 @@
                     "output_name": "Has multiple samples"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Samtools merge",
+                    "name": "bed_file"
+                },
+                {
+                    "description": "runtime parameter for tool Samtools merge",
+                    "name": "headerbam"
+                }
+            ],
             "label": null,
             "name": "Samtools merge",
             "outputs": [
@@ -5551,16 +5642,16 @@
                     "output_name": "output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2",
             "tool_shed_repository": {
-                "changeset_revision": "c8bc9d08b0e3",
+                "changeset_revision": "37c8eb55315d",
                 "name": "samtools_merge",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"bamfiles\": {\"__class__\": \"ConnectedValue\"}, \"bed_file\": {\"__class__\": \"RuntimeValue\"}, \"headerbam\": {\"__class__\": \"RuntimeValue\"}, \"idpg\": false, \"idrg\": false, \"region\": null, \"seed\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.22+galaxy1",
+            "tool_version": "1.22+galaxy2",
             "type": "tool",
             "uuid": "48c3b202-85ca-447b-8f91-fbc440e33366",
             "when": "$(inputs.when)",
@@ -5612,7 +5703,7 @@
         },
         "45": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "errors": null,
             "id": 45,
             "input_connections": {
@@ -5641,16 +5732,16 @@
                     "output_name": "pretext_snap_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ff02cf8f66f0",
+                "changeset_revision": "c4fb391275a0",
                 "name": "pretext_snapshot",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": false, \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.0.5+galaxy1",
+            "tool_version": "0.0.7+galaxy0",
             "type": "tool",
             "uuid": "f453794e-4045-4602-9f49-26abf7f1426f",
             "when": null,
@@ -5658,7 +5749,7 @@
         },
         "46": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "errors": null,
             "id": 46,
             "input_connections": {
@@ -5687,16 +5778,16 @@
                     "output_name": "pretext_snap_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ff02cf8f66f0",
+                "changeset_revision": "c4fb391275a0",
                 "name": "pretext_snapshot",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": false, \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.0.5+galaxy1",
+            "tool_version": "0.0.7+galaxy0",
             "type": "tool",
             "uuid": "533b33d8-3a3b-480a-9978-1526d65606c5",
             "when": null,
@@ -6241,7 +6332,12 @@
                     "output_name": "text_param"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
             "label": "False if Q telomere track is empty",
             "name": "Map parameter value",
             "outputs": [
@@ -6287,7 +6383,12 @@
                     "output_name": "text_param"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
             "label": "False if P telomere track is empty",
             "name": "Map parameter value",
             "outputs": [
@@ -6566,7 +6667,7 @@
         },
         "64": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0",
             "errors": null,
             "id": 64,
             "input_connections": {
@@ -6589,16 +6690,16 @@
                 "top": 1950
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "aff5135563c6",
+                "changeset_revision": "61f9ddbc63ca",
                 "name": "column_maker",
                 "owner": "devteam",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"avoid_scientific_notation\": false, \"error_handling\": {\"auto_col_types\": true, \"fail_on_non_existent_columns\": true, \"non_computable\": {\"action\": \"--fail-on-non-computable\", \"__current_case__\": 0}}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"ops\": {\"header_lines_select\": \"no\", \"__current_case__\": 0, \"expressions\": [{\"__index__\": 0, \"cond\": \"c2-1\", \"add_column\": {\"mode\": \"\", \"__current_case__\": 0, \"pos\": \"\"}}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.1",
+            "tool_version": "2.1+galaxy0",
             "type": "tool",
             "uuid": "28ba3827-13c9-431f-b02c-01904a6f0577",
             "when": null,
@@ -7509,7 +7610,7 @@
         }
     },
     "tags": [],
-    "uuid": "51640fb0-0e97-4a6b-baf6-234fc13400ba",
-    "version": 2,
-    "release": "2.3"
+    "uuid": "d17ad083-2f5c-444c-9735-6b2b7edf50ef",
+    "version": 1,
+    "release": "2.4"
 }
