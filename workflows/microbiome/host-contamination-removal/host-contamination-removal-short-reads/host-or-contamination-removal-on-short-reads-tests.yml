@@ -1,4 +1,4 @@
-- doc: Test outline for Host-or-Contamination-removal-on-short-reads
+- doc: Test outline for Host-or-Contamination-removal-on-short-reads with a built-in genome index
   job:
     Short-reads:
       class: Collection
@@ -16,15 +16,56 @@
           identifier: reverse
           location: https://zenodo.org/records/15089018/files/MAG_reads_reverse.fastqsanger.gz
           filetype: fastqsanger.gz
+    Choose Reference Genome: Use a built-in genome index
     Host/Contaminant Reference Genome: hg38
+    Reference genome file: null
   outputs:
     MultiQC HTML Report:
       asserts:
-        has_text:
-          text: "pair"
-        has_text:
-          text: "Bowtie"
-    Bowtie2 Mapping Statistics:
+        - has_text:
+            text: "pair"
+        - has_text:
+            text: "Bowtie"
+    Bowtie2 Mapping Statistics from Local Index:
+      element_tests:
+        pair:
+          asserts:
+            has_text:
+              text: "9462 reads"
+            has_n_lines:
+              n: 15
+- doc: Test outline for Host-or-Contamination-Removal-on-Short-Reads with a reference genome from the history
+  job:
+    Reference genome file:
+      class: File
+      location: https://zenodo.org/records/19664899/files/hg38.fasta
+      filetype: fasta
+    Short-reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: pair
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/15089018/files/MAG_reads_forward.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/15089018/files/MAG_reads_reverse.fastqsanger.gz
+          filetype: fastqsanger.gz
+    Choose Reference Genome: Use a reference genome from the history
+    Host/Contaminant Reference Genome: apiMel3
+  outputs:
+    MultiQC HTML Report:
+      asserts:
+        - has_text:
+            text: "0.0"
+        - has_text:
+            text: "Paired-end"
+    Bowtie2 Mapping Statistics from Reference Input:
       element_tests:
         pair:
           asserts:
