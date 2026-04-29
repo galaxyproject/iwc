@@ -1,4 +1,4 @@
-- doc: Test for Metagenome-Assembled-Genomes-(MAGs)-generation
+- doc: Test for Metagenome-Assembled-Genomes-(MAGs)-generation short read only
   job:
     Trimmed reads:
       class: Collection
@@ -6,61 +6,199 @@
       elements:
       - class: Collection
         type: paired
-        identifier: 50contig_reads
+        identifier: test_minigut
         elements:
           - class: File
             identifier: forward
-            location: https://zenodo.org/records/15089018/files/MAG_reads_forward.fastqsanger.gz
+            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
           - class: File
             identifier: reverse
-            location: https://zenodo.org/records/15089018/files/MAG_reads_reverse.fastqsanger.gz
-    Trimmed reads from grouped samples:
+            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed paired reads from grouped samples:
       class: Collection
       collection_type: list:paired
       elements:
       - class: Collection
         type: paired
-        identifier: 50contig_reads
+        identifier: test_minigut
         elements:
-        - class: File
-          identifier: forward
-          location: https://zenodo.org/records/15089018/files/MAG_reads_forward.fastqsanger.gz
-        - class: File
-          identifier: reverse
-          location: https://zenodo.org/records/15089018/files/MAG_reads_reverse.fastqsanger.gz
+          - class: File
+            identifier: forward
+            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+          - class: File
+            identifier: reverse
+            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
     Choose Assembler: MEGAHIT
     Custom Assemblies: null
-    Minimum length of contigs to output: '200'
+    Minimum length of contigs to output: '100'
     Read length (CONCOCT): '100'
     Environment for the built-in model (SemiBin): global
-    Contamination weight (Binette): '2'
+    Contamination weight (Binette): '100'
     CheckM2 Database: 1.0.2
     Minimum MAG completeness percentage: '1'
-    Maximum MAG contamination percentage: '25'
+    Maximum MAG contamination percentage: '1'
     Minimum MAG length: '100'
-    ANI threshold for dereplication: '0.95'
-    GTDB-tk Database: full_database_release_220_downloaded_2024-10-19
-    Bakta Database: V5.1_2024-01-19
-    AMRFinderPlus Database for Bakta: amrfinderplus_V3.12_2024-05-02.2
-    Run Bakta on MAGs: true
-    Run GTDB-Tk on MAGs: false
+    ANI threshold for dereplication: '0.99'
+    Run COMEBin: false
   outputs:
     Full MultiQC Report:
       asserts:
       - that: has_text
-        text: "50contig_reads_bin"
+        text: "minigut_reads_binette_bin10_fasta"
       - that: has_text
         text: "QUAST"
       - that: has_text
         text: "CheckM"
     Assembly Report:
       element_tests:
-        50contig_reads:
+        minigut_reads:
           asserts:
           - that: has_text
             text: "All statistics are based on contigs of size"
           - that: has_size
-            value: 372000
+            value: 373800
             delta: 50000
-
-
+    Primary clustering dendrogram:
+      asserts:
+      - that: has_size
+        value: 169000
+        delta: 20000
+    Cluster Assignment:
+      asserts:
+      - that: has_text
+        text: "genome"
+      - that: has_text
+        text: "primary_cluster"
+      - that: has_text
+        text: "minigut_reads_binette_bin49.fasta"
+    Dereplicated Bins:
+      element_tests:
+        minigut_reads_binette_bin1.fasta:
+          asserts:
+          - that: has_size
+            value: 715700
+            delta: 10000
+    Merged CoverM Output:
+      asserts:
+      - that: has_text
+        text: "Genome"
+      - that: has_text
+        text: "minigut_reads_binette_bin10"
+    Merged Quast Output:
+      asserts:
+      - that: has_text
+        text: "Assembly"
+      - that: has_text
+        text: "118"
+      - that: has_text
+        text: "minigut_reads_binette_bin10.fasta"
+- doc: Test for Metagenome-Assembled-Genomes-(MAGs)-generation long read test
+  job:
+    Trimmed reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: test_minigut
+        elements:
+          - class: File
+            identifier: forward
+            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+          - class: File
+            identifier: reverse
+            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: test_minigut
+        elements:
+          - class: File
+            identifier: forward
+            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+          - class: File
+            identifier: reverse
+            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed nanopore reads from grouped samples:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: minigut_reads
+        location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz 
+    Choose Assembler: metaSPAdes
+    Custom Assemblies: null
+    Minimum length of contigs to output: '100'
+    Read length (CONCOCT): '100'
+    Environment for the built-in model (SemiBin): global
+    Contamination weight (Binette): '100'
+    CheckM2 Database: 1.0.2
+    Minimum MAG completeness percentage: '1'
+    Maximum MAG contamination percentage: '1'
+    Minimum MAG length: '100'
+    ANI threshold for dereplication: '0.99'
+    Run COMEBin: false
+  outputs:
+    Full MultiQC Report:
+      asserts:
+      - that: has_text
+        text: "minigut_reads_binette_bin1_fasta"
+      - that: has_text
+        text: "QUAST"
+      - that: has_text
+        text: "CheckM"
+    Assembly Report:
+      element_tests:
+        minigut_reads:
+          asserts:
+          - that: has_text
+            text: "All statistics are based on contigs of size"
+          - that: has_size
+            value: 361400
+            delta: 50000
+    out cn:
+      element_tests:
+        minigut_reads:
+          asserts:
+          - that: has_size
+            value: 1736000
+            delta: 200000
+    Primary clustering dendrogram:
+      asserts:
+      - that: has_size
+        value: 131000
+        delta: 20000
+    Cluster Assignment:
+      asserts:
+      - that: has_text
+        text: "genome"
+      - that: has_text
+        text: "primary_cluster"
+      - that: has_text
+        text: "minigut_reads_binette_bin2.fasta"
+    Dereplicated Bins:
+      element_tests:
+        minigut_reads_binette_bin1.fasta:
+          asserts:
+          - that: has_size
+            value: 848000
+            delta: 10000
+    Merged CoverM Output:
+      asserts:
+      - that: has_text
+        text: "Genome"
+      - that: has_text
+        text: "unmapped"
+      - that: has_text
+        text: "minigut_reads_binette_bin2"
+    Merged Quast Output:
+      asserts:
+      - that: has_text
+        text: "Assembly"
+      - that: has_text
+        text: "4"
+      - that: has_text
+        text: "minigut_reads_binette_bin2.fasta"
