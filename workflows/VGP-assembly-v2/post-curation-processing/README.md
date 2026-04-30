@@ -13,26 +13,27 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 5. **Database for Compleasm Genes** [text] - Compleasm lineage dataset (e.g., vertebrata_odb10, primates_odb10)
 6. **Hi-C reads** [list:paired] - Paired collection of Hi-C sequencing data
 7. **PacBio reads** [list] - Collection of PacBio HiFi reads
+8. **Estimated Genome Size** [txt] - Text file containing the estimated genome size (in base pairs) used to compute the percentage of sequence assigned to chromosomes
 
 ### Processing Options
 
-8. **Generate Gene tracks with Compleasm?** [boolean] - Enable/disable Compleasm gene annotation tracks
-9. **Trim the Hi-C data?** [boolean] - Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy"
-10. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C data
-11. **Remove adapters from HiFi reads?** [boolean] - Select no if using HiFi reads trimmed in a previous workflow
-12. **Generate high resolution Hi-C maps?** [boolean] - Generate high resolution Pretext maps
+9. **Generate Gene tracks with Compleasm?** [boolean] - Enable/disable Compleasm gene annotation tracks
+10. **Trim the Hi-C data?** [boolean] - Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy"
+11. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C data
+12. **Remove adapters from HiFi reads?** [boolean] - Select no if using HiFi reads trimmed in a previous workflow
+13. **Generate high resolution Hi-C maps?** [boolean] - Generate high resolution Pretext maps
 
 ### Analysis Parameters
 
-13. **Canonical telomeric pattern** [text] - Default: TTAGGG (for vertebrate genomes)
-14. **Telomere patterns to explore** [text] - Telomere repeat patterns to search for (comma-separated, IUPAC allowed)
-15. **Minimum Mapping Quality** [integer] - Minimum mapping score for Hi-C alignments. Default: 10
-16. **Bin Size for BigWig files** [integer] - Bin size for coverage tracks. Default: 100
+14. **Canonical telomeric pattern** [text] - Default: TTAGGG (for vertebrate genomes)
+15. **Telomere patterns to explore** [text] - Telomere repeat patterns to search for (comma-separated, IUPAC allowed)
+16. **Minimum Mapping Quality** [integer] - Minimum mapping score for Hi-C alignments. Default: 10
+17. **Bin Size for BigWig files** [integer] - Bin size for coverage tracks. Default: 100
 
 ### Haplotype Naming
 
-17. **Name Haplotype 1** [text] - Label for haplotype 1 (used to prefix output names)
-18. **Name Haplotype 2** [text] - Label for haplotype 2 (used to prefix output names)
+18. **Name Haplotype 1** [text] - Label for haplotype 1 (used to prefix output names)
+19. **Name Haplotype 2** [text] - Label for haplotype 2 (used to prefix output names)
 
 ## Outputs
 
@@ -45,6 +46,8 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Corrected AGP** - AGP file with corrections applied
 - **Curated Hap1** - Curated haplotype 1 FASTA
 - **Curated Hap2** - Curated haplotype 2 FASTA
+- **Compressed Curated Hap1** - Curated haplotype 1 FASTA (gzip-compressed)
+- **Compressed Curated Hap2** - Curated haplotype 2 FASTA (gzip-compressed)
 - **Hap1 AGP** - Haplotype 1 AGP
 - **Hap2 Unlocs no hap dups AGP** - Haplotype 2 AGP without haplotypic duplicates in unlocalized scaffolds
 - **Hap1 Unlocs no hap dups AGP** - Haplotype 1 AGP without haplotypic duplicates in unlocalized scaffolds
@@ -58,6 +61,11 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Chromosome mapping Hap1** - Scaffold to chromosome mapping for haplotype 1 (SUPER_N naming)
 - **Chromosome mapping Hap2** - Scaffold to chromosome mapping for haplotype 2
 - **Chromosome level Hap2** - Chromosome-level haplotype 2 FASTA
+- **Chromosome File Hap1** - List of scaffolds assigned as chromosomes in haplotype 1
+- **Chromosome File Hap2** - List of scaffolds assigned as chromosomes in haplotype 2
+- **Percentage of Sequence Assigned to Chromosomes Hap1** - Fraction of haplotype 1 sequence assigned to chromosomes (relative to estimated genome size)
+- **Percentage of Sequence Assigned to Chromosomes Hap2** - Fraction of haplotype 2 sequence assigned to chromosomes (relative to estimated genome size)
+- **Sequence Assignment Stats** - Combined chromosome assignment statistics for both haplotypes
 
 ### Rename and Reorient
 
