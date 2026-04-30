@@ -17,43 +17,49 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 3. **Haplotype 2** [fasta] - Secondary haplotype assembly (required if using two haplotypes)
 4. **Hi-C reads** [fastq] - Paired collection containing Hi-C data
 5. **PacBio reads** [fastq] - Collection of PacBio HiFi reads
+6. **Estimated Genome Size** [file] - Single-value file with the estimated genome size in bp; used to switch from BWA-MEM2 to BWA-MEM for genomes larger than 10G
 
 ### Assembly Annotation Parameters
 
-6. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)
-7. **Species Name** [text] - Species identifier for gene annotation
-8. **Assembly Name** [text] - Assembly identifier (e.g., toLid)
-9. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)
-10. **Database for Compleasm** [text] - Compleasm database version (default: v5)
+7. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)
+8. **Species Name** [text] - Species identifier for gene annotation
+9. **Assembly Name** [text] - Assembly identifier (e.g., toLid)
+10. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)
+11. **Database for Compleasm** [text] - Compleasm database version (default: v5)
 
 ### Scaffold Naming Options
 
-11. **Do you want to add suffixes to the scaffold names?** [boolean] - Select yes if scaffold names do not contain haplotype information
-12. **First Haplotype suffix** [text] - Suffix for haplotype 1 scaffolds (default: H1)
-13. **Second Haplotype suffix** [text] - Suffix for haplotype 2 scaffolds (default: H2)
+12. **Do you want to add suffixes to the scaffold names?** [boolean] - Select yes if scaffold names do not contain haplotype information
+13. **First Haplotype suffix** [text] - Suffix for haplotype 1 scaffolds (default: H1)
+14. **Second Haplotype suffix** [text] - Suffix for haplotype 2 scaffolds (default: H2)
 
 ### Hi-C Processing Options
 
-14. **Do you want to trim the Hi-C data?** [boolean] - If yes, removes 5bp at the end of Hi-C reads (recommended for Arima Hi-C data if the map looks "noisy")
-15. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C alignments using Samtools markdup
-16. **Minimum Mapping Quality** [integer] - Minimum MAPQ score for filtered PretextMap (default: 10; set to 0 to keep all mapped reads)
+15. **Do you want to trim the Hi-C data?** [boolean] - If yes, removes 5bp at the end of Hi-C reads (recommended for Arima Hi-C data if the map looks "noisy")
+16. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C alignments using Samtools markdup
+17. **Minimum Mapping Quality** [integer] - Minimum MAPQ score for filtered PretextMap (default: 10; set to 0 to keep all mapped reads)
 
 ### PacBio Processing Options
 
-17. **Remove adapters from HiFi reads?** [boolean] - Trim adapters from PacBio HiFi reads using Cutadapt
+18. **Remove adapters from HiFi reads?** [boolean] - Trim adapters from PacBio HiFi reads using Cutadapt
 
 ### Telomere Detection
 
-18. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)
-19. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)
+19. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)
+20. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)
 
 ### Hi-C Map Resolution
 
-20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)
+21. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)
 
 ### Visualization Options
 
-21. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)
+22. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)
+
+### JBrowse2 Related Species
+
+23. **Use related species** [boolean] - Include related-species assemblies as additional tracks/alignments in the JBrowse2 instance
+24. **Related Species** [fasta.gz collection] - Collection of related-species assemblies (gzipped FASTA) to align against the assembled haplotypes for JBrowse2 visualization
 
 ## Outputs
 
@@ -116,6 +122,19 @@ All Pretext outputs are generated in two versions:
 27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)
 28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)
 29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)
+
+### Haplotype Alignment Outputs
+
+30. **Alignments** [PAF] - Haplotype-vs-haplotype (and, if enabled, vs related-species) alignments produced by mashmap, used as JBrowse2 synteny tracks
+
+### JBrowse2 Outputs
+
+Generated depending on whether one or two haplotypes are provided and whether related species are included:
+
+31. **JBrowse2 Single Haplotype** [JBrowse2] - JBrowse2 instance for a single-haplotype assembly
+32. **JBrowse2 Single Haplotype with related species** [JBrowse2] - Single-haplotype JBrowse2 instance with related-species alignment tracks
+33. **JBrowse2 Hap1 vs Hap2 with no related species** [JBrowse2] - Diploid JBrowse2 instance with Hap1↔Hap2 alignments
+34. **JBrowse2 Hap1 and hap2 with related species** [JBrowse2] - Diploid JBrowse2 instance including related-species alignments
 
 ## Usage Notes
 
