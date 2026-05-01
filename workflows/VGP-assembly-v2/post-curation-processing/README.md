@@ -13,10 +13,10 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 5. **Database for Compleasm Genes** [text] - Compleasm lineage dataset (e.g., vertebrata_odb10, primates_odb10)
 6. **Hi-C reads** [list:paired] - Paired collection of Hi-C sequencing data
 7. **PacBio reads** [list] - Collection of PacBio HiFi reads
-8. **Estimated Genome Size** [txt] - Text file containing the estimated genome size (in base pairs) used to compute the percentage of sequence assigned to chromosomes
 
 ### Processing Options
 
+8. **Genome larger than 10GB** [boolean] - Use BWA-MEM instead of BWA-MEM2 for read alignment. Recommended for genomes larger than 10GB. Default: false
 9. **Generate Gene tracks with Compleasm?** [boolean] - Enable/disable Compleasm gene annotation tracks
 10. **Trim the Hi-C data?** [boolean] - Trim 5 bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy"
 11. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C data
@@ -63,8 +63,8 @@ This workflow performs post-curation processing and evaluation for VGP assemblie
 - **Chromosome level Hap2** - Chromosome-level haplotype 2 FASTA
 - **Chromosome File Hap1** - List of scaffolds assigned as chromosomes in haplotype 1
 - **Chromosome File Hap2** - List of scaffolds assigned as chromosomes in haplotype 2
-- **Percentage of Sequence Assigned to Chromosomes Hap1** - Fraction of haplotype 1 sequence assigned to chromosomes (relative to estimated genome size)
-- **Percentage of Sequence Assigned to Chromosomes Hap2** - Fraction of haplotype 2 sequence assigned to chromosomes (relative to estimated genome size)
+- **Percentage of Sequence Assigned to Chromosomes Hap1** - Fraction of haplotype 1 sequence assigned to chromosomes (relative to total assembly length)
+- **Percentage of Sequence Assigned to Chromosomes Hap2** - Fraction of haplotype 2 sequence assigned to chromosomes (relative to total assembly length)
 - **Sequence Assignment Stats** - Combined chromosome assignment statistics for both haplotypes
 
 ### Rename and Reorient
