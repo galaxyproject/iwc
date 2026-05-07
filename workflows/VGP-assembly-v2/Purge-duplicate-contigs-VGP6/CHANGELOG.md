@@ -2,6 +2,9 @@
 
 ## [0.10.6] - 2026-05-06
 
+### Manual Changes
+- Fix Typo in an awk command to rename scaffolds after purging. 
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
 - `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.30+galaxy0`
