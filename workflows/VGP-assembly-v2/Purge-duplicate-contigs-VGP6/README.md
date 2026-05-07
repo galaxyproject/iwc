@@ -15,6 +15,9 @@ This workflow is the 6th workflow of the VGP pipeline. It is meant to be run aft
 8. Lineage of your species for Busco Orthologs (recommended: vertebrata)
 9. Name of first haplotype
 10. Name of second haplotype
+11. Species Name
+12. Assembly Name
+13. What sequences are you purging? (`contig` or `scaffold`)
 
 
 ## Outputs
