@@ -32,6 +32,19 @@ The workflow takes the assembly haplotype(s) and the precuration tracks (telomer
 4. **JBrowse2 Hap1 and hap2 with related species** [collection] - JBrowse2 instance for two haplotypes with related species alignments (when two haplotypes are used)
 5. **JBrowse2 Hap1 and hap2 with related species and gene tracks** [collection] - As above, with gene annotation tracks included
 
+### Additional outputs
+
+These JBrowse2 instances are produced without the related-species alignment tracks and can be useful for curators who only need the assembly-internal view.
+
+6. **JBrowse2 Single Haplotype** [collection] - JBrowse2 instance for a single haplotype with assembly tracks only (telomeres, gaps, coverage), no related-species alignments
+7. **JBrowse2 Single Haplotype with Gene Track** [collection] - As above, with gene annotation tracks included
+8. **JBrowse2 Hap1 vs Hap2** [collection] - JBrowse2 instance for two haplotypes with the hap1-vs-hap2 alignment, no related-species alignments
+9. **JBrowse2 Hap1 vs Hap2 with gene tracks** [collection] - As above, with gene annotation tracks included
+
+### Validation output
+
+10. **Fail if there are duplicated sequence names between the fasta files** [boolean] - Internal validation flag. The workflow fails fast if any sequence name appears in more than one of the related-species fastas.
+
 ## Usage Notes
 
 ### Pairing with the Hi-C contact map workflow
