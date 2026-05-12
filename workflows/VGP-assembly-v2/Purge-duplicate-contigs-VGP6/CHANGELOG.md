@@ -3,7 +3,10 @@
 ## [0.10.6] - 2026-05-06
 
 ### Manual Changes
-- Fix Typo in an awk command to rename scaffolds after purging. 
+- Fix Typo in an awk command to rename scaffolds after purging.
+- Rename the primary haplotype scaffolds after purging, matching the renaming already applied to haplotype 2.
+- Add `Name mapping Hap1` workflow output (original → renamed scaffold table for the primary haplotype), analogous to the existing `Name mapping Alternate assembly` output.
+- Tighten `Name of primary assembly` / `Name of alternate assembly` inputs: mark them required (`optional: false`), set defaults to `Hap1` / `Hap2`, and narrow the restriction lists so each input only offers labels appropriate to its haplotype.
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
