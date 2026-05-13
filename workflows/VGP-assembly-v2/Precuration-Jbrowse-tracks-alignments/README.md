@@ -2,47 +2,55 @@
 
 This workflow generates JBrowse2 instances with genome assembly tracks and alignments against related species, to assist the manual curation of genome assemblies. It complements the Hi-C contact map workflow by providing a complementary genome browser view of the same precuration tracks alongside synteny with related species.
 
-The workflow takes the assembly haplotype(s) and the precuration tracks (telomeres, gaps, coverage, optional gene annotations), aligns the assembly against a list of related species, and packages everything into a JBrowse2 instance that curators can open directly in their browser.
+The workflow takes the assembly haplotype(s) and the precuration tracks (telomeres, gaps, coverage, optional gene annotations), optionally aligns the assembly against a list of related species, and packages everything into a JBrowse2 instance that curators can open directly in their browser.
 
 ## Inputs
 
-### Required Inputs
+The workflow auto-detects its operating mode from the data you provide — there are no toggle parameters to set:
+
+- Provide **Haplotype 2** to switch to dual-haplotype mode (includes hap1-vs-hap2 alignment)
+- Provide **Genes** to add a gene annotation track
+- Provide **Related Species** to add synteny alignments against external genomes
+
+Each of the four combinations produces a different JBrowse2 instance (see Outputs).
+
+### Required inputs
 
 1. **Species Name** [text] - Species identifier used in the assembly info report
 2. **Assembly Name** [text] - Assembly identifier (e.g., toLID)
 3. **Haplotype 1** [fasta] - Primary haplotype assembly (recommended: with H1 suffix added to scaffold names)
-4. **Will you use a second haplotype?** [boolean] - Set to true for diploid assemblies
-5. **Haplotype 2** [fasta, optional] - Secondary haplotype assembly (required if using two haplotypes)
-6. **Related Species** [collection of fasta.gz] - Simple list of gzipped FASTA files of related species genomes for synteny alignment. **Sequence names must be unique across the entire collection** - the workflow performs a duplicate-name check on the merged related-species fastas and will fail early if any sequence name appears in more than one file. A common pattern is to prefix each species' scaffolds with the species name (e.g. `Species_1_scaffold_1`).
-7. **Telomere P** [BED] - P-arm telomere coordinates
-8. **Telomere Q** [BED] - Q-arm telomere coordinates (can be empty)
-9. **Gaps** [BED] - Assembly gap coordinates
-10. **Coverage** [BigWig] - PacBio HiFi read coverage track
+4. **Telomere P** [BED] - P-arm telomere coordinates
+5. **Telomere Q** [BED] - Q-arm telomere coordinates (can be empty)
+6. **Gaps** [BED] - Assembly gap coordinates
+7. **Coverage** [BigWig] - PacBio HiFi read coverage track
 
-### Gene Annotation Options
+### Optional inputs
 
-11. **Do you want to provide gene annotation for your assembly?** [boolean] - Enable to include a gene annotation track in the JBrowse2 instance
-12. **Genes** [GFF, optional] - Gene annotation track (required if gene annotations enabled)
+8. **Haplotype 2** [fasta] - Secondary haplotype assembly. Provide for diploid assemblies; leave empty for single-haplotype mode.
+9. **Genes** [GFF3] - Gene annotation track. Provide to add a gene track to every JBrowse2 instance.
+10. **Related Species** [collection of fasta.gz] - Simple list of gzipped FASTA files of related species genomes for synteny alignment. **Sequence names must be unique across the entire collection** - the workflow performs a duplicate-name check on the merged related-species fastas and will fail early if any sequence name appears in more than one file. A common pattern is to prefix each species' scaffolds with the species name (e.g. `Species_1_scaffold_1`). Leave empty to skip related-species alignment entirely.
 
 ## Outputs
 
-1. **Assembly Info** - Summary of species and assembly name
-2. **JBrowse2 Single Haplotype with related species** [collection] - JBrowse2 instance for a single haplotype with related species alignments (when only one haplotype is used)
-3. **JBrowse2 Single Haplotype with related species and Gene Tracks** [collection] - As above, with gene annotation tracks included
-4. **JBrowse2 Hap1 and hap2 with related species** [collection] - JBrowse2 instance for two haplotypes with related species alignments (when two haplotypes are used)
-5. **JBrowse2 Hap1 and hap2 with related species and gene tracks** [collection] - As above, with gene annotation tracks included
+The set of populated outputs depends on which optional inputs are provided. Outputs from inactive modes are present in the history but empty.
 
-### Additional outputs
+### Single-haplotype outputs (Haplotype 2 not provided)
 
-These JBrowse2 instances are produced without the related-species alignment tracks and can be useful for curators who only need the assembly-internal view.
+1. **JBrowse2 Single Haplotype** [collection] - JBrowse2 instance for one haplotype with assembly tracks only (telomeres, gaps, coverage), no related-species alignments
+2. **JBrowse2 Single Haplotype with Gene Track** [collection] - As above, with gene annotation tracks included (when Genes provided)
+3. **JBrowse2 Single Haplotype with related species** [collection] - JBrowse2 instance for one haplotype with related-species alignments (when Related Species provided)
+4. **JBrowse2 Single Haplotype with related species and Gene Tracks** [collection] - As above, with gene annotation tracks included
 
-6. **JBrowse2 Single Haplotype** [collection] - JBrowse2 instance for a single haplotype with assembly tracks only (telomeres, gaps, coverage), no related-species alignments
-7. **JBrowse2 Single Haplotype with Gene Track** [collection] - As above, with gene annotation tracks included
-8. **JBrowse2 Hap1 vs Hap2** [collection] - JBrowse2 instance for two haplotypes with the hap1-vs-hap2 alignment, no related-species alignments
-9. **JBrowse2 Hap1 vs Hap2 with gene tracks** [collection] - As above, with gene annotation tracks included
+### Dual-haplotype outputs (Haplotype 2 provided)
 
-### Validation output
+5. **JBrowse2 Hap1 vs Hap2** [collection] - JBrowse2 instance with hap1-vs-hap2 alignment, no related-species alignments
+6. **JBrowse2 Hap1 vs Hap2 with gene tracks** [collection] - As above, with gene annotation tracks included (when Genes provided)
+7. **JBrowse2 Hap1 and hap2 with related species** [collection] - JBrowse2 instance with hap1, hap2, and related-species alignments (when Related Species provided)
+8. **JBrowse2 Hap1 and hap2 with related species and gene tracks** [collection] - As above, with gene annotation tracks included
 
+### Other outputs
+
+9. **Assembly Info** - Summary of species and assembly name
 10. **Fail if there are duplicated sequence names between the fasta files** [boolean] - Internal validation flag. The workflow fails fast if any sequence name appears in more than one of the related-species fastas.
 
 ## Usage Notes
