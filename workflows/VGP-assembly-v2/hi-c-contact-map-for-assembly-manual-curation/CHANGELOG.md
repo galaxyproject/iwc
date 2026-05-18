@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.5] - 2026-05-18
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.34+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1`
+
 ## [2.4] - 2026-04-29
 
 ### Automatic update
