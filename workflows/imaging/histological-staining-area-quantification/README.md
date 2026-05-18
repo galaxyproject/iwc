@@ -20,8 +20,9 @@ A tabular file (TSV) with one row per sample:
 - `percent_area` — staining area as percentage of total image area
 
 ## Compatible stainings
+
 | Staining | Target channel |
-|----------|---------------|
+|----------|----------------|
 | Masson's Trichrome (MT) | Channel 2 |
 | Immunohistochemistry (IHC) | Channel 2 (DAB) |
 
