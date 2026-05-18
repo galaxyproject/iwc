@@ -1,21 +1,27 @@
 - doc: Test outline for RNAvar
   job:
-    "Forward Reads (R1)":
-      class: File
-      path: test-data/test_rnaseq_1.fastq.gz
-      filetype: fastqsanger.gz
-    "Reverse Reads (R2)":
-      class: File
-      path: test-data/test_rnaseq_2.fastq.gz
-      filetype: fastqsanger.gz
-    "Reference Genome":
-      class: File
-      path: test-data/genome.fasta
-      filetype: fasta
+    "Collection of paired-end fastqs":
+      class: Collection
+      collection_type: "list:paired"
+      elements:
+        - class: Collection
+          type: paired
+          identifier: pair
+          elements:
+            - class: File
+              identifier: forward
+              path: test-data/test_rnaseq_1.fastq.gz
+              filetype: fastqsanger.gz
+            - class: File
+              identifier: reverse
+              path: test-data/test_rnaseq_2.fastq.gz
+              filetype: fastqsanger.gz
+    "Cached reference genome": hg38
     "Genome Annotation":
       class: File
       path: test-data/genome.gff3
       filetype: gff3
+    "STAR Genome Overhang": 14
     "Known Variants (dbSNP)":
       class: File
       path: test-data/dbsnp_146.hg38.vcf
@@ -24,15 +30,18 @@
       class: File
       path: test-data/mills_and_1000G.indels.vcf
       filetype: vcf
-    "SnpEff Genome Version": hg38
+    "Variant discovery regions":
+      class: File
+      path: test-data/regions.bed
+      filetype: bed
     "Variant Exclusion Filter": "FS > 30.0 || QD < 2.0"
-    "STAR Genome Overhang": 14
+    "SnpEff Genome Version": hg38
   outputs:
     "Final Annotated Variants":
       asserts:
-        # Expected variants: 54 | VCF Header lines: 36 | Total: 90.
+        # Expected variants + VCF Header lines = Total: 540.
         - has_n_lines:
-            n: 90
+            n: 540
         # Verify the content is scientifically correct by checking for 
         # the presence of the target chromosome string.
         - has_text:
