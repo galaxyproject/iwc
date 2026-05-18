@@ -1,10 +1,19 @@
 # Changelog
 
-## [3.0] - 2026-04-29
+## [2.5] - 2026-05-14
 
 ### Added
-- Now use BWA-MEM for large genomes (>10Gb) instead of BWA-MEM2 like smaller genomes. New input `Estimated Genome Size` to drive the aligner selection.
-- Now generate JBrowse2 instances with Mashmap alignments and tracks for both haplotypes, and optionaly with a collection of closely related species.
+- BWA-MEM is now used for large genomes (>10 Gb) instead of BWA-MEM2 used for smaller genomes.
+- New input `Estimated Genome Size` (single-value file with the estimated genome size in bp) drives the BWA-MEM vs BWA-MEM2 aligner selection.
+
+### Removed
+- Input `Will you use a second haplotype?` — the workflow now infers single- vs two-haplotype mode from whether `Haplotype 2` is provided.
+- Output `Both Haplotypes merged` (no longer surfaced; merge happens internally).
+- Outputs `Hi-C duplication stats on Scaffolds: MultiQc` and `Hi-C duplication stats on Scaffolds: Raw` (MultiQC step removed; the plain `Hi-C duplication stats on Scaffolds` output is retained).
+- Outputs `Pairtools Multiqc Stats on Scaffolds` and `Pairtools MultiQc on Scaffolds: Plots`.
+
+### Note
+- RefSeq-based related-species detection and JBrowse2 visualization have been moved to a separate workflow.
 
 
 ## [2.4] - 2026-04-29
