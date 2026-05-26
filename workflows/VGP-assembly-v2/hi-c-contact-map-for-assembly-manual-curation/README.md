@@ -49,7 +49,7 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 
 ### Hi-C Map Resolution
 
-20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)
+20. **Generate ultra resolution Hi-C maps** [boolean] - Generate ultra resolution Pretext maps (slower, requires more resources)
 
 ### Visualization Options
 

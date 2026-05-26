@@ -6,6 +6,12 @@
 - BWA-MEM is now used for large genomes (>10 Gb) instead of BWA-MEM2 used for smaller genomes.
 - New input `Estimated Genome Size` (single-value file with the estimated genome size in bp) drives the BWA-MEM vs BWA-MEM2 aligner selection.
 
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1` (high-resolution PretextMap steps; the low-resolution variants remain on `0.2.4+galaxy0`)
+
+### Changed
+- Input `Generate high resolution Hi-C maps` renamed to `Generate ultra resolution Hi-C maps`.
+
 ### Removed
 - Input `Will you use a second haplotype?` — the workflow now infers single- vs two-haplotype mode from whether `Haplotype 2` is provided.
 - Output `Both Haplotypes merged` (no longer surfaced; merge happens internally).
