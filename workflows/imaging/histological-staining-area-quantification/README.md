@@ -15,8 +15,10 @@ Masson's Trichrome (MT) and Immunohistochemistry (IHC).
 A tabular file (TSV) with one row per sample:
 - `sample_id` — sample identifier
 - `label` — pixel label (1 = stained region)
-- `area` — total number of stained pixels
 - `mean_intensity` — mean pixel intensity within the stained region
+- `area` — total number of stained pixels
+- `area_filled` — stained area with internal holes filled
+- `total_area` — total pixel count of the input image (width × height)
 - `percent_area` — staining area as percentage of total image area
 
 ## Compatible stainings

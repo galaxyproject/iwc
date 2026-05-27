@@ -9,4 +9,4 @@
 - Test data available on Zenodo:
   - CD11b IHC ROIs — infarct zone (4-oxo-RA treated): https://doi.org/10.5281/zenodo.20157596
   - CD11b IHC ROIs — border zone (4-oxo-RA treated): https://doi.org/10.5281/zenodo.20158418
-  - CD11b IHC ROIs — border and infarct zone (Vehicle/DMSO): https://doi.org/10.5281/zenodo.20271100A
+  - CD11b IHC ROIs — border and infarct zone (Vehicle/DMSO): https://doi.org/10.5281/zenodo.20271100
