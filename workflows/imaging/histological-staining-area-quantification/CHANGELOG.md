@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.1] - 2026-05-28
+
+### Fixed
+- Use bare ORCID identifier in `.dockstore.yml` so Dockstore accepts the author metadata.
+
 ## [0.1] - 2026-05-18
 
 ### Added
