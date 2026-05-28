@@ -18,16 +18,16 @@ PRJEB1417616
 
 Other input options are booleans related to the *pysradb* tool functioning and can be explained as in its tool help:
 
-- **assay (metadata download)**&emsp;&emsp;&emsp;&emsp;Include assay type in output
-- **desc (metadata download)**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be included
-- **detailed (metadata download)**&emsp;&emsp;&emsp;&emsp;Display detailed metadata table
-- **expand (metadata download)**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be expanded
+- **Include assay type in metadata**&emsp;&emsp;&emsp;&emsp;Include assay type in output
+- **Include sample attributes in metadata**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be included
+- **Display detailed metadata table**&emsp;&emsp;&emsp;&emsp;Display detailed metadata table
+- **Expand sample attributes in metadata**&emsp;&emsp;&emsp;&emsp;Should sample_attribute be expanded
 
 
 ## Outputs
 
 There are 3 main outputs:
 
-- Data collection for SRA manifest of input BioProject ID(s)
+- Data collection for the SRA metadata table of input BioProject ID(s)
 - Data collection for Paired End FASTQ files
 - Data collection for Single End FASTQ files
