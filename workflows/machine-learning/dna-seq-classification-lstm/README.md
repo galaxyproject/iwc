@@ -5,7 +5,7 @@ This workflow implements a deep learning pipeline for DNA sequence classificatio
 
 ### An example task achieved by the workflow
 
-The workflow can be used to perform DNA sequence classification on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). The biological goal of such a task is to identify where RNA splicing occurs. During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences)
+The workflow can be used to perform DNA sequence classification on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). The biological goal of such a task is to identify where RNA splicing occurs. During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N.
 
 ---
 
@@ -23,7 +23,7 @@ The workflow can be used to perform DNA sequence classification on splice-juncti
 ## 📥 Inputs
 The workflow requires two datasets:
 - DNA sequences (FASTA format)
-- Labels for sequences (tabular format)
+- Labels for sequences (tabular format) (for example, a file containing a list of splice junction (exon-intron, intron-exon and neither) categories corresponding to each DNA sequence)
 
 ---
 
