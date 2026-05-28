@@ -1,7 +1,11 @@
-# 🧬 DNA Sequence Classification using LSTM (Galaxy Workflow)
+# 🧬 DNA Sequence Classification using LSTM neural network (Galaxy Workflow)
 
 ## 📌 Overview
 This workflow implements a deep learning pipeline for DNA sequence classification using an LSTM-based neural network. It takes raw DNA sequences in FASTA format and their labels in tabular format, processes them into numerical representations, trains a model, and evaluates its performance. 
+
+### An example task achieved by the workflow
+
+The workflow can be used to perform DNA sequence classification on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). The biological goal of such a task is to identify where RNA splicing occurs. During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function.
 
 ---
 
