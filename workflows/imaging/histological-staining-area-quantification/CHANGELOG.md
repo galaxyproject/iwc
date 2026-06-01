@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-06-01
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/imgteam/image_info/ip_imageinfo/5.7.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/imgteam/image_info/ip_imageinfo/8.0.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/imgteam/split_image/ip_split_image/2.3.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/imgteam/split_image/ip_split_image/2.3.5+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+
 ## [0.1.1] - 2026-05-28
 
 ### Fixed
