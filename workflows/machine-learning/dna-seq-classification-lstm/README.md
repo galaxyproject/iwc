@@ -5,9 +5,20 @@ This workflow implements a deep learning pipeline for DNA sequence classificatio
 
 ### An example task achieved by the workflow
 
-The workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N.
+The workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:
+
+| Splice junction categories  | Donor                   | DNA sequence                                                 |
+|-----------------------------|-------------------------|--------------------------------------------------------------|
+| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |
+| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |
+| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |
+
+The first colunm is given as a set of catgories/labels/classes and the third column is used as a set of DNA sequences.
+
 
 Other tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
+
+An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by Cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression taks.
 
 ---
 
@@ -87,6 +98,22 @@ Training parameters:
 
 ---
 
+## Model optimisation
+
+Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore the optimal set of parameters. 
+
+A list of parameters to look out for model optimisation:
+
+- Epochs
+- Batch size
+- Learning rate
+- Optimiser
+- Number of LSTM layers and their number of respective units
+- Number of dense layers and their number of respective units
+- Training/test/validate data split
+
+---
+
 ## Evaluation
 
 - Metrics reported:
@@ -98,6 +125,8 @@ Training parameters:
   - Predictions on test data
   - Class probabilities
   - Confusion matrix visualization
+
+A higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, vary from dataset to dataset and heavily depends on model architecture and data quality. 
 
 ---
 
@@ -113,7 +142,7 @@ Training parameters:
 
 ## Usage notes
 
-- Ensure input datasets are in correct format: DNA sequences as FASTA and labels as tabular
+- Ensure DNA sequences are in FASTA and labels as tabular formats.
 - Categories/labels/classes must align with input DNA sequences
 - Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs)
 - Suitable for multi-class classification problems
