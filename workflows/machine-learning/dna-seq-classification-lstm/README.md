@@ -18,7 +18,7 @@ The first colunm is given as a set of catgories/labels/classes and the third col
 
 Other tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
 
-An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by Cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression taks.
+An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.
 
 ---
 
@@ -100,7 +100,7 @@ Training parameters:
 
 ## Model optimisation
 
-Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore the optimal set of parameters. 
+Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values. 
 
 A list of parameters to look out for model optimisation:
 
@@ -110,7 +110,7 @@ A list of parameters to look out for model optimisation:
 - Optimiser
 - Number of LSTM layers and their number of respective units
 - Number of dense layers and their number of respective units
-- Training/test/validate data split
+- Training/test/validate data split size
 
 ---
 
@@ -126,7 +126,7 @@ A list of parameters to look out for model optimisation:
   - Class probabilities
   - Confusion matrix visualization
 
-A higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, vary from dataset to dataset and heavily depends on model architecture and data quality. 
+A higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
 
 ---
 
