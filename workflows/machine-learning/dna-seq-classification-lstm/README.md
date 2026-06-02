@@ -35,7 +35,7 @@ An example of regression task can be found in [Gosai, S et al](https://www.natur
 
 ## Inputs
 The workflow requires two datasets:
-- DNA sequences (FASTA format)
+- DNA sequences (FASTA format). Can contain fixed length or variable length sequences
 - Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)
 
 ---
