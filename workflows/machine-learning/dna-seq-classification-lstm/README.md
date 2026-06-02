@@ -144,7 +144,7 @@ A higher F1-score (closer to 1.0) indicate high performance. High classification
 
 - Ensure DNA sequences are in FASTA and labels as tabular formats.
 - Categories/labels/classes must align with input DNA sequences
-- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs)
+- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and the in the "Use GPU resources", set it to "Yes".
 - Suitable for multi-class classification problems
 
 ---
