@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2] - 2026-06-09
+
+### Changed
+- Update `ip_imageinfo` to `8.0.0+galaxy0` (was `5.7.1+galaxy1`).
+- Update `ip_split_image` to `2.3.5+galaxy1` (was `2.3.5+galaxy0`).
+- Update `imagej2_analyze_particles_binary` to `20240614+galaxy1` (was `20240614+galaxy0`).
+- Update `collection_element_identifiers` to `0.0.3` (was `0.0.2`).
+
 ## [0.1.1] - 2026-05-28
 
 ### Fixed
