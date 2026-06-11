@@ -2,6 +2,9 @@
 
 ## [0.1.2] - 2026-06-09
 
+### Added
+- Stain intensity normalization step using CLAHE (Contrast Limited Adaptive Histogram Equalization) before colour deconvolution, to reduce staining variability across images.
+
 ### Changed
 - Add interactive workflow report with invocation summary, input image viewer, staining mask viewer, and results table.
 - Update `ip_imageinfo` to `8.0.0+galaxy0` (was `5.7.1+galaxy1`).
