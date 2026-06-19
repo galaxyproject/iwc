@@ -1,6 +1,6 @@
-# SameStr Workflow for Strain-Level Analysis of FMT Samples
+# SameStr workflow for shared-strain detection in metagenomes
 
-This workflow processes paired-end shotgun metagenomic sequencing reads from pre-FMT (recipient), donor, and post-FMT samples. It performs the following steps:
+This workflow processes paired-end shotgun metagenomic sequencing reads from multiple samples. It performs the following steps:
 
 - **Preprocessing**: Quality trimming and host read removal using KneadData
 - **Taxonomic profiling**: MetaPhlAn4 or mOTUs for taxonomic classification
