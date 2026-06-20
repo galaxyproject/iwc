@@ -9,13 +9,11 @@ This workflow processes paired-end shotgun metagenomic sequencing reads from mul
 
 ## Inputs
 
-- **Raw Reads**: A collection of paired-end FASTQ files (`.fastq.gz`) representing pre-FMT, donor, and post-FMT samples
+- **Raw Reads**: A collection of paired-end FASTQ files from one or more samples to compare
 - **Run MetaPhlAn**: Boolean parameter (default: true) that enables MetaPhlAn-based strain detection
 - **Run mOTUs**: Boolean parameter (default: false) that enables mOTUs-based strain detection
 
 ## Outputs
 
-- **stats_file**: Summary statistics of SNV profiles per sample
-- **taxon_counts**: Taxonomic abundance table
-- **strain_events**: Strain-level events detected across samples 
-- **cooccurrences**: Strain co-occurrence patterns across samples 
+ - **MetaPhlAn results** (if enabled): SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables
+ - **mOTUs results** (if enabled): SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables
