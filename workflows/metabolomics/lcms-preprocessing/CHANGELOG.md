@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2] - 2025-10-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/melpetera/intensity_checks/intens_check/1.3.0` was updated to `toolshed.g2.bx.psu.edu/repos/melpetera/intensity_checks/intens_check/2.0.1`
+
 ## [1.1] - 2025-05-05
 
 ### Changed
