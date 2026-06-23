@@ -3,8 +3,7 @@
 This workflow processes paired-end shotgun metagenomic sequencing reads from multiple samples. It performs the following steps:
 
 - **Preprocessing**: Quality trimming and host read removal using KneadData
-- **Taxonomic profiling**: MetaPhlAn4 or mOTUs for taxonomic classification
-- **Marker-based alignment**: MetaPhlAn or mOTUs for alignment
+- **Taxonomic profiling and marker-based alignment**: MetaPhlAn4 or mOTUs for taxonomic classification and marker based alignment
 - **Strain detection**: SameStr tools identify strains across samples and compute pairwise strain comparisons using Maximum Variant Profile Similarity (MVS) scores.
 
 ## Inputs
