@@ -4,8 +4,8 @@
     "comments": [
         {
             "child_steps": [
-                20,
-                19
+                19,
+                20
             ],
             "color": "red",
             "data": {
@@ -19,27 +19,6 @@
             "size": [
                 375,
                 538
-            ],
-            "type": "frame"
-        },
-        {
-            "child_steps": [
-                15,
-                16,
-                17
-            ],
-            "color": "lime",
-            "data": {
-                "title": "Map Strandedness parameter"
-            },
-            "id": 1,
-            "position": [
-                855.5086321940169,
-                1473.6242729517785
-            ],
-            "size": [
-                251,
-                558
             ],
             "type": "frame"
         },
@@ -63,6 +42,27 @@
                 716
             ],
             "type": "frame"
+        },
+        {
+            "child_steps": [
+                15,
+                16,
+                17
+            ],
+            "color": "lime",
+            "data": {
+                "title": "Map Strandedness parameter"
+            },
+            "id": 1,
+            "position": [
+                855.5086321940169,
+                1473.6242729517785
+            ],
+            "size": [
+                251,
+                558
+            ],
+            "type": "frame"
         }
     ],
     "creator": [
@@ -80,7 +80,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "RNA-Seq Analysis: Paired-End Read Processing and Quantification",
-    "readme": "# RNA-Seq Analysis: Paired-End Read Processing and Quantification\n\n## Inputs dataset\n\n- Collection paired FASTQ files: The workflow needs a list of dataset pairs of fastqsanger.\n- GTF file of annotation: A gtf file with genes annotation.\n- GTF with regions to exclude from FPKM normalization with Cufflinks: Optional, but recommended. A gtf file with regions to exclude from normalization in Cufflinks.\n\n  - For instance a gtf that masks chrM for the mm10 genome:\n\n```\nchrM\tchrM_gene\texon\t0\t16299\t.\t+\t.\tgene_id \"chrM_gene_plus\"; transcript_id \"chrM_tx_plus\"; exon_id \"chrM_ex_plus\";\nchrM\tchrM_gene\texon\t0\t16299\t.\t-\t.\tgene_id \"chrM_gene_minus\"; transcript_id \"chrM_tx_minus\"; exon_id \"chrM_ex_minus\";\n```\n\n## Inputs values\n\n- Forward and Reverse adapter (optional): By default, fastp will try to overlap both reads and will only use these sequences if R1/R2 are found not overlapped. Their sequences depends on the library preparation. Usually classical Illumina RNA libraries is Truseq and ISML (relatively new Illumina library) is Nextera.\n- Generate additional QC reports: whether to compute additional QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.\n- Reference genome: this field will be adapted to the genomes available for STAR.\n- Strandedness: For stranded RNA, reverse means that the first read in a pair is complementary to the coding sequence, forward means that the first read in a pair is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.\n- Use featureCounts for generating count tables: Whether to use count tables from featureCounts instead of from STAR.\n- Compute Cufflinks FPKM: Whether you want to get FPKM with Cufflinks (pretty long).\n- Compute StringTie FPKM: Whether you want to get FPKM/TPM etc... with StringTie.\n\n## Processing\n\n- The workflow will remove adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with STAR with ENCODE parameters (for long RNA-seq but I use it for short also). STAR is also used to count reads per gene and generate strand-specific normalized coverage (on uniquely mapped reads).\n- Optionally featureCounts is used to generate count files when this option enabled.\n- Optionally FastQC, Picard, read_distribution, geneBody_coverage, samtools idxstats, Picard are run to get additional QC.\n- A multiQC is run to have an overview of the QC. This can also be used to get the strandedness.\n- FPKM values for genes and transcripts are computed with cufflinks using correction for multi-mapped reads (this step is optionnal).\n- FPKM/TPM values for genes are computed with StringTie (this step is optional).\n- The BAM is filtered to keep only uniquely mapped reads (tag NH:i:1).\n- Unstranded coverage is computed with bedtools and normalized to the number of million uniquely mapped reads.\n- The three coverage files are converted to bigwig.\n\n### Warning\n\n- The coverage stranded output depends on the strandedness of the library:\n  - If you have an unstranded library, stranded coverages are useless\n  - If you have a forward stranded library, the label matches the orientation of the first read in pairs.\n  - If you have a reverse stranded library, the label matches the orientation of the second read in pairs.\n",
+    "readme": "# RNA-Seq Analysis: Paired-End Read Processing and Quantification\n\n## Inputs dataset\n\n- Collection paired FASTQ files: The workflow needs a list of dataset pairs of fastqsanger.\n- GTF file of annotation: A gtf file with genes annotation.\n- GTF with regions to exclude from FPKM normalization with Cufflinks: Optional, but recommended. A gtf file with regions to exclude from normalization in Cufflinks.\n\n  - For instance a gtf that masks chrM for the mm10 genome:\n\n```\nchrM\tchrM_gene\texon\t0\t16299\t.\t+\t.\tgene_id \"chrM_gene_plus\"; transcript_id \"chrM_tx_plus\"; exon_id \"chrM_ex_plus\";\nchrM\tchrM_gene\texon\t0\t16299\t.\t-\t.\tgene_id \"chrM_gene_minus\"; transcript_id \"chrM_tx_minus\"; exon_id \"chrM_ex_minus\";\n```\n\n## Inputs values\n\n- Forward and Reverse adapter (optional): By default, fastp will try to overlap both reads and will only use these sequences if R1/R2 are found not overlapped. Their sequences depends on the library preparation. Usually classical Illumina RNA libraries is Truseq and ISML (relatively new Illumina library) is Nextera.\n- Generate additional QC reports: whether to compute additional QC: Falco, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.\n- Reference genome: this field will be adapted to the genomes available for STAR.\n- Strandedness: For stranded RNA, reverse means that the first read in a pair is complementary to the coding sequence, forward means that the first read in a pair is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.\n- Use featureCounts for generating count tables: Whether to use count tables from featureCounts instead of from STAR.\n- Compute Cufflinks FPKM: Whether you want to get FPKM with Cufflinks (pretty long).\n- Compute StringTie FPKM: Whether you want to get FPKM/TPM etc... with StringTie.\n\n## Processing\n\n- The workflow will remove adapters and low quality bases and filter out any read smaller than 15bp.\n- The filtered reads are mapped with STAR with ENCODE parameters (for long RNA-seq but I use it for short also). STAR is also used to count reads per gene and generate strand-specific normalized coverage (on uniquely mapped reads).\n- Optionally featureCounts is used to generate count files when this option enabled.\n- Optionally Falco, Picard, read_distribution, geneBody_coverage, samtools idxstats, Picard are run to get additional QC.\n- A multiQC is run to have an overview of the QC. This can also be used to get the strandedness.\n- FPKM values for genes and transcripts are computed with cufflinks using correction for multi-mapped reads (this step is optionnal).\n- FPKM/TPM values for genes are computed with StringTie (this step is optional).\n- The BAM is filtered to keep only uniquely mapped reads (tag NH:i:1).\n- Unstranded coverage is computed with bedtools and normalized to the number of million uniquely mapped reads.\n- The three coverage files are converted to bigwig.\n\n### Warning\n\n- The coverage stranded output depends on the strandedness of the library:\n  - If you have an unstranded library, stranded coverages are useless\n  - If you have a forward stranded library, the label matches the orientation of the first read in pairs.\n  - If you have a reverse stranded library, the label matches the orientation of the second read in pairs.\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -167,14 +167,14 @@
             "workflow_outputs": []
         },
         "3": {
-            "annotation": "Whether to compute additional QC like fastQC, gene body coverage etc...",
+            "annotation": "Whether to compute additional QC like Falco, gene body coverage etc...",
             "content_id": null,
             "errors": null,
             "id": 3,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Whether to compute additional QC like fastQC, gene body coverage etc...",
+                    "description": "Whether to compute additional QC like Falco, gene body coverage etc...",
                     "name": "Generate additional QC reports"
                 }
             ],
@@ -424,7 +424,7 @@
         },
         "12": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.5+galaxy0",
             "errors": null,
             "id": 12,
             "input_connections": {
@@ -475,16 +475,16 @@
                     "output_name": "report_json"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.1+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.5+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "8276962186f2",
+                "changeset_revision": "8b1ff0343492",
                 "name": "fastp",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"duplicated_reads\": {\"handling_options\": {\"eval_dups\": \"--dont_eval_duplication\", \"__current_case__\": 0}}, \"filter_options\": {\"quality_filtering_options\": {\"disable_quality_filtering\": false, \"qualified_quality_phred\": \"30\", \"unqualified_percent_limit\": null, \"n_base_limit\": null}, \"length_filtering_options\": {\"disable_length_filtering\": false, \"length_required\": \"15\", \"length_limit\": null}, \"low_complexity_filter\": {\"enable_low_complexity_filter\": false, \"complexity_threshold\": null}}, \"output_options\": {\"report_html\": false, \"report_json\": true}, \"overrepresented_sequence_analysis\": {\"overrepresentation_analysis\": false, \"overrepresentation_sampling\": null}, \"read_mod_options\": {\"polyg_tail_trimming\": {\"trimming_select\": \"\", \"__current_case__\": 1, \"poly_g_min_len\": null}, \"polyx_tail_trimming\": {\"polyx_trimming_select\": \"\", \"__current_case__\": 1}, \"umi_processing\": {\"umi\": false, \"umi_loc\": null, \"umi_len\": null, \"umi_prefix\": null}, \"cutting_by_quality_options\": {\"cut_front_select\": {\"cut_front\": \"\", \"__current_case__\": 1}, \"cut_tail_select\": {\"cut_tail\": \"\", \"__current_case__\": 1}, \"cut_right_select\": {\"cut_right\": \"\", \"__current_case__\": 1}}, \"base_correction_options\": {\"correction\": false}}, \"single_paired\": {\"single_paired_selector\": \"paired_collection\", \"__current_case__\": 1, \"paired_input\": {\"__class__\": \"ConnectedValue\"}, \"merge_reads\": {\"merge\": \"\", \"__current_case__\": 1}, \"adapter_trimming_options\": {\"disable_adapter_trimming\": false, \"adapter_sequence1\": {\"__class__\": \"ConnectedValue\"}, \"adapter_sequence2\": {\"__class__\": \"ConnectedValue\"}, \"detect_adapter_for_pe\": false}, \"global_trimming_options\": {\"trim_front1\": null, \"trim_tail1\": null, \"trim_front2\": null, \"trim_tail2\": null}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.3.1+galaxy0",
+            "tool_version": "1.3.5+galaxy0",
             "type": "tool",
             "uuid": "80d855a6-7a77-46e9-9124-9dd3d9d72cc1",
             "when": null,
@@ -742,7 +742,7 @@
         },
         "18": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11b+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11b+galaxy1",
             "errors": null,
             "id": 18,
             "input_connections": {
@@ -856,16 +856,16 @@
                     "output_name": "reads_per_gene"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11b+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11b+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "de21b616f03a",
+                "changeset_revision": "55c9ac3aa8f4",
                 "name": "rgrnastar",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"algo\": {\"params\": {\"settingsType\": \"full\", \"__current_case__\": 3, \"seed\": {\"seedSearchStartLmax\": \"50\", \"seedSearchStartLmaxOverLread\": \"1.0\", \"seedSearchLmax\": \"0\", \"seedMultimapNmax\": \"10000\", \"seedPerReadNmax\": \"1000\", \"seedPerWindowNmax\": \"50\", \"seedNoneLociPerWindow\": \"10\"}, \"align\": {\"alignIntronMin\": \"20\", \"alignIntronMax\": \"1000000\", \"alignMatesGapMax\": \"1000000\", \"alignSJoverhangMin\": \"8\", \"alignSJstitchMismatchNmax\": {\"alignSJstitchMismatchNmax1\": \"0\", \"alignSJstitchMismatchNmax2\": \"-1\", \"alignSJstitchMismatchNmax3\": \"0\", \"alignSJstitchMismatchNmax4\": \"0\"}, \"alignSJDBoverhangMin\": \"1\", \"alignSplicedMateMapLmin\": \"0\", \"alignSplicedMateMapLminOverLmate\": \"0.66\", \"alignWindowsPerReadNmax\": \"10000\", \"alignTranscriptsPerWindowNmax\": \"100\", \"alignTranscriptsPerReadNmax\": \"10000\", \"alignEndsType\": \"Local\", \"peOverlapNbasesMin\": \"0\", \"peOverlapMMp\": \"0.01\"}, \"chim_settings\": {\"chimSegmentMin\": \"12\", \"chimScoreMin\": \"0\", \"chimScoreDropMax\": \"20\", \"chimScoreSeparation\": \"10\", \"chimScoreJunctionNonGTAG\": \"-1\", \"chimJunctionOverhangMin\": \"20\", \"chimSegmentReadGapMax\": \"0\", \"chimFilter\": true, \"chimMainSegmentMultNmax\": \"10\", \"chimMultimapNmax\": \"1\", \"chimMultimapScoreRange\": \"1\"}, \"junction_limits\": {\"limitOutSJoneRead\": \"1000\", \"limitOutSJcollapsed\": \"1000000\", \"limitSjdbInsertNsj\": \"1000000\"}}}, \"chimOutType\": \"\", \"filter\": {\"basic_filters\": [\"exclude_unmapped\"], \"output_params2\": {\"output_select2\": \"yes\", \"__current_case__\": 0, \"outFilterType\": true, \"outFilterMultimapScoreRange\": \"1\", \"outFilterMultimapNmax\": \"20\", \"outFilterMismatchNmax\": \"999\", \"outFilterMismatchNoverLmax\": \"0.3\", \"outFilterMismatchNoverReadLmax\": \"0.04\", \"outFilterScoreMin\": \"0\", \"outFilterScoreMinOverLread\": \"0.66\", \"outFilterMatchNmin\": \"0\", \"outFilterMatchNminOverLread\": \"0.66\", \"outSAMmultNmax\": \"-1\", \"outSAMtlen\": \"1\"}}, \"oformat\": {\"outSAMattributes\": [\"NH\", \"HI\", \"AS\", \"nM\"], \"HI_offset\": \"1\", \"outSAMprimaryFlag\": \"OneBestScore\", \"outSAMmapqUnique\": \"255\", \"wasp_conditional\": {\"waspOutputMode\": \"\", \"__current_case__\": 1}}, \"outWig\": {\"outWigType\": \"bedGraph\", \"__current_case__\": 1, \"outWigTypeSecondWord\": \"\", \"outWigStrand\": true, \"outWigReferencesPrefix\": \"-\", \"outWigNorm\": true}, \"perf\": {\"outBAMsortingBinsN\": \"50\", \"winAnchorMultimapNmax\": \"50\"}, \"refGenomeSource\": {\"geneSource\": \"indexed\", \"__current_case__\": 0, \"GTFconditional\": {\"GTFselect\": \"without-gtf-with-gtf\", \"__current_case__\": 1, \"genomeDir\": {\"__class__\": \"ConnectedValue\"}, \"sjdbGTFfile\": {\"__class__\": \"ConnectedValue\"}, \"sjdbGTFfeatureExon\": \"exon\", \"sjdbOverhang\": \"100\", \"quantmode_output\": {\"quantMode\": \"GeneCounts\", \"__current_case__\": 1}}}, \"singlePaired\": {\"sPaired\": \"paired_collection\", \"__current_case__\": 2, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"twopass\": {\"twopassMode\": \"None\", \"__current_case__\": 0, \"twopass_read_subset\": \"\", \"sj_precalculated\": \"\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.7.11b+galaxy0",
+            "tool_version": "2.7.11b+galaxy1",
             "type": "tool",
             "uuid": "be1a277d-6d0d-4aaf-acea-9735426932b0",
             "when": null,
@@ -1227,7 +1227,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "3001fc2b-2b22-4c6b-b75c-7e5fdfb549c7"
+                "uuid": "808bc124-a1b2-4b75-8bb2-4fd6ec61b1fb"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1317,13 +1317,7 @@
                         "type": "parameter_input",
                         "uuid": "56955f25-7e9e-4201-a056-b61f47359c84",
                         "when": null,
-                        "workflow_outputs": [
-                            {
-                                "label": null,
-                                "output_name": "output",
-                                "uuid": "d363c181-7f37-45ef-9732-86aaf879478a"
-                            }
-                        ]
+                        "workflow_outputs": []
                     },
                     "1": {
                         "annotation": "From STAR strand 1",
@@ -1829,7 +1823,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "4373fa7c-db0b-4165-86df-5b5289f1eebc"
+                "uuid": "402ca165-e27b-4fe8-a4a5-457c4cb54da6"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1845,7 +1839,7 @@
         },
         "21": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy1",
             "errors": null,
             "id": 21,
             "input_connections": {
@@ -1900,16 +1894,16 @@
                     "output_name": "output_summary"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "30f6985f0ac7",
+                "changeset_revision": "37d067694d40",
                 "name": "featurecounts",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"anno\": {\"anno_select\": \"history\", \"__current_case__\": 2, \"reference_gene_sets\": {\"__class__\": \"ConnectedValue\"}, \"gff_feature_type\": \"exon\", \"gff_feature_attribute\": \"gene_id\", \"summarization_level\": false}, \"extended_parameters\": {\"multifeatures\": {\"multifeat\": \"\", \"__current_case__\": 0}, \"exon_exon_junction_read_counting_enabled\": {\"count_exon_exon_junction_reads\": \"\", \"__current_case__\": 1}, \"long_reads\": false, \"by_read_group\": false, \"largest_overlap\": false, \"min_overlap\": \"1\", \"frac_overlap\": \"0\", \"frac_overlap_feature\": \"0\", \"read_extension_5p\": \"0\", \"read_extension_3p\": \"0\", \"read_reduction\": \"\", \"R\": false}, \"format\": \"tabdel_short\", \"include_feature_length_file\": false, \"pe_parameters\": {\"paired_end_status\": \"PE_fragments\", \"__current_case__\": 2, \"check_distance_enabled\": {\"checkFragLength\": \"false\", \"__current_case__\": 1}, \"only_both_ends\": false, \"exclude_chimerics\": true}, \"read_filtering_parameters\": {\"mapping_quality\": \"0\", \"splitonly\": \"\", \"primary\": false, \"ignore_dup\": false}, \"strand_specificity\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"anno\": {\"anno_select\": \"history\", \"__current_case__\": 2, \"reference_gene_sets\": {\"__class__\": \"ConnectedValue\"}, \"gff_feature_type\": \"exon\", \"gff_feature_attribute\": \"gene_id\", \"summarization_level\": false}, \"extended_parameters\": {\"multifeatures\": {\"multifeat\": \"\", \"__current_case__\": 0}, \"exon_exon_junction_read_counting_enabled\": {\"count_exon_exon_junction_reads\": \"\", \"__current_case__\": 1}, \"long_reads\": false, \"by_read_group\": false, \"largest_overlap\": false, \"min_overlap\": \"1\", \"frac_overlap\": \"0\", \"frac_overlap_feature\": \"0\", \"read_extension_5p\": \"0\", \"read_extension_3p\": \"0\", \"read_reduction\": \"\", \"R\": false}, \"format\": \"tabdel_short\", \"include_feature_length_file\": false, \"pe_parameters\": {\"paired_end_status\": \"PE_fragments\", \"__current_case__\": 2, \"check_distance_enabled\": {\"P\": \"false\", \"__current_case__\": 1}, \"only_both_ends\": false, \"exclude_chimerics\": true}, \"read_filtering_parameters\": {\"mapping_quality\": \"0\", \"splitonly\": \"\", \"primary\": false, \"ignore_dup\": false}, \"strand_specificity\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.1.1+galaxy0",
+            "tool_version": "2.1.1+galaxy1",
             "type": "tool",
             "uuid": "5a03b546-eb3f-4e99-b845-24c8f54ed183",
             "when": "$(inputs.when)",
@@ -1917,7 +1911,7 @@
         },
         "22": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/2.2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/3.0.3+galaxy1",
             "errors": null,
             "id": 22,
             "input_connections": {
@@ -1978,16 +1972,16 @@
                     "output_name": "gene_abundance_estimation"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/2.2.3+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/3.0.3+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "cbf488da3b2c",
+                "changeset_revision": "92198ab2345f",
                 "name": "stringtie",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"adv\": {\"abundance_estimation\": true, \"omit_sequences\": \"\", \"name_prefix\": null, \"fraction\": \"0.01\", \"min_tlen\": \"200\", \"min_anchor_len\": \"10\", \"min_anchor_cov\": \"1\", \"min_bundle_cov\": \"1\", \"bdist\": \"50\", \"bundle_fraction\": \"1.0\", \"disable_trimming\": false, \"multi_mapping\": false, \"point_features\": {\"__class__\": \"RuntimeValue\"}}, \"guide\": {\"use_guide\": \"yes\", \"__current_case__\": 1, \"guide_source\": {\"guide_gff_select\": \"history\", \"__current_case__\": 1, \"ref_hist\": {\"__class__\": \"ConnectedValue\"}}, \"input_estimation\": true, \"special_outputs\": {\"special_outputs_select\": \"no\", \"__current_case__\": 2}, \"coverage_file\": false}, \"input_options\": {\"input_mode\": \"short_reads\", \"__current_case__\": 0, \"input_bam\": {\"__class__\": \"ConnectedValue\"}}, \"rna_strandness\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"adv\": {\"abundance_estimation\": true, \"omit_sequences\": \"\", \"name_prefix\": null, \"fraction\": \"0.01\", \"min_tlen\": \"200\", \"min_anchor_len\": \"10\", \"min_anchor_cov\": \"1\", \"min_bundle_cov\": \"1\", \"bdist\": \"50\", \"bundle_fraction\": \"1.0\", \"disable_trimming\": false, \"multi_mapping\": false, \"point_features\": {\"__class__\": \"RuntimeValue\"}}, \"guide\": {\"use_guide\": \"yes\", \"__current_case__\": 1, \"guide_source\": {\"guide_gff_select\": \"history\", \"__current_case__\": 1, \"ref_hist\": {\"__class__\": \"ConnectedValue\"}}, \"input_estimation\": true, \"special_outputs\": {\"special_outputs_select\": \"no\", \"__current_case__\": 2}, \"coverage_file\": false}, \"input_options\": {\"input_mode\": \"short_reads\", \"__current_case__\": 0, \"input_bam\": {\"__class__\": \"ConnectedValue\"}}, \"nascent_mode\": \"\", \"rna_strandness\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "2.2.3+galaxy0",
+            "tool_version": "3.0.3+galaxy1",
             "type": "tool",
             "uuid": "5a796064-9c52-4b5c-b5da-02c43f6c742f",
             "when": "$(inputs.when)",
@@ -2267,7 +2261,7 @@
                     },
                     "3": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/1.2.4+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/1.3.2+galaxy0",
                         "errors": null,
                         "id": 3,
                         "input_connections": {
@@ -2284,10 +2278,6 @@
                             {
                                 "description": "runtime parameter for tool Falco",
                                 "name": "contaminants"
-                            },
-                            {
-                                "description": "runtime parameter for tool Falco",
-                                "name": "input_file"
                             },
                             {
                                 "description": "runtime parameter for tool Falco",
@@ -2322,16 +2312,16 @@
                                 "output_name": "text_file"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/1.2.4+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/1.3.2+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "959a14c1f2dd",
+                            "changeset_revision": "219ffa24f789",
                             "name": "falco",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"adapters\": {\"__class__\": \"RuntimeValue\"}, \"bisulfite\": false, \"contaminants\": {\"__class__\": \"RuntimeValue\"}, \"generate_summary\": false, \"input_file\": {\"__class__\": \"RuntimeValue\"}, \"limits\": {\"__class__\": \"RuntimeValue\"}, \"nogroup\": false, \"reverse_complement\": false, \"subsample\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"adapters\": {\"__class__\": \"RuntimeValue\"}, \"bisulfite\": false, \"contaminants\": {\"__class__\": \"RuntimeValue\"}, \"generate_summary\": false, \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"limits\": {\"__class__\": \"RuntimeValue\"}, \"nogroup\": false, \"reverse_complement\": false, \"subsample\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.2.4+galaxy0",
+                        "tool_version": "1.3.2+galaxy0",
                         "type": "tool",
                         "uuid": "62205d41-4a26-4144-927d-a8fb93c270aa",
                         "when": null,
@@ -2676,7 +2666,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "c7521033-412b-40a5-8d18-95088f5cc226"
+                "uuid": "a5144679-e76f-46d3-bf6f-fe9df34fb004"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -2984,7 +2974,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "3f2619de-61a3-4ac0-9d34-c70ea8938b4b"
+                "uuid": "f4b2d313-80dd-458a-8fc3-7bce14bb520d"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -3000,7 +2990,7 @@
         },
         "26": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1",
             "errors": null,
             "id": 26,
             "input_connections": {
@@ -3059,16 +3049,16 @@
                     "output_name": "stats"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "3dd49be3f7d3",
+                "changeset_revision": "fac2260bc88a",
                 "name": "multiqc",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"fastp\", \"__current_case__\": 8, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"software_cond\": {\"software\": \"star\", \"__current_case__\": 29, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"log\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"type\": {\"type\": \"genecounts\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}}]}}, {\"__index__\": 2, \"software_cond\": {\"software\": \"featureCounts\", \"__current_case__\": 10, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.33+galaxy2",
+            "tool_version": "1.35+galaxy1",
             "type": "tool",
             "uuid": "8e104453-589d-4a27-bd0d-4fc25ca17a31",
             "when": "$(inputs.when)",
@@ -3076,7 +3066,7 @@
         },
         "27": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1",
             "errors": null,
             "id": 27,
             "input_connections": {
@@ -3155,16 +3145,16 @@
                     "output_name": "stats"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "3dd49be3f7d3",
+                "changeset_revision": "fac2260bc88a",
                 "name": "multiqc",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"fastp\", \"__current_case__\": 8, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"software_cond\": {\"software\": \"star\", \"__current_case__\": 29, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"log\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"type\": {\"type\": \"genecounts\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}}]}}, {\"__index__\": 2, \"software_cond\": {\"software\": \"featureCounts\", \"__current_case__\": 10, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 3, \"software_cond\": {\"software\": \"fastqc\", \"__current_case__\": 9, \"output\": [{\"__index__\": 0, \"type\": \"data\", \"input\": {\"__class__\": \"ConnectedValue\"}}]}}, {\"__index__\": 4, \"software_cond\": {\"software\": \"samtools\", \"__current_case__\": 25, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"idxstats\", \"__current_case__\": 2, \"input\": {\"__class__\": \"ConnectedValue\"}}}]}}, {\"__index__\": 5, \"software_cond\": {\"software\": \"picard\", \"__current_case__\": 18, \"output\": [{\"__index__\": 0, \"type\": \"markdups\", \"input\": {\"__class__\": \"ConnectedValue\"}}]}}, {\"__index__\": 6, \"software_cond\": {\"software\": \"rseqc\", \"__current_case__\": 23, \"output\": [{\"__index__\": 0, \"type\": {\"type\": \"read_distribution\", \"__current_case__\": 6, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"type\": {\"type\": \"gene_body_coverage\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}}]}}], \"title\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.33+galaxy2",
+            "tool_version": "1.35+galaxy1",
             "type": "tool",
             "uuid": "c0c0731d-9122-44af-9460-ff5254a74068",
             "when": "$(inputs.when)",
@@ -3291,7 +3281,7 @@
         "RNAseq",
         "transcriptomics"
     ],
-    "uuid": "9200371d-70f9-4ce6-9658-1bfdde928169",
+    "uuid": "e1930fd2-404e-4159-ac35-fc90e5ee054b",
     "version": 1,
     "release": "1.4"
 }
