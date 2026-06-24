@@ -29,7 +29,7 @@ export interface SearchIndexEntry {
     tags: string[];
     release: string;
     collections: string[];
-    updated: string;
+    updated: string | null;
 }
 
 // Define the interface for a single workflow
@@ -49,6 +49,7 @@ export interface Workflow {
     diagram_svg?: string;
     trsID: string;
     iwcID: string;
+    repoPath: string;
     categories: string[];
     collections: string[];
     doi?: string;

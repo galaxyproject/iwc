@@ -1,0 +1,427 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "Generates codon-aware alignments and phylogenetic trees compatible with downstream HyPhy analyses.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0009-0009-3690-8372",
+            "name": "Danielle Callan"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-1967-4403",
+            "name": "Hannah Verdonk"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-4817-4029",
+            "name": "Sergei L. Kosakovsky Pond"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "HyPhy: Preprocessing ",
+    "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign – codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE – maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "reference cds",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "reference cds",
+                    "name": "reference cds"
+                }
+            ],
+            "label": "reference cds",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 190
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "0bbf4925-d024-4a9f-a49a-e0af90d2dff2",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "unaligned sequences",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "unaligned sequences",
+                    "name": "unaligned sequences"
+                }
+            ],
+            "label": "unaligned sequences",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 300,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"fasta\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "52042239-85e4-40f5-ae53-bdd13ac50618",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Tool: 1.0.0+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/remove_terminal_stop_codons/remove_terminal_stop_codons/1.0.0+galaxy0",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Remove terminal stop codons",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 300,
+                "top": 190
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/remove_terminal_stop_codons/remove_terminal_stop_codons/1.0.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "0290a7285026",
+                "name": "remove_terminal_stop_codons",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"genetic_code\": \"1\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"no_check_internal\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0+galaxy0",
+            "type": "tool",
+            "uuid": "0c84c0dd-abe7-44a7-bd8b-e44b6b847610",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Tool: 5.1.0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "input_list": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Collapse Collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "90981f86000f",
+                "name": "collapse_collections",
+                "owner": "nml",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filename\": {\"add_name\": false, \"__current_case__\": 1}, \"input_list\": {\"__class__\": \"ConnectedValue\"}, \"one_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "5.1.0",
+            "type": "tool",
+            "uuid": "a46ed440-a63d-4eaa-bf55-3f73eede2916",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Tool: 482",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "faSplit",
+            "outputs": [
+                {
+                    "name": "output_list",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 190
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482",
+            "tool_shed_repository": {
+                "changeset_revision": "1add611a6018",
+                "name": "ucsc_fasplit",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"O\": {\"split_type\": \"byname\", \"__current_case__\": 3}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "482",
+            "type": "tool",
+            "uuid": "a3ab5888-1950-46a1-828c-462facc66050",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Tool: 0.1.14+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "fasta": {
+                    "id": 3,
+                    "output_name": "output"
+                },
+                "reference_cond|reference_history": {
+                    "id": 4,
+                    "output_name": "output_list"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool cawlign",
+                    "name": "reference_cond"
+                }
+            ],
+            "label": null,
+            "name": "cawlign",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 900,
+                "top": 170
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/cawlign/cawlign/0.1.15+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "1cd8a25117c1",
+                "name": "cawlign",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"affine_gap\": false, \"fasta\": {\"__class__\": \"ConnectedValue\"}, \"format\": \"refmap\", \"local_alignment\": \"trim\", \"reference_cond\": {\"reference_source\": \"history\", \"__current_case__\": 1, \"reference_history\": {\"__class__\": \"ConnectedValue\"}}, \"reverse_complement\": \"none\", \"scoring_matrix_cond\": {\"datatype\": \"codon\", \"__current_case__\": 0, \"scoring_matrix_source\": {\"matrix_source\": \"builtin\", \"__current_case__\": 0, \"scoring_matrix\": \"BLOSUM62\"}}, \"write_reference\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.15+galaxy0",
+            "type": "tool",
+            "uuid": "dcfe4e2c-e5a1-4df3-a93d-1417765775b4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "Remove ambiguous sequences",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "infile": {
+                    "id": 5,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Remove ambiguous sequences",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1203.2700302458857,
+                "top": 168.585547085466
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutfile": {
+                    "action_arguments": {
+                        "newtype": "fasta"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"function emit(header, seq,    copy, gaps, len) {\\n    if (seq == \\\"\\\") return\\n    copy = seq\\n    gsub(/[-N.]/, \\\"\\\", copy)\\n    len  = length(seq)\\n    gaps = len - length(copy)\\n    if (len && gaps/len <= VAR1) {\\n        print header\\n        print seq\\n    }\\n}\\nBEGIN { header=\\\"\\\"; seq=\\\"\\\" }\\n/^>/ {\\n    emit(header, seq)\\n    header = $0\\n    seq = \\\"\\\"\\n    next\\n}\\n{ seq = seq $0 }\\nEND { emit(header, seq) }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": \"0.5\"}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "ce43a8ff-6411-423f-b282-587292a6fd9f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Tool: 2.5.93+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input_file": {
+                    "id": 6,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "HyPhy-CLN",
+            "outputs": [
+                {
+                    "name": "output_file",
+                    "type": "fasta"
+                }
+            ],
+            "position": {
+                "left": 1500,
+                "top": 170
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/hyphy_cln/hyphy_cln/2.5.96+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "bf1ca3de3a76",
+                "name": "hyphy_cln",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"filtering_method\": \"Yes/Yes\", \"gencodeid\": \"Universal\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.5.96+galaxy0",
+            "type": "tool",
+            "uuid": "f5425142-f3d9-4985-8eed-5436424e06af",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "output_file",
+                    "output_name": "output_file",
+                    "uuid": "7882789f-4324-475e-820e-09a5be16b0ac"
+                }
+            ]
+        },
+        "8": {
+            "annotation": "Tool: 2.4.0+galaxy1",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "general_options|s": {
+                    "id": 7,
+                    "output_name": "output_file"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool IQ-TREE",
+                    "name": "general_options"
+                },
+                {
+                    "description": "runtime parameter for tool IQ-TREE",
+                    "name": "general_options"
+                },
+                {
+                    "description": "runtime parameter for tool IQ-TREE",
+                    "name": "likelihood_mapping"
+                }
+            ],
+            "label": null,
+            "name": "IQ-TREE",
+            "outputs": [
+                {
+                    "name": "bionj",
+                    "type": "nhx"
+                },
+                {
+                    "name": "treefile",
+                    "type": "nhx"
+                },
+                {
+                    "name": "mldist",
+                    "type": "mldist"
+                },
+                {
+                    "name": "splits",
+                    "type": "nex"
+                },
+                {
+                    "name": "iqtree",
+                    "type": "iqtree"
+                }
+            ],
+            "position": {
+                "left": 1800,
+                "top": 170
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "18a61a9c1601",
+                "name": "iqtree",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"bootstrap_parameters\": {\"ultrafast_bootstrap\": {\"ufboot\": null, \"ufjack\": null, \"jack_prop\": null, \"boot_trees\": false, \"wbtl\": false, \"nmax\": \"1000\", \"bcor\": \"0.99\", \"nstep\": \"100\", \"beps\": \"0.5\", \"sampling\": null, \"bnni\": false}, \"nonparametric_bootstrap\": {\"boot\": null, \"jack\": null, \"jack_prop\": null, \"bcon\": null, \"bonly\": null, \"tbe\": false}}, \"general_options\": {\"s\": {\"__class__\": \"ConnectedValue\"}, \"o\": null, \"short_alignments\": false, \"seqtype\": \"DNA\", \"t\": {\"__class__\": \"RuntimeValue\"}, \"seed\": null, \"keep_ident\": false, \"epsilon\": null, \"safe\": false}, \"likelihood_mapping\": {\"lmap\": null, \"lmclust\": {\"__class__\": \"RuntimeValue\"}, \"quartetlh\": false}, \"miscellaneous_options\": {\"fconst\": null, \"blmin\": null, \"blmax\": null}, \"modelling_parameters\": {\"automatic_model\": {\"cond_model\": {\"opt_custommodel\": \"true\", \"__current_case__\": 0, \"m\": null}, \"merge_strategy\": {\"merge\": \"none\", \"__current_case__\": 0}, \"mset\": null, \"msub\": \"nuclear\", \"mfreq\": null, \"mrate\": null, \"cmin\": \"2\", \"cmax\": \"10\", \"merit\": \"AIC\", \"mtree\": false, \"madd\": null, \"mdef\": {\"__class__\": \"RuntimeValue\"}, \"modelomatic\": false}, \"specifying_substitution\": {\"mix_opt\": false}, \"rate_heterogeneity\": {\"alpha_min\": null, \"gamma_median\": false, \"i\": null, \"opt_gamma_inv\": false, \"rate\": false, \"mlrate\": false}, \"partition_model\": {\"model_selection\": {\"model\": \"none\", \"__current_case__\": 0}}, \"site_specific_frequency\": {\"tree_freq\": {\"__class__\": \"RuntimeValue\"}, \"site_freq\": null, \"freq_max\": false}}, \"time_tree\": {\"date_source\": {\"select_source\": \"none\", \"__current_case__\": 0}, \"date_tip\": null, \"date_root\": null, \"date_ci\": null, \"clock_sd\": null, \"date_no_outgroup\": false, \"date_outlier\": null, \"date_options\": null}, \"tree_parameters\": {\"tree_search\": {\"n\": null, \"ninit\": \"100\", \"ntop\": \"20\", \"nbest\": \"5\", \"nstop\": \"100\", \"radius\": \"6\", \"perturb\": \"0.5\", \"allnni\": false, \"tree_fix\": false, \"g\": {\"__class__\": \"RuntimeValue\"}, \"fast\": false, \"polytomy\": false, \"treels\": false, \"show_lh\": false, \"terrace\": false}, \"single_branch\": {\"alrt\": null, \"abayes\": false, \"lbp\": null}, \"tree_topology\": {\"trees\": {\"__class__\": \"RuntimeValue\"}, \"test\": null, \"test_weight\": false, \"test_au\": false}, \"constructing_consensus\": {\"contree\": false, \"connet\": false, \"sup_min\": \"0.0\", \"burnin\": null, \"support\": {\"__class__\": \"RuntimeValue\"}, \"suptag\": null}, \"computing_robinson_foulds\": {\"tree_dist_all\": false, \"tree_dist\": {\"__class__\": \"RuntimeValue\"}, \"tree_dist2\": {\"__class__\": \"RuntimeValue\"}}, \"generating_random\": {\"r\": null, \"rand\": null, \"branch_min\": null, \"branch_mean\": null, \"branch_max\": null}, \"ancestral_state\": {\"ancestral\": false, \"asr_min\": null}, \"symmetry_test\": {\"symtest\": false, \"symtest_remove_bad\": false, \"symtest_remove_good\": false, \"symtest_type\": null, \"symtest_pval\": null, \"symtest_keep_zero\": false}, \"concordance_factor\": {\"gcf\": {\"__class__\": \"RuntimeValue\"}, \"df_tree\": false, \"scf\": null, \"cf_verbose\": false, \"cf_quartet\": false}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.4.0+galaxy1",
+            "type": "tool",
+            "uuid": "ac7542a5-1352-4699-a54c-bef15be8ede0",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "treefile",
+                    "output_name": "treefile",
+                    "uuid": "6cde83f8-75b4-411b-b0f0-a65670d982a2"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "c4344db0-eac2-4915-aaec-5d8ea386f109",
+    "version": 1,
+    "release": "0.1"
+}

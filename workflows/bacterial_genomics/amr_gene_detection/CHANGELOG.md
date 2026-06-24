@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.8] 2026-03-15
+
+- added MultiQC to collect all tabular files and create a HTML report of them
+- added a column regex operation to remove the ignore sign of ABRicate output header to make it usable for MulitQC 
+
 ## [1.1.7] 2025-12-01
 
 ### Automatic update

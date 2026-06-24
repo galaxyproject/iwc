@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3] - 2026-02-11
+
+- Fix workflow name which still refered to OpenMS 2.8
+
 ## [0.2] - 2024-06-17
 
 ### Automatic update

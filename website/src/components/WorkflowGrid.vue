@@ -33,7 +33,7 @@ const isSearching = computed(() => localSearchQuery.value.trim().length > 0);
 
 // Sort workflows by updated date (use props directly, no store subscription needed)
 const sortedWorkflows = computed(() =>
-    props.workflows.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
+    props.workflows.slice().sort((a, b) => new Date(b.updated ?? 0).getTime() - new Date(a.updated ?? 0).getTime()),
 );
 
 // Fuse.js configuration (flat structure now)
