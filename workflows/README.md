@@ -249,7 +249,7 @@ The workflows submitted to iwc are updated automatically. We describe here where
 ## Reviews
 
 Your PR will be reviewed by an IWC member as soon as possible, following the guidelines in https://github.com/galaxyproject/iwc/blob/main/.github/PULL_REQUEST_TEMPLATE.md. To speed up reviews please familiarize with this checklist. A claude slash command is available to automate part of the review process, use `/review <pr number>` to run it.
-Please add yourself to the .github/CODEOWNERS file so you will be notified when there PRs that modify your workflow.
+Please add yourself to the .github/CODEOWNERS file so you will be notified when there are PRs that modify your workflow.
 
 ### FAQ
 - A workflow has not been updated while it has tools that have newer versions available?
