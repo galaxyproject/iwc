@@ -57,10 +57,50 @@ jobs:
         repository-list: "${{ needs.setup.outputs.repository-list }}"
         additional-planemo-options: --iwc
 
-  test:
-    name: Test workflows
+  # Detect if any changed repo contains a .wt_instance file
+  detect_secret:
+    name: Detect secret requirement
     needs: setup
-    if: needs.setup.outputs.repository-list != ''
+    runs-on: ubuntu-latest
+    outputs:
+      use_secret: ${{ steps.check.outputs.use_secret }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - id: check
+        run: |
+          echo "use_secret=false" >> $GITHUB_OUTPUT
+          for repo in $(echo "${{ needs.setup.outputs.repository-list }}" | tr ',' '\n'); do
+            if [[ -f "$repo/.wt_instance" ]]; then
+              echo "use_secret=true" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+
+  # Test job that requires the secret (runs only when .wt_instance present)
+  test_secret:
+    name: Test workflows (with secret)
+    needs: [setup, detect_secret]
+    if: ${{ needs.detect_secret.outputs.use_secret == 'true' && needs.setup.outputs.repository-list != '' }}
+    environment: secret-env   # protected environment containing GALAXY_USER_KEY
+    uses: ./.github/workflows/test_workflows.yml
+    with:
+      galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
+      chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
+      chunk-list: ${{ needs.setup.outputs.chunk-list }}
+      python-version-list: "[\"3.11\"]"
+      repository-list: ${{ needs.setup.outputs.repository-list }}
+      galaxy-fork: galaxyproject
+      galaxy-branch: release_25.0
+      check-outputs: false
+      # galaxy-user-key: ${{ secrets.GALAXY_USER_KEY }}
+
+  # Test job for PRs that do not need the secret
+  test_regular:
+    name: Test workflows (no secret)
+    needs: [setup, detect_secret]
+    if: ${{ needs.detect_secret.outputs.use_secret != 'true' && needs.setup.outputs.repository-list != '' }}
     uses: ./.github/workflows/test_workflows.yml
     with:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
@@ -75,7 +115,8 @@ jobs:
   combine_outputs:
     # same as tool step
     name: Combine chunked test results
-    needs: [setup, test]
+    needs: [setup, test_secret, test_regular]
+    if: always()
     strategy:
       matrix:
         python-version: ['3.11']
@@ -119,7 +160,7 @@ jobs:
   # deploy workflows to organization
   deploy:
     name: Deploy
-    needs: [setup,test,combine_outputs]
+    needs: [setup,test_secret,test_regular,combine_outputs]
     strategy:
       matrix:
         python-version: ['3.11']
