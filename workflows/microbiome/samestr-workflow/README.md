@@ -1,4 +1,4 @@
-# SameStr workflow for shared-strain detection in metagenomes
+# SamestrGal for shared-strain detection in metagenomes
 
 This workflow processes paired-end shotgun metagenomic sequencing reads from multiple samples. It performs the following steps:
 
