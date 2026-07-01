@@ -36,6 +36,6 @@ Compared to the full [nf-core/rnavar (v1.2.3)](https://nf-co.re/rnavar/1.2.3/doc
 * **Preprocessing:** No current support for UMI-Tools-based deduplication or optional read trimming.
 * **Annotation:** Variant annotation is restricted to SnpEff; support for other alternatives is not yet implemented.
 * **Performance:** The `GATK4 SplitNCigarReads` step is not parallelized, which may impact runtime on very large datasets compared to the Nextflow execution model.
-* **Variant Discovery Regions:** Unlike the nf-core implementation (which automatically constructs an exon BED file from the GFF if omitted), leaving the "Variant discovery regions" input empty in this workflow defaults to standard genomic variant calling instead of forcing RNA-specific calling.
+* **Variant Discovery Regions:** Unlike the nf-core implementation (which automatically constructs an exon BED file from the GFF if omitted), this workflow does not auto-generate an exon BED; if the input is left empty, variants are called genome-wide (still using RNA-seq calling parameters).
 * **Variant Calling Configuration:** The variant calling step does not currently allow configuration of the `--gatk_hc_call_conf` parameter.
 * **Filtering:** Filtering uses `bcftools filter` and does not offer clustered SNPs filtering.

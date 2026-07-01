@@ -18,15 +18,14 @@
     "license": "MIT",
     "release": "0.1",
     "name": "RNA-seq Variant Discovery",
-    "readme": "# RNA-seq Variant Discovery (RNAvar)\n\nThis workflow is an attempt at a faithful reimplementation of the [nf-core/rnavar](https://nf-co.re/rnavar) pipeline for the Galaxy ecosystem. nf-core rnavar handles the transition from raw reads to annotated variants using industry-standard tools and follows established best practices for RNA-seq variant discovery. This implementation for Galaxy still has a few limitations (see below).\n\n## Workflow Logic\n1. **Alignment:** **STAR** in 2-pass mode for high-accuracy splice-aware mapping.\n2. **Preprocessing:** **MarkDuplicates** and **GATK4 SplitNCigarReads** to prepare the BAM for variant calling by splitting reads into exon segments.\n3. **Recalibration (optional):** **GATK4 BaseRecalibrator** (BQSR) using known polymorphic sites to adjust base quality scores.\n4. **Variant Calling:** **GATK4 HaplotypeCaller** with parameters specifically tuned for RNA-seq (e.g., ignoring soft-clipped bases).\n5. **Filtering:** called variants are soft-filtered with **bcftools filter** (default filter expression: `FS > 30.0 || QD < 2.0`) to reduce false positives.\n6. **Annotation:** Functional annotation of variants using **SnpEff** against a selected local database.\n\n## Inputs\n* **Collection of paired-end fastqs**: A collection of paired-end fastq sequencing reads. Supports gzipped (`.gz`) files.\n* **Cached reference genome**: Cached reference genome built into the server (e.g., hg38).\n* **Genome Annotation**: GTF file containing gene models for splice-aware alignment.\n* **STAR Genome Overhang**: Sequence length around junctions for STAR indexing. Set to (Read Length - 1). For example, use 99 for 100bp reads.\n* **Perform Base Recalibration**: Whether to run GATK BaseRecalibrator and ApplyBQSR.\n* **Known Variants (dbSNP)**: VCF file of known polymorphisms for base quality score recalibration (required only if base recalibration is enabled).\n* **Known Indels**: VCF file of known insertions and deletions for base quality score recalibration (required only if base recalibration is enabled).\n* **Variant discovery regions**: Optional BED file containing exon regions.\n* **Variant Exclusion Filter**: A bcftools-style expression for hard-filtering variants (default: `FS > 30.0 || QD < 2.0`).\n* **SnpEff Genome Version**: The name of the locally installed SnpEff database (e.g., hg38).\n\n## Outputs\n* **Final Annotated Variants**: VCF file containing discovered variants with functional annotations (impact, effect, gene names) from SnpEff.\n* **MultiQC Quality Report**: An HTML report aggregating quality metrics from alignment and preprocessing steps.\n\n## Testing and Parity\nThe workflow is validated with the included Planemo test case using Saccharomyces cerevisiae (sacCer3) RNA-seq data and produces an annotated VCF containing variants on chrI.\n\n## Limitations\nCompared to the full [nf-core/rnavar (v1.2.3)](https://nf-co.re/rnavar/1.2.3/docs/usage/) implementation, this Galaxy workflow currently has the following limitations:\n* **Sample Handling:** Does not support CSV sample sheets; inputs must be provided as individual datasets or collections.\n* **Modularity:** Base recalibration (BQSR) can be enabled/disabled via workflow parameters, whereas variant filtering is mandatory (the original pipeline allows skipping filtering).\n* **Preprocessing:** No current support for UMI-Tools-based deduplication or optional read trimming.\n* **Annotation:** Variant annotation is restricted to SnpEff; support for other alternatives is not yet implemented.\n* **Performance:** The `GATK4 SplitNCigarReads` step is not parallelized, which may impact runtime on very large datasets compared to the Nextflow execution model.\n* **Variant Discovery Regions:** Unlike the nf-core implementation (which automatically constructs an exon BED file from the GFF if omitted), leaving the \"Variant discovery regions\" input empty in this workflow defaults to standard genomic variant calling instead of forcing RNA-specific calling.\n* **Variant Calling Configuration:** The variant calling step does not currently allow configuration of the `--gatk_hc_call_conf` parameter.\n* **Filtering:** Filtering uses `bcftools filter` and does not offer clustered SNPs filtering.",
+    "readme": "# RNA-seq Variant Discovery (RNAvar)\n\nThis workflow is an attempt at a faithful reimplementation of the [nf-core/rnavar](https://nf-co.re/rnavar) pipeline for the Galaxy ecosystem. nf-core rnavar handles the transition from raw reads to annotated variants using industry-standard tools and follows established best practices for RNA-seq variant discovery. This implementation for Galaxy still has a few limitations (see below).\n\n## Workflow Logic\n1. **Alignment:** **STAR** in 2-pass mode for high-accuracy splice-aware mapping.\n2. **Preprocessing:** **MarkDuplicates** and **GATK4 SplitNCigarReads** to prepare the BAM for variant calling by splitting reads into exon segments.\n3. **Recalibration (optional):** **GATK4 BaseRecalibrator** (BQSR) using known polymorphic sites to adjust base quality scores.\n4. **Variant Calling:** **GATK4 HaplotypeCaller** with parameters specifically tuned for RNA-seq (e.g., ignoring soft-clipped bases).\n5. **Filtering:** called variants are soft-filtered with **bcftools filter** (default filter expression: `FS > 30.0 || QD < 2.0`) to reduce false positives.\n6. **Annotation:** Functional annotation of variants using **SnpEff** against a selected local database.\n\n## Inputs\n* **Collection of paired-end fastqs**: A collection of paired-end fastq sequencing reads. Supports gzipped (`.gz`) files.\n* **Cached reference genome**: Cached reference genome built into the server (e.g., hg38).\n* **Genome Annotation**: GTF file containing gene models for splice-aware alignment.\n* **STAR Genome Overhang**: Sequence length around junctions for STAR indexing. Set to (Read Length - 1). For example, use 99 for 100bp reads.\n* **Perform Base Recalibration**: Whether to run GATK BaseRecalibrator and ApplyBQSR.\n* **Known Variants (dbSNP)**: VCF file of known polymorphisms for base quality score recalibration (required only if base recalibration is enabled).\n* **Known Indels**: VCF file of known insertions and deletions for base quality score recalibration (required only if base recalibration is enabled).\n* **Variant discovery regions**: Optional BED file containing exon regions.\n* **Variant Exclusion Filter**: A bcftools-style expression for hard-filtering variants (default: `FS > 30.0 || QD < 2.0`).\n* **SnpEff Genome Version**: The name of the locally installed SnpEff database (e.g., hg38).\n\n## Outputs\n* **Final Annotated Variants**: VCF file containing discovered variants with functional annotations (impact, effect, gene names) from SnpEff.\n* **MultiQC Quality Report**: An HTML report aggregating quality metrics from alignment and preprocessing steps.\n\n## Testing and Parity\nThe workflow is validated with the included Planemo test case using Saccharomyces cerevisiae (sacCer3) RNA-seq data and produces an annotated VCF containing variants on chrI.\n\n## Limitations\nCompared to the full [nf-core/rnavar (v1.2.3)](https://nf-co.re/rnavar/1.2.3/docs/usage/) implementation, this Galaxy workflow currently has the following limitations:\n* **Sample Handling:** Does not support CSV sample sheets; inputs must be provided as individual datasets or collections.\n* **Modularity:** Base recalibration (BQSR) can be enabled/disabled via workflow parameters, whereas variant filtering is mandatory (the original pipeline allows skipping filtering).\n* **Preprocessing:** No current support for UMI-Tools-based deduplication or optional read trimming.\n* **Annotation:** Variant annotation is restricted to SnpEff; support for other alternatives is not yet implemented.\n* **Performance:** The `GATK4 SplitNCigarReads` step is not parallelized, which may impact runtime on very large datasets compared to the Nextflow execution model.\n* **Variant Discovery Regions:** Unlike the nf-core implementation (which automatically constructs an exon BED file from the GFF if omitted), this workflow does not auto-generate an exon BED; if the input is left empty, variants are called genome-wide (still using RNA-seq calling parameters).\n* **Variant Calling Configuration:** The variant calling step does not currently allow configuration of the `--gatk_hc_call_conf` parameter.\n* **Filtering:** Filtering uses `bcftools filter` and does not offer clustered SNPs filtering.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
     "steps": {
         "0": {
             "annotation": "A collection of paired-end fastq sequencing reads. Supports gzipped (`.gz`) files.",
-            "content_id": null,
-            "errors": null,
+            "content_id": null,            "errors": null,
             "id": 0,
             "input_connections": {},
             "inputs": [
@@ -41,14 +40,16 @@
             "position": {
                 "left": 0,
                 "top": 255.41237702419835
-            },            "tool_id": null,
+            },
+            "tool_id": null,
             "tool_state": "{\"optional\": false, \"format\": [\"fastqsanger.gz\", \"fastq\", \"fastq.gz\"], \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
             "tool_version": null,
             "type": "data_collection_input",
             "uuid": "046cdda7-795d-4c95-b18f-2ba16e95b8b1",
             "when": null,
             "workflow_outputs": []
-        },        "1": {
+        },
+        "1": {
             "annotation": "Cached reference genome built into the server (e.g., hg38).",
             "content_id": null,
             "errors": null,
@@ -91,8 +92,8 @@
             "name": "Input dataset",
             "outputs": [],
             "position": {
-                "left": 13.062532729232199,
-                "top": 509.1874929542899
+                "left": 13.062495407918178,
+                "top": 509.1875311179958
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"tag\": null}",
@@ -238,37 +239,10 @@
             "workflow_outputs": []
         },
         "8": {
-            "annotation": "Gene annotations (GTF) used for alignment and defining discovery intervals.",
-            "content_id": null,
-            "errors": null,
-            "id": 8,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Gene annotations (GTF) used for alignment and defining discovery intervals.",
-                    "name": "Genome Annotation 2"
-                }
-            ],
-            "label": "Genome Annotation 2",
-            "name": "Input dataset",
-            "outputs": [],
-            "position": {
-                "left": 957.9934736447797,
-                "top": 797.7882496668303
-            },
-            "tool_id": null,
-            "tool_state": "{\"optional\": false, \"tag\": null}",
-            "tool_version": null,
-            "type": "data_input",
-            "uuid": "8b44a9b7-43ea-4ae1-bdc6-8995b56b3c1f",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "9": {
             "annotation": "Enter the bcftools expression to filter out variants. The default (FS &gt; 30.0 || QD &lt; 2.0) excludes variants with high strand bias or low quality-by-depth, following standard GATK hard-filtering recommendations for RNA-seq.",
             "content_id": null,
             "errors": null,
-            "id": 9,
+            "id": 8,
             "input_connections": {},
             "inputs": [
                 {
@@ -291,11 +265,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "10": {
+        "9": {
             "annotation": "The name of the locally installed SnpEff database (e.g., hg38) for functional annotation. This must match the version of your Reference Genome.",
             "content_id": null,
             "errors": null,
-            "id": 10,
+            "id": 9,
             "input_connections": {},
             "inputs": [
                 {
@@ -318,11 +292,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "11": {
+        "10": {
             "annotation": "",
             "content_id": "__FLATTEN__",
             "errors": null,
-            "id": 11,
+            "id": 10,
             "input_connections": {
                 "input": {
                     "id": 0,
@@ -358,11 +332,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "12": {
+        "11": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/2.7.11b+galaxy0",
             "errors": null,
-            "id": 12,
+            "id": 11,
             "input_connections": {
                 "refGenomeSource|GTFconditional|genomeDir": {
                     "id": 1,
@@ -448,11 +422,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "13": {
+        "12": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 13,
+            "id": 12,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 7,
@@ -493,14 +467,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "14": {
+        "13": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/falco/falco/1.2.4+galaxy0",
             "errors": null,
-            "id": 14,
+            "id": 13,
             "input_connections": {
                 "input_file": {
-                    "id": 11,
+                    "id": 10,
                     "output_name": "output"
                 }
             },
@@ -548,14 +522,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "15": {
+        "14": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_AddOrReplaceReadGroups/3.1.1.0",
             "errors": null,
-            "id": 15,
+            "id": 14,
             "input_connections": {
                 "inputFile": {
-                    "id": 12,
+                    "id": 11,
                     "output_name": "mapped_reads"
                 }
             },
@@ -594,11 +568,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "16": {
+        "15": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_BedToIntervalList/3.1.1.0",
             "errors": null,
-            "id": 16,
+            "id": 15,
             "input_connections": {
                 "inputFile": {
                     "id": 7,
@@ -609,7 +583,7 @@
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 13,
+                    "id": 12,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -647,14 +621,14 @@
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "17": {
+        "16": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/picard/picard_MarkDuplicates/3.1.1.0",
             "errors": null,
-            "id": 17,
+            "id": 16,
             "input_connections": {
                 "inputFile": {
-                    "id": 15,
+                    "id": 14,
                     "output_name": "outFile"
                 }
             },
@@ -702,18 +676,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "18": {
+        "17": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gatk4_split_n_cigar_reads/gatk4_split_n_cigar_reads/4.6.2.0+galaxy0",
             "errors": null,
-            "id": 18,
+            "id": 17,
             "input_connections": {
                 "input_bam": {
-                    "id": 17,
+                    "id": 16,
                     "output_name": "outFile"
                 },
                 "intervals": {
-                    "id": 16,
+                    "id": 15,
                     "output_name": "outFile"
                 },
                 "reference_source|reference_sequence": {
@@ -761,18 +735,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "19": {
+        "18": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gatk4_base_recalibrator/gatk4_base_recalibrator/4.6.2.0+galaxy0",
             "errors": null,
-            "id": 19,
+            "id": 18,
             "input_connections": {
                 "input_bam": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "output_bam"
                 },
                 "intervals": {
-                    "id": 16,
+                    "id": 15,
                     "output_name": "outFile"
                 },
                 "known_sites": [
@@ -834,22 +808,22 @@
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "20": {
+        "19": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gatk4_applybqsr/gatk4_applybqsr/4.6.2.0+galaxy0",
             "errors": null,
-            "id": 20,
+            "id": 19,
             "input_connections": {
                 "bqsr_recal_file": {
-                    "id": 19,
+                    "id": 18,
                     "output_name": "output_recal"
                 },
                 "input_bam": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "output_bam"
                 },
                 "intervals": {
-                    "id": 16,
+                    "id": 15,
                     "output_name": "outFile"
                 },
                 "reference_source|reference_sequence": {
@@ -901,18 +875,18 @@
             "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "21": {
+        "20": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 21,
+            "id": 20,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 20,
+                    "id": 19,
                     "output_name": "output_bam"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "output_bam"
                 }
             },
@@ -945,14 +919,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "22": {
+        "21": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/2.0.8",
             "errors": null,
-            "id": 22,
+            "id": 21,
             "input_connections": {
                 "input1": {
-                    "id": 21,
+                    "id": 20,
                     "output_name": "data_param"
                 }
             },
@@ -991,22 +965,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "23": {
+        "22": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/gatk4_haplotype_caller/gatk4_haplotype_caller/4.6.2.0+galaxy0",
             "errors": null,
-            "id": 23,
+            "id": 22,
             "input_connections": {
                 "dbsnp": {
                     "id": 5,
                     "output_name": "output"
                 },
                 "input_bams": {
-                    "id": 21,
+                    "id": 20,
                     "output_name": "data_param"
                 },
                 "intervals": {
-                    "id": 16,
+                    "id": 15,
                     "output_name": "outFile"
                 },
                 "reference_source|reference_sequence": {
@@ -1054,18 +1028,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "24": {
+        "23": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bcftools_filter/bcftools_filter/1.22+galaxy0",
             "errors": null,
-            "id": 24,
+            "id": 23,
             "input_connections": {
                 "input_file": {
-                    "id": 23,
+                    "id": 22,
                     "output_name": "output_vcf"
                 },
                 "sec_restrict|exclude": {
-                    "id": 9,
+                    "id": 8,
                     "output_name": "output"
                 }
             },
@@ -1109,18 +1083,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "25": {
+        "24": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.4+galaxy0",
             "errors": null,
-            "id": 25,
+            "id": 24,
             "input_connections": {
                 "input": {
-                    "id": 24,
+                    "id": 23,
                     "output_name": "output_file"
                 },
                 "snpDb|genomeVersion": {
-                    "id": 10,
+                    "id": 9,
                     "output_name": "output"
                 }
             },
@@ -1198,34 +1172,34 @@
                 }
             ]
         },
-        "26": {
+        "25": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0",
             "errors": null,
-            "id": 26,
+            "id": 25,
             "input_connections": {
                 "results_0|software_cond|output_0|input": {
-                    "id": 14,
+                    "id": 13,
                     "output_name": "text_file"
                 },
                 "results_1|software_cond|output_0|type|input": {
-                    "id": 12,
+                    "id": 11,
                     "output_name": "output_log"
                 },
                 "results_1|software_cond|output_1|type|input": {
-                    "id": 12,
+                    "id": 11,
                     "output_name": "reads_per_gene"
                 },
                 "results_2|software_cond|output_0|type|input": {
-                    "id": 22,
+                    "id": 21,
                     "output_name": "output1"
                 },
                 "results_3|software_cond|output_0|input": {
-                    "id": 17,
+                    "id": 16,
                     "output_name": "metrics_file"
                 },
                 "results_4|software_cond|input": {
-                    "id": 25,
+                    "id": 24,
                     "output_name": "csvFile"
                 }
             },
@@ -1275,6 +1249,6 @@
         }
     },
     "tags": [],
-    "uuid": "60e7ecf6-71d8-4e3d-9f4c-0a1c2e3f826a",
-    "version": 13
+    "uuid": "28fd1751-2040-4fd3-84e0-922fa59ca27f",
+    "version": 15
 }
