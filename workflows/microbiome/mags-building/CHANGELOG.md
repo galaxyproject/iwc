@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5] - 2026-26-04
+
+- **metaSPAdes** now can use optional long reads as input
+- remove non-main MAGs steps from the workflow (genome annotation, taxonomy annotation) they are now in seperate workflows, that can be used optionally downstream of the main workflow
+- Change COMEBin to be a optional binner
+
+### Changed
+
 ## [0.4] - 2025-10-07
 
 ### Changed
