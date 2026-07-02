@@ -22,7 +22,7 @@ jobs:
       python-version-list: "[\"3.11\"]"
       max-chunks: 4
       galaxy-fork: galaxyproject
-      galaxy-branch: release_25.1
+      galaxy-branch: release_26.0
 
   # Planemo lint the changed repositories
   lint:
@@ -57,10 +57,35 @@ jobs:
         repository-list: "${{ needs.setup.outputs.repository-list }}"
         additional-planemo-options: --iwc
 
+  # Detect if any changed repo contains a .wt_instance file
+  # and set environment to 'secret-env' (if there is such a file)
+  # or None (otherwise) 
+  determine_env:
+    name: Determine github environment to use
+    needs: setup
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.check.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - id: check
+        run: |
+          echo "environment=" >> $GITHUB_OUTPUT
+          for repo in $(echo "${{ needs.setup.outputs.repository-list }}" | tr ',' '\n'); do
+            if [[ -f "$repo/.wt_instance" ]]; then
+              echo "Found $repo/.wt_instance"
+              echo "environment=secret-env" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+          echo "Will use $(cat $GITHUB_OUTPUT)"
+
   test:
     name: Test workflows
-    needs: setup
-    if: needs.setup.outputs.repository-list != ''
+    needs: [setup, determine_env]
+    if: ${{ needs.setup.outputs.repository-list != '' }}
     uses: ./.github/workflows/test_workflows.yml
     with:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
@@ -69,13 +94,16 @@ jobs:
       python-version-list: "[\"3.11\"]"
       repository-list: ${{ needs.setup.outputs.repository-list }}
       galaxy-fork: galaxyproject
-      galaxy-branch: release_25.1
+      galaxy-branch: release_25.0
       check-outputs: false
+      galaxy-user-key-environment: ${{ needs.determine_env.outputs.environment }}
+    secrets: inherit
 
   combine_outputs:
     # same as tool step
     name: Combine chunked test results
     needs: [setup, test]
+    if: always()
     strategy:
       matrix:
         python-version: ['3.11']

@@ -41,10 +41,16 @@ on:
         default: false
         required: false
         type: boolean
+      galaxy-user-key-environment:
+        description: 'name of the protected environment holding GALAXY_USER_KEY (empty = none)'
+        default: ''
+        required: false
+        type: string
 jobs:
   test:
     name: Test workflows
     runs-on: ubuntu-latest
+    environment: ${{ inputs.galaxy-user-key-environment }}
     strategy:
       fail-fast: false
       matrix:
@@ -60,6 +66,9 @@ jobs:
         ports:
           - 5432:5432
     steps:
+    - name: Debug environment
+      run: |
+          echo "${{ inputs.galaxy-user-key-environment }}"
     - uses: actions/checkout@v4
       with:
         fetch-depth: 1
@@ -86,6 +95,7 @@ jobs:
         galaxy-branch: ${{ inputs.galaxy-branch }}
         chunk: ${{ matrix.chunk }}
         chunk-count: ${{ inputs.chunk-count }}
+        galaxy-user-key: ${{ secrets.GALAXY_USER_KEY }}
     - uses: actions/upload-artifact@v4
       with:
         name: 'Workflow test output ${{ matrix.chunk }}'
