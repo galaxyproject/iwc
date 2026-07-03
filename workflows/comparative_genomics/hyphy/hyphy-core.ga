@@ -22,7 +22,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "HyPhy: Core",
-    "readme": "# HyPhy: Core\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a multi-gene reference CDS FASTA, invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods\u2014MEME, PRIME, BUSTED, and FEL\u2014on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA  (downloadable directly from NCBI RefSeq/GenBank).\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) \u2013 Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) \u2013 Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) \u2013 One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) \u2013 One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) \u2013 One JSON per gene.\n6. HyPhy FEL results (collection, JSON) \u2013 One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.\n\n## Recommended Use\nBest suited for viral CDS panels where codon-aware alignment and tree building succeed cleanly. Genes containing internal stop codons or ongoing recombination will either produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+    "readme": "# HyPhy: Core\n\n## Description\nThis workflow orchestrates a full codon-aware selection pipeline. It starts with a list collection of FASTA assemblies plus a reference genome FASTA and GTF annotation (from which gffread extracts the CDS), invokes the HyPhy preprocessing subworkflow to build per-gene codon-aware alignments and IQ-TREE phylogenies, and then runs four HyPhy methods\u2014MEME, PRIME, BUSTED, and FEL\u2014on each gene. \n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference genome FASTA and GTF annotation (downloadable directly from NCBI RefSeq/GenBank); gffread extracts the CDS from these.\n\n## Outputs\n1. Codon-aware alignments (collection, FASTA) \u2013 Produced by the subworkflow (cawlign + cleaning).\n2. Gene trees (collection, Newick) \u2013 Produced by the subworkflow (IQ-TREE).\n3. HyPhy MEME results (collection, JSON) \u2013 One JSON per gene.\n4. HyPhy PRIME results (collection, JSON) \u2013 One JSON per gene.\n5. HyPhy BUSTED results (collection, JSON) \u2013 One JSON per gene.\n6. HyPhy FEL results (collection, JSON) \u2013 One JSON per gene.\nAll six collections share identical element identifiers.\n\n## Key Tools\n1. Subworkflow: cawlign (codon-aware alignment) and IQ-TREE (gene trees) plus cleanup steps.\n2. HyPhy MEME / PRIME / BUSTED / FEL: Selection analyses executed per gene using the subworkflow outputs.\n\n## Recommended Use\nBest suited for viral CDS panels where codon-aware alignment and tree building succeed cleanly. Genes containing internal stop codons or ongoing recombination will either produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -160,20 +160,20 @@
                 "format-version": "0.1",
                 "license": "MIT",
                 "name": "HyPhy: Preprocessing ",
-                "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference CDS FASTA, splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference CDS FASTA (You can download these directly from NCBI)\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
+                "readme": "# HyPhy: Preprocessing\n\n## Description\nThis Galaxy workflow prepares codon-aware inputs for downstream HyPhy analyses. It accepts a list collection of FASTA assemblies plus a reference genome FASTA and GTF annotation (from which gffread extracts the CDS), splits the reference by gene, and for each gene:\n1. Cleans sequence headers and removes problematic records.\n2. Aligns the reference gene against every assembly in the collection with cawlign (codon-aware).\n3. Builds a gene-specific phylogeny with IQ-TREE.\n4. Harmonizes names so the alignment and tree share element identifiers.\nThe resulting per-gene alignments and trees can be used directly as HyPhy inputs.\n\n## Inputs\n1. Assemblies (list collection of FASTA)\n2. Reference genome FASTA and GTF annotation (You can download these directly from NCBI); gffread extracts the CDS from these\n\n## Outputs\n1. Cleaned codon-aware alignments (collection of FASTA) with one element per gene, already filtered and aligned via cawlign.\n2. Per-gene phylogenies (collection of Newick). One tree per gene from IQ-TREE, matched by element identifier to the alignments.\n\n## Key Tools\ncawlign \u2013 codon-aware alignment between each reference gene and every sample FASTA.\nIQ-TREE \u2013 maximum-likelihood tree inference for each aligned gene.\n\n## Recommended Use\nThis workflow is tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading downstream HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.",
                 "report": {
                     "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
                 },
                 "steps": {
                     "0": {
-                        "annotation": "fasta for the genome to be used as reference to identify CDS",
+                        "annotation": "gtf for the genome to be used as reference to identify cds",
                         "content_id": null,
                         "errors": null,
                         "id": 0,
                         "input_connections": {},
                         "inputs": [
                             {
-                                "description": "fasta for the genome to be used as reference to identify CDS",
+                                "description": "gtf for the genome to be used as reference to identify cds",
                                 "name": "reference GTF"
                             }
                         ],
@@ -193,14 +193,14 @@
                         "workflow_outputs": []
                     },
                     "1": {
-                        "annotation": "gtf for the genome to be used as reference to identify cds",
+                        "annotation": "fasta for the genome to be used as reference to identify CDS",
                         "content_id": null,
                         "errors": null,
                         "id": 1,
                         "input_connections": {},
                         "inputs": [
                             {
-                                "description": "gtf for the genome to be used as reference to identify cds",
+                                "description": "fasta for the genome to be used as reference to identify CDS",
                                 "name": "reference Fasta"
                             }
                         ],
