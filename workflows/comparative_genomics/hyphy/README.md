@@ -11,7 +11,8 @@ This directory contains Galaxy workflows for running HyPhy (Hypothesis Testing u
 The main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.
 
 **Inputs:**
-- **Reference CDS FASTA** (required): Multi-gene CDS reference file (e.g., from NCBI)
+- **Reference GTF** (required): GTF annotation for the reference genome
+- **Reference Fasta** (required): Genome FASTA for the reference assembly
 - **Unaligned sequences** (required): List collection of FASTA files, one per sample
 - **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling
 - **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches
@@ -52,14 +53,16 @@ Subworkflow for sequence cleanup and codon-aware alignment.
 ## Test Data
 
 The `test-data/` directory contains:
-- `denv1_ref_cds.fasta`: Reference coding sequences from Dengue virus 1
-- `foreground_seqs_list.tabular`: Example foreground sequence identifiers
+- `denv1_genome.fasta`: Reference genome FASTA for Dengue virus 1 (NC_001477.1)
+- `denv1_ref.gtf`: GTF annotation for two DENV1 CDS regions (capsid protein C and prM; coords 95–394 and 437–934)
+- `denv1_ref_cds.fasta`: Pre-extracted CDS sequences (retained for reference; not used as a workflow input in v0.2+)
+- `foreground_seqs_list.txt`: Example foreground sequence identifiers
 - `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing
 
 ## Running Tests
 
 Tests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:
-1. Core only (reference CDS + unaligned sequences)
+1. Core only (reference GTF + reference Fasta + unaligned sequences)
 2. Core + Compare with regex (no foreground list)
 3. Core + Compare with foreground list (no regex)
 4. Core + Compare with all inputs (regex takes precedence)
