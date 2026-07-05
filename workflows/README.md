@@ -166,6 +166,26 @@ If your tests are not passing because you made an error into your test file you 
 planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 ```
 
+#### Request testing against an external Galaxy instance
+
+By default, IWC workflow tests run on a Galaxy instance started by the GitHub Actions worker. This is the preferred setup because it keeps tests reproducible, reviewable, and independent of shared public Galaxy infrastructure.
+
+Testing against an external Galaxy instance is a last resort. Only request it for workflows that cannot reasonably pass on the GitHub worker instance, for example because they require infrastructure or reference data that cannot be made available in CI. Do not use this to work around ordinary test failures, missing test data, tool installation problems, or workflows that can be reduced to a smaller CI-friendly test case.
+
+To request external-instance testing for a workflow repository, add a file named `.wt_instance` to that workflow directory. The file must contain the target instance name:
+
+```text
+usegalaxy.org
+```
+
+For example:
+
+```text
+workflows/<category>/<workflow>/.wt_instance
+```
+
+When a pull request changes a workflow directory containing `.wt_instance`, the PR test job runs in the protected GitHub environment that provides the `GALAXY_USER_KEY` secret for that instance. This may require approval from maintainers before the test job can access the secret and run.
+
 ##### Use build-in indexes
 
 If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
