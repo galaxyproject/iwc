@@ -13,7 +13,7 @@
     "license": "MIT",
     "release": "0.1",
     "name": "Ancient DNA analysis",
-    "readme": "# Pipeline Summary\nThis workflow performs an ancient DNA (aDNA) based analysis similar to the one in the [nf-core/eager](https://nf-co.re/eager/2.5.3/) workflow. nf-core/eager is a bioinformatics best-practice processing pipeline for genomic NGS sequencing data, with a focus on ancient DNA data. It is ideal for the (palaeo)genomic analysis of humans, animals, plants, microbes and even microbiomes.\n\nThe pipeline processes the sequencing-read input provided to the workflow together with a reference genome and optional supporting reference data. It aligns reads and performs extensive general NGS and aDNA-specific quality control on the results.\n\n\n## Required & Optional Inputs\nTo run this workflow successfully, you need to provide the following input datasets and parameters:\n\n\n* **`Input reads` :** Input single-end FASTQ reads for the sample.\n* **`Reference genome` :** Reference genome sequence in FASTA format. This is essential for read mapping and variant calling.\n* **`Choose Mapper` :** Switch to select the alignment tool. Choose between BWA and Bowtie2.\n* **`Hap Map ChrX reference` :** HapMap dataset required for X-chromosome contamination estimation in ANGSD.\n* **`Input Mitochondrial Chromosome Name` :** The exact header name of the mitochondrial chromosome in your reference FASTA file (e.g., MT, chrM, rCRS).\n* **`Kraken2 database directory` :** The database directory required for Kraken2 taxonomic classification.\n* **`Optional BED file for Sex.DetERRmine` :** An optional BED file containing specific genomic coordinates to restrict the Sex.DetERRmine analysis. Leave empty for standard whole-genome human analysis, or provide targeted regions to enable gender estimation for non-human organisms.\n* **`ANGSD region parameter` :** The specific genomic region to restrict the ANGSD analysis (typically 'X' for human male nuclear contamination estimation).\n\n\n## Workflow Steps\nBy default the pipeline currently performs the following:\n\n## 1. Preprocessing and Quality Control\n* **Quality Control:** Evaluates read quality before and after trimming (`FastQC`)\n* **Adapter Trimming:** Removes adapter sequences (`AdapterRemoval`)\n\n## 2. Read Mapping and Processing\n* **Alignment:** Maps reads to the provided reference genome conditionally using either (`BWA`) or (`Bowtie2`) based on user selection\n* **Filtering and Statistics:** Separates unmapped reads and calculates alignment statistics (`Samtools View and Flagstat`)\n* **Duplicate Removal:** Detects and marks PCR duplicates (`Picard MarkDuplicates`)\n* **Alignment Quality:** Generates detailed BAM quality metrics (`QualiMap BamQC`)\n* **Library Complexity:** Estimates library complexity (`Preseq`)\n\n## 3. Ancient DNA (aDNA) Analysis\n* **Damage Profiling:** Visualizes aDNA-specific C-to-T damage patterns (`mapDamage`)\n* **Endogenous Content:** Calculates the proportion of endogenous (target) DNA in the sample (`EndorSpy`)\n* **(`Optional`) Contamination:** Estimates nuclear X-chromosome contamination conditionally if HapMap data is provided (`ANGSD X-Contamination`)\n\n## 4. Biological Information\n* **Sex Determination:** Determines biological sex based on relative chromosome coverage ratio. This step adapts conditionally whether an optional BED file is provided (`Sex.DetERRmine`)\n* **Mt/Nuc Ratio:** Calculates the ratio of mitochondrial reads to nuclear reads utilizing the specified mitochondrial chromosome name (`MtNucRatioCalculator`)\n\n## 5. Genotyping\n* **Variant Analysis:** Performs variant calling to generate VCF files (`FreeBayes`)\n* **Variant Statistics:** Calculates statistics for the generated variants (`Bcftools stats`)\n\n## 6. Metagenomic Screening (For Unmapped Reads)\n* **Read Extraction:** Extracts unmapped reads for microbial analysis (`Picard SamToFastq`)\n* **Quality Filter:** Filters low-complexity sequences (`BBTools BBduk`)\n* **Taxonomic Classification:** Performs microbiome/taxonomic screening on the filtered unmapped reads (`Kraken2`)\n\n## 7. Reporting\n* **Summary Report:** Aggregates logs and statistics from all these tools into a single interactive HTML report (`MultiQC`)\n\n\n## Workflow Outputs\nUpon successful execution, the workflow explicitly provides the following final files for analysis:\n\n* **`MultiQC aggregated workflow summary report` :** An interactive HTML report aggregating QC and analysis logs from all tools.\n* **`QualiMap BamQC general alignment quality metrics report` :** A detailed HTML report containing mapping quality metrics, GC content, and coverage statistics.\n* **`mapDamage Visualisation` :** Visual plots displaying the characteristic C-to-T deamination patterns at the ends of ancient DNA reads.\n* **`Kraken2 taxonomic classification and microbial screening report` :** A tabular report showing the taxonomic classification of unmapped reads.\n* **`EndorSpy endogenous DNA authentication report` :** A JSON file containing the calculated endogenous DNA percentage.\n* **`Sex.DetERRmine (Without BED) report of chromosomal gender estimation` :** A JSON file containing biological sex metrics for human-genome alignments.\n* **`Sex.DetERRmine (With BED) report of chromosomal gender estimation` :** A JSON file containing biological sex metrics for targeted capture regions.\n* **`Mitochondrial to nuclear DNA ratio calculation report` :** A JSON file containing the calculated ratio between mitochondrial and nuclear reads.\n* **`ANGSD report of nuclear contamination estimation` :** A tabular text file detailing the estimates of nuclear X-chromosome contamination.\n* **`Bcftools variant calling summary statistics report` :** A text file containing comprehensive summary statistics for the called variants (VCF).\n* **`Fully post-processed mapping results` :** The final deduplicated and filtered alignment BAM file.\n* **`Freebayes raw genomic variant calls` :** The raw VCF file generated from variant analysis.\n\n\n## Testing Data\nTo ensure the workflow functions correctly, it was validated using the following datasets and databases:\n\n* **`Primary Test Data` :** A downsampled single-end FASTQ dataset (`NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz`) optimized for rapid workflow testing and validation.\n* **`Primary Reference Genome` :** The [hs37d5_chr21-MT.fa.gz](https://github.com/nf-core/test-datasets/blob/eager/reference/Human/hs37d5_chr21-MT.fa.gz) file was utilized as the primary reference genome sequence.\n* **`X-Chromosome Contamination Reference` :** The [HapMap ChrX](https://github.com/ANGSD/angsd/blob/master/RES/HapMapChrX.gz) dataset was provided as the initial reference for the estimation of X-chromosome contamination using the ANGSD tool.\n* **`Taxonomic Classification Database` :** The Minikraken v2 database was utilized to perform taxonomic classification via Kraken2.",
+    "readme": "# Ancient DNA analysis pipeline\nThis workflow performs an ancient DNA (aDNA) based analysis similar to the one in the [nf-core/eager](https://nf-co.re/eager/2.5.3/) workflow. nf-core/eager is a bioinformatics best-practice processing pipeline for genomic NGS sequencing data, with a focus on ancient DNA data. It is ideal for the (palaeo)genomic analysis of humans, animals, plants, microbes and even microbiomes.\n\nThe pipeline processes the sequencing-read input provided to the workflow together with a reference genome and optional supporting reference data. It aligns reads and performs extensive general NGS and aDNA-specific quality control on the results.\n\n\n## Required & Optional Inputs\nTo run this workflow successfully, you need to provide the following input datasets and parameters:\n\n* **`Choose Read Type` :** Select whether your input is Single-End or Paired-End.\n* **`Input Single-end reads` :** Input single-end FASTQ reads (list collection) for the sample.\n* **`Input Paired-end Forward reads (R1)` :** Input paired-end forward FASTQ reads (list collection) for the sample.\n* **`Input Paired-end reverse reads (R2)` :** Input paired-end reverse FASTQ reads (list collection) for the sample.\n* **`Reference genome` :** Reference genome sequence in FASTA format. This is essential for read mapping and variant calling.\n* **`Choose Mapper` :** Switch to select the alignment tool. Choose between BWA and Bowtie2.\n* **`HapMap chromosome X reference` :** Optional HapMap dataset used for X-chromosome contamination estimation in ANGSD (used only if provided).\n* **`Input Mitochondrial Chromosome Name` :** The exact header name of the mitochondrial chromosome in your reference FASTA file (e.g., MT, chrM, rCRS).\n* **`Kraken2 database directory` :** The database directory required for Kraken2 taxonomic classification.\n* **`Optional BED file for Sex.DetERRmine` :** An optional BED file containing specific genomic coordinates to restrict the Sex.DetERRmine analysis. Leave empty for standard whole-genome human analysis, or provide targeted regions to enable gender estimation for non-human organisms.\n* **`ANGSD region parameter` :** The specific genomic region to restrict the ANGSD analysis (e.g. 'X:5000000-154900000' for human male nuclear contamination estimation; adjust for your reference).\n\n\n## Workflow Steps\nBy default the pipeline currently performs the following:\n\n## 1. Preprocessing and Quality Control\n* **Quality Control:** Evaluates read quality before and after trimming (`FastQC`)\n* **Adapter Trimming:** Removes adapter sequences (`AdapterRemoval`)\n\n## 2. Read Mapping and Processing\n* **Alignment:** Maps reads to the provided reference genome conditionally using either (`BWA`) or (`Bowtie2`) based on user selection\n* **Filtering and Statistics:** Separates unmapped reads and calculates alignment statistics (`Samtools View and Flagstat`)\n* **Duplicate Removal:** Detects and marks PCR duplicates (`Picard MarkDuplicates`)\n* **Alignment Quality:** Generates detailed BAM quality metrics (`QualiMap BamQC`)\n* **Library Complexity:** Estimates library complexity (`Preseq`)\n\n## 3. Ancient DNA (aDNA) Analysis\n* **Damage Profiling:** Visualizes aDNA-specific C-to-T damage patterns (`mapDamage`)\n* **Endogenous Content:** Calculates the proportion of endogenous (target) DNA in the sample (`EndorSpy`)\n* **(`Optional`) Contamination:** Estimates nuclear X-chromosome contamination conditionally if HapMap data is provided (`ANGSD X-Contamination`)\n\n## 4. Biological Information\n* **Sex Determination:** Determines biological sex based on relative chromosome coverage ratio. This step adapts conditionally whether an optional BED file is provided (`Sex.DetERRmine`)\n* **Mt/Nuc Ratio:** Calculates the ratio of mitochondrial reads to nuclear reads utilizing the specified mitochondrial chromosome name (`MtNucRatioCalculator`)\n\n## 5. Genotyping\n* **Variant Analysis:** Performs variant calling to generate VCF files (`FreeBayes`)\n* **Variant Statistics:** Calculates statistics for the generated variants (`Bcftools stats`)\n\n## 6. Metagenomic Screening (For Unmapped Reads)\n* **Read Extraction:** Extracts unmapped reads for microbial analysis (`Picard SamToFastq`)\n* **Quality Filter:** Filters low-complexity sequences (`BBTools BBduk`)\n* **Taxonomic Classification:** Performs microbiome/taxonomic screening on the filtered unmapped reads (`Kraken2`)\n\n## 7. Reporting\n* **Summary Report:** Aggregates logs and statistics from all these tools into a single interactive HTML report (`MultiQC`)\n\n\n## Workflow Outputs\nUpon successful execution, the workflow explicitly provides the following final files for analysis:\n\n* **`MultiQC aggregated workflow summary report` :** An interactive HTML report aggregating QC and analysis logs from all tools.\n* **`QualiMap BamQC general alignment quality metrics report` :** A detailed HTML report containing mapping quality metrics, GC content, and coverage statistics.\n* **`mapDamage Visualisation` :** Visual plots displaying the characteristic C-to-T deamination patterns at the ends of ancient DNA reads.\n* **`Kraken2 taxonomic classification and microbial screening report` :** A tabular report showing the taxonomic classification of unmapped reads.\n* **`EndorSpy endogenous DNA authentication report` :** A JSON file containing the calculated endogenous DNA percentage.\n* **`Sex.DetERRmine (Without BED) report of chromosomal gender estimation` :** A JSON file containing biological sex metrics for human-genome alignments.\n* **`Sex.DetERRmine (With BED) report of chromosomal gender estimation` :** A JSON file containing biological sex metrics for targeted capture regions.\n* **`Mitochondrial to nuclear DNA ratio calculation report` :** A JSON file containing the calculated ratio between mitochondrial and nuclear reads.\n* **`ANGSD report of nuclear contamination estimation` :** A tabular text file detailing the estimates of nuclear X-chromosome contamination.\n* **`Bcftools variant calling summary statistics report` :** A text file containing comprehensive summary statistics for the called variants (VCF).\n* **`Fully post-processed mapping results` :** The final deduplicated and filtered alignment BAM file.\n* **`FreeBayes raw genomic variant calls` :** The raw VCF file generated from variant analysis.\n\n\n## Testing Data\nTo ensure the workflow functions correctly, it was validated using the following datasets and databases:\n\n* **`Primary Test Data` :** A downsampled paired-end FASTQ dataset [NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz](https://zenodo.org/records/21222737/files/NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz) and [NIST7035_TAAGGCGA_L001_R2_001_10MB.fastq.gz](https://zenodo.org/records/21222737/files/NIST7035_TAAGGCGA_L001_R2_001_10MB.fastq.gz) optimized for rapid workflow testing and validation.\n* **`Primary Reference Genome` :** The [hs37d5_chr21-MT.fa.gz](https://github.com/nf-core/test-datasets/blob/eager/reference/Human/hs37d5_chr21-MT.fa.gz) file was utilized as the primary reference genome sequence.\n* **`X-Chromosome Contamination Reference` :** The [HapMap ChrX](https://github.com/ANGSD/angsd/blob/master/RES/HapMapChrX.gz) dataset was provided as the initial reference for the estimation of X-chromosome contamination using the ANGSD tool.\n* **`Taxonomic Classification Database` :** The Minikraken v2 database was utilized to perform taxonomic classification via Kraken2.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -92,7 +92,7 @@
                 "top": 791.502398805326
             },
             "tool_id": null,
-            "tool_state": "{\"optional\": true, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_state": "{\"optional\": true, \"format\": [\"fastq.gz\", \"fastqsanger.gz\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
             "tool_version": null,
             "type": "data_collection_input",
             "uuid": "182acaba-5521-4972-9d17-c51a485160f9",
@@ -115,11 +115,11 @@
             "name": "Input dataset collection",
             "outputs": [],
             "position": {
-                "left": 0.0,
+                "left": 0,
                 "top": 909.1024659439979
             },
             "tool_id": null,
-            "tool_state": "{\"optional\": true, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_state": "{\"optional\": true, \"format\": [\"fastq.gz\", \"fastqsanger.gz\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
             "tool_version": null,
             "type": "data_collection_input",
             "uuid": "8bc74801-26a1-4ea3-90a4-46ba6d8ee2eb",
@@ -243,10 +243,10 @@
             "inputs": [
                 {
                     "description": "HapMap dataset required for X-chromosome contamination estimation in ANGSD.",
-                    "name": "Hap Map ChrX reference"
+                    "name": "HapMap chromosome X reference"
                 }
             ],
-            "label": "Hap Map ChrX reference",
+            "label": "HapMap chromosome X reference",
             "name": "Input dataset",
             "outputs": [],
             "position": {
@@ -674,7 +674,7 @@
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/adapter_removal/adapter_removal/2.3.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "40874f772ea1",
+                "changeset_revision": "ff174ae7a02f",
                 "name": "adapter_removal",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -730,7 +730,7 @@
             ],
             "position": {
                 "left": 1585.0605375620003,
-                "top": 0.0
+                "top": 0
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastqc/fastqc/0.74+galaxy1",
@@ -808,7 +808,7 @@
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/adapter_removal/adapter_removal/2.3.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "40874f772ea1",
+                "changeset_revision": "ff174ae7a02f",
                 "name": "adapter_removal",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -966,12 +966,7 @@
                     "output_name": "output_param_boolean"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Concatenate multiple datasets or collections",
-                    "name": "input1"
-                }
-            ],
+            "inputs": [],
             "label": null,
             "name": "Concatenate multiple datasets or collections",
             "outputs": [
@@ -986,7 +981,7 @@
             },
             "post_job_actions": {},
             "tool_id": "cat1",
-            "tool_state": "{\"input1\": {\"__class__\": \"RuntimeValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"RuntimeValue\"}}, {\"__index__\": 1, \"input2\": {\"__class__\": \"RuntimeValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"input2\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
@@ -2068,8 +2063,8 @@
                 }
             ],
             "position": {
-                "left": 3796.690788825225,
-                "top": 2691.3442286752565
+                "left": 3797.7429031173497,
+                "top": 2711.3938670695097
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/1.3.10+galaxy1",
@@ -2087,9 +2082,9 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "Freebayes raw genomic variant calls",
+                    "label": "FreeBayes raw genomic variant calls",
                     "output_name": "output_vcf",
-                    "uuid": "947ea898-b15a-4942-8caa-ae6efeb59c66"
+                    "uuid": "2ee04238-e4fd-47a6-aa9c-50a999e7d67a"
                 }
             ]
         },
@@ -2119,8 +2114,8 @@
                 }
             ],
             "position": {
-                "left": 3796.565701585027,
-                "top": 2192.2937632681387
+                "left": 3796.5623204474264,
+                "top": 2196.5097635888333
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bbtools_bbduk/bbtools_bbduk/39.08+galaxy4",
@@ -2463,6 +2458,6 @@
         }
     },
     "tags": [],
-    "uuid": "d0dae49f-bcad-44c6-9ac9-f2d047290da7",
-    "version": 8
+    "uuid": "ab793987-07cf-42f4-b819-96720aefed33",
+    "version": 4
 }

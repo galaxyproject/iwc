@@ -13,11 +13,11 @@ To run this workflow successfully, you need to provide the following input datas
 * **`Input Paired-end reverse reads (R2)` :** Input paired-end reverse FASTQ reads (list collection) for the sample.
 * **`Reference genome` :** Reference genome sequence in FASTA format. This is essential for read mapping and variant calling.
 * **`Choose Mapper` :** Switch to select the alignment tool. Choose between BWA and Bowtie2.
-* **`Hap Map ChrX reference` :** HapMap dataset required for X-chromosome contamination estimation in ANGSD.
+* **`HapMap chromosome X reference` :** Optional HapMap dataset used for X-chromosome contamination estimation in ANGSD (used only if provided).
 * **`Input Mitochondrial Chromosome Name` :** The exact header name of the mitochondrial chromosome in your reference FASTA file (e.g., MT, chrM, rCRS).
 * **`Kraken2 database directory` :** The database directory required for Kraken2 taxonomic classification.
 * **`Optional BED file for Sex.DetERRmine` :** An optional BED file containing specific genomic coordinates to restrict the Sex.DetERRmine analysis. Leave empty for standard whole-genome human analysis, or provide targeted regions to enable gender estimation for non-human organisms.
-* **`ANGSD region parameter` :** The specific genomic region to restrict the ANGSD analysis (typically 'X' for human male nuclear contamination estimation).
+* **`ANGSD region parameter` :** The specific genomic region to restrict the ANGSD analysis (e.g. 'X:5000000-154900000' for human male nuclear contamination estimation; adjust for your reference).
 
 
 ## Workflow Steps
@@ -70,13 +70,13 @@ Upon successful execution, the workflow explicitly provides the following final 
 * **`ANGSD report of nuclear contamination estimation` :** A tabular text file detailing the estimates of nuclear X-chromosome contamination.
 * **`Bcftools variant calling summary statistics report` :** A text file containing comprehensive summary statistics for the called variants (VCF).
 * **`Fully post-processed mapping results` :** The final deduplicated and filtered alignment BAM file.
-* **`Freebayes raw genomic variant calls` :** The raw VCF file generated from variant analysis.
+* **`FreeBayes raw genomic variant calls` :** The raw VCF file generated from variant analysis.
 
 
 ## Testing Data
 To ensure the workflow functions correctly, it was validated using the following datasets and databases:
 
-* **`Primary Test Data` :** A downsampled single-end FASTQ dataset [NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz](https://zenodo.org/records/20271974/files/NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz) optimized for rapid workflow testing and validation.
+* **`Primary Test Data` :** A downsampled paired-end FASTQ dataset [NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz](https://zenodo.org/records/21222737/files/NIST7035_TAAGGCGA_L001_R1_001_10MB.fastq.gz) and [NIST7035_TAAGGCGA_L001_R2_001_10MB.fastq.gz](https://zenodo.org/records/21222737/files/NIST7035_TAAGGCGA_L001_R2_001_10MB.fastq.gz) optimized for rapid workflow testing and validation.
 * **`Primary Reference Genome` :** The [hs37d5_chr21-MT.fa.gz](https://github.com/nf-core/test-datasets/blob/eager/reference/Human/hs37d5_chr21-MT.fa.gz) file was utilized as the primary reference genome sequence.
 * **`X-Chromosome Contamination Reference` :** The [HapMap ChrX](https://github.com/ANGSD/angsd/blob/master/RES/HapMapChrX.gz) dataset was provided as the initial reference for the estimation of X-chromosome contamination using the ANGSD tool.
 * **`Taxonomic Classification Database` :** The Minikraken v2 database was utilized to perform taxonomic classification via Kraken2.
