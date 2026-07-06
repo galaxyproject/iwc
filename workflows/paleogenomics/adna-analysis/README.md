@@ -7,7 +7,10 @@ The pipeline processes the sequencing-read input provided to the workflow togeth
 ## Required & Optional Inputs
 To run this workflow successfully, you need to provide the following input datasets and parameters:
 
-* **`Input reads` :** Input single-end FASTQ reads for the sample.
+* **`Choose Read Type` :** Select whether your input is Single-End or Paired-End.
+* **`Input Single-end reads` :** Input single-end FASTQ reads (list collection) for the sample.
+* **`Input Paired-end Forward reads (R1)` :** Input paired-end forward FASTQ reads (list collection) for the sample.
+* **`Input Paired-end reverse reads (R2)` :** Input paired-end reverse FASTQ reads (list collection) for the sample.
 * **`Reference genome` :** Reference genome sequence in FASTA format. This is essential for read mapping and variant calling.
 * **`Choose Mapper` :** Switch to select the alignment tool. Choose between BWA and Bowtie2.
 * **`Hap Map ChrX reference` :** HapMap dataset required for X-chromosome contamination estimation in ANGSD.
