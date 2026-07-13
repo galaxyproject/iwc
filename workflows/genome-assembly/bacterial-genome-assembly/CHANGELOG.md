@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1] - 2026-04-15
+
+### Manual update
+
+* Add CONVERTER_gz_to_uncompressed tool box because some fastq.gz files cause errors, uncompressing them resolves the issue
+
 ## [2.0.1] - 2025-12-01
 
 ### Automatic update
