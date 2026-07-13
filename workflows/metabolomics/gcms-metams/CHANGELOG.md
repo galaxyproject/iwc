@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3] - 2026-07-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/ethevenot/checkformat/checkFormat/3.0.0` was updated to `toolshed.g2.bx.psu.edu/repos/ethevenot/checkformat/checkFormat/4.0.0+galaxy0`
+
 ## [0.2] - 2025-05-05
 
 ### Automatic update
