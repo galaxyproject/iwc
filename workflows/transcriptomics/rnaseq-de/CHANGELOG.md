@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [0.11] - 2026-07-14
+
+### Manual update
+- Manual release bump after the previous update
+  
 ## [0.10] - 2026-07-13
 
 ### Automatic update
