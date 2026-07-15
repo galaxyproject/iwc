@@ -1,6 +1,6 @@
 # correlation of samples on peaks:
 
-## Inputs dataset
+## Input datasets
 
 - A list of peak files.
 - Sample BAM files
