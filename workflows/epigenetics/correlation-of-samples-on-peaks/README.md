@@ -3,7 +3,7 @@
 ## Input datasets
 
 - A collection (list) of peak files.
-- Sample BAM files
+- A collection (list) of BAM or CRAM files
 
 ## Inputs values
 
