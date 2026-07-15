@@ -18,7 +18,3 @@
 - The workflow produces two outputs:
   - a compressed numpy array containing the raw count of the read coverages (i.e., the output of `multiBamSummary`) in .npz format
   - a plot of pairwise correlation values between the read coverages (i.e., the output of `plotCorrelation`).
-
-### Warning
-
-- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding len file for use in bedtools slopbed.
