@@ -17,4 +17,5 @@
 - Calculate and visualize pairwise correlation values between the read coverages using the tool `plotCorrelation`.
 - The workflow produces two outputs:
   - a compressed numpy array containing the raw count of the read coverages (i.e., the output of `multiBamSummary`) in .npz format
+  - The same raw count of the read coverages (i.e., the output of `multiBamSummary`) in .tabular format
   - a plot of pairwise correlation values between the read coverages (i.e., the output of `plotCorrelation`).
