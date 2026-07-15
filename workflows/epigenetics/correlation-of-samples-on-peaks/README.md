@@ -7,7 +7,7 @@
 
 ## Inputs values
 
-- Reference genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (dbkeys table)
+- Reference genome: this field will be adapted to the genomes for bedtools sort (dbkeys table)
 
 ## Processing
 
