@@ -13,10 +13,10 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 ### Required Inputs
 
 1. **Haplotype 1** [fasta] - Primary haplotype assembly
-2. **Will you use a second haplotype?** [boolean] - Set to true for diploid assemblies
-3. **Haplotype 2** [fasta] - Secondary haplotype assembly (required if using two haplotypes)
-4. **Hi-C reads** [fastq] - Paired collection containing Hi-C data
-5. **PacBio reads** [fastq] - Collection of PacBio HiFi reads
+2. **Haplotype 2** [fasta] - Secondary haplotype assembly (leave unset for single-haplotype mode)
+3. **Hi-C reads** [list:paired collection, fastq] - Paired collection containing Hi-C data
+4. **PacBio reads** [list collection, fastq.gz] - Collection of PacBio HiFi reads
+5. **Estimated Genome Size** [file] - Single-value file with the estimated genome size in bp; used to switch from BWA-MEM2 to BWA-MEM for genomes larger than 10 Gb
 
 ### Assembly Annotation Parameters
 
@@ -49,7 +49,7 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 
 ### Hi-C Map Resolution
 
-20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)
+20. **Generate ultra resolution Hi-C maps** [boolean] - Generate ultra resolution Pretext maps (slower, requires more resources)
 
 ### Visualization Options
 
@@ -61,50 +61,42 @@ The Pretext files can be opened in PretextView for manual curation of genome ass
 
 1. **Assembly for curation** [fasta] - Merged assembly (if two haplotypes used) or single haplotype with optional suffix
 2. **Assembly Info** [tabular] - Summary statistics from gfastats
-3. **Both Haplotypes merged** [fasta] - Concatenated assembly file
+3. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied
+4. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied
 
 ### Gene Annotation Outputs
 
-4. **Compleasm Genes track** [GFF] - Combined gene annotations for Pretext track (if gene annotations enabled)
+5. **Compleasm Genes track** [GFF] - Combined gene annotations for Pretext track (if gene annotations enabled)
 
 ### Hi-C Alignment Outputs
 
-5. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments
-6. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering
-7. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)
-8. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)
-9. **Hi-C duplication stats on Scaffolds: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)
-10. **Hi-C duplication stats on Scaffolds: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)
-11. **Pairtools Multiqc Stats on Scaffolds** [tabular] - Pairtools statistics
-12. **Pairtools MultiQc on Scaffolds: Plots** [HTML] - Pairtools MultiQC plots
+6. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments
+7. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering
+8. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)
+9. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)
 
 ### PacBio Processing Outputs
 
-13. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)
-14. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)
+10. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)
+11. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)
 
 ### PacBio Coverage Outputs
 
-15. **BigWig Coverage** [bigwig] - PacBio read coverage track
-16. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage
-17. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments
+12. **BigWig Coverage** [bigwig] - PacBio read coverage track
+13. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage
+14. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments
 
 ### Telomere Outputs
 
-18. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope
-19. **terminal telomeres** [bedgraph] - All detected telomeric regions
-20. **P telomeres bed** [BED] - P-arm (5') telomeres only
-21. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only
+15. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope
+16. **terminal telomeres** [bedgraph] - All detected telomeric regions
+17. **P telomeres bed** [BED] - P-arm (5') telomeres only
+18. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only
 
 ### Gap Outputs
 
-22. **Gaps Bed** [BED] - Assembly gap coordinates
-23. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext
-
-### Assembly Haplotype Outputs
-
-24. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied
-25. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied
+19. **Gaps Bed** [BED] - Assembly gap coordinates
+20. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext
 
 ### Pretext Map Outputs
 
@@ -112,10 +104,10 @@ All Pretext outputs are generated in two versions:
 - **With MAPQ filtering** (default MAPQ ≥ 10): Cleaner maps with high-confidence contacts
 - **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments
 
-26. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)
-27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)
-28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)
-29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)
+21. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)
+22. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)
+23. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)
+24. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)
 
 ## Usage Notes
 
