@@ -10,9 +10,7 @@ This workflow processes paired-end shotgun metagenomic sequencing reads from mul
 
 - **Raw Reads**: A collection of paired-end FASTQ files from one or more samples to compare
 - **Run MetaPhlAn**: Boolean parameter (default: true) that enables MetaPhlAn-based strain detection
-- **Run mOTUs**: Boolean parameter (default: false) that enables mOTUs-based strain detection
 
 ## Outputs
 
  - **MetaPhlAn results** (if enabled): SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables
- - **mOTUs results** (if enabled): SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables
