@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5] - 2026-07-20
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2`
+
 ## [0.4] - 2026-03-17
 - Added an optional step allowing users to select either a built-in reference genome or provide a custom reference genome from their history.
 
