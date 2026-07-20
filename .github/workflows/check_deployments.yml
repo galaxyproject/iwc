@@ -32,7 +32,9 @@ jobs:
   deploy:
     name: Deploy missing workflows
     needs: check
-    if: github.ref == 'refs/heads/main' && needs.check.outputs.has-missing == 'true'
+    # always() is required: without it this job is skipped whenever the check
+    # job fails, which is precisely when there is something to deploy.
+    if: always() && github.ref == 'refs/heads/main' && needs.check.outputs.has-missing == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -58,10 +60,25 @@ jobs:
         credentials: 'https://${{ env.GITHUB_USER }}:${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}@github.com/'
     - name: Deploy missing workflows
       run: |
+        failed=()
         while IFS= read -r repo_dir; do
           [ -z "$repo_dir" ] && continue
-          echo "Deploying $repo_dir ..."
-          planemo workflow_upload --namespace iwc-workflows "$repo_dir"
-        done <<< "${{ needs.check.outputs.missing-repos }}"
+          echo "::group::Deploying $repo_dir"
+          if planemo workflow_upload --namespace iwc-workflows "$repo_dir"; then
+            echo "Deployed $repo_dir"
+          else
+            echo "::error::Failed to deploy $repo_dir"
+            failed+=("$repo_dir")
+          fi
+          echo "::endgroup::"
+        done <<< "$MISSING_REPOS"
+        if [ ${#failed[@]} -ne 0 ]; then
+          echo "Failed to deploy ${#failed[@]} workflow(s):"
+          printf '  %s\n' "${failed[@]}"
+          exit 1
+        fi
       env:
+        # Passed via the environment rather than interpolated into the script,
+        # so that repository paths cannot be expanded as shell syntax.
+        MISSING_REPOS: ${{ needs.check.outputs.missing-repos }}
         GITHUB_TOKEN: ${{ secrets.IWC_WORKFLOWS_BOT_TOKEN }}
