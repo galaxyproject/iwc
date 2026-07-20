@@ -9,7 +9,6 @@
 ### Deprecated
 - The updated versions of these two tools are available only on galaxy.org
 - `toolshed.g2.bx.psu.edu/repos/mvdbeek/add_input_name_as_column/addName/0.3.0` was deprecated to `toolshed.g2.bx.psu.edu/repos/mvdbeek/add_input_name_as_column/addName/0.2.0`
-- `toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.8.0+galaxy0` was deprecated to `toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.7.0+galaxy0`
 
 
 ## [1.2.2] - 2026-07-13
