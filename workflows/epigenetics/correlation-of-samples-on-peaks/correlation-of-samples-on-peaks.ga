@@ -1,6 +1,6 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "Takes a list of peak files, sorts  and merges them using bedtools. Then it counts the number of reads per regions for each BAM files, calculates their correlation and returns the deeptools raw counts, coverage matrix and the correlation plot.",
+    "annotation": "This workflow computes read coverage of BAM/CRAM samples over a merged set of peak regions to generate a pairwise correlation plot, along with the corresponding raw read counts and coverage matrix.",
     "comments": [],
     "creator": [
         {
@@ -23,7 +23,7 @@
     "license": "MIT",
     "release":"0.1",
     "name": "correlation of samples on peaks",
-    "readme": "# correlation of samples on peaks:\n\n## Input datasets\n\n- A collection (list) of peak files.\n- A collection (list) of BAM or CRAM files\n\n## Inputs values\n\n- Reference genome: this field will be adapted to the genomes for bedtools sort (dbkeys table)\n\n## Processing\n\n- The workflow will concatenate the list of peak files given as input\n- Sorts and merges the concatenated BED file by Chromosome using `bedtools sortBED` and `bedtools mergeBED`, respectively.\n- Computes the read coverages for each BAM/CRAM file on the sorted and merged list of genomic region present in the bed files using `multiBamSummary`.\n- Calculate and visualize pairwise correlation values between the read coverages using the tool `plotCorrelation`.\n- The workflow produces three outputs:\n  - a compressed numpy array containing the raw count of the read coverages (i.e., the output of `multiBamSummary`) in .npz format\n  - The same raw count of the read coverages (i.e., the output of `multiBamSummary`) in .tabular format\n  - a plot of pairwise correlation values between the read coverages (i.e., the output of `plotCorrelation`).",
+    "readme": "# Correlation of samples on peaks\n\n## Input datasets\n\n- A collection (list) of peak files.\n- A collection (list) of BAM or CRAM files\n\n## Input values\n\n- Reference genome: this field will be adapted to the genomes for bedtools sort (dbkeys table)\n\n## Processing\n\n- The workflow will concatenate the list of peak files given as input\n- Sorts and merges the concatenated BED file by Chromosome using `bedtools sortBED` and `bedtools mergeBED`, respectively.\n- Computes the read coverages for each BAM/CRAM file on the sorted and merged list of genomic region present in the bed files using `multiBamSummary`.\n- Calculate and visualize pairwise correlation values between the read coverages using the tool `plotCorrelation`.\n- The workflow produces three outputs:\n  - a compressed numpy array containing the raw count of the read coverages (i.e., the output of `multiBamSummary`) in .npz format\n  - The same raw count of the read coverages (i.e., the output of `multiBamSummary`) in .tabular format\n  - a plot of pairwise correlation values between the read coverages (i.e., the output of `plotCorrelation`).\n\n## Note\n\n A similar workflow `consensus-peaks` creates peaks from raw replicate BAMs via MACS2-based calling and reproducibility filtering while `correlation-of-samples-on-peaks` takes existing peaks together with BAM/CRAM files and tells you how correlated the samples' signal is over those regions. In other words, this workflow serves as a downstream QC step of `consensus-peaks` rather than a peak-calling step itself.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -83,14 +83,14 @@
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "This takes the BAM /CRAM formated peak files ",
+            "annotation": "This takes the BAM/CRAM formatted alignment files",
             "content_id": null,
             "errors": null,
             "id": 2,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "This takes the BAM /CRAM formated peak files ",
+                    "description": "This takes the BAM/CRAM formated alignment files",
                     "name": "BAM or CRAM files"
                 }
             ],
@@ -110,7 +110,7 @@
             "workflow_outputs": []
         },
         "3": {
-            "annotation": "This step concatenate multiple datasets into one",
+            "annotation": "This step concatenates multiple datasets into one",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
             "errors": null,
             "id": 3,
@@ -257,7 +257,7 @@
             "workflow_outputs": []
         },
         "6": {
-            "annotation": "",
+            "annotation": "Computes average read coverage by counting reads from the input BAM/CRAM files over the regions defined in the sorted BED file.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/3.5.2+galaxy0",
             "errors": null,
             "id": 6,
@@ -281,7 +281,7 @@
                     "name": "multibam_conditional"
                 }
             ],
-            "label": "multiBam summary",
+            "label": "multiBamSummary",
             "name": "multiBamSummary",
             "outputs": [
                 {
@@ -313,19 +313,19 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "deeptools coverage matrix",
+                    "label": "deepTools coverage matrix",
                     "output_name": "outFile",
                     "uuid": "91131b1a-2471-4e71-8013-688bb48cda8c"
                 },
                 {
-                    "label": "deeptool raw counts",
+                    "label": "deepTools raw counts",
                     "output_name": "outFileRawCounts",
                     "uuid": "1102d9c7-0b87-4388-bca5-dea638d35ad3"
                 }
             ]
         },
         "7": {
-            "annotation": "",
+            "annotation": "Calculates pairwise correlations between samples using the coverage matrix generated by multiBamSummary",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_correlation/deeptools_plot_correlation/3.5.2+galaxy0",
             "errors": null,
             "id": 7,
@@ -336,7 +336,7 @@
                 }
             },
             "inputs": [],
-            "label": "Plot correlation",
+            "label": "Correlation plot",
             "name": "plotCorrelation",
             "outputs": [
                 {
