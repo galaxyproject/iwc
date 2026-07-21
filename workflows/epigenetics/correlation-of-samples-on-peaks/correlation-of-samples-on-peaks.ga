@@ -1,0 +1,377 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow computes read coverage of BAM/CRAM samples over a merged set of peak regions to generate a pairwise correlation plot, along with the corresponding raw read counts and coverage matrix.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0002-1964-4960",
+            "name": "Lucille Delisle"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0002-1228-0308",
+            "name": "Alexandre Mayran"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0009-0003-9444-3944",
+            "name": "Olusegun E. Adebayo"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "release":"0.1",
+    "name": "correlation of samples on peaks",
+    "readme": "# Correlation of samples on peaks\n\n## Input datasets\n\n- A collection (list) of peak files.\n- A collection (list) of BAM or CRAM files\n\n## Input values\n\n- Reference genome: this field will be adapted to the genomes for bedtools sort (dbkeys table)\n\n## Processing\n\n- The workflow will concatenate the list of peak files given as input\n- Sorts and merges the concatenated BED file by Chromosome using `bedtools sortBED` and `bedtools mergeBED`, respectively.\n- Computes the read coverages for each BAM/CRAM file on the sorted and merged list of genomic region present in the bed files using `multiBamSummary`.\n- Calculate and visualize pairwise correlation values between the read coverages using the tool `plotCorrelation`.\n- The workflow produces three outputs:\n  - a compressed numpy array containing the raw count of the read coverages (i.e., the output of `multiBamSummary`) in .npz format\n  - The same raw count of the read coverages (i.e., the output of `multiBamSummary`) in .tabular format\n  - a plot of pairwise correlation values between the read coverages (i.e., the output of `plotCorrelation`).\n\n## Note\n\n A similar workflow `consensus-peaks` creates peaks from raw replicate BAMs via MACS2-based calling and reproducibility filtering while `correlation-of-samples-on-peaks` takes existing peaks together with BAM/CRAM files and tells you how correlated the samples' signal is over those regions. In other words, this workflow serves as a downstream QC step of `consensus-peaks` rather than a peak-calling step itself.",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "Here we are taking a collection of all peak files you wish to use.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Here we are taking a collection of all peak files you wish to use.",
+                    "name": "Collection of peak files"
+                }
+            ],
+            "label": "Collection of peak files",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 4.906208594894025
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"bed\", \"encodepeak\"], \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "798ed613-1dcd-46b1-99b6-1881dc6ae68e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Select reference genome of your choice",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Select reference genome of your choice",
+                    "name": "Reference genome"
+                }
+            ],
+            "label": "Reference genome",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0.9320604717288035,
+                "top": 114.05922959764115
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "06dee00a-a02e-47d8-aff9-5ef58d0519a9",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "This takes the BAM/CRAM formatted alignment files",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "This takes the BAM/CRAM formated alignment files",
+                    "name": "BAM or CRAM files"
+                }
+            ],
+            "label": "BAM or CRAM files",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 3.3762628479699686,
+                "top": 253.99402266636798
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": \"\", \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "f772380f-1b20-45f8-b0f2-5f4a2c0238a2",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "This step concatenates multiple datasets into one",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "inputs": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Concatenate all files into one",
+            "name": "Concatenate datasets",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 306.7937026785099,
+                "top": 3.3977051244017105
+            },
+            "post_job_actions": {
+                "HideDatasetActionout_file1": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"inputs\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "90edcb8c-3655-4f44-b55e-3c1d80edb0f5",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "This sorts the bed files by chosen rules",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_sortbed/2.31.1+galaxy0",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "genome_file_opts|genome": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "input": {
+                    "id": 3,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool bedtools SortBED",
+                    "name": "genome_file_opts"
+                }
+            ],
+            "label": "Sort bed files",
+            "name": "bedtools SortBED",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 605.0864927261093,
+                "top": 0
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_sortbed/2.31.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "2892111d91f8",
+                "name": "bedtools",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"genome_file_opts\": {\"genome_file_opts_selector\": \"loc\", \"__current_case__\": 0, \"genome\": {\"__class__\": \"ConnectedValue\"}}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"option\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.31.1+galaxy0",
+            "type": "tool",
+            "uuid": "870344a2-a7ee-491f-a0e8-ffb4bb722092",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Merges with the sorted bed file",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_mergebed/2.31.1+galaxy2",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input": {
+                    "id": 4,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Merge bed file",
+            "name": "bedtools MergeBED",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "bed"
+                }
+            ],
+            "position": {
+                "left": 902.4818556497356,
+                "top": 4.474324538251267
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_mergebed/2.31.1+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "2892111d91f8",
+                "name": "bedtools",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"c_and_o_argument_repeat\": [], \"distance\": \"0\", \"header\": false, \"input\": {\"__class__\": \"ConnectedValue\"}, \"strand\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.31.1+galaxy2",
+            "type": "tool",
+            "uuid": "fa82b514-9304-4c7c-b847-8e3f98d9e9b0",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "Computes average read coverage by counting reads from the input BAM/CRAM files over the regions defined in the sorted BED file.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/3.5.2+galaxy0",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "mode|region_file": {
+                    "id": 5,
+                    "output_name": "output"
+                },
+                "multibam_conditional|bamfiles": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool multiBamSummary",
+                    "name": "mode"
+                },
+                {
+                    "description": "runtime parameter for tool multiBamSummary",
+                    "name": "multibam_conditional"
+                }
+            ],
+            "label": "multiBamSummary",
+            "name": "multiBamSummary",
+            "outputs": [
+                {
+                    "name": "outFile",
+                    "type": "deeptools_coverage_matrix"
+                },
+                {
+                    "name": "outFileRawCounts",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1201.677284108745,
+                "top": 1.3972221596870895
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/3.5.2+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "1fcb7adc39b8",
+                "name": "deeptools_multi_bam_summary",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"advancedOpt\": {\"showAdvancedOpt\": \"no\", \"__current_case__\": 0}, \"chromInfo\": \"/data/galaxy/galaxy/var/tool-data/mm10_UCSC/len/mm10_UCSC.len\", \"custom_sample_labels_conditional\": {\"custom_labels_select\": \"No\", \"__current_case__\": 0}, \"mode\": {\"modeOpt\": \"BED-file\", \"__current_case__\": 1, \"region_file\": {\"__class__\": \"ConnectedValue\"}}, \"multibam_conditional\": {\"orderMatters\": \"No\", \"__current_case__\": 0, \"bamfiles\": {\"__class__\": \"ConnectedValue\"}}, \"outRawCounts\": true, \"region\": \"\", \"scalingFactors\": false, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.5.2+galaxy0",
+            "type": "tool",
+            "uuid": "6486b3e8-5e36-4678-970e-f65cd3213f36",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "deepTools coverage matrix",
+                    "output_name": "outFile",
+                    "uuid": "91131b1a-2471-4e71-8013-688bb48cda8c"
+                },
+                {
+                    "label": "deepTools raw counts",
+                    "output_name": "outFileRawCounts",
+                    "uuid": "1102d9c7-0b87-4388-bca5-dea638d35ad3"
+                }
+            ]
+        },
+        "7": {
+            "annotation": "Calculates pairwise correlations between samples using the coverage matrix generated by multiBamSummary",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_correlation/deeptools_plot_correlation/3.5.2+galaxy0",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "corData": {
+                    "id": 6,
+                    "output_name": "outFile"
+                }
+            },
+            "inputs": [],
+            "label": "Correlation plot",
+            "name": "plotCorrelation",
+            "outputs": [
+                {
+                    "name": "outFileName",
+                    "type": "png"
+                }
+            ],
+            "position": {
+                "left": 1504.6919348478332,
+                "top": 5.764769589732765
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_correlation/deeptools_plot_correlation/3.5.2+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "2c66e43f1c86",
+                "name": "deeptools_plot_correlation",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"corData\": {\"__class__\": \"ConnectedValue\"}, \"corMethod\": \"spearman\", \"outFileCorMatrix\": false, \"outFileFormat\": \"png\", \"plotting_type\": {\"whatToPlot\": \"heatmap\", \"__current_case__\": 0, \"zMin\": \"\", \"zMax\": \"\", \"colorMap\": \"RdYlBu\", \"plotTitle\": \"\", \"plotNumbers\": true, \"plotHeight\": \"9.5\", \"plotWidth\": \"11.0\"}, \"removeOutliers\": false, \"skipZeros\": false, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.5.2+galaxy0",
+            "type": "tool",
+            "uuid": "43017614-cf22-453a-830c-098c2e3d0e4d",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Correlation plot",
+                    "output_name": "outFileName",
+                    "uuid": "5a847bf5-94fa-446a-b1fc-558a02fd8138"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "82eb76a0-004f-4780-9e38-868d13d66b6c",
+    "version": 35
+}
