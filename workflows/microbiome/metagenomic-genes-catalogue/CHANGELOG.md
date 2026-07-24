@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3] - 2026-07-16
+
+### Changed
+
+- Concatenation used to be performed directly after assembly, but following steps (Prodigal and AMRFinderPlus) could take too long depending on the number of samples and their size. Concatenation is now performed later in the workflow, which speeds up the process when dealing with multiple samples, without affecting the results.
+
+### Deprecated
+- The updated versions of these two tools are available only on galaxy.org
+- `toolshed.g2.bx.psu.edu/repos/mvdbeek/add_input_name_as_column/addName/0.3.0` was deprecated to `toolshed.g2.bx.psu.edu/repos/mvdbeek/add_input_name_as_column/addName/0.2.0`
+
+
 ## [1.2.2] - 2026-07-13
 
 ### Automatic update
