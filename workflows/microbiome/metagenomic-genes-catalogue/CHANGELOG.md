@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3] - 2026-07-16
+
+### Changed
+
+- Concatenation used to be performed directly after assembly, but following steps (Prodigal and AMRFinderPlus) could take too long depending on the number of samples and their size. Concatenation is now performed later in the workflow, which speeds up the process when dealing with multiple samples, without affecting the results.
+
+
 ## [1.2.2] - 2026-07-13
 
 ### Automatic update
