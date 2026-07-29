@@ -15,8 +15,8 @@ chrM	chrM_gene	exon	0	16299	.	-	.	gene_id "chrM_gene_minus"; transcript_id "chrM
 
 ## Inputs values
 
-- Forward adapter (optional): If not provided, fastp will try to guess the adapter sequence from the data. Its sequences  depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use FastQC to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.
-- Generate additional QC reports: whether to compute additional QC: FastQC, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.
+- Forward adapter (optional): If not provided, fastp will try to guess the adapter sequence from the data. Its sequences  depends on the library preparation. Usually classical Illumina RNA libraries are Truseq and ISML (relatively new Illumina library) is Nextera. If you don't know, use Falco to determine if it is Truseq or Nextera. If the read length is relatively short (50bp), there is probably no adapter so it will not impact your results.
+- Generate additional QC reports: whether to compute additional QC: Falco, Picard, Read distribution on genomic features, gene body coverage, reads per chromosomes.
 - Reference genome: this field will be adapted to the genomes available for STAR.
 - Strandedness: For stranded RNA, reverse means that the read is complementary to the coding sequence, forward means that the read is in the same orientation as the coding sequence. This will only count alignments that are compatible with your library preparation strategy. This is also used for the stranded coverage and for FPKM computation with cufflinks/StringTie.
 - Use featureCounts for generating count tables: Whether to use count tables from featureCounts instead of from STAR.

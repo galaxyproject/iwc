@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.5.5] - 2026-05-12
+
+### Changed
+
+- The workflow now uses the "Filter failed datasets" tool at version 1.1.0, which avoids warnings on Galaxy instances running releases 25.0 or later
+- All optional input parameters have been turned into non-optional ones.
+
+  This was not possible originally because non-optional input parameters could not have default values.
+
+- The MultiQC step of the workflow no longer generates the raw data for plots.
+
+  The collection of raw data does not seem useful enough to justify carrying it around as a workflow output.
+  Please reach out if your downstream processing depends on it!
+
+None of these changes should affect analysis results.
+
+### Tool updates
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.0+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.3+galaxy0`
+
+  With this tool update fastp gets executed with the --dont_eval_duplication
+  option, i.e. the fastp report will no longer contain the duplicate estimate
+  for the raw reads.
+  An estimate of duplicated reads based on mapping results is still available
+  as part of the "QualiMap BamQC report" workflow output.
+
+  The update also enables fastp's --detect_adapter_for_pe option for adapter
+  trimming, which may change the results of this step compared to the previous
+  workflow version.
+
+- `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.18` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.19`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_trim/ivar_trim/1.4.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.5` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.9`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ivar_removereads/ivar_removereads/1.4.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ivar_removereads/ivar_removereads/1.4.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/4.3+t.galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/5.4.0c+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.34+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.15.1+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.22+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3`
+
 ## [0.5.4] - 2025-03-17
 
 ### Automatic update
