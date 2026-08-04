@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7] - 2026-08-03
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.1.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/checkm2/checkm2/1.1.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/coverm_genome/coverm_genome/0.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/coverm_genome/coverm_genome/0.8.0+galaxy1`
+
 ## [0.6] - 2026-07-20
 
 ### Automatic update
