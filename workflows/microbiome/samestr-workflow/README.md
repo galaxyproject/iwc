@@ -9,8 +9,10 @@ This workflow processes paired-end shotgun metagenomic sequencing reads from mul
 ## Inputs
 
 - **Raw Reads**: A collection of paired-end FASTQ files from one or more samples to compare
-- **Run MetaPhlAn**: Boolean parameter (default: true) that enables MetaPhlAn-based strain detection
+- **Select MetaPhlAn Database**: Optional. Selecting a database runs MetaPhlAn as the taxonomic profiler and marker-based aligner.
+- **Select mOTUs Database**: Optional. Selecting a database runs mOTUs as the taxonomic profiler and marker-based aligner.
+- At least one of the two databases must be selected, or the workflow will fail. If both are selected, both tools run, but SameStr uses the MetaPhlAn output.
 
 ## Outputs
 
- - **MetaPhlAn results** (if enabled): SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables
+ - **SameStr results**: SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables, generated from MetaPhlAn output if a MetaPhlAn database was selected, otherwise from mOTUs output.
