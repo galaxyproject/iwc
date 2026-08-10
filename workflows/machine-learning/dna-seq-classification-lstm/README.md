@@ -1,6 +1,7 @@
 # 🧬 DNA sequence classification using LSTM neural network (Galaxy Workflow)
 
 ## Overview
+
 This workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.
 
 ### An example task achieved by the workflow
@@ -23,6 +24,7 @@ An example of regression task can be found in [Gosai, S et al](https://www.natur
 ---
 
 ## Key features
+
 - End-to-end pipeline in Galaxy
 - DNA sequence encoding using k-mer representation
 - Deep learning model built with Keras
@@ -34,6 +36,7 @@ An example of regression task can be found in [Gosai, S et al](https://www.natur
 ---
 
 ## Inputs
+
 The workflow requires two datasets:
 - DNA sequences (FASTA format). Can contain fixed length or variable length sequences
 - Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)
@@ -90,20 +93,20 @@ The workflow builds a Sequential Keras model with:
 
 ## Model training
 
-- Optimizer: Adam  
-- Loss function: categorical crossentropy  
-- Metrics: categorical accuracy  
+- Optimizer: Adam
+- Loss function: categorical crossentropy
+- Metrics: categorical accuracy
 
 Training parameters:
-- Epochs: 10  
+- Epochs: 10
 - Batch size: 32
-- Validation split: 10%  
+- Validation split: 10%
 
 ---
 
 ## Model optimisation
 
-Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values. 
+Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values.
 
 A list of parameters to look out for model optimisation:
 
@@ -145,12 +148,13 @@ A higher F1-score (closer to 1.0) indicate high performance. High classification
 
 ## Usage notes
 
-- Ensure DNA sequences are in FASTA and labels as tabular formats.
+- Ensure DNA sequences are in FASTA and labels as tabular formats
 - Categories/labels/classes must align with input DNA sequences
-- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and the in the "Use GPU resources", set it to "Yes".
+- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and the in the "Use GPU resources", set it to "Yes"
 - Suitable for multi-class classification problems
 
 ---
 
 ## License
+
 MIT License
