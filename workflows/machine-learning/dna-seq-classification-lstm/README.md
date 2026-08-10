@@ -13,7 +13,7 @@ The workflow can be used to perform DNA sequence classification (60bp long short
 | IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |
 | N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |
 
-The first colunm is given as a set of catgories/labels/classes and the third column is used as a set of DNA sequences.
+The first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.
 
 
 Other tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
@@ -48,7 +48,7 @@ The workflow requires two datasets:
 - Output: encoded feature matrix
 
 ### 2. Data preparation
-- Encoded sequences are merged with labels
+- K-mer encoded sequences are merged with labels
 - Dataset is split into:
   - Training set (75%)
   - Test set (25%)
@@ -60,7 +60,7 @@ The workflow requires two datasets:
 - Labels are converted to categorical (one-hot encoding) representation
 
 ### 4. Model training
-- LSTM-based deep learning model is trained to map encoded DNA sequences to their task-specific labels.
+- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.
 
 ### 5. Model evaluation
 - The trained model is evaluated on unseen test data on several classification metrics.
@@ -72,16 +72,19 @@ The workflow requires two datasets:
 The workflow builds a Sequential Keras model with:
 
 - Embedding layer:
-  - Input dim: 130
-  - Output dim: 128
+  - Input dimension: 99 (vocabulary size for 3-mer encoding + 1)
+  - Output dimension: 128
+  - Number of output dimensions can be tuned for optimal performance
 
 - LSTM layers:
   - LSTM (256 units, return sequences)
   - LSTM (256 units)
+  - Number of LSTM units can be tuned for optimal performance
 
 - Dense layers:
   - Dense (64 units, ELU activation)
-  - Output Dense (3 units, Softmax)
+  - Output Dense (3 units for 3 classes, Softmax)
+  - Number of dense units can be tuned for optimal performance
 
 ---
 
