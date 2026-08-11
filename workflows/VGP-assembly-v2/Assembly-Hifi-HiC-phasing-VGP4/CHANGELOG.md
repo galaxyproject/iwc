@@ -2,6 +2,10 @@
 
 ## [0.7] - 2026-07-31
 
+### Changes
+
+- Documentation fixes: removed the MultiQC report from the list of outputs in the README (the step is not exposed as a workflow output), and updated the workflow annotation to refer to Compleasm instead of BUSCO.
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/lparsons/cutadapt/cutadapt/5.2+galaxy2`
 - `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
