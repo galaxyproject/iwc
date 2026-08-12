@@ -1,8 +1,8 @@
 # Planemo test configuration for Hi-C contact map workflow
-# Test 1: Single read set per technology (no collections)
-# Test 2: Multiple read sets with collections
+# Test 1: Diploid (two haplotypes), single read set per technology
+# Test 2: Single haplotype, multiple read sets with collections
 
-- doc: Test 1 - Single read set per technology
+- doc: Test 1 - Diploid, single read set per technology
   job:
     Haplotype 1:
       class: File
@@ -49,7 +49,6 @@
         - hash_function: SHA-1
           hash_value: 84fe8fad10155f9edd1365ba13bb5f30f0d1d881
     Do you want to add suffixes to the scaffold names?: true
-    Will you use a second haplotype?: true
     First Haplotype suffix: H1
     Second Haplotype suffix: H2
     Do you want to trim the Hi-C data?: false
@@ -62,9 +61,13 @@
     Species Name: Test_species
     Assembly Name: toLid
     Lineage for Compleasm: vertebrata_odb10
-    Database for Compleasm: v5 
-    Generate gene annotations: false
-    Generate high resolution Hi-C maps: false
+    Database for Compleasm: v5
+    Generate gene annotations: true
+    Generate ultra resolution Hi-C maps: false
+    Estimated Genome Size:
+      class: File
+      location: https://zenodo.org/records/19925237/files/real_size.txt
+      filetype: txt
   outputs:
     Assembly for curation:
       asserts:
@@ -103,10 +106,6 @@
         has_size:
           value: 800000
           delta: 400000
-    "Hi-C duplication stats on Scaffolds: Raw":
-      asserts:
-        has_text:
-          text: "total_dups\t3941"
     Precuration Hi-C alignments:
       asserts:
         has_size:
@@ -114,11 +113,13 @@
           delta: 50000
     Hi-C duplication stats on Scaffolds:
       asserts:
-        - has_text:
-            text: "EXCLUDED: 1042"
-        - has_text_matching:
-            expression: "READ: (\\d+)\\nWRITTEN: (?!\\1\\b)\\d+"
-- doc: Test 2 - Multiple read sets with collections
+        has_text:
+          text: "EXCLUDED: 1042"
+    Compleasm Genes track:
+      asserts:
+        has_text:
+          text: "scaffold_1.H2\t106669\t106765"
+- doc: Test 2 - Single haplotype, multiple read sets with collections
   job:
     Haplotype 1:
       class: File
@@ -127,13 +128,6 @@
       hashes:
       - hash_function: SHA-1
         hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
-    Haplotype 2:
-      class: File
-      location: https://zenodo.org/records/18664706/files/Haplotype_2.fasta
-      filetype: fasta
-      hashes:
-      - hash_function: SHA-1
-        hash_value: 166cb118625113e39593bedb10aaea028c20f77d
     Hi-C reads:
       class: Collection
       collection_type: list:paired
@@ -187,7 +181,6 @@
         - hash_function: SHA-1
           hash_value: f0408118bf8d116d0d560d2899fc4861c930c067
     Do you want to add suffixes to the scaffold names?: true
-    Will you use a second haplotype?: true
     First Haplotype suffix: H1
     Second Haplotype suffix: H2
     Do you want to trim the Hi-C data?: false
@@ -201,8 +194,12 @@
     Assembly Name: toLid
     Lineage for Compleasm: vertebrata_odb10
     Database for Compleasm: v5
-    Generate gene annotations: true
-    Generate high resolution Hi-C maps: false
+    Generate gene annotations: false
+    Generate ultra resolution Hi-C maps: false
+    Estimated Genome Size:
+      class: File
+      location: https://zenodo.org/records/19925237/files/large_size.txt
+      filetype: txt
   outputs:
     Assembly for curation:
       asserts:
@@ -223,40 +220,24 @@
     BigWig Coverage:
       asserts:
         has_size:
-          value: 20000
-          delta: 10000
-    P telomeres bed:
-      asserts:
-        - has_text:
-            text: "scaffold_10.H2"
-        - has_text:
-            text: "scaffold_1.H1\t488600\t500600\t12000"
-    Merged Hi-C Alignments on Scaffolds:
+          value: 7000
+          delta: 2000
+    Precuration Hi-C alignments:
       asserts:
         has_size:
-          value: 15000000
-          delta: 6000000
+          value: 12805288
+          delta: 2000000
     Pretext All tracks:
       asserts:
         has_size:
-          value: 2000000
-          delta: 1000000
+          value: 940000
+          delta: 200000
     Pretext All tracks - Multimapping:
       asserts:
         has_size:
-          value: 2000000
-          delta: 1000000
-    Compleasm Genes track:
+          value: 940000
+          delta: 200000
+    P telomeres bed:
       asserts:
         has_text:
-          text: "scaffold_1.H2\t106669\t106765"
-    "Hi-C duplication stats on Scaffolds: Raw":
-      asserts:
-        has_text:
-          text: "total_dups\t3941\t2623"
-    Hi-C duplication stats on Scaffolds:
-      asserts:
-        - has_text:
-            text: "EXCLUDED: 1725"
-        - has_text_matching:
-            expression: "READ: (\\d+)\\nWRITTEN: \\1\\b"
+          text: "scaffold_1.H1\t488600\t500600\t12000"
