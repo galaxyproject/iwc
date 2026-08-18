@@ -1,0 +1,229 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow splits a BAM file into smaller, contig-specific BAM files. This allows subtools to analyze the BAMs in parallel.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0009-0009-0059-1887",
+            "name": "Niklas Mayle"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "release": "0.1",
+    "name": "Split BAM by Path",
+    "readme": "## What This Workflow Does\n\nThis workflow takes two input files:\n* **BAM file:** The main aligned sequence dataset.\n* **Path list file:** A text file containing target paths, or contigs (one per line).\n\n### Process\n1. **Splits the path list:** Breaks the input list into individual single-line text files.\n2. **Filters the BAM:** Parses the path/contig from each text file and extracts the matching reads from the main BAM file.\n3. **Generates individual BAMs:** Creates a collection of smaller, contig-specific BAM files.\n\nThis enables downstream tools to analyze individual contigs concurrently, significantly speeding up execution times.",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "A list of contig paths (one per line) used to split the main BAM into smaller, contig-specific BAM files.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "A list of contig paths (one per line) used to split the main BAM into smaller, contig-specific BAM files.",
+                    "name": "Input path list"
+                }
+            ],
+            "label": "Input path list",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 110
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"txt\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "98d8620e-6786-4605-b42f-781c901fc10e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "The BAM file beeing split into smaller, contig-specific BAM files.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "The BAM file beeing split into smaller, contig-specific BAM files.",
+                    "name": "Input BAM"
+                }
+            ],
+            "label": "Input BAM",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 480,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"bam\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "dd72c780-7c2c-4161-bec7-73e074014185",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "split_parms|input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Split file",
+                    "name": "split_parms"
+                }
+            ],
+            "label": "Split file row by row",
+            "name": "Split file",
+            "outputs": [
+                {
+                    "name": "list_output_txt",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 240,
+                "top": 110
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "tool_shed_repository": {
+                "changeset_revision": "2dae863c8f42",
+                "name": "split_file_to_collection",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"split_parms\": {\"select_ftype\": \"txt\", \"__current_case__\": 5, \"input\": {\"__class__\": \"ConnectedValue\"}, \"select_mode\": {\"mode\": \"chunk\", \"__current_case__\": 0, \"chunksize\": \"1\"}, \"newfilenames\": \"contig_for_bam\", \"select_allocate\": {\"allocate\": \"batch\", \"__current_case__\": 1}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.5.2",
+            "type": "tool",
+            "uuid": "81d46f64-9660-4dde-8969-514521c0eb2a",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "list_output_txt",
+                    "output_name": "list_output_txt",
+                    "uuid": "081d2389-87d4-4f03-b310-e8b54b41446b"
+                }
+            ]
+        },
+        "3": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "input1": {
+                    "id": 2,
+                    "output_name": "list_output_txt"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "text_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 480,
+                "top": 110
+            },
+            "post_job_actions": {},
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"text\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "d53f022a-8429-4c25-96fb-463bf4396689",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtool_filter2/samtool_filter2/1.8+galaxy1",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input1": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "regions": {
+                    "id": 3,
+                    "output_name": "text_param"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter SAM or BAM, output SAM or BAM",
+                    "name": "bed_file"
+                }
+            ],
+            "label": null,
+            "name": "Filter SAM or BAM, output SAM or BAM",
+            "outputs": [
+                {
+                    "name": "output1",
+                    "type": "sam"
+                }
+            ],
+            "position": {
+                "left": 720,
+                "top": 110
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutput1": {
+                    "action_arguments": {
+                        "newtype": "bam"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "output1"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtool_filter2/samtool_filter2/1.8+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "649a225999a5",
+                "name": "samtool_filter2",
+                "owner": "devteam",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"bed_file\": {\"__class__\": \"RuntimeValue\"}, \"flag\": {\"filter\": \"no\", \"__current_case__\": 0}, \"header\": \"-h\", \"input1\": {\"__class__\": \"ConnectedValue\"}, \"library\": \"\", \"mapq\": null, \"outputtype\": \"bam\", \"possibly_select_inverse\": false, \"read_group\": \"\", \"regions\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.8+galaxy1",
+            "type": "tool",
+            "uuid": "02850bc7-b610-4865-86b9-8512bcde118c",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Output BAM",
+                    "output_name": "output1",
+                    "uuid": "10dc6c81-661c-433f-9c49-115227c129eb"
+                }
+            ]
+        }
+    },
+    "tags": [
+        "helper"
+    ],
+    "uuid": "6b03c053-106a-43d9-b593-63d69516bf39",
+    "version": 11
+}

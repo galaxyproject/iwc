@@ -1,0 +1,78 @@
+- doc: Test outline for Pangenome-Variant-Calling-using-VG-Giraffe-and-Google-DeepVariant
+  job:
+    GBZ_FILE:
+      class: File
+      path: test-data/GBZ_FILE.gbz
+      filetype: gbz
+    Read_1:
+      class: File
+      path: test-data/Read_1.fastqsanger.gz
+      filetype: fastqsanger.gz
+    Read_2:
+      class: File
+      path: test-data/Read_2.fastqsanger.gz
+      filetype: fastqsanger.gz
+    REFERENCE_PREFIX: null
+    GIRAFFE_PRESET: default
+    READS_PER_CHUNK: '20000000'
+    SAMPLE_NAME: s0
+    GIRAFFE_OPTIONS: null
+    GIRAFFE PRUNE_LOW_COMPLEXITY: true
+    GIRAFFE MAX_FRAGMENT_LENGTH: '3000'
+    DeepVariant MIN_MAPQ: null
+    DeepVariant KEEP_LEGACY_AC: false
+    DeepVariant NORM_READS: true
+    DeepVariant REALIGN_READS: true
+    DeepVariant MODEL_TYPE: WGS
+    DeepVariant make_examples extra args: null
+    DeepVariant MAX_READ_LENGTH_TO_REALIGN: '500'
+    DeepVariant HAPLOID_CONTIGS: null
+    DeepVariant SMALL_MODEL_DISABLED: false
+    hap.py TARGET_REGION: null
+  outputs:
+    Output BAM:
+      element_test:
+        has_size: 117467
+        delta: 5000
+    Ouput Unmapped Reads BAM:
+      element_test:
+        has_size: 494
+        delta: 50
+    Output VCF:
+      asserts:
+        - that: "has_line"
+          line: "##fileformat=VCFv4.2"
+          n: 1
+        - that: "has_n_lines"
+          n: 146
+        - that: "has_text"
+          text: "chr1"
+          n: 59
+        - that: "has_text"
+          text: "chr2"
+          n: 63
+        - that: "has_line"
+          line: "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	s0"
+          n: 1
+        - that: "has_line"
+          line: "chr1	1123	.	A	G	30	PASS	.	GT:GQ:DP:AD:VAF:MID:PL	0/1:30:30:17,13:0.433333:small_model:29,0,51"
+          n: 1
+    Output GVCF:
+      asserts:
+        - that: "has_line"
+          line: "##fileformat=VCFv4.2"
+          n: 1
+        - that: "has_n_lines"
+          n: 363
+        - that: "has_text"
+          text: "chr1"
+          n: 173
+        - that: "has_text"
+          text: "chr2"
+          n: 166
+        - that: "has_line"
+          line: "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	s0"
+          n: 1
+        - that: "has_line"
+          line: "chr1	1	.	A	<*>	0	.	END=34	GT:GQ:MIN_DP:PL	0/0:1:0:0,0,0"
+          n: 1
