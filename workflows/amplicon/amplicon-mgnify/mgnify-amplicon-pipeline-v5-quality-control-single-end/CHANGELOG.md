@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5] - 2026-08-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.11+galaxy0`
+
 ## [0.4] - 2026-07-20
 
 ### Automatic update
