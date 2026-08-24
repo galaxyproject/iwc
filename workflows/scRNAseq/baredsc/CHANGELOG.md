@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8] - 2026-08-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+
 ## [0.7] - 2026-01-19
 
 ### Automatic update
