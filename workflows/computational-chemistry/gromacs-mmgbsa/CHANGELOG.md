@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9] - 2026-08-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/chemteam/md_converter/md_converter/1.9.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/chemteam/md_converter/md_converter/1.9.7+galaxy0`
+
 ## [0.1.8] - 2026-03-09
 
 ### Automatic update
