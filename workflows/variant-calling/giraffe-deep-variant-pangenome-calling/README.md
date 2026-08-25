@@ -4,7 +4,7 @@ This workflow performs small variant calling using pangenome reference graphs. I
 
 Input reads are chunked for parallel mapping. The chunk size can be specified. If both forward and reverse reads are provided, they are interleaved into a single FASTQ file in the workflow before chunking.
 
-VG giraffe surjects its results directly to the reference within the pangenome graph. A different reference FASTA can be specified if the input pangenome graph does not contain all the bases of the reference. If the reads should not be surjected to all the paths in the pangenome graph, a custom path list file can be given. The mapped reads will be output in BAM format. Then, the BAM file undergoes postprocessing by marking paired reads properly paired until a given maximum distance (default 3000 bp) (only if a second read pair is provided).
+VG giraffe surjects its results directly to the reference within the pangenome graph. A different reference FASTA can be specified if the input pangenome graph does not contain all the bases of the reference. If the pangenome graph is missing reference paths overall, an according xg graph with the reference can be provided. If the reads should not be surjected to all the paths in the pangenome graph, a custom path list file can be given. The mapped reads will be output in BAM format. Then, the BAM file undergoes postprocessing by marking paired reads properly paired until a given maximum distance (default 3000 bp) (only if a second read pair is provided).
 
 According to the [authors](https://github.com/vgteam/vg_wdl#read-realignment), realignment can improve variant calling. By default, mapped reads are locally realigned using DeepVariant's built-in realigner before calling variants. Reads longer than DeepVariant's max_read_length_to_realign threshold (default 500 bp) are never realigned. Additionally, DeepVariant's read normalization is also enabled to left align indels for each read. For a faster variant calling step, the BAM file is split into smaller, contig-specific BAM files. This allows parallel analysis.
 
@@ -21,6 +21,7 @@ For benchmarking and validation, hap.py can be used by providing a truth vcf fil
   - A Minimizer Index to speed up finding matches (seeds) between reads and the graph [Optional] (vg.min file)
   - A Distance Index to quickly cluster seeds [Optional] (vg.dist file)
   - A Zipcodes Index for distance hints to speed up chaining, especially for long reads [Optional] (vg.zipcodes file)
+- Input XG Graph if the Input Pangenome Graph is missing reference paths for surjection [Optional] (.xg file)
 - First Read (fastqsanger or fastqsanger.gz file)
 - Second Read [Optional] (fastqsanger or fastqsanger.gz file)
 - Number of reads contained in each mapping chunk. For paired reads, make sure this value is even [Default 20000000]
