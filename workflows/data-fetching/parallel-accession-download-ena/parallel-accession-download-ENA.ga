@@ -1,0 +1,339 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This Galaxy workflow automates the parallel download of sequencing data (FASTQ files) from the European Nucleotide Archive (ENA) .",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0002-5987-8032",
+            "name": "Anton Nekrutenko",
+            "url": "https://orcid.org/0000-0002-5987-8032"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "Parallel  accession download ENA",
+    "readme": "# Parallel Accession Download ENA - Galaxy Workflow\n\n## Overview\n\nThis Galaxy workflow automates the parallel download of sequencing data (FASTQ files) from the European Nucleotide Archive (ENA) using a list of accession numbers. The workflow is designed to efficiently handle bulk downloads by splitting accessions into manageable batches and processing them in parallel.\n\n## Workflow Author\n\n**Anton Nekrutenko**\n- ORCID: [0000-0002-5987-8032](https://orcid.org/0000-0002-5987-8032)\n\n## License\n\nMIT License\n\n## What This Workflow Does\n\nThe workflow performs the following steps:\n\n1. **Input Processing**: Takes a list of accession numbers (e.g., SRR numbers from NCBI SRA or ENA)\n2. **Batch Splitting**: Divides the accession list into smaller chunks for parallel processing\n3. **Parallel Download**: Downloads FASTQ files for each batch simultaneously using the `fastq-dl` tool\n4. **Output Organization**: Organizes downloaded data into three categories:\n   - Metadata files (information about each accession)\n   - Single-end reads (SE)\n   - Paired-end reads (PE)\n\n## Workflow Inputs\n\n### 1. List of Accessions (Required)\n- **Format**: Text file (txt, tabular, or csv)\n- **Content**: One accession number per line\n- **Example**:\n  ```\n  SRR123456\n  SRR123457\n  SRR123458\n  ```\n- **Source**: Accessions can be obtained from NCBI SRA or ENA databases\n\n### 2. Number of Accessions per Download Job (Optional)\n- **Type**: Integer parameter\n- **Default**: 1\n- **Recommended**: Set higher for large lists to reduce the number of parallel jobs\n- **Example**: For 1,000 accessions, set to 100 to create 10 parallel jobs (each downloading 100 accessions)\n- **Minimum**: 1\n\n## Workflow Steps\n\n### Step 1: Split File\n- **Tool**: `split_file_to_collection`\n- **Purpose**: Divides the input accession list into chunks based on the specified batch size\n- **Output**: Collection of smaller files, each containing a subset of accessions\n\n### Step 2: Download FASTQ Files\n- **Tool**: `fastq-dl` \n- **Purpose**: Downloads sequencing data from ENA/NCBI for each batch of accessions\n- **Features**:\n  - Automatically detects whether data is single-end or paired-end\n  - Downloads metadata for each accession\n  - Handles both NCBI SRA and ENA repositories\n\n### Step 3-5: Apply Rules\n- **Purpose**: Organizes downloaded files into properly structured collections\n- **Step 3**: Creates metadata collection\n- **Step 4**: Creates single-end reads collection (tagged as \"SE\")\n- **Step 5**: Creates paired-end reads collection (tagged as \"PE\")\n\n## Workflow Outputs\n\n1. **Metadata Collection**: TSV/JSON files containing information about each downloaded accession\n2. **Single-End Reads**: FASTQ files for single-end sequencing experiments (tagged \"SE\")\n3. **Paired-End Reads**: Paired FASTQ files for paired-end sequencing experiments (tagged \"PE\")\n\n## Usage Recommendations\n\n### For Small Lists (< 50 accessions)\n- Keep the default batch size of 1\n- This will create one job per accession\n\n### For Medium Lists (50-500 accessions)\n- Set batch size to 10-50\n- This balances parallelization with job management\n\n### For Large Lists (> 500 accessions)\n- Set batch size to 50-100 or higher\n- Reduces the total number of jobs and system overhead\n- Example: 1,000 accessions with batch size 100 = 10 parallel jobs\n\n## Important Notes\n\n1. **Network Requirements**: This workflow requires internet access to download data from ENA\n2. **Storage Requirements**: Ensure sufficient storage space for downloaded FASTQ files (sequencing files can be very large)\n3. **Time Considerations**: Download time depends on:\n   - Number of accessions\n   - Size of each sequencing dataset\n   - Network bandwidth\n   - Server load on ENA/NCBI\n\n4. **Error Handling**: Some accessions may fail to download if:\n   - The accession is invalid\n   - Data is restricted/private\n   - Network connectivity issues\n   - The data is not available on the queried repository\n\n## Example Use Case\n\n**Scenario**: Downloading 500 bacterial genome sequencing datasets\n\n```\nInput 1: List of 500 SRR accessions (one per line)\nInput 2: Batch size = 50\n\nResult: 10 parallel download jobs, each handling 50 accessions\n```\n\n## References\n\n- Galaxy Project: https://galaxyproject.org/\n- ENA: https://www.ebi.ac.uk/ena\n- fastq-dl tool: https://github.com/rpetit3/fastq-dl\n",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "This is the list of accessions downloaded from NCBI or EBA. It should contain one accession per line",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "This is the list of accessions downloaded from NCBI or EBA. It should contain one accession per line",
+                    "name": "List of accessions"
+                }
+            ],
+            "label": "List of accessions",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 26.933349609375,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"txt\", \"tabular\", \"csv\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "48559016-e44c-47ad-ac54-1f71003cbce8",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "By default this number is 1, which may create too many jobs. So if you, for example, want to download a 1000 accessions set this number to 100. This way you will get 10 jobs downloading 100 accessions each. ",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "By default this number is 1, which may create too many jobs. So if you, for example, want to download a 1000 accessions set this number to 100. This way you will get 10 jobs downloading 100 accessions each. ",
+                    "name": "Number of accessions for a single download job"
+                }
+            ],
+            "label": "Number of accessions for a single download job",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 434
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 1, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "00442617-161d-4a84-aae7-cdb373295ce1",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "split_parms|input": {
+                    "id": 0,
+                    "output_name": "output"
+                },
+                "split_parms|split_by|select_mode|chunksize": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Split file",
+                    "name": "split_parms"
+                }
+            ],
+            "label": null,
+            "name": "Split file",
+            "outputs": [
+                {
+                    "name": "list_output_tab",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 415.433349609375,
+                "top": 420
+            },
+            "post_job_actions": {
+                "HideDatasetActionlist_output_tab": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "list_output_tab"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "tool_shed_repository": {
+                "changeset_revision": "2dae863c8f42",
+                "name": "split_file_to_collection",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"split_parms\": {\"select_ftype\": \"tabular\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}, \"top\": \"0\", \"split_by\": {\"select_split_by\": \"row\", \"__current_case__\": 1, \"select_mode\": {\"mode\": \"chunk\", \"__current_case__\": 0, \"chunksize\": {\"__class__\": \"ConnectedValue\"}}, \"newfilenames\": \"split_file\", \"select_allocate\": {\"allocate\": \"byrow\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.5.2",
+            "type": "tool",
+            "uuid": "f5a702c7-fd27-4e29-9474-075bf995a865",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.1+galaxy0",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "input_type|accessions_file": {
+                    "id": 2,
+                    "output_name": "list_output_tab"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool fastq-dl",
+                    "name": "input_type"
+                }
+            ],
+            "label": null,
+            "name": "fastq-dl",
+            "outputs": [
+                {
+                    "name": "metadata",
+                    "type": "input"
+                },
+                {
+                    "name": "single_end_collection",
+                    "type": "input"
+                },
+                {
+                    "name": "paired_end_collection",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 734.5,
+                "top": 274
+            },
+            "post_job_actions": {
+                "HideDatasetActionmetadata": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "metadata"
+                },
+                "HideDatasetActionpaired_end_collection": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "paired_end_collection"
+                },
+                "HideDatasetActionsingle_end_collection": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "single_end_collection"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastq_dl/fastq_dl/3.0.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "3f1ee30e39e9",
+                "name": "fastq_dl",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"group_by_experiment\": false, \"group_by_sample\": false, \"input_type\": {\"select_input_type\": \"accessions_list\", \"__current_case__\": 1, \"accessions_file\": {\"__class__\": \"ConnectedValue\"}}, \"only_download_metadata\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.0.1+galaxy0",
+            "type": "tool",
+            "uuid": "20ff6328-78a5-4d95-8c6a-763b6344747d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "__APPLY_RULES__",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input": {
+                    "id": 3,
+                    "output_name": "metadata"
+                }
+            },
+            "inputs": [],
+            "label": "Metadata",
+            "name": "Apply rules",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1008.5,
+                "top": 171
+            },
+            "post_job_actions": {},
+            "tool_id": "__APPLY_RULES__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "28fc6ba3-a7ab-44a1-a26d-e7415456da6e",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Metadata",
+                    "output_name": "output",
+                    "uuid": "02fed155-413b-456a-a7d9-80d8a240f08e"
+                }
+            ]
+        },
+        "5": {
+            "annotation": "",
+            "content_id": "__APPLY_RULES__",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input": {
+                    "id": 3,
+                    "output_name": "single_end_collection"
+                }
+            },
+            "inputs": [],
+            "label": "Single reads",
+            "name": "Apply rules",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1006.5,
+                "top": 406
+            },
+            "post_job_actions": {
+                "TagDatasetActionoutput": {
+                    "action_arguments": {
+                        "tags": "name:SE"
+                    },
+                    "action_type": "TagDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__APPLY_RULES__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "63ddbab6-7674-424f-a7c2-5d1fc253fca5",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Single end data",
+                    "output_name": "output",
+                    "uuid": "f50187ba-6c58-4bdc-8e0c-8b9288440e8a"
+                }
+            ]
+        },
+        "6": {
+            "annotation": "",
+            "content_id": "__APPLY_RULES__",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input": {
+                    "id": 3,
+                    "output_name": "paired_end_collection"
+                }
+            },
+            "inputs": [],
+            "label": "Paired reads",
+            "name": "Apply rules",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1027.5,
+                "top": 566
+            },
+            "post_job_actions": {
+                "TagDatasetActionoutput": {
+                    "action_arguments": {
+                        "tags": "name:PE"
+                    },
+                    "action_type": "TagDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__APPLY_RULES__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [2], \"connectable\": true, \"is_workflow\": false, \"type\": \"paired_identifier\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier2\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "55c862df-2147-4273-a0e3-58ac2bb32c67",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Paired data",
+                    "output_name": "output",
+                    "uuid": "2579ceb7-b393-47c9-9eb6-6c853d0e053f"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "c60cfa31-3eaa-4067-aa46-abcd1c8f315b",
+    "version": 12
+}
