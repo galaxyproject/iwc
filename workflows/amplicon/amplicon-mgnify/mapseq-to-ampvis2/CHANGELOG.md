@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] - 2026-08-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy3`
+
 ## [0.3] - 2026-08-24
 
 ### Automatic update
