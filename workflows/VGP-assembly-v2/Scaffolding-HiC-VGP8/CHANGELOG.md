@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.6] - 2026-08-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_tail_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.11+galaxy0`
+
 ## [3.5] - 2026-03-30
 
 ### Changes
