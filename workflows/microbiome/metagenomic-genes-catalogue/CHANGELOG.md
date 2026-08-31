@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4] - 2026-08-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/amrfinderplus/amrfinderplus/3.12.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/amrfinderplus/amrfinderplus/4.2.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/1.4.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/1.4.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_easyjoin_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.8.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/coverm_contig/coverm_contig/0.8.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3`
+
 ## [1.3] - 2026-07-16
 
 ### Changed
