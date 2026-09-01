@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4] - 2026-08-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy3`
+
+## [0.3] - 2026-08-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ampvis2_load/ampvis2_load/2.8.11+galaxy2`
+
 ## [0.2] - 2025-03-10
 
 ### Automatic update
