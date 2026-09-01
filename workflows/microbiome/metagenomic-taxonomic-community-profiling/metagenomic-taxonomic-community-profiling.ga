@@ -4,34 +4,32 @@
     "comments": [
         {
             "child_steps": [
-                8,
                 9,
                 10,
-                14,
+                11,
+                16,
                 17,
                 23,
                 24,
-                29,
-                30,
+                31,
                 32,
                 33,
-                34,
-                35,
-                36,
-                37,
+                50,
+                38,
                 39,
-                40,
+                41,
                 42,
-                43,
                 44,
                 45,
                 46,
                 47,
                 48,
                 49,
-                50,
-                38,
-                41
+                51,
+                52,
+                53,
+                40,
+                43
             ],
             "color": "lime",
             "data": {
@@ -39,7 +37,7 @@
             },
             "id": 1,
             "position": [
-                1360.3,
+                2139.94222628314,
                 1611.7
             ],
             "size": [
@@ -50,38 +48,16 @@
         },
         {
             "child_steps": [
-                11,
-                12,
-                13,
-                15
-            ],
-            "color": "orange",
-            "data": {
-                "title": "TAXONOMIC PROFILING"
-            },
-            "id": 0,
-            "position": [
-                717.7,
-                502.2
-            ],
-            "size": [
-                520,
-                1115
-            ],
-            "type": "frame"
-        },
-        {
-            "child_steps": [
-                18,
-                16,
-                20,
-                21,
-                22,
+                19,
+                25,
                 26,
                 27,
-                28,
-                31,
-                51
+                29,
+                34,
+                35,
+                36,
+                37,
+                54
             ],
             "color": "turquoise",
             "data": {
@@ -89,12 +65,34 @@
             },
             "id": 2,
             "position": [
-                3702.5,
+                4482.14222628314,
                 0
             ],
             "size": [
                 1171,
                 1272
+            ],
+            "type": "frame"
+        },
+        {
+            "child_steps": [
+                13,
+                14,
+                18,
+                30
+            ],
+            "color": "orange",
+            "data": {
+                "title": "TAXONOMIC PROFILING"
+            },
+            "id": 0,
+            "position": [
+                1497.34222628314,
+                502.2
+            ],
+            "size": [
+                550,
+                1383
             ],
             "type": "frame"
         }
@@ -117,50 +115,24 @@
         },
         {
             "class": "Organization",
-            "name": "AuBi (Auvergne Bioinformatique)"
+            "name": "AuBi (Auvergne Bioinformatique)",
+            "url": "https://mesocentre.uca.fr/projets-associes/plateforme-aubi"
         }
     ],
     "format-version": "0.1",
     "release": "0.1",
     "license": "MIT",
     "name": "Metagenomic Taxonomic Community Profiling",
-    "readme": "# Metagenomic Community Profiling\n\nThis workflow performs taxonomic profiling on metagenomic short-read quality-controlled and host/contaminant removed data using multiple state-of-the-art tools, standardizes the generated outputs, and generates visualizations.\n\n## Inputs\n\n- Paired collection of **FastQ files** containing **metagenomic short-read data** after quality control and host/contamination removal\n- **Reference databases** for the different taxonomy profiling tools\n\n## Workflow Overview\n\n1. **Taxonomy Profiling** using\n\n   - **Kraken2** (k-mer approach) with abundance re-estimation with **Bracken**\n   - **MetaPhlAn** (marker-based approach)\n   - **sylph** (k-mer approach)\n\n2. **Standardization** of Kraken2/Bracken and MetaPhlAn outputs using **TaxPasta**\n\n3. **Visualization** using\n   - **Krona** to generate interactive, hierarchical plots for exploring taxonomy profiles.\n   - **MultiQC** for aggregated HTML report for cross-sample and cross-tools comparisons \n\n## Outputs\n\n- Taxonomic profiles (Kraken2, Kraken2 + Bracken, MetaPhlAn, sylph)\n- Standardized taxonomy tables (TaxPasta)\n- Krona interactive plots\n- MultiQC HTML report\n\n\n",
+    "readme": "# Metagenomic Community Profiling\n\nThis workflow extends and enhances the [\"Taxonomy Profiling and Visualisation with Krona\" workflow](https://iwc.galaxyproject.org/workflow/taxonomy-profiling-and-visualization-with-krona-main/) by replacing single-tool profiling with a **multi-profiler approach** that combines three complementary state-of-the-art tools: **Kraken2+Bracken** (k-mer based), **MetaPhlAn** (marker-gene based), and **Sylph** (k-mer based). By running multiple profilers in parallel and standardizing their outputs, this workflow provides more robust taxonomic assignments, enables cross-tool comparison, and reduces method-specific biases. All profiles are standardized to a common format and visualized through interactive Krona plots and aggregated MultiQC reports.\n\n> **When to use this workflow vs. the original Krona workflow**\n>\n> Use **this workflow** when you need:\n> - **Multi-method validation**: Cross-validate taxonomic assignments across different algorithms (k-mer vs. marker-based approaches)\n> - **Comprehensive profiling**: Capture a broader range of taxa by leveraging the strengths of each tool (MetaPhlAn's sensitivity for marker genes, Kraken2's breadth, Sylph's speed)\n> - **Standardized outputs**: Directly comparable taxonomy tables across tools for downstream analysis\n> - **Research-grade results**: Ideal for publications requiring methodological rigor and reproducibility\n>\n> Use the **original single-profiler Krona workflow** when you need:\n> - **Simpler execution**: Single tool (Kraken2) with lower computational overhead\n> - **Quick exploration**: Rapid taxonomic overview without cross-tool comparison\n> - **Resource constraints**: Limited compute resources where running multiple profilers is impractical\n\n---\n\n## Inputs\n\n- **Paired collection of FastQ files** containing **metagenomic short-read data** after quality control and host/contamination removal\n\n- **Reference databases** for the taxonomy profiling tools. **Database selections must be compatible across tools as specified below.**\n\n  ### Kraken2 + Bracken\n  - **Kraken2 Reference Taxonomy Database**: Pre-built databases available from [Ben Langmead's AWS indexes](https://benlangmead.github.io/aws-indexes/k2). The database contains k-mer to taxonomy mappings and reference sequences.\n  - **Bracken Reference Taxonomy Database**: **Must be identical to the Kraken2 database** used for classification. Bracken uses the Kraken2 database to re-estimate abundances at the specified taxonomic level.\n  - **Bracken level**: The taxonomic level at which Bracken re-estimates abundances. Select one:\n    - `D` = Domain\n    - `P` = Phylum\n    - `C` = Class\n    - `O` = Order\n    - `F` = Family\n    - `G` = Genus\n    - `S` = Species\n    - `S1` = Subspecies 1\n    - `S2` = Subspecies 2\n    - *Recommendation*: Use `S` (Species) for most metagenomic analyses, or `G` (Genus) for higher-level comparisons.\n\n  ### MetaPhlAn\n  - **MetaPhlAn Reference Taxonomy Database**: Clade-specific marker genes database. **Must select a version compatible with the installed MetaPhlAn tool** to avoid incompatibilities.\n\n  ### Sylph\n  - **Sylph Reference Genome Database**: Genome database used for k-mer classification.\n  - **Sylph Reference Taxonomy Metadata**: **Must correspond exactly to the selected Sylph genome database**. This file links genomic sequences to taxonomic information.\n\n  ### TaxPasta (Standardization)\n  - **NCBI taxonomy version**: **One NCBI taxonomy version must be selected per profiling tool**, and it **must match the NCBI taxonomy version used by the selected database** for that tool. TaxPasta uses this to resolve numeric taxon IDs into human-readable names and ensure consistent taxonomy across standardized outputs.\n\n---\n\n## Workflow Overview\n\n1. **Taxonomy Profiling** using\n   - **Kraken2** (k-mer approach) with abundance re-estimation with **Bracken**\n   - **MetaPhlAn** (marker-based approach)\n   - **Sylph** (k-mer approach)\n\n2. **Standardization** of Kraken2/Bracken, MetaPhlAn, and Sylph outputs using **TaxPasta**\n\n3. **Visualization** using\n   - **Krona** to generate interactive, hierarchical plots for exploring taxonomy profiles.\n   - **MultiQC** for aggregated HTML report for cross-sample and cross-tools comparisons\n\n---\n\n## Outputs\n\n- Taxonomic profiles (Kraken2, Kraken2 + Bracken, MetaPhlAn, Sylph)\n- Standardized taxonomy tables (TaxPasta)\n- Krona interactive plots\n- MultiQC HTML report",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
     "steps": {
         "0": {
-            "annotation": "Database that will be used by Kraken2 to classify sequences and generates a taxonomy profile",
-            "content_id": null,
-            "errors": null,
-            "id": 0,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Database that will be used by Kraken2 to classify sequences and generates a taxonomy profile",
-                    "name": "Reference Taxonomy Database for Kraken2"
-                }
-            ],
-            "label": "Reference Taxonomy Database for Kraken2",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 64.87370618228164,
-                "top": 845.3233310187424
-            },
-            "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "715e22c3-0f5f-4906-a345-ac36bceca3e4",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "1": {
             "annotation": "The input for this workflow is a paired collection of metagenomic reads, after quality control and host/contamination removal, in fastqsanger (.gz) format.",
             "content_id": null,
             "errors": null,
-            "id": 1,
+            "id": 0,
             "input_connections": {},
             "inputs": [
                 {
@@ -172,8 +144,8 @@
             "name": "Input dataset collection",
             "outputs": [],
             "position": {
-                "left": 19.744171446781337,
-                "top": 1089.7749488101167
+                "left": 0,
+                "top": 323.5506093218161
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
@@ -183,92 +155,38 @@
             "when": null,
             "workflow_outputs": []
         },
+        "1": {
+            "annotation": "Database that will be used by Kraken2 to classify sequences and generates a taxonomy profile",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Database that will be used by Kraken2 to classify sequences and generates a taxonomy profile",
+                    "name": "Reference Taxonomy Database for Kraken2"
+                }
+            ],
+            "label": "Reference Taxonomy Database for Kraken2",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 329.07750068683316,
+                "top": 469.5670690907481
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "715e22c3-0f5f-4906-a345-ac36bceca3e4",
+            "when": null,
+            "workflow_outputs": []
+        },
         "2": {
-            "annotation": "Database that will be used by MetaPhlAn to classify sequences and generates a taxonomy profile.",
-            "content_id": null,
-            "errors": null,
-            "id": 2,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Database that will be used by MetaPhlAn to classify sequences and generates a taxonomy profile.",
-                    "name": "Reference Taxonomy Database for MetaPhlAn"
-                }
-            ],
-            "label": "Reference Taxonomy Database for MetaPhlAn",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 47.950130656469014,
-                "top": 1295.1613819582788
-            },
-            "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "a32cabc5-c855-4638-a19e-434dc6c89152",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "3": {
-            "annotation": "Genome database that will be used by Sylph to classify sequences",
-            "content_id": null,
-            "errors": null,
-            "id": 3,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Genome database that will be used by Sylph to classify sequences",
-                    "name": "Reference Database for Sylph"
-                }
-            ],
-            "label": "Reference Database for Sylph",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 21.154469407265736,
-                "top": 1578.1141168553256
-            },
-            "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "a6a21a7f-deb6-46fa-aa2b-e1ffd7575e97",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "4": {
-            "annotation": "Taxonomy metadata that Sylph uses to link genomic and taxonomy information and generate a taxonomy profile. The reference taxonomy metadata must correspond to the used reference genome database.",
-            "content_id": null,
-            "errors": null,
-            "id": 4,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Taxonomy metadata that Sylph uses to link genomic and taxonomy information and generate a taxonomy profile. The reference taxonomy metadata must correspond to the used reference genome database.",
-                    "name": "Reference Taxonomy Metadata for Sylph"
-                }
-            ],
-            "label": "Reference Taxonomy Metadata for Sylph",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 63.46340822179724,
-                "top": 1722.3404964645886
-            },
-            "tool_id": null,
-            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "bb105c20-ac31-4eec-8e45-1ebceba185e4",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "5": {
             "annotation": "Database that will be used by Bracken to estimate the abundance at a single level using Kraken2 classifications. The database should be the same as for Kraken2.",
             "content_id": null,
             "errors": null,
-            "id": 5,
+            "id": 2,
             "input_connections": {},
             "inputs": [
                 {
@@ -280,8 +198,8 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 39.48834289356273,
-                "top": 1866.567048229364
+                "left": 515.5746633088256,
+                "top": 613.5197058348385
             },
             "tool_id": null,
             "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
@@ -291,11 +209,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "6": {
+        "3": {
             "annotation": "Taxonomic Level at which Bracken re-estimates the abundances of different taxa.\nThe possible values are: \"S2\" for Subspecies 2; \"S1\" for Subspecies 1; \"S\" for Species; \"G\" for Genus; \"F\" for Family; \"O\" for Order; \"C\" for Class; \"P\" for Phylum; \"D\" for Domain",
             "content_id": null,
             "errors": null,
-            "id": 6,
+            "id": 3,
             "input_connections": {},
             "inputs": [
                 {
@@ -307,8 +225,8 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 0,
-                "top": 2009.665292763547
+                "left": 695.5154427483777,
+                "top": 739.0279140118118
             },
             "tool_id": null,
             "tool_state": "{\"default\": \"S\", \"multiple\": false, \"validators\": [], \"restrictions\": [\"S2\", \"S1\", \"S\", \"G\", \"F\", \"O\", \"C\", \"P\", \"D\"], \"parameter_type\": \"text\", \"optional\": false}",
@@ -318,24 +236,24 @@
             "when": null,
             "workflow_outputs": []
         },
-        "7": {
+        "4": {
             "annotation": "NCBI taxonomy that taxpasta will use to have actual human-readable taxon names in the standardised outputs",
             "content_id": null,
             "errors": null,
-            "id": 7,
+            "id": 4,
             "input_connections": {},
             "inputs": [
                 {
                     "description": "NCBI taxonomy that taxpasta will use to have actual human-readable taxon names in the standardised outputs",
-                    "name": "NCBI Taxonomy for taxpasta"
+                    "name": "NCBI Taxonomy for Kraken2/Bracken taxpasta"
                 }
             ],
-            "label": "NCBI Taxonomy for taxpasta",
+            "label": "NCBI Taxonomy for Kraken2/Bracken taxpasta",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 699.3331527277617,
-                "top": 2138.6485882396883
+                "left": 759.7827207091044,
+                "top": 891.6264199344608
             },
             "tool_id": null,
             "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
@@ -345,11 +263,119 @@
             "when": null,
             "workflow_outputs": []
         },
+        "5": {
+            "annotation": "Database that will be used by MetaPhlAn to classify sequences and generates a taxonomy profile.",
+            "content_id": null,
+            "errors": null,
+            "id": 5,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Database that will be used by MetaPhlAn to classify sequences and generates a taxonomy profile.",
+                    "name": "Reference Taxonomy Database for MetaPhlAn"
+                }
+            ],
+            "label": "Reference Taxonomy Database for MetaPhlAn",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 891.6671032185201,
+                "top": 1040.9466023414022
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "a32cabc5-c855-4638-a19e-434dc6c89152",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "NCBI taxonomy that taxpasta will use to have actual human-readable taxon names in the standardised outputs",
+            "content_id": null,
+            "errors": null,
+            "id": 6,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "NCBI taxonomy that taxpasta will use to have actual human-readable taxon names in the standardised outputs",
+                    "name": "NCBI Taxonomy for MetaPhlAn taxpasta"
+                }
+            ],
+            "label": "NCBI Taxonomy for MetaPhlAn taxpasta",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 968.794907923925,
+                "top": 1168.833393366872
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "0beef198-4816-4d85-abe6-771c64b70318",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Genome database that will be used by Sylph to classify sequences",
+            "content_id": null,
+            "errors": null,
+            "id": 7,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Genome database that will be used by Sylph to classify sequences",
+                    "name": "Reference Database for Sylph"
+                }
+            ],
+            "label": "Reference Database for Sylph",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 1072.364469594192,
+                "top": 1495.4645724784714
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "a6a21a7f-deb6-46fa-aa2b-e1ffd7575e97",
+            "when": null,
+            "workflow_outputs": []
+        },
         "8": {
+            "annotation": "Taxonomy metadata that Sylph uses to link genomic and taxonomy information and generate a taxonomy profile. The reference taxonomy metadata must correspond to the used reference genome database.",
+            "content_id": null,
+            "errors": null,
+            "id": 8,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Taxonomy metadata that Sylph uses to link genomic and taxonomy information and generate a taxonomy profile. The reference taxonomy metadata must correspond to the used reference genome database.",
+                    "name": "Reference Taxonomy Metadata for Sylph"
+                }
+            ],
+            "label": "Reference Taxonomy Metadata for Sylph",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 1212.0301541529836,
+                "top": 1604.8339303950586
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "bb105c20-ac31-4eec-8e45-1ebceba185e4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
             "annotation": "Compose the profiler name (kraken2) used to standardize the Kraken2 community profiles with taxpasta.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 8,
+            "id": 9,
             "input_connections": {},
             "inputs": [],
             "label": "Compose kraken2 profiler name for taxpasta ",
@@ -361,7 +387,7 @@
                 }
             ],
             "position": {
-                "left": 1469.6458686234434,
+                "left": 2249.2880949065834,
                 "top": 3193.43629804836
             },
             "post_job_actions": {
@@ -386,11 +412,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "9": {
+        "10": {
             "annotation": "Compose the profiler name (bracken) used to standardize the Bracken community profiles with taxpasta.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 9,
+            "id": 10,
             "input_connections": {},
             "inputs": [],
             "label": "Compose bracken profiler name for taxpasta",
@@ -402,7 +428,7 @@
                 }
             ],
             "position": {
-                "left": 1464.0992239046586,
+                "left": 2243.7414501877984,
                 "top": 3332.103241731013
             },
             "post_job_actions": {
@@ -427,11 +453,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "10": {
+        "11": {
             "annotation": "Compose the profiler name (metaphlan) used to standardize the MetaPhlAn community profiles with taxpasta.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 10,
+            "id": 11,
             "input_connections": {},
             "inputs": [],
             "label": "Compose MetaPhlAn profiler name for taxpasta",
@@ -443,7 +469,7 @@
                 }
             ],
             "position": {
-                "left": 1457.6054863385748,
+                "left": 2237.2477126217145,
                 "top": 3477.8501792322186
             },
             "post_job_actions": {
@@ -468,18 +494,71 @@
             "when": null,
             "workflow_outputs": []
         },
-        "11": {
+        "12": {
+            "annotation": "Extracts collection element identifiers to get the sample names to prepare the header for final outputs with correct column names.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "input_collection": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Extract sample names",
+            "name": "Extract element identifiers",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "txt"
+                }
+            ],
+            "position": {
+                "left": 399.93323351414443,
+                "top": 1551.5453412185052
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                },
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Sample names"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
+            "tool_shed_repository": {
+                "changeset_revision": "3e27acfa4830",
+                "name": "collection_element_identifiers",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.0.3",
+            "type": "tool",
+            "uuid": "9a55cfd3-0f0b-440c-bf80-fc7dee081950",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
             "annotation": "Searches read k-mers against a reference k-mers database, looks for where these are placed within the taxonomy tree inside the database, makes the classification with the most probable position, maps k-mers to the lowest common ancestor (LCA) of all genomes known to contain the given k-mers, and generates a taxonomic community profile",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.1+galaxy0",
             "errors": null,
-            "id": 11,
+            "id": 13,
             "input_connections": {
                 "kraken2_database": {
-                    "id": 0,
+                    "id": 1,
                     "output_name": "output"
                 },
                 "single_paired|input_pair": {
-                    "id": 1,
+                    "id": 0,
                     "output_name": "output"
                 }
             },
@@ -502,7 +581,7 @@
                 }
             ],
             "position": {
-                "left": 750.7439469679363,
+                "left": 1530.3861732510761,
                 "top": 557.1709470814005
             },
             "post_job_actions": {
@@ -552,25 +631,848 @@
                 }
             ]
         },
-        "12": {
-            "annotation": "Searches for marker-genes in reads against a clade-specific marker gene database and generates a taxonomic community profile",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+        "14": {
+            "annotation": "Searches read k-mers against reference genomes, annotate identified reads to taxons and generates a taxonomic community profile",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/0.8.1+galaxy0",
             "errors": null,
-            "id": 12,
+            "id": 14,
             "input_connections": {
-                "inputs|db|cached_db": {
+                "database_select|sylph_database": {
+                    "id": 7,
+                    "output_name": "output"
+                },
+                "database_select|sylph_tax_metadata": {
+                    "id": 8,
+                    "output_name": "output"
+                },
+                "sketch_reads|input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool sylph profile",
+                    "name": "database_select"
+                },
+                {
+                    "description": "runtime parameter for tool sylph profile",
+                    "name": "database_select"
+                },
+                {
+                    "description": "runtime parameter for tool sylph profile",
+                    "name": "sketch_reads"
+                }
+            ],
+            "label": "Sylph taxonomic profiling",
+            "name": "sylph profile",
+            "outputs": [
+                {
+                    "name": "sylphmpa_files",
+                    "type": "input"
+                },
+                {
+                    "name": "output_sylph_prof",
+                    "type": "tabular"
+                },
+                {
+                    "name": "sylph_merge_tax_out",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1532.6092973980599,
+                "top": 1494.0586688767075
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_sylph_prof": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_sylph_prof"
+                },
+                "HideDatasetActionsylphmpa_files": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "sylphmpa_files"
+                },
+                "RenameDatasetActionsylph_merge_tax_out": {
+                    "action_arguments": {
+                        "newname": "Sylph taxonomy profile"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "sylph_merge_tax_out"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/0.8.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "6c1ac7640090",
+                "name": "sylph_profile",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"database_select\": {\"select\": \"cached\", \"__current_case__\": 0, \"sylph_database\": {\"__class__\": \"ConnectedValue\"}, \"sylph_tax_metadata\": {\"__class__\": \"ConnectedValue\"}, \"column\": \"relative_abundance\"}, \"estimate_unknown\": false, \"min_num_kmers\": \"50\", \"sketch_reads\": {\"type_reads\": \"paired_group\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.8.1+galaxy0",
+            "type": "tool",
+            "uuid": "bb28cb54-6f3e-4cb0-878a-7e1f28d30dd2",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Sylph taxonomy profile",
+                    "output_name": "sylph_merge_tax_out",
+                    "uuid": "810611a6-1324-4050-9d00-37033d6240bf"
+                }
+            ]
+        },
+        "15": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
+                "split_parms|input": {
+                    "id": 12,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Split file",
+                    "name": "split_parms"
+                }
+            ],
+            "label": null,
+            "name": "Split file",
+            "outputs": [
+                {
+                    "name": "list_output_generic",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 641.1742197930504,
+                "top": 1397.2002292939778
+            },
+            "post_job_actions": {
+                "HideDatasetActionlist_output_generic": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "list_output_generic"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/split_file_to_collection/split_file_to_collection/0.5.2",
+            "tool_shed_repository": {
+                "changeset_revision": "2dae863c8f42",
+                "name": "split_file_to_collection",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"split_parms\": {\"select_ftype\": \"generic\", \"__current_case__\": 6, \"input\": {\"__class__\": \"ConnectedValue\"}, \"split_method\": {\"select_split_method\": \"regex\", \"__current_case__\": 0, \"generic_regex\": \"^\\\\n*\", \"split_after\": \"false\"}, \"select_mode\": {\"mode\": \"chunk\", \"__current_case__\": 0, \"chunksize\": \"1\"}, \"newfilenames\": \"identifiers\", \"select_allocate\": {\"allocate\": \"batch\", \"__current_case__\": 1}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.5.2",
+            "type": "tool",
+            "uuid": "47bed0bf-50d3-44fb-8b41-12b3b0ebc606",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "16": {
+            "annotation": "Count the number of samples to decide between the single-sample and several-samples branches.",
+            "content_id": "wc_gnu",
+            "errors": null,
+            "id": 16,
+            "input_connections": {
+                "input1": {
+                    "id": 12,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Count samples in collection",
+            "name": "Line/Word/Character count",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2219.1466821336157,
+                "top": 2208.8381279207256
+            },
+            "post_job_actions": {
+                "HideDatasetActionout_file1": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "wc_gnu",
+            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "aaf8fd9d-ba5a-4919-ad3e-bef47044c195",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "17": {
+            "annotation": "Adds a line `rank` to prepare the header for final outputs with correct column names.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "errors": null,
+            "id": 17,
+            "input_connections": {
+                "infile": {
+                    "id": 12,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Add `rank` header line",
+            "name": "Add line to file",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2681.926069810854,
+                "top": 1659.1226131089231
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutfile": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "8e251055b1a9",
+                "name": "add_line_to_file",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"rank\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "a6ac7428-f399-41ff-87cd-99b554b3b980",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "18": {
+            "annotation": "Re-estimates abundance from Kraken2 output at a defined taxonomic level",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/3.1+galaxy0",
+            "errors": null,
+            "id": 18,
+            "input_connections": {
+                "input": {
+                    "id": 13,
+                    "output_name": "report_output"
+                },
+                "kmer_distr": {
                     "id": 2,
                     "output_name": "output"
                 },
-                "inputs|in|raw_in|in": {
-                    "id": 1,
+                "level": {
+                    "id": 3,
                     "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Bracken abundance re-estimation",
+            "name": "Bracken",
+            "outputs": [
+                {
+                    "name": "report",
+                    "type": "tabular"
+                },
+                {
+                    "name": "kraken_report",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1786.6516538415638,
+                "top": 769.8611651713902
+            },
+            "post_job_actions": {
+                "RenameDatasetActionkraken_report": {
+                    "action_arguments": {
+                        "newname": "Kraken-Style Bracken report"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "kraken_report"
+                },
+                "RenameDatasetActionreport": {
+                    "action_arguments": {
+                        "newname": "Kraken2/Bracken taxonomy profile"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "report"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/3.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "4d350ac5148e",
+                "name": "bracken",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"kmer_distr\": {\"__class__\": \"ConnectedValue\"}, \"level\": {\"__class__\": \"ConnectedValue\"}, \"logfile_output\": false, \"out_report\": true, \"threshold\": \"10\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "3.1+galaxy0",
+            "type": "tool",
+            "uuid": "d5636a9d-b7e7-435e-8da6-ddba1af17b0a",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Bracken report",
+                    "output_name": "report",
+                    "uuid": "d14e37d2-f874-4d77-9928-f8121b703a06"
+                },
+                {
+                    "label": "Kraken-Style Bracken report",
+                    "output_name": "kraken_report",
+                    "uuid": "42b612ce-ab85-48fa-a8e7-2392f2bccc9c"
+                }
+            ]
+        },
+        "19": {
+            "annotation": "Convert Kraken2 report to Krona compatible input",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
+            "errors": null,
+            "id": 19,
+            "input_connections": {
+                "report": {
+                    "id": 13,
+                    "output_name": "report_output"
+                }
+            },
+            "inputs": [],
+            "label": "Convert Kraken2 report to Krona input",
+            "name": "Krakentools: Convert kraken report file",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 4502.238549646445,
+                "top": 40.065981156427846
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "05e78a90e02d",
+                "name": "krakentools_kreport2krona",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"intermediate_ranks\": false, \"report\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.2.1+galaxy0",
+            "type": "tool",
+            "uuid": "9410e764-c1f7-4c74-937b-627f1042694b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "20": {
+            "annotation": "",
+            "content_id": "__FILTER_FAILED_DATASETS__",
+            "errors": null,
+            "id": 20,
+            "input_connections": {
+                "input": {
+                    "id": 14,
+                    "output_name": "sylphmpa_files"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter failed datasets",
+                    "name": "replacement"
+                }
+            ],
+            "label": "Filter failed Sylph datasets 2",
+            "name": "Filter failed datasets",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2960.868218969948,
+                "top": 1225.845337722651
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__FILTER_FAILED_DATASETS__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "9f7c1626-0d88-47c4-be5f-8dc592363c6c",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "21": {
+            "annotation": "",
+            "content_id": "__FILTER_FAILED_DATASETS__",
+            "errors": null,
+            "id": 21,
+            "input_connections": {
+                "input": {
+                    "id": 14,
+                    "output_name": "sylph_merge_tax_out"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Filter failed datasets",
+                    "name": "replacement"
+                }
+            ],
+            "label": "Filter failed Sylph datasets",
+            "name": "Filter failed datasets",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2967.6423708878524,
+                "top": 1435.4069648179252
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__FILTER_FAILED_DATASETS__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "fcdeae7f-c274-4922-ab4b-c2630decafbb",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "22": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 22,
+            "input_connections": {
+                "input1": {
+                    "id": 15,
+                    "output_name": "list_output_generic"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "text_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1153.2026505120432,
+                "top": 1323.9533720201337
+            },
+            "post_job_actions": {
+                "HideDatasetActiontext_param": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "text_param"
+                }
+            },
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"text\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "b908f34d-aa23-4217-97db-f3149ab1abc6",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "23": {
+            "annotation": "Parse the sample count into a parameter used to select the standardization branch.",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 23,
+            "input_connections": {
+                "input1": {
+                    "id": 16,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Parse sample count",
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 2549.721531222623,
+                "top": 2337.3863044515097
+            },
+            "post_job_actions": {
+                "HideDatasetActioninteger_param": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "integer_param"
+                }
+            },
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "85e279d8-e28f-4bf6-87de-d37c1690fc54",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "24": {
+            "annotation": "Adds a line `name` to prepare the header for final outputs with correct column names.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "errors": null,
+            "id": 24,
+            "input_connections": {
+                "infile": {
+                    "id": 17,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Add `name` header line",
+            "name": "Add line to file",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 3121.01844409237,
+                "top": 1669.4532197670642
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutfile": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "8e251055b1a9",
+                "name": "add_line_to_file",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"name\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "11e081bc-3e90-4af9-9c84-841b7fa72b14",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "25": {
+            "annotation": "Convert Bracken report to Krona compatible input",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
+            "errors": null,
+            "id": 25,
+            "input_connections": {
+                "report": {
+                    "id": 18,
+                    "output_name": "kraken_report"
+                }
+            },
+            "inputs": [],
+            "label": "Convert Bracken report to Krona input",
+            "name": "Krakentools: Convert kraken report file",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 4588.319759035894,
+                "top": 1034.4062120302474
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "05e78a90e02d",
+                "name": "krakentools_kreport2krona",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"intermediate_ranks\": false, \"report\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.2.1+galaxy0",
+            "type": "tool",
+            "uuid": "66f95e89-778a-4ae0-8dac-d895de70553c",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "26": {
+            "annotation": "Generate an interactive pie chart of the Kraken2 taxonomic community profile",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
+            "errors": null,
+            "id": 26,
+            "input_connections": {
+                "type_of_data|input": {
+                    "id": 19,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Krona pie chart",
+                    "name": "type_of_data"
+                }
+            ],
+            "label": "Krona chart for Kraken2 community profile",
+            "name": "Krona pie chart",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "html"
+                }
+            ],
+            "position": {
+                "left": 4752.243414857833,
+                "top": 40.056286203537525
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Krona chart for Kraken2 community profile"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7d01da0b9e18",
+                "name": "taxonomy_krona_chart",
+                "owner": "crs4",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"tabular\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"combine_inputs\": false, \"root_name\": \"Root\", \"type_of_data\": {\"type_of_data_selector\": \"text\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.7.1+galaxy0",
+            "type": "tool",
+            "uuid": "96f2afa3-38aa-4181-8f9f-19b5db4c5f5e",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Krona chart for Kraken2 community profile",
+                    "output_name": "output",
+                    "uuid": "bcfce83e-78f0-40d7-a8df-5795d4cb91cb"
+                }
+            ]
+        },
+        "27": {
+            "annotation": "Remove 1 level in sylph taxonomy collection",
+            "content_id": "__FLATTEN__",
+            "errors": null,
+            "id": 27,
+            "input_connections": {
+                "input": {
+                    "id": 20,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Flatten Sylph taxonomy collection",
+            "name": "Flatten collection",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 4614.563364848409,
+                "top": 813.0728413628751
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "__FLATTEN__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "ffb1e3f0-9dca-4b5e-bff6-fafac35cad7a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "28": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
+            "errors": null,
+            "id": 28,
+            "input_connections": {
+                "input_tabular": {
+                    "id": 21,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Merge Sylph profiles",
+            "name": "Column join",
+            "outputs": [
+                {
+                    "name": "tabular_output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3791.038989914476,
+                "top": 1378.8163523201993
+            },
+            "post_job_actions": {
+                "RenameDatasetActiontabular_output": {
+                    "action_arguments": {
+                        "newname": "Merged Sylph taxonomy profile"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "tabular_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
+            "tool_shed_repository": {
+                "changeset_revision": "3ddd99c7efee",
+                "name": "collection_column_join",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"fill_char\": \"0\", \"has_header\": \"1\", \"identifier_column\": \"1\", \"include_outputs\": null, \"input_tabular\": {\"__class__\": \"ConnectedValue\"}, \"old_col_in_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.0.3",
+            "type": "tool",
+            "uuid": "d20abed4-81bd-4da9-9898-0420e6a87803",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Merged Sylph taxonomy profile",
+                    "output_name": "tabular_output",
+                    "uuid": "3e056d89-6a4d-4612-b635-ca1dcf0c2fe3"
+                }
+            ]
+        },
+        "29": {
+            "annotation": "Format Sylph output into a Krona compatible input",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan2krona/metaphlan2krona/2.6.0.0",
+            "errors": null,
+            "id": 29,
+            "input_connections": {
+                "profile": {
+                    "id": 21,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Sylph-for-Krona",
+            "name": "Format MetaPhlAn2",
+            "outputs": [
+                {
+                    "name": "krona",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 4761.304157590185,
+                "top": 381.2503364407891
+            },
+            "post_job_actions": {
+                "HideDatasetActionkrona": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "krona"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan2krona/metaphlan2krona/2.6.0.0",
+            "tool_shed_repository": {
+                "changeset_revision": "fdbd63e92b01",
+                "name": "metaphlan2krona",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"profile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.6.0.0",
+            "type": "tool",
+            "uuid": "3280d942-75c9-4138-af45-f7b5367f9183",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "30": {
+            "annotation": "Searches for marker-genes in reads against a clade-specific marker gene database and generates a taxonomic community profile",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+            "errors": null,
+            "id": 30,
+            "input_connections": {
+                "inputs|db|cached_db": {
+                    "id": 5,
+                    "output_name": "output"
+                },
+                "inputs|in|raw_in|in": {
+                    "id": 0,
+                    "output_name": "output"
+                },
+                "out|sample_id": {
+                    "id": 22,
+                    "output_name": "text_param"
                 }
             },
             "inputs": [
                 {
                     "description": "runtime parameter for tool MetaPhlAn",
                     "name": "analysis"
+                },
+                {
+                    "description": "runtime parameter for tool MetaPhlAn",
+                    "name": "out"
                 }
             ],
             "label": "MetaPhlAn taxonomic profiling",
@@ -594,8 +1496,8 @@
                 }
             ],
             "position": {
-                "left": 737.7439469679363,
-                "top": 832.170959288432
+                "left": 1559.5554016788394,
+                "top": 1038.5689932644668
             },
             "post_job_actions": {
                 "HideDatasetActionbowtie2out": {
@@ -647,7 +1549,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.1\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": {\"__class__\": \"RuntimeValue\"}, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": true}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.1\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": {\"__class__\": \"RuntimeValue\"}, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": {\"__class__\": \"ConnectedValue\"}, \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": true}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "4.2.4+galaxy0",
             "type": "tool",
@@ -661,584 +1563,121 @@
                 }
             ]
         },
-        "13": {
-            "annotation": "Searches read k-mers against reference genomes, annotate identified reads to taxons and generates a taxonomic community profile",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/0.8.1+galaxy0",
+        "31": {
+            "annotation": "Standardize and combine the taxonomic profiles of several samples into a single table using taxpasta.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 13,
+            "id": 31,
             "input_connections": {
-                "database_select|sylph_database": {
-                    "id": 3,
-                    "output_name": "output"
-                },
-                "database_select|sylph_tax_metadata": {
-                    "id": 4,
-                    "output_name": "output"
-                },
-                "sketch_reads|input": {
-                    "id": 1,
-                    "output_name": "output"
+                "input_param_type|input_param": {
+                    "id": 23,
+                    "output_name": "integer_param"
                 }
             },
             "inputs": [
                 {
-                    "description": "runtime parameter for tool sylph profile",
-                    "name": "database_select"
-                },
-                {
-                    "description": "runtime parameter for tool sylph profile",
-                    "name": "database_select"
-                },
-                {
-                    "description": "runtime parameter for tool sylph profile",
-                    "name": "sketch_reads"
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
                 }
             ],
-            "label": "Sylph taxonomic profiling",
-            "name": "sylph profile",
+            "label": "Run taxpasta on several elements",
+            "name": "Map parameter value",
             "outputs": [
                 {
-                    "name": "sylphmpa_files",
-                    "type": "input"
-                },
-                {
-                    "name": "output_sylph_prof",
-                    "type": "tabular"
-                },
-                {
-                    "name": "sylph_merge_tax_out",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 736.7689383001031,
-                "top": 1308.1715055412112
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput_sylph_prof": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output_sylph_prof"
-                },
-                "HideDatasetActionsylphmpa_files": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "sylphmpa_files"
-                },
-                "RenameDatasetActionsylph_merge_tax_out": {
-                    "action_arguments": {
-                        "newname": "Sylph taxonomy profile"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "sylph_merge_tax_out"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sylph_profile/sylph_profile/0.8.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "6c1ac7640090",
-                "name": "sylph_profile",
-                "owner": "bgruening",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"database_select\": {\"select\": \"cached\", \"__current_case__\": 0, \"sylph_database\": {\"__class__\": \"ConnectedValue\"}, \"sylph_tax_metadata\": {\"__class__\": \"ConnectedValue\"}, \"column\": \"relative_abundance\"}, \"estimate_unknown\": false, \"min_num_kmers\": \"50\", \"sketch_reads\": {\"type_reads\": \"paired_group\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.8.1+galaxy0",
-            "type": "tool",
-            "uuid": "bb28cb54-6f3e-4cb0-878a-7e1f28d30dd2",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Sylph taxonomy profile",
-                    "output_name": "sylph_merge_tax_out",
-                    "uuid": "810611a6-1324-4050-9d00-37033d6240bf"
-                }
-            ]
-        },
-        "14": {
-            "annotation": "Compose the NCBI taxonomy version string passed to taxpasta.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
-            "errors": null,
-            "id": 14,
-            "input_connections": {
-                "components_0|param_type|component_value": {
-                    "id": 7,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Compose NCBI taxonomy version for taxpasta",
-            "name": "Compose text parameter value",
-            "outputs": [
-                {
-                    "name": "out1",
+                    "name": "output_param_boolean",
                     "type": "expression.json"
                 }
             ],
             "position": {
-                "left": 1418.93312346554,
-                "top": 2662.6919242724007
+                "left": 2907.9409383569146,
+                "top": 2143.7020093233755
             },
             "post_job_actions": {
-                "HideDatasetActionout1": {
+                "HideDatasetActionoutput_param_boolean": {
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
-                    "output_name": "out1"
+                    "output_name": "output_param_boolean"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "tool_shed_repository": {
-                "changeset_revision": "e188c9826e0f",
-                "name": "compose_text_param",
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"1\", \"to\": \"false\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"true\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.1.1",
+            "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "28c8c082-4a12-40c6-92e9-048500141d0f",
+            "uuid": "e44cd7e4-a737-4823-86ab-d5fad50e180e",
             "when": null,
             "workflow_outputs": []
         },
-        "15": {
-            "annotation": "Re-estimates abundance from Kraken2 output at a defined taxonomic level",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/3.1+galaxy0",
+        "32": {
+            "annotation": "Standardize the taxonomic profile of a single sample using taxpasta.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 15,
+            "id": 32,
             "input_connections": {
-                "input": {
-                    "id": 11,
-                    "output_name": "report_output"
-                },
-                "kmer_distr": {
-                    "id": 5,
-                    "output_name": "output"
-                },
-                "level": {
-                    "id": 6,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Bracken abundance re-estimation",
-            "name": "Bracken",
-            "outputs": [
-                {
-                    "name": "report",
-                    "type": "tabular"
-                },
-                {
-                    "name": "kraken_report",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 1007.0094275584239,
-                "top": 769.8611651713902
-            },
-            "post_job_actions": {
-                "RenameDatasetActionkraken_report": {
-                    "action_arguments": {
-                        "newname": "Kraken-Style Bracken report"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "kraken_report"
-                },
-                "RenameDatasetActionreport": {
-                    "action_arguments": {
-                        "newname": "Kraken2/Bracken taxonomy profile"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "report"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bracken/est_abundance/3.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "4d350ac5148e",
-                "name": "bracken",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"kmer_distr\": {\"__class__\": \"ConnectedValue\"}, \"level\": {\"__class__\": \"ConnectedValue\"}, \"logfile_output\": false, \"out_report\": true, \"threshold\": \"10\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "3.1+galaxy0",
-            "type": "tool",
-            "uuid": "d5636a9d-b7e7-435e-8da6-ddba1af17b0a",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Bracken report",
-                    "output_name": "report",
-                    "uuid": "d14e37d2-f874-4d77-9928-f8121b703a06"
-                },
-                {
-                    "label": "Kraken-Style Bracken report",
-                    "output_name": "kraken_report",
-                    "uuid": "42b612ce-ab85-48fa-a8e7-2392f2bccc9c"
-                }
-            ]
-        },
-        "16": {
-            "annotation": "Convert Kraken2 report to Krona compatible input",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
-            "errors": null,
-            "id": 16,
-            "input_connections": {
-                "report": {
-                    "id": 11,
-                    "output_name": "report_output"
-                }
-            },
-            "inputs": [],
-            "label": "Convert Kraken2 report to Krona input",
-            "name": "Krakentools: Convert kraken report file",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 3722.5963233633047,
-                "top": 40.065981156427846
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "05e78a90e02d",
-                "name": "krakentools_kreport2krona",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"intermediate_ranks\": false, \"report\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.2.1+galaxy0",
-            "type": "tool",
-            "uuid": "9410e764-c1f7-4c74-937b-627f1042694b",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "17": {
-            "annotation": "Extracts collection element identifiers to get the sample names to prepare the header for final outputs with correct column names.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "errors": null,
-            "id": 17,
-            "input_connections": {
-                "input_collection": {
-                    "id": 12,
-                    "output_name": "output_file"
-                }
-            },
-            "inputs": [],
-            "label": "Extract sample names",
-            "name": "Extract element identifiers",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "txt"
-                }
-            ],
-            "position": {
-                "left": 1422.8824367891536,
-                "top": 1830.3970753305182
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                },
-                "RenameDatasetActionoutput": {
-                    "action_arguments": {
-                        "newname": "Sample names"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "tool_shed_repository": {
-                "changeset_revision": "3e27acfa4830",
-                "name": "collection_element_identifiers",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.0.3",
-            "type": "tool",
-            "uuid": "9a55cfd3-0f0b-440c-bf80-fc7dee081950",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "18": {
-            "annotation": "Generate an interactive pie chart of the MetaPhlAn taxonomic community profile",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
-            "errors": null,
-            "id": 18,
-            "input_connections": {
-                "type_of_data|input": {
-                    "id": 12,
-                    "output_name": "krona_output_file"
+                "input_param_type|input_param": {
+                    "id": 23,
+                    "output_name": "integer_param"
                 }
             },
             "inputs": [
                 {
-                    "description": "runtime parameter for tool Krona pie chart",
-                    "name": "type_of_data"
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
                 }
             ],
-            "label": "Krona chart for MetaPhlAn community profile",
-            "name": "Krona pie chart",
+            "label": "Run taxpasta on 1 element",
+            "name": "Map parameter value",
             "outputs": [
                 {
-                    "name": "output",
-                    "type": "html"
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
                 }
             ],
             "position": {
-                "left": 3722.601188574693,
-                "top": 200.05628620353752
+                "left": 2974.0502752317143,
+                "top": 3079.0111802276942
             },
             "post_job_actions": {
-                "RenameDatasetActionoutput": {
-                    "action_arguments": {
-                        "newname": "Krona chart for MetaPhlAn community profile"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "output"
+                "HideDatasetActionoutput_param_boolean": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_param_boolean"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "tool_shed_repository": {
-                "changeset_revision": "7d01da0b9e18",
-                "name": "taxonomy_krona_chart",
-                "owner": "crs4",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"__input_ext\": \"tabular\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"combine_inputs\": false, \"root_name\": \"Root\", \"type_of_data\": {\"type_of_data_selector\": \"text\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "2.7.1+galaxy0",
-            "type": "tool",
-            "uuid": "114a8334-be55-4e3b-a2a9-73afc79baefb",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Krona chart for MetaPhlAn community profile",
-                    "output_name": "output",
-                    "uuid": "f539f601-a8ca-431a-ad92-b758dabdc748"
-                }
-            ]
-        },
-        "19": {
-            "annotation": "",
-            "content_id": "__FILTER_FAILED_DATASETS__",
-            "errors": null,
-            "id": 19,
-            "input_connections": {
-                "input": {
-                    "id": 13,
-                    "output_name": "sylph_merge_tax_out"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Filter failed datasets",
-                    "name": "replacement"
-                }
-            ],
-            "label": "Filter failed Sylph datasets",
-            "name": "Filter failed datasets",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 2212.8556358594547,
-                "top": 1401.769770887829
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "__FILTER_FAILED_DATASETS__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.1.0",
-            "type": "tool",
-            "uuid": "fcdeae7f-c274-4922-ab4b-c2630decafbb",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "20": {
-            "annotation": "Remove 1 level in sylph taxonomy collection",
-            "content_id": "__FLATTEN__",
-            "errors": null,
-            "id": 20,
-            "input_connections": {
-                "input": {
-                    "id": 13,
-                    "output_name": "sylphmpa_files"
-                }
-            },
-            "inputs": [],
-            "label": "Flatten Sylph taxonomy collection",
-            "name": "Flatten collection",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 3834.9143905219516,
-                "top": 766.3375421907742
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "__FLATTEN__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "ffb1e3f0-9dca-4b5e-bff6-fafac35cad7a",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "21": {
-            "annotation": "Convert Bracken report to Krona compatible input",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
-            "errors": null,
-            "id": 21,
-            "input_connections": {
-                "report": {
-                    "id": 15,
-                    "output_name": "kraken_report"
-                }
-            },
-            "inputs": [],
-            "label": "Convert Bracken report to Krona input",
-            "name": "Krakentools: Convert kraken report file",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 3803.2720277315952,
-                "top": 946.3002592328027
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/krakentools_kreport2krona/krakentools_kreport2krona/1.2.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "05e78a90e02d",
-                "name": "krakentools_kreport2krona",
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"intermediate_ranks\": false, \"report\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"1\", \"to\": \"true\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"false\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2.1+galaxy0",
+            "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "66f95e89-778a-4ae0-8dac-d895de70553c",
+            "uuid": "c453622d-7a0f-4343-b158-502c26cc1434",
             "when": null,
             "workflow_outputs": []
         },
-        "22": {
-            "annotation": "Generate an interactive pie chart of the Kraken2 taxonomic community profile",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
-            "errors": null,
-            "id": 22,
-            "input_connections": {
-                "type_of_data|input": {
-                    "id": 16,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Krona pie chart",
-                    "name": "type_of_data"
-                }
-            ],
-            "label": "Krona chart for Kraken2 community profile",
-            "name": "Krona pie chart",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "html"
-                }
-            ],
-            "position": {
-                "left": 3972.601188574693,
-                "top": 40.056286203537525
-            },
-            "post_job_actions": {
-                "RenameDatasetActionoutput": {
-                    "action_arguments": {
-                        "newname": "Krona chart for Kraken2 community profile"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7d01da0b9e18",
-                "name": "taxonomy_krona_chart",
-                "owner": "crs4",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"__input_ext\": \"tabular\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"combine_inputs\": false, \"root_name\": \"Root\", \"type_of_data\": {\"type_of_data_selector\": \"text\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "2.7.1+galaxy0",
-            "type": "tool",
-            "uuid": "96f2afa3-38aa-4181-8f9f-19b5db4c5f5e",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Krona chart for Kraken2 community profile",
-                    "output_name": "output",
-                    "uuid": "bcfce83e-78f0-40d7-a8df-5795d4cb91cb"
-                }
-            ]
-        },
-        "23": {
-            "annotation": "Adds a line `rank` to prepare the header for final outputs with correct column names.",
+        "33": {
+            "annotation": "Adds a line `taxonomic_id` to prepare the header for final outputs with correct column names.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
             "errors": null,
-            "id": 23,
+            "id": 33,
             "input_connections": {
                 "infile": {
-                    "id": 17,
-                    "output_name": "output"
+                    "id": 24,
+                    "output_name": "outfile"
                 }
             },
             "inputs": [],
-            "label": "Add `rank` header line",
+            "label": "Add `taxonomic_id` header line",
             "name": "Add line to file",
             "outputs": [
                 {
@@ -1247,10 +1686,17 @@
                 }
             ],
             "position": {
-                "left": 1902.2838435277142,
-                "top": 1659.1226131089231
+                "left": 3369.8071016684294,
+                "top": 1679.644665431469
             },
             "post_job_actions": {
+                "ChangeDatatypeActionoutfile": {
+                    "action_arguments": {
+                        "newtype": "tabular"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "outfile"
+                },
                 "HideDatasetActionoutfile": {
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
@@ -1264,211 +1710,22 @@
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"rank\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"taxonomic_id\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "0.1.0",
             "type": "tool",
-            "uuid": "a6ac7428-f399-41ff-87cd-99b554b3b980",
+            "uuid": "da2c186c-d9f6-44a4-a61e-720d2a7401e2",
             "when": null,
             "workflow_outputs": []
         },
-        "24": {
-            "annotation": "Count the number of samples to decide between the single-sample and several-samples branches.",
-            "content_id": "wc_gnu",
-            "errors": null,
-            "id": 24,
-            "input_connections": {
-                "input1": {
-                    "id": 17,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Count samples in collection",
-            "name": "Line/Word/Character count",
-            "outputs": [
-                {
-                    "name": "out_file1",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 1677.5334917472999,
-                "top": 2555.0728052868794
-            },
-            "post_job_actions": {
-                "HideDatasetActionout_file1": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "out_file1"
-                }
-            },
-            "tool_id": "wc_gnu",
-            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "aaf8fd9d-ba5a-4919-ad3e-bef47044c195",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "25": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
-            "errors": null,
-            "id": 25,
-            "input_connections": {
-                "input_tabular": {
-                    "id": 19,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Merge Sylph profiles",
-            "name": "Column join",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 3011.3967636313364,
-                "top": 1378.8163523201993
-            },
-            "post_job_actions": {
-                "RenameDatasetActiontabular_output": {
-                    "action_arguments": {
-                        "newname": "Merged Sylph taxonomy profile"
-                    },
-                    "action_type": "RenameDatasetAction",
-                    "output_name": "tabular_output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
-            "tool_shed_repository": {
-                "changeset_revision": "3ddd99c7efee",
-                "name": "collection_column_join",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"fill_char\": \"0\", \"has_header\": \"1\", \"identifier_column\": \"1\", \"include_outputs\": null, \"input_tabular\": {\"__class__\": \"ConnectedValue\"}, \"old_col_in_header\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.0.3",
-            "type": "tool",
-            "uuid": "d20abed4-81bd-4da9-9898-0420e6a87803",
-            "when": null,
-            "workflow_outputs": [
-                {
-                    "label": "Merged Sylph taxonomy profile",
-                    "output_name": "tabular_output",
-                    "uuid": "3e056d89-6a4d-4612-b635-ca1dcf0c2fe3"
-                }
-            ]
-        },
-        "26": {
-            "annotation": "Format Sylph output into a Krona compatible input",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan2krona/metaphlan2krona/2.6.0.0",
-            "errors": null,
-            "id": 26,
-            "input_connections": {
-                "profile": {
-                    "id": 19,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Sylph-for-Krona",
-            "name": "Format MetaPhlAn2",
-            "outputs": [
-                {
-                    "name": "krona",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 3981.661931307045,
-                "top": 381.2503364407891
-            },
-            "post_job_actions": {
-                "HideDatasetActionkrona": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "krona"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan2krona/metaphlan2krona/2.6.0.0",
-            "tool_shed_repository": {
-                "changeset_revision": "fdbd63e92b01",
-                "name": "metaphlan2krona",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"profile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "2.6.0.0",
-            "type": "tool",
-            "uuid": "3280d942-75c9-4138-af45-f7b5367f9183",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "27": {
-            "annotation": "Rename flattened sylph taxonomy collection",
-            "content_id": "__RELABEL_FROM_FILE__",
-            "errors": null,
-            "id": 27,
-            "input_connections": {
-                "how|labels": {
-                    "id": 17,
-                    "output_name": "output"
-                },
-                "input": {
-                    "id": 20,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Relabel identifiers",
-                    "name": "how"
-                }
-            ],
-            "label": "Relabel Sylph taxonomy collection",
-            "name": "Relabel identifiers",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 4175.294685083418,
-                "top": 705.0537614603472
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "output"
-                }
-            },
-            "tool_id": "__RELABEL_FROM_FILE__",
-            "tool_state": "{\"how\": {\"how_select\": \"txt\", \"__current_case__\": 0, \"labels\": {\"__class__\": \"ConnectedValue\"}, \"strict\": false}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.1.0",
-            "type": "tool",
-            "uuid": "4ac0faf3-0816-4a96-8251-7eae2ecc2823",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "28": {
+        "34": {
             "annotation": "Generate an interactive pie chart of the Kraken2/Bracken taxonomic community profile",
             "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
             "errors": null,
-            "id": 28,
+            "id": 34,
             "input_connections": {
                 "type_of_data|input": {
-                    "id": 21,
+                    "id": 25,
                     "output_name": "output"
                 }
             },
@@ -1487,7 +1744,7 @@
                 }
             ],
             "position": {
-                "left": 4137.06667881365,
+                "left": 4916.70890509679,
                 "top": 942.757113669872
             },
             "post_job_actions": {
@@ -1520,100 +1777,63 @@
                 }
             ]
         },
-        "29": {
-            "annotation": "Adds a line `name` to prepare the header for final outputs with correct column names.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+        "35": {
+            "annotation": "Rename flattened sylph taxonomy collection",
+            "content_id": "__RELABEL_FROM_FILE__",
             "errors": null,
-            "id": 29,
+            "id": 35,
             "input_connections": {
-                "infile": {
-                    "id": 23,
-                    "output_name": "outfile"
+                "how|labels": {
+                    "id": 12,
+                    "output_name": "output"
+                },
+                "input": {
+                    "id": 27,
+                    "output_name": "output"
                 }
             },
-            "inputs": [],
-            "label": "Add `name` header line",
-            "name": "Add line to file",
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Relabel identifiers",
+                    "name": "how"
+                }
+            ],
+            "label": "Relabel Sylph taxonomy collection",
+            "name": "Relabel identifiers",
             "outputs": [
                 {
-                    "name": "outfile",
+                    "name": "output",
                     "type": "input"
                 }
             ],
             "position": {
-                "left": 2341.37621780923,
-                "top": 1669.4532197670642
+                "left": 4954.936911366558,
+                "top": 705.0537614603472
             },
             "post_job_actions": {
-                "HideDatasetActionoutfile": {
+                "HideDatasetActionoutput": {
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
-                    "output_name": "outfile"
+                    "output_name": "output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
-            "tool_shed_repository": {
-                "changeset_revision": "8e251055b1a9",
-                "name": "add_line_to_file",
-                "owner": "bgruening",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"name\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_id": "__RELABEL_FROM_FILE__",
+            "tool_state": "{\"how\": {\"how_select\": \"txt\", \"__current_case__\": 0, \"labels\": {\"__class__\": \"ConnectedValue\"}, \"strict\": false}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.1.0",
+            "tool_version": "1.1.0",
             "type": "tool",
-            "uuid": "11e081bc-3e90-4af9-9c84-841b7fa72b14",
+            "uuid": "4ac0faf3-0816-4a96-8251-7eae2ecc2823",
             "when": null,
             "workflow_outputs": []
         },
-        "30": {
-            "annotation": "Parse the sample count into a parameter used to select the standardization branch.",
-            "content_id": "param_value_from_file",
-            "errors": null,
-            "id": 30,
-            "input_connections": {
-                "input1": {
-                    "id": 24,
-                    "output_name": "out_file1"
-                }
-            },
-            "inputs": [],
-            "label": "Parse sample count",
-            "name": "Parse parameter value",
-            "outputs": [
-                {
-                    "name": "integer_param",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1915.905449143921,
-                "top": 2506.7310229925965
-            },
-            "post_job_actions": {
-                "HideDatasetActioninteger_param": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "integer_param"
-                }
-            },
-            "tool_id": "param_value_from_file",
-            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "85e279d8-e28f-4bf6-87de-d37c1690fc54",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "31": {
+        "36": {
             "annotation": "Generate an interactive pie chart of the Sylph taxonomic community profile",
             "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
             "errors": null,
-            "id": 31,
+            "id": 36,
             "input_connections": {
                 "type_of_data|input": {
-                    "id": 26,
+                    "id": 29,
                     "output_name": "krona"
                 }
             },
@@ -1632,7 +1852,7 @@
                 }
             ],
             "position": {
-                "left": 4353.420157514694,
+                "left": 5133.062383797835,
                 "top": 283.7970506492853
             },
             "post_job_actions": {
@@ -1665,169 +1885,409 @@
                 }
             ]
         },
-        "32": {
-            "annotation": "Adds a line `taxonomic_id` to prepare the header for final outputs with correct column names.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+        "37": {
+            "annotation": "Generate an interactive pie chart of the MetaPhlAn taxonomic community profile",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
             "errors": null,
-            "id": 32,
+            "id": 37,
+            "input_connections": {
+                "type_of_data|input": {
+                    "id": 30,
+                    "output_name": "krona_output_file"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Krona pie chart",
+                    "name": "type_of_data"
+                }
+            ],
+            "label": "Krona chart for MetaPhlAn community profile",
+            "name": "Krona pie chart",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "html"
+                }
+            ],
+            "position": {
+                "left": 4502.243414857833,
+                "top": 200.05628620353752
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Krona chart for MetaPhlAn community profile"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7d01da0b9e18",
+                "name": "taxonomy_krona_chart",
+                "owner": "crs4",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"tabular\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"combine_inputs\": false, \"root_name\": \"Root\", \"type_of_data\": {\"type_of_data_selector\": \"text\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.7.1+galaxy0",
+            "type": "tool",
+            "uuid": "114a8334-be55-4e3b-a2a9-73afc79baefb",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Krona chart for MetaPhlAn community profile",
+                    "output_name": "output",
+                    "uuid": "f539f601-a8ca-431a-ad92-b758dabdc748"
+                }
+            ]
+        },
+        "38": {
+            "annotation": "Standardize Kraken2 taxonomic community profile (several samples)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 38,
             "input_connections": {
                 "infile": {
-                    "id": 29,
-                    "output_name": "outfile"
+                    "id": 13,
+                    "output_name": "report_output"
+                },
+                "profiler": {
+                    "id": 9,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 31,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [],
-            "label": "Add `taxonomic_id` header line",
-            "name": "Add line to file",
+            "label": "Standardize and combine Kracken2 taxonomic community profiles",
+            "name": "taxpasta",
             "outputs": [
                 {
-                    "name": "outfile",
-                    "type": "input"
+                    "name": "tabular_output",
+                    "type": "tabular"
                 }
             ],
             "position": {
-                "left": 2590.1648753852896,
-                "top": 1679.644665431469
+                "left": 3224.3106188831753,
+                "top": 1826.1082187780773
             },
             "post_job_actions": {
-                "ChangeDatatypeActionoutfile": {
-                    "action_arguments": {
-                        "newtype": "tabular"
-                    },
-                    "action_type": "ChangeDatatypeAction",
-                    "output_name": "outfile"
+                "HideDatasetActiontabular_output": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "tabular_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "6df6b8d0-5c59-41b1-879e-c36c2431bb95",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "39": {
+            "annotation": "Standardize Bracken taxonomic community profile (several samples)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 39,
+            "input_connections": {
+                "infile": {
+                    "id": 18,
+                    "output_name": "report"
                 },
-                "HideDatasetActionoutfile": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "outfile"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
-            "tool_shed_repository": {
-                "changeset_revision": "8e251055b1a9",
-                "name": "add_line_to_file",
-                "owner": "bgruening",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"taxonomic_id\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "da2c186c-d9f6-44a4-a61e-720d2a7401e2",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "33": {
-            "annotation": "Standardize and combine the taxonomic profiles of several samples into a single table using taxpasta.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "errors": null,
-            "id": 33,
-            "input_connections": {
-                "input_param_type|input_param": {
-                    "id": 30,
-                    "output_name": "integer_param"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map parameter value",
-                    "name": "input_param_type"
-                }
-            ],
-            "label": "Run taxpasta on several elements",
-            "name": "Map parameter value",
-            "outputs": [
-                {
-                    "name": "output_param_boolean",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 2128.298712073775,
-                "top": 2143.7020093233755
-            },
-            "post_job_actions": {
-                "HideDatasetActionoutput_param_boolean": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
+                "profiler": {
+                    "id": 10,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 31,
                     "output_name": "output_param_boolean"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "tool_shed_repository": {
-                "changeset_revision": "022a635f2283",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"1\", \"to\": \"false\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"true\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.2.0",
-            "type": "tool",
-            "uuid": "e44cd7e4-a737-4823-86ab-d5fad50e180e",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "34": {
-            "annotation": "Standardize the taxonomic profile of a single sample using taxpasta.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "errors": null,
-            "id": 34,
-            "input_connections": {
-                "input_param_type|input_param": {
-                    "id": 30,
-                    "output_name": "integer_param"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map parameter value",
-                    "name": "input_param_type"
-                }
-            ],
-            "label": "Run taxpasta on 1 element",
-            "name": "Map parameter value",
+            "inputs": [],
+            "label": "Standardize and combine Bracken taxonomic community profiles",
+            "name": "taxpasta",
             "outputs": [
                 {
-                    "name": "output_param_boolean",
-                    "type": "expression.json"
+                    "name": "tabular_output",
+                    "type": "tabular"
                 }
             ],
             "position": {
-                "left": 2194.4080489485746,
-                "top": 3079.0111802276942
+                "left": 3289.0785990925724,
+                "top": 2140.3828554251286
             },
             "post_job_actions": {
-                "HideDatasetActionoutput_param_boolean": {
+                "HideDatasetActiontabular_output": {
                     "action_arguments": {},
                     "action_type": "HideDatasetAction",
-                    "output_name": "output_param_boolean"
+                    "output_name": "tabular_output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "022a635f2283",
-                "name": "map_param_value",
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"1\", \"to\": \"true\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"false\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.2.0",
+            "tool_version": "0.7.0+galaxy0",
             "type": "tool",
-            "uuid": "c453622d-7a0f-4343-b158-502c26cc1434",
-            "when": null,
+            "uuid": "6d7f6785-e4f1-4815-ad66-0500792f9691",
+            "when": "$(inputs.when)",
             "workflow_outputs": []
         },
-        "35": {
+        "40": {
+            "annotation": "Standardize MetaPhlAn taxonomic community profile (several samples)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 40,
+            "input_connections": {
+                "infile": {
+                    "id": 30,
+                    "output_name": "output_file"
+                },
+                "profiler": {
+                    "id": 11,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 6,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 31,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Standardize and combine MetaPhlAn taxonomic community profiles",
+            "name": "taxpasta",
+            "outputs": [
+                {
+                    "name": "tabular_output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3441.982472903435,
+                "top": 2452.1375303636037
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "daef0242-49f7-4c9a-8a1d-7611e2cc7ae3",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "41": {
+            "annotation": "Standardize Kraken2 taxonomic community profile (one sample)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 41,
+            "input_connections": {
+                "infile": {
+                    "id": 13,
+                    "output_name": "report_output"
+                },
+                "profiler": {
+                    "id": 9,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 32,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Standardize Kraken2 taxonomic community profile",
+            "name": "taxpasta",
+            "outputs": [
+                {
+                    "name": "tabular_output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3248.50825988777,
+                "top": 2780.5976935356966
+            },
+            "post_job_actions": {
+                "HideDatasetActiontabular_output": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "tabular_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "84ecfd3a-ddf2-48d5-99f8-09f7223882fb",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "42": {
+            "annotation": "Standardize Bracken taxonomic community profile (one sample)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 42,
+            "input_connections": {
+                "infile": {
+                    "id": 18,
+                    "output_name": "report"
+                },
+                "profiler": {
+                    "id": 10,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 32,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Standardize Bracken taxonomic community profile",
+            "name": "taxpasta",
+            "outputs": [
+                {
+                    "name": "tabular_output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3398.3147370076176,
+                "top": 3090.6965989211485
+            },
+            "post_job_actions": {
+                "HideDatasetActiontabular_output": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "tabular_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "09f4d4ee-211a-4ca8-be0e-2a6d6ad0667b",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "43": {
+            "annotation": "Standardize MetaPhlAn taxonomic community profile (one sample)",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "errors": null,
+            "id": 43,
+            "input_connections": {
+                "infile": {
+                    "id": 30,
+                    "output_name": "output_file"
+                },
+                "profiler": {
+                    "id": 11,
+                    "output_name": "out1"
+                },
+                "taxonomy": {
+                    "id": 6,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 32,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Standardize MetaPhlAn taxonomic community profile",
+            "name": "taxpasta",
+            "outputs": [
+                {
+                    "name": "tabular_output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 3450.7479404039345,
+                "top": 3393.6609694326276
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7ffa36716a1e",
+                "name": "taxpasta",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.7.0+galaxy0",
+            "type": "tool",
+            "uuid": "c9dc265a-2c6c-4124-8622-f4bb2bbd5089",
+            "when": "$(inputs.when)",
+            "workflow_outputs": []
+        },
+        "44": {
             "annotation": "Transposes rows/columns to prepare the header for final outputs with correct column names.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_transpose/datamash_transpose/1.9+galaxy1",
             "errors": null,
-            "id": 35,
+            "id": 44,
             "input_connections": {
                 "in_file": {
-                    "id": 32,
+                    "id": 33,
                     "output_name": "outfile"
                 }
             },
@@ -1841,7 +2301,7 @@
                 }
             ],
             "position": {
-                "left": 2925.265646444611,
+                "left": 3704.9078727277506,
                 "top": 1666.4770197157961
             },
             "post_job_actions": {
@@ -1873,359 +2333,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "36": {
-            "annotation": "Standardize Kraken2 taxonomic community profile (several samples)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 36,
-            "input_connections": {
-                "infile": {
-                    "id": 11,
-                    "output_name": "report_output"
-                },
-                "profiler": {
-                    "id": 8,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 33,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Standardize and combine Bracken taxonomic community profiles 2",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2407.192634732649,
-                "top": 1824.9540752442415
-            },
-            "post_job_actions": {
-                "HideDatasetActiontabular_output": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "tabular_output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "6df6b8d0-5c59-41b1-879e-c36c2431bb95",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "37": {
-            "annotation": "Standardize Bracken taxonomic community profile (several samples)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 37,
-            "input_connections": {
-                "infile": {
-                    "id": 15,
-                    "output_name": "report"
-                },
-                "profiler": {
-                    "id": 9,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 33,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Standardize and combine Bracken taxonomic community profiles",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2449.7169966211486,
-                "top": 2154.4447419042863
-            },
-            "post_job_actions": {
-                "HideDatasetActiontabular_output": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "tabular_output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "6d7f6785-e4f1-4815-ad66-0500792f9691",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "38": {
-            "annotation": "Standardize MetaPhlAn taxonomic community profile (several samples)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 38,
-            "input_connections": {
-                "infile": {
-                    "id": 12,
-                    "output_name": "output_file"
-                },
-                "profiler": {
-                    "id": 10,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 33,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Standardize and combine MetaPhlAn taxonomic community profiles",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2662.340246620295,
-                "top": 2452.1375303636037
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"merge\", \"__current_case__\": 1, \"format\": {\"output_format\": \"TSV\", \"__current_case__\": 0, \"wide\": true}}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "daef0242-49f7-4c9a-8a1d-7611e2cc7ae3",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "39": {
-            "annotation": "Standardize Kraken2 taxonomic community profile (one sample)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 39,
-            "input_connections": {
-                "infile": {
-                    "id": 11,
-                    "output_name": "report_output"
-                },
-                "profiler": {
-                    "id": 8,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 34,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Standardize Kraken2 taxonomic community profile",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2468.86603360463,
-                "top": 2780.5976935356966
-            },
-            "post_job_actions": {
-                "HideDatasetActiontabular_output": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "tabular_output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "84ecfd3a-ddf2-48d5-99f8-09f7223882fb",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "40": {
-            "annotation": "Standardize Bracken taxonomic community profile (one sample)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 40,
-            "input_connections": {
-                "infile": {
-                    "id": 15,
-                    "output_name": "report"
-                },
-                "profiler": {
-                    "id": 9,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 34,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Standardize Bracken taxonomic community profile",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2618.672510724478,
-                "top": 3090.6965989211485
-            },
-            "post_job_actions": {
-                "HideDatasetActiontabular_output": {
-                    "action_arguments": {},
-                    "action_type": "HideDatasetAction",
-                    "output_name": "tabular_output"
-                }
-            },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "09f4d4ee-211a-4ca8-be0e-2a6d6ad0667b",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "41": {
-            "annotation": "Standardize MetaPhlAn taxonomic community profile (one sample)",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "errors": null,
-            "id": 41,
-            "input_connections": {
-                "infile": {
-                    "id": 12,
-                    "output_name": "output_file"
-                },
-                "profiler": {
-                    "id": 10,
-                    "output_name": "out1"
-                },
-                "taxonomy": {
-                    "id": 14,
-                    "output_name": "out1"
-                },
-                "when": {
-                    "id": 34,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool taxpasta",
-                    "name": "infile"
-                }
-            ],
-            "label": "Standardize MetaPhlAn taxonomic community profile",
-            "name": "taxpasta",
-            "outputs": [
-                {
-                    "name": "tabular_output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 2671.105714120795,
-                "top": 3393.6609694326276
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/taxpasta/taxpasta/0.7.0+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "7ffa36716a1e",
-                "name": "taxpasta",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"action\": {\"action\": \"standardise\", \"__current_case__\": 0}, \"add_id_lineage\": false, \"add_lineage\": true, \"add_name\": true, \"add_rank\": true, \"add_rank_lineage\": false, \"infile\": {\"__class__\": \"RuntimeValue\"}, \"profiler\": {\"__class__\": \"ConnectedValue\"}, \"taxonomy\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.7.0+galaxy0",
-            "type": "tool",
-            "uuid": "c9dc265a-2c6c-4124-8622-f4bb2bbd5089",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "42": {
+        "45": {
             "annotation": "Pick the standardized Kraken2 profile from whichever branch (1 or several samples) ran.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 42,
+            "id": 45,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 36,
+                    "id": 38,
                     "output_name": "tabular_output"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 39,
+                    "id": 41,
                     "output_name": "tabular_output"
                 }
             },
@@ -2239,7 +2358,7 @@
                 }
             ],
             "position": {
-                "left": 3030.925400726774,
+                "left": 3810.567627009914,
                 "top": 2362.2356976928845
             },
             "post_job_actions": {
@@ -2264,18 +2383,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "43": {
+        "46": {
             "annotation": "Pick the standardized Bracken profile from whichever branch (1 or several samples) ran.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 43,
+            "id": 46,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 37,
+                    "id": 39,
                     "output_name": "tabular_output"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 40,
+                    "id": 42,
                     "output_name": "tabular_output"
                 }
             },
@@ -2289,7 +2408,7 @@
                 }
             ],
             "position": {
-                "left": 2981.6692954113496,
+                "left": 3761.3115216944893,
                 "top": 2730.3536227910545
             },
             "post_job_actions": {
@@ -2314,18 +2433,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "44": {
+        "47": {
             "annotation": "Pick the standardized MetaPhlAn profile from whichever branch (1 or several samples) ran.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 44,
+            "id": 47,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 38,
+                    "id": 40,
                     "output_name": "tabular_output"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 41,
+                    "id": 43,
                     "output_name": "tabular_output"
                 }
             },
@@ -2339,7 +2458,7 @@
                 }
             ],
             "position": {
-                "left": 3018.076026425268,
+                "left": 3797.718252708408,
                 "top": 3140.977111336467
             },
             "post_job_actions": {
@@ -2364,14 +2483,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "45": {
+        "48": {
             "annotation": "Removes the original column names of taxpasta output for Kraken2",
             "content_id": "Remove beginning1",
             "errors": null,
-            "id": 45,
+            "id": 48,
             "input_connections": {
                 "input": {
-                    "id": 42,
+                    "id": 45,
                     "output_name": "data_param"
                 }
             },
@@ -2385,7 +2504,7 @@
                 }
             ],
             "position": {
-                "left": 3351.6960173454413,
+                "left": 4131.338243628581,
                 "top": 2372.478021138728
             },
             "post_job_actions": {
@@ -2404,14 +2523,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "46": {
+        "49": {
             "annotation": "Removes the original column names of taxpasta output for Bracken",
             "content_id": "Remove beginning1",
             "errors": null,
-            "id": 46,
+            "id": 49,
             "input_connections": {
                 "input": {
-                    "id": 43,
+                    "id": 46,
                     "output_name": "data_param"
                 }
             },
@@ -2425,7 +2544,7 @@
                 }
             ],
             "position": {
-                "left": 3275.763215665502,
+                "left": 4055.4054419486415,
                 "top": 2751.2106263618066
             },
             "post_job_actions": {
@@ -2444,14 +2563,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "47": {
+        "50": {
             "annotation": "Removes the original column names of taxpasta output for MetaPhlAn",
             "content_id": "Remove beginning1",
             "errors": null,
-            "id": 47,
+            "id": 50,
             "input_connections": {
                 "input": {
-                    "id": 44,
+                    "id": 47,
                     "output_name": "data_param"
                 }
             },
@@ -2465,7 +2584,7 @@
                 }
             ],
             "position": {
-                "left": 3315.7547321803554,
+                "left": 4095.3969584634956,
                 "top": 3194.7026050050854
             },
             "post_job_actions": {
@@ -2484,18 +2603,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "48": {
+        "51": {
             "annotation": "Add the header with correct column names to the standardized Kraken2 taxonomy profile.",
             "content_id": "cat1",
             "errors": null,
-            "id": 48,
+            "id": 51,
             "input_connections": {
                 "input1": {
-                    "id": 35,
+                    "id": 44,
                     "output_name": "out_file"
                 },
                 "queries_0|input2": {
-                    "id": 45,
+                    "id": 48,
                     "output_name": "out_file1"
                 }
             },
@@ -2509,7 +2628,7 @@
                 }
             ],
             "position": {
-                "left": 3706.6852580095597,
+                "left": 4486.3274842927,
                 "top": 2357.16110186647
             },
             "post_job_actions": {
@@ -2536,18 +2655,18 @@
                 }
             ]
         },
-        "49": {
+        "52": {
             "annotation": "Add the header with correct column names to the standardized Bracken taxonomy profile.",
             "content_id": "cat1",
             "errors": null,
-            "id": 49,
+            "id": 52,
             "input_connections": {
                 "input1": {
-                    "id": 35,
+                    "id": 44,
                     "output_name": "out_file"
                 },
                 "queries_0|input2": {
-                    "id": 46,
+                    "id": 49,
                     "output_name": "out_file1"
                 }
             },
@@ -2561,7 +2680,7 @@
                 }
             ],
             "position": {
-                "left": 3703.89173045164,
+                "left": 4483.53395673478,
                 "top": 2761.313358676246
             },
             "post_job_actions": {
@@ -2588,18 +2707,18 @@
                 }
             ]
         },
-        "50": {
+        "53": {
             "annotation": "Add the header with correct column names to the standardized MetaPhlAn taxonomy profile.",
             "content_id": "cat1",
             "errors": null,
-            "id": 50,
+            "id": 53,
             "input_connections": {
                 "input1": {
-                    "id": 35,
+                    "id": 44,
                     "output_name": "out_file"
                 },
                 "queries_0|input2": {
-                    "id": 47,
+                    "id": 50,
                     "output_name": "out_file1"
                 }
             },
@@ -2613,7 +2732,7 @@
                 }
             ],
             "position": {
-                "left": 3701.0052842169384,
+                "left": 4480.647510500079,
                 "top": 3200.4290381360975
             },
             "post_job_actions": {
@@ -2640,34 +2759,34 @@
                 }
             ]
         },
-        "51": {
+        "54": {
             "annotation": "Generate an interactive report of different taxonomic community profiles",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2",
             "errors": null,
-            "id": 51,
+            "id": 54,
             "input_connections": {
                 "results_0|software_cond|input": {
-                    "id": 11,
+                    "id": 13,
                     "output_name": "report_output"
                 },
                 "results_1|software_cond|input": {
-                    "id": 12,
+                    "id": 30,
                     "output_name": "output_file"
                 },
                 "results_2|software_cond|input": {
-                    "id": 27,
+                    "id": 35,
                     "output_name": "output"
                 },
                 "results_3|software_cond|input": {
-                    "id": 48,
+                    "id": 51,
                     "output_name": "out_file1"
                 },
                 "results_4|software_cond|input": {
-                    "id": 49,
+                    "id": 52,
                     "output_name": "out_file1"
                 },
                 "results_5|software_cond|input": {
-                    "id": 50,
+                    "id": 53,
                     "output_name": "out_file1"
                 }
             },
@@ -2690,7 +2809,7 @@
                 }
             ],
             "position": {
-                "left": 4585.764544395697,
+                "left": 5365.406770678837,
                 "top": 442.85853675696313
             },
             "post_job_actions": {
@@ -2736,6 +2855,6 @@
         "taxonomy",
         "metagenomics"
     ],
-    "uuid": "81e40664-c3bf-4553-a1c8-348fdd6c8601",
-    "version": 1
+    "uuid": "e90097cc-0ba8-4a08-a995-664a796a0b1f",
+    "version": 20
 }
