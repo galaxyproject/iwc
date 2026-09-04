@@ -218,6 +218,7 @@
     ],
     "format-version": "0.1",
     "license": "MIT",
+    "release": "2.5",
     "name": "PretextMap Generation from 1 or 2 haplotypes",
     "readme": "# Hi-C Contact Map Generation for Manual Curation of Genome Assemblies\n\nThis workflow generates Hi-C contact maps for diploid genome assemblies in the Pretext format. It includes tracks for:\n- **Gene annotations** (Compleasm)\n- **PacBio read coverage** and coverage gaps\n- **Telomeres** (with flexible pattern detection)\n- **Assembly gaps**\n\nThe Pretext files can be opened in PretextView for manual curation of genome assemblies.\n\n## Inputs\n\n### Required Inputs\n\n1. **Haplotype 1** [fasta] - Primary haplotype assembly\n2. **Will you use a second haplotype?** [boolean] - Set to true for diploid assemblies\n3. **Haplotype 2** [fasta] - Secondary haplotype assembly (required if using two haplotypes)\n4. **Hi-C reads** [fastq] - Paired collection containing Hi-C data\n5. **PacBio reads** [fastq] - Collection of PacBio HiFi reads\n\n### Assembly Annotation Parameters\n\n6. **Generate gene annotations** [boolean] - Enable/disable Compleasm gene annotation tracks (disable for large genomes to avoid memory issues)\n7. **Species Name** [text] - Species identifier for gene annotation\n8. **Assembly Name** [text] - Assembly identifier (e.g., toLid)\n9. **Lineage for Compleasm** [text] - BUSCO lineage dataset (e.g., vertebrata_odb10, primates_odb10)\n10. **Database for Compleasm** [text] - Compleasm database version (default: v5)\n\n### Scaffold Naming Options\n\n11. **Do you want to add suffixes to the scaffold names?** [boolean] - Select yes if scaffold names do not contain haplotype information\n12. **First Haplotype suffix** [text] - Suffix for haplotype 1 scaffolds (default: H1)\n13. **Second Haplotype suffix** [text] - Suffix for haplotype 2 scaffolds (default: H2)\n\n### Hi-C Processing Options\n\n14. **Do you want to trim the Hi-C data?** [boolean] - If yes, removes 5bp at the end of Hi-C reads (recommended for Arima Hi-C data if the map looks \"noisy\")\n15. **Remove duplicated Hi-C reads?** [boolean] - Remove PCR duplicates from Hi-C alignments using Samtools markdup\n16. **Minimum Mapping Quality** [integer] - Minimum MAPQ score for filtered PretextMap (default: 10; set to 0 to keep all mapped reads)\n\n### PacBio Processing Options\n\n17. **Remove adapters from HiFi reads?** [boolean] - Trim adapters from PacBio HiFi reads using Cutadapt\n\n### Telomere Detection\n\n18. **Canonical telomeric pattern** [text] - Expected telomere repeat sequence (default: TTAGGG for vertebrates; use CCCTAA for reverse complement)\n19. **Telomeric Patterns to explore (comma-separated), IUPAC allowed** [text] - Additional telomeric patterns to search for (e.g., TTAGGG,CCCTAA)\n\n### Hi-C Map Resolution\n\n20. **Generate high resolution Hi-C maps** [boolean] - Generate high resolution Pretext maps (slower, requires more resources)\n\n### Visualization Options\n\n21. **Bin Size for Bigwig files** [integer] - Resolution for coverage tracks (default: 100; larger values = smaller files but lower resolution)\n\n## Outputs\n\n### Assembly Outputs\n\n1. **Assembly for curation** [fasta] - Merged assembly (if two haplotypes used) or single haplotype with optional suffix\n2. **Assembly Info** [tabular] - Summary statistics from gfastats\n3. **Both Haplotypes merged** [fasta] - Concatenated assembly file\n\n### Gene Annotation Outputs\n\n4. **Compleasm Genes track** [GFF] - Combined gene annotations for Pretext track (if gene annotations enabled)\n\n### Hi-C Alignment Outputs\n\n5. **Merged Hi-C Alignments on Scaffolds** [BAM] - Combined Hi-C read alignments\n6. **Precuration Hi-C alignments** [BAM] - Hi-C alignments before filtering\n7. **Trimmed Hi-C data** [fastq] - Hi-C reads after adapter trimming (if trimming enabled)\n8. **Hi-C duplication stats on Scaffolds** [tabular] - Samtools markdup statistics (if duplicate removal enabled)\n9. **Hi-C duplication stats on Scaffolds: MultiQc** [HTML] - MultiQC report of duplicate statistics (if duplicate removal enabled)\n10. **Hi-C duplication stats on Scaffolds: Raw** [tabular] - Raw Samtools markdup metrics (if duplicate removal enabled)\n11. **Pairtools Multiqc Stats on Scaffolds** [tabular] - Pairtools statistics\n12. **Pairtools MultiQc on Scaffolds: Plots** [HTML] - Pairtools MultiQC plots\n\n### PacBio Processing Outputs\n\n13. **HiFi reads without adapters** [fastq] - Adapter-trimmed PacBio reads (if adapter removal enabled)\n14. **HiFi reads adapters trimming report** [tabular] - Cutadapt trimming statistics (if adapter removal enabled)\n\n### PacBio Coverage Outputs\n\n15. **BigWig Coverage** [bigwig] - PacBio read coverage track\n16. **Coverage Gaps Track** [bedgraph] - Regions with low or no PacBio coverage\n17. **Merged HiFi Alignments** [BAM] - Combined PacBio alignments\n\n### Telomere Outputs\n\n18. **Telomere Report** [tabular] - Comprehensive telomere analysis from Teloscope\n19. **terminal telomeres** [bedgraph] - All detected telomeric regions\n20. **P telomeres bed** [BED] - P-arm (5') telomeres only\n21. **Q telomeres Bed** [BED] - Q-arm (3') telomeres only\n\n### Gap Outputs\n\n22. **Gaps Bed** [BED] - Assembly gap coordinates\n23. **Gaps Bedgraph** [bedgraph] - Assembly gap track for Pretext\n\n### Assembly Haplotype Outputs\n\n24. **Decontaminated Hap1 with Suffix** [fasta] - Haplotype 1 with suffix applied\n25. **Decontaminated Hap2 with Suffix** [fasta] - Haplotype 2 with suffix applied\n\n### Pretext Map Outputs\n\nAll Pretext outputs are generated in two versions:\n- **With MAPQ filtering** (default MAPQ ≥ 10): Cleaner maps with high-confidence contacts\n- **Without filtering (Multimapping)**: Shows all mapped contacts including low-quality alignments\n\n26. **Pretext All tracks** [pretext] - Contact map with all annotation tracks (MAPQ filtered)\n27. **Pretext All tracks - Multimapping** [pretext] - Contact map with all tracks (unfiltered)\n28. **Pretext Snapshot With tracks** [PNG] - Image of contact map with tracks (MAPQ filtered)\n29. **Pretext Snapshot With tracks - Multimapping** [PNG] - Image of contact map with tracks (unfiltered)\n\n## Usage Notes\n\n### When to trim Hi-C data\nEnable trimming if you're using Arima Hi-C kits and notice a \"noisy\" contact map pattern.\n\n### MAPQ filtering\nThe default MAPQ threshold of 10 removes ambiguously mapped Hi-C contacts, resulting in cleaner contact maps. Compare both filtered and unfiltered outputs to assess mapping quality.\n\n### Choosing Compleasm lineage\nSelect the most specific lineage available for your species:\n- Vertebrates: `vertebrata_odb10`\n- Mammals: `mammalia_odb10`\n- Primates: `primates_odb10`\n- Birds: `aves_odb10`\n- See [BUSCO datasets](https://busco-data.ezlab.org/v5/data/lineages/) for complete list\n\n### Telomere patterns\n- Vertebrates typically use TTAGGG\n- Some species have variant patterns - check the literature\n- IUPAC codes are supported (e.g., TTAGGK for TTAGGG/TTAGGC)\n\n## Citation\n\nIf you use this workflow, please cite:\n- PretextMap and PretextView tools\n- Compleasm for gene completeness assessment\n- Teloscope for telomere detection\n- Other tools as listed in the workflow\n",
     "report": {
@@ -865,12 +866,7 @@
                     "output_name": "output"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map parameter value",
-                    "name": "input_param_type"
-                }
-            ],
+            "inputs": [],
             "label": "Hap2 not provided",
             "name": "Map parameter value",
             "outputs": [
@@ -1194,7 +1190,7 @@
                     },
                     "7": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "errors": null,
                         "id": 7,
                         "input_connections": {
@@ -1231,16 +1227,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"replacements\": [{\"__index__\": 0, \"find_pattern\": \">.+$\", \"replace_pattern\": {\"__class__\": \"ConnectedValue\"}, \"sed_options\": null}], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "0d494264-b35e-4084-b8b8-f4bacd1bc3d0",
                         "when": "$(inputs.when)",
@@ -1248,7 +1244,7 @@
                     },
                     "8": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "errors": null,
                         "id": 8,
                         "input_connections": {
@@ -1285,16 +1281,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"replacements\": [{\"__index__\": 0, \"find_pattern\": \">.+$\", \"replace_pattern\": {\"__class__\": \"ConnectedValue\"}, \"sed_options\": null}], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "5d369c5c-05fc-4477-897a-42b948900499",
                         "when": "$(inputs.when)",
@@ -1428,7 +1424,7 @@
                     },
                     "11": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
                         "errors": null,
                         "id": 11,
                         "input_connections": {
@@ -1461,16 +1457,16 @@
                                 "output_name": "out_file1"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"inputs\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [{\"__index__\": 0, \"inputs2\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "b2f8c163-76e4-4e8e-bcf6-56c69b322e6f",
                         "when": null,
@@ -1484,7 +1480,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "c08e241b-bd8e-4ccb-809f-597eb3727455"
+                "uuid": "abd5f63d-7b06-467f-bd57-14729bab7746"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1725,12 +1721,7 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Map parameter value",
-                                "name": "input_param_type"
-                            }
-                        ],
+                        "inputs": [],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1782,12 +1773,7 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Map parameter value",
-                                "name": "input_param_type"
-                            }
-                        ],
+                        "inputs": [],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1839,12 +1825,7 @@
                                 "output_name": "text_param"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Map parameter value",
-                                "name": "input_param_type"
-                            }
-                        ],
+                        "inputs": [],
                         "label": null,
                         "name": "Map parameter value",
                         "outputs": [
@@ -1887,7 +1868,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "f0b6802f-89b9-40b5-8ee8-d071fb00f61f"
+                "uuid": "dccda33c-0fb8-4b3d-a2fc-6e155ccf6e1b"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1910,12 +1891,7 @@
                     "output_name": "output"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Cutadapt",
-                    "name": "library"
-                }
-            ],
+            "inputs": [],
             "label": null,
             "name": "Cutadapt",
             "outputs": [
@@ -2158,7 +2134,7 @@
                     },
                     "4": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "errors": null,
                         "id": 4,
                         "input_connections": {
@@ -2195,16 +2171,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"replacements\": [{\"__index__\": 0, \"find_pattern\": \">.+$\", \"replace_pattern\": {\"__class__\": \"ConnectedValue\"}, \"sed_options\": null}], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "035ade88-6466-4cfd-bff6-fe954f352772",
                         "when": "$(inputs.when)",
@@ -2268,7 +2244,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "61fd370d-591a-49dd-92a6-b23f10de1a7d"
+                "uuid": "66a83ff5-1016-422a-88a9-97862d22ece5"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -2733,7 +2709,7 @@
                     },
                     "5": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3",
                         "errors": null,
                         "id": 5,
                         "input_connections": {
@@ -2762,16 +2738,16 @@
                                 "output_name": "output"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"case_sensitive\": \"-i\", \"color\": \"NOCOLOR\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"invert\": \"\", \"lines_after\": \"0\", \"lines_before\": \"0\", \"regex_type\": \"-G\", \"url_paste\": \">\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "b06586f9-7bb2-469d-87c5-a79ac25c2040",
                         "when": null,
@@ -3004,12 +2980,7 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [
-                                        {
-                                            "description": "runtime parameter for tool Map parameter value",
-                                            "name": "input_param_type"
-                                        }
-                                    ],
+                                    "inputs": [],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3061,12 +3032,7 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [
-                                        {
-                                            "description": "runtime parameter for tool Map parameter value",
-                                            "name": "input_param_type"
-                                        }
-                                    ],
+                                    "inputs": [],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3118,12 +3084,7 @@
                                             "output_name": "text_param"
                                         }
                                     },
-                                    "inputs": [
-                                        {
-                                            "description": "runtime parameter for tool Map parameter value",
-                                            "name": "input_param_type"
-                                        }
-                                    ],
+                                    "inputs": [],
                                     "label": null,
                                     "name": "Map parameter value",
                                     "outputs": [
@@ -3166,7 +3127,7 @@
                                 }
                             },
                             "tags": [],
-                            "uuid": "af5969bd-8de4-4a2b-8f2b-0602b0363724"
+                            "uuid": "f3477279-b1c8-41c7-a543-bfef11f9bd2a"
                         },
                         "tool_id": null,
                         "type": "subworkflow",
@@ -3189,12 +3150,7 @@
                                 "output_name": "output"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Cutadapt",
-                                "name": "library"
-                            }
-                        ],
+                        "inputs": [],
                         "label": "Trim Hi-C reads 2",
                         "name": "Cutadapt",
                         "outputs": [
@@ -3263,12 +3219,7 @@
                                 "output_name": "output"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Map parameter value",
-                                "name": "input_param_type"
-                            }
-                        ],
+                        "inputs": [],
                         "label": "False when removal is true",
                         "name": "Map parameter value",
                         "outputs": [
@@ -3383,16 +3334,7 @@
                                 "output_name": "index"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool BWA-MEM2",
-                                "name": "fastq_input"
-                            },
-                            {
-                                "description": "runtime parameter for tool BWA-MEM2",
-                                "name": "reference_source"
-                            }
-                        ],
+                        "inputs": [],
                         "label": null,
                         "name": "BWA-MEM2",
                         "outputs": [
@@ -3651,16 +3593,7 @@
                                 "output_name": "Has multiple samples"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool Samtools merge",
-                                "name": "bed_file"
-                            },
-                            {
-                                "description": "runtime parameter for tool Samtools merge",
-                                "name": "headerbam"
-                            }
-                        ],
+                        "inputs": [],
                         "label": null,
                         "name": "Samtools merge",
                         "outputs": [
@@ -3871,7 +3804,7 @@
                     },
                     "19": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2",
                         "errors": null,
                         "id": 19,
                         "input_connections": {
@@ -3880,12 +3813,7 @@
                                 "output_name": "dedup_pairs_stats"
                             }
                         },
-                        "inputs": [
-                            {
-                                "description": "runtime parameter for tool MultiQC",
-                                "name": "image_content_input"
-                            }
-                        ],
+                        "inputs": [],
                         "label": "Pairtools Multiqc",
                         "name": "MultiQC",
                         "outputs": [
@@ -3959,16 +3887,16 @@
                                 "output_name": "stats"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2",
                         "tool_shed_repository": {
-                            "changeset_revision": "dc0f5512911c",
+                            "changeset_revision": "0559e0711094",
                             "name": "multiqc",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"comment\": \"\", \"export\": true, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": true, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"pairtools\", \"__current_case__\": 40, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"Hi-C alignements to Scaffold stats\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.35+galaxy3",
+                        "tool_version": "1.35+galaxy2",
                         "type": "tool",
                         "uuid": "66905684-e6a1-4d2a-91ad-4809ca5e864a",
                         "when": null,
@@ -4247,7 +4175,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "67cc0fc5-fd53-4203-a5d4-855108c61923"
+                "uuid": "8077d5ff-fa93-4cfa-b262-193e68298756"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -4475,16 +4403,7 @@
                     "output_name": "data_param"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map with minimap2",
-                    "name": "fastq_input"
-                },
-                {
-                    "description": "runtime parameter for tool Map with minimap2",
-                    "name": "reference_source"
-                }
-            ],
+            "inputs": [],
             "label": null,
             "name": "Map with minimap2",
             "outputs": [
@@ -4918,7 +4837,7 @@
                     },
                     "7": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
                         "errors": null,
                         "id": 7,
                         "input_connections": {
@@ -4955,16 +4874,16 @@
                                 "output_name": "out_file1"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"inputs\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "1185817d-9a3a-4949-912a-3d0738f6f112",
                         "when": null,
@@ -5058,7 +4977,7 @@
                     },
                     "10": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.11+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy3",
                         "errors": null,
                         "id": 10,
                         "input_connections": {
@@ -5087,16 +5006,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.11+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy3",
                         "tool_shed_repository": {
-                            "changeset_revision": "30b60202d990",
+                            "changeset_revision": "ab83aa685821",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"grouping\": {\"grouping_select\": \"no\", \"__current_case__\": 0, \"count\": false, \"repeated\": false, \"uniqueonly\": true}, \"ignorecase\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"skipfields\": \"0\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.11+galaxy0",
+                        "tool_version": "9.5+galaxy3",
                         "type": "tool",
                         "uuid": "96bd05b5-633e-4b34-8cef-fd09cf615cac",
                         "when": null,
@@ -5212,7 +5131,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "59dd2651-d8f3-4eef-9af0-03da1e767a7d"
+                "uuid": "533d9ac3-9782-459a-bce3-a95842ddaffa"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -5274,7 +5193,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "0d0e8d0691c8",
+                "changeset_revision": "7087d9a23185",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -5331,7 +5250,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "0d0e8d0691c8",
+                "changeset_revision": "7087d9a23185",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -5377,7 +5296,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "0d0e8d0691c8",
+                "changeset_revision": "7087d9a23185",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -5427,7 +5346,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "0d0e8d0691c8",
+                "changeset_revision": "7087d9a23185",
                 "name": "pretext_map",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -5617,16 +5536,7 @@
                     "output_name": "Has multiple samples"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Samtools merge",
-                    "name": "bed_file"
-                },
-                {
-                    "description": "runtime parameter for tool Samtools merge",
-                    "name": "headerbam"
-                }
-            ],
+            "inputs": [],
             "label": null,
             "name": "Samtools merge",
             "outputs": [
@@ -5707,7 +5617,7 @@
         },
         "45": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "errors": null,
             "id": 45,
             "input_connections": {
@@ -5736,16 +5646,16 @@
                     "output_name": "pretext_snap_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "cfc412b91a57",
+                "changeset_revision": "c4fb391275a0",
                 "name": "pretext_snapshot",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": \"false\", \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": false, \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.0.9+galaxy0",
+            "tool_version": "0.0.7+galaxy0",
             "type": "tool",
             "uuid": "f453794e-4045-4602-9f49-26abf7f1426f",
             "when": null,
@@ -5753,7 +5663,7 @@
         },
         "46": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "errors": null,
             "id": 46,
             "input_connections": {
@@ -5782,16 +5692,16 @@
                     "output_name": "pretext_snap_out"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "cfc412b91a57",
+                "changeset_revision": "c4fb391275a0",
                 "name": "pretext_snapshot",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": \"false\", \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"colormap\": \"8\", \"formats\": {\"outformat\": \"png\", \"__current_case__\": 0}, \"grid\": {\"showGrid\": \"yes\", \"__current_case__\": 0, \"gridsize\": \"1\", \"gridcolor\": \"black\"}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mintexels\": \"64\", \"resolution\": \"2000\", \"sequencenames\": false, \"sequences\": \"=full\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "0.0.9+galaxy0",
+            "tool_version": "0.0.7+galaxy0",
             "type": "tool",
             "uuid": "533b33d8-3a3b-480a-9978-1526d65606c5",
             "when": null,
@@ -6336,12 +6246,7 @@
                     "output_name": "text_param"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map parameter value",
-                    "name": "input_param_type"
-                }
-            ],
+            "inputs": [],
             "label": "False if Q telomere track is empty",
             "name": "Map parameter value",
             "outputs": [
@@ -6387,12 +6292,7 @@
                     "output_name": "text_param"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Map parameter value",
-                    "name": "input_param_type"
-                }
-            ],
+            "inputs": [],
             "label": "False if P telomere track is empty",
             "name": "Map parameter value",
             "outputs": [
@@ -6464,7 +6364,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -6514,7 +6414,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -6602,7 +6502,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -6656,7 +6556,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -6892,7 +6792,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -6946,7 +6846,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7204,7 +7104,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7254,7 +7154,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7304,7 +7204,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7361,7 +7261,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7415,7 +7315,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7469,7 +7369,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pretext_graph/pretext_graph/0.0.9+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "9491362ac1cd",
+                "changeset_revision": "8e422c873d02",
                 "name": "pretext_graph",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -7614,7 +7514,6 @@
         }
     },
     "tags": [],
-    "uuid": "64a3948e-887d-4a3d-a9da-cfcc36018317",
-    "version": 1,
-    "release": "2.5"
+    "uuid": "9a0f2276-4487-4582-a510-e1f5d69512aa",
+    "version": 1
 }
