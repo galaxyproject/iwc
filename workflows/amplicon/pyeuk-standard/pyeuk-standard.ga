@@ -1,0 +1,642 @@
+{
+  "a_galaxy_workflow": "true",
+  "annotation": "PyEuk Standard: FASTQs + amplicon panel -> windows -> haplotypes -> sheet -> cluster sweep. Portable multilocus typing with a sweep output (count range + confidence + stable cores).",
+  "comments": [],
+  "creator": [
+    {
+      "class": "Person",
+      "name": "Anton Nekrutenko"
+    },
+    {
+      "class": "Person",
+      "name": "Sergei Pond"
+    }
+  ],
+  "format-version": "0.1",
+  "license": "MIT",
+  "name": "Read-level haplotype typing (PyEuk 0.7.0 unified)",
+  "steps": {
+    "0": {
+      "annotation": "Adapter/quality-trimmed paired FASTQ, one pair per specimen. The list element identifier IS the specimen id: it becomes column 1 of the calls and the row id of the sheet, so it must match [A-Za-z0-9_.-]+.",
+      "content_id": null,
+      "errors": null,
+      "id": 0,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Adapter/quality-trimmed paired FASTQ, one pair per specimen. The list element identifier IS the specimen id: it becomes column 1 of the calls and the row id of the sheet, so it must match [A-Za-z0-9_.-]+.",
+          "name": "reads"
+        }
+      ],
+      "label": "reads",
+      "name": "Input dataset collection",
+      "outputs": [],
+      "position": {
+        "left": 0,
+        "top": 0
+      },
+      "tool_id": null,
+      "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
+      "tool_version": null,
+      "type": "data_collection_input",
+      "uuid": "e79822d3-2e9f-4212-8dc7-1d59518329a9",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "1": {
+      "annotation": "Minimum TOTAL fully-spanning reads for a window to be called at all. Applied before any haplotype is considered, so it is the first gate a window has to clear -- and on the Cyclospora 2018 cohort it was the binding one. Measured by holding the BAMs and windows fixed and sweeping only this value: min_span 24-42 is a flat plateau at ARI 0.9737 against the vendor labels with a single specimen misassigned, and between 42 and 44 it falls to 0.7536 with ten misassigned. The previous default of 50 sat on the wrong side of that cliff. Note this gate is harder on MIXED specimens than clonal ones: k co-infecting genotypes split the spanning reads k ways, so a mixture needs k times the depth of a clonal sample to clear the same value. 30 is a Cyclospora result, not a universal constant -- on a cohort with different amplicon lengths or insert sizes, sweep it again rather than assuming it transfers.",
+      "content_id": null,
+      "errors": null,
+      "id": 1,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Minimum TOTAL fully-spanning reads for a window to be called at all. Applied before any haplotype is considered, so it is the first gate a window has to clear -- and on the Cyclospora 2018 cohort it was the binding one. Measured by holding the BAMs and windows fixed and sweeping only this value: min_span 24-42 is a flat plateau at ARI 0.9737 against the vendor labels with a single specimen misassigned, and between 42 and 44 it falls to 0.7536 with ten misassigned. The previous default of 50 sat on the wrong side of that cliff. Note this gate is harder on MIXED specimens than clonal ones: k co-infecting genotypes split the spanning reads k ways, so a mixture needs k times the depth of a clonal sample to clear the same value. 30 is a Cyclospora result, not a universal constant -- on a cohort with different amplicon lengths or insert sizes, sweep it again rather than assuming it transfers.",
+          "name": "min_span"
+        }
+      ],
+      "label": "min_span",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 10,
+        "top": 10
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": 30, \"validators\": [], \"parameter_type\": \"integer\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "cb3dc40f-7fc1-4ca8-b9ba-0666f526dc93",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "2": {
+      "annotation": "Minimum HAPLOTYPE frequency -- the fraction of spanning reads carrying an entire string. Exposed because the right value is dataset-dependent and the default is not general. 0.05 was carried over from a Cryptosporidium titration whose minor components were 25-75%, so anything below the gate was never exercised there. On a cohort containing 1% components, 0.05 makes them undetectable BY CONSTRUCTION -- every observed frequency then piles up just above the gate. Set 0.005 or lower to probe a low-frequency detection floor, and let min_reads suppress noise instead.",
+      "content_id": null,
+      "errors": null,
+      "id": 2,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Minimum HAPLOTYPE frequency -- the fraction of spanning reads carrying an entire string. Exposed because the right value is dataset-dependent and the default is not general. 0.05 was carried over from a Cryptosporidium titration whose minor components were 25-75%, so anything below the gate was never exercised there. On a cohort containing 1% components, 0.05 makes them undetectable BY CONSTRUCTION -- every observed frequency then piles up just above the gate. Set 0.005 or lower to probe a low-frequency detection floor, and let min_reads suppress noise instead.",
+          "name": "min_freq"
+        }
+      ],
+      "label": "min_freq",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 20,
+        "top": 20
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": 0.05, \"validators\": [], \"parameter_type\": \"float\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "06cac662-4b4e-405a-baba-0b8908c7b036",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "3": {
+      "annotation": "Minimum supporting reads per haplotype. This is the noise control that should do the work when min_freq is lowered: at 10 reads a haplotype needs real support regardless of how small a fraction it represents.",
+      "content_id": null,
+      "errors": null,
+      "id": 3,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Minimum supporting reads per haplotype. This is the noise control that should do the work when min_freq is lowered: at 10 reads a haplotype needs real support regardless of how small a fraction it represents.",
+          "name": "min_reads"
+        }
+      ],
+      "label": "min_reads",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 30,
+        "top": 30
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": 10, \"validators\": [], \"parameter_type\": \"integer\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "cf1713ff-e090-41c8-bafa-02c5b641cd9f",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "4": {
+      "annotation": "Project the distance matrix onto the PSD cone by Gram double centering. DEFAULT FALSE. The projection guarantees the distances embed in Euclidean space, which Ward linkage assumes, but it buys that by compressing the closest pairs: measured on the CDC AmpliSeq cohort it left the median pair at 0.174 against 0.184 while inflating the closest 1% from 0.0048 to 0.0946, a factor of 19.6. Tight pairs are precisely what a relatedness measure exists to resolve. Turning it off improved the pairwise AUC on all four labelled comparisons available, and in error counts took Cyclospora from 3 wrong of 153 to 1, and PvAmpSeq from 5 wrong of 277 to 2. Set TRUE together with cut=distance, where the regularised geometry helps instead: CDC scores ARI 0.7952 against the published clusters with the projection on and 0.6805 with it off.",
+      "content_id": null,
+      "errors": null,
+      "id": 4,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Project the distance matrix onto the PSD cone by Gram double centering. DEFAULT FALSE. The projection guarantees the distances embed in Euclidean space, which Ward linkage assumes, but it buys that by compressing the closest pairs: measured on the CDC AmpliSeq cohort it left the median pair at 0.174 against 0.184 while inflating the closest 1% from 0.0048 to 0.0946, a factor of 19.6. Tight pairs are precisely what a relatedness measure exists to resolve. Turning it off improved the pairwise AUC on all four labelled comparisons available, and in error counts took Cyclospora from 3 wrong of 153 to 1, and PvAmpSeq from 5 wrong of 277 to 2. Set TRUE together with cut=distance, where the regularised geometry helps instead: CDC scores ARI 0.7952 against the published clusters with the projection on and 0.6805 with it off.",
+          "name": "project_psd"
+        }
+      ],
+      "label": "project_psd",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 50,
+        "top": 50
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": false, \"validators\": [], \"parameter_type\": \"boolean\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "6c7c9401-049b-4c67-b836-9a9046294bae",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "5": {
+      "annotation": "\"count\" or \"distance\". Two different questions, not two qualities of answer. count splits the cohort into k groups, k chosen from the largest merge-height gap subject to a minimum relative gap and a minimum cluster size. Right for a closed investigation where every specimen belongs somewhere. distance cuts at a fixed dissimilarity, with no k and no gap requirement, and returns specimens with no near neighbour as singletons. Right for surveillance, where most cases are unrelated. A cluster count cannot represent a structure that is mostly singletons: on the CDC cohort, whose published truth is 93 groups with 79 singletons, the count rule rejects every k that could reproduce it and returns 1.",
+      "content_id": null,
+      "errors": null,
+      "id": 5,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "\"count\" or \"distance\". Two different questions, not two qualities of answer. count splits the cohort into k groups, k chosen from the largest merge-height gap subject to a minimum relative gap and a minimum cluster size. Right for a closed investigation where every specimen belongs somewhere. distance cuts at a fixed dissimilarity, with no k and no gap requirement, and returns specimens with no near neighbour as singletons. Right for surveillance, where most cases are unrelated. A cluster count cannot represent a structure that is mostly singletons: on the CDC cohort, whose published truth is 93 groups with 79 singletons, the count rule rejects every k that could reproduce it and returns 1.",
+          "name": "cut"
+        }
+      ],
+      "label": "cut",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 60,
+        "top": 60
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": \"count\", \"validators\": [], \"parameter_type\": \"text\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "f715d84e-7c98-4aab-b47a-44b70a7a5849",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "6": {
+      "annotation": "Dissimilarity at which to cut when cut=distance. Leave unset to calibrate it from the data; the tool prints the value and where it came from rather than presenting it as a constant.",
+      "content_id": null,
+      "errors": null,
+      "id": 6,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Dissimilarity at which to cut when cut=distance. Leave unset to calibrate it from the data; the tool prints the value and where it came from rather than presenting it as a constant.",
+          "name": "linkage_threshold"
+        }
+      ],
+      "label": "linkage_threshold",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 70,
+        "top": 70
+      },
+      "tool_id": null,
+      "tool_state": "{\"validators\": [], \"parameter_type\": \"float\", \"optional\": true}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "20809fa8-994e-4f82-80bc-6d6f46776a36",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "7": {
+      "annotation": "Minimum fraction of loci a specimen must have called to enter the distance matrix. Panel-dependent, so there is no universal value. Raise it when the cohort has a low-completeness tail that would otherwise produce distances pinned at the engine's no-shared-data ceiling: on CDC AmpliSeq five specimens sit at 0.46-0.48 while the median is 0.945, and they generate six pairs at distance 1.0 against a real maximum of 0.2888. Four of those five are the specimens the source publication itself marks as insufficient for clustering.",
+      "content_id": null,
+      "errors": null,
+      "id": 7,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Minimum fraction of loci a specimen must have called to enter the distance matrix. Panel-dependent, so there is no universal value. Raise it when the cohort has a low-completeness tail that would otherwise produce distances pinned at the engine's no-shared-data ceiling: on CDC AmpliSeq five specimens sit at 0.46-0.48 while the median is 0.945, and they generate six pairs at distance 1.0 against a real maximum of 0.2888. Four of those five are the specimens the source publication itself marks as insufficient for clustering.",
+          "name": "min_completeness"
+        }
+      ],
+      "label": "min_completeness",
+      "name": "Input parameter",
+      "outputs": [],
+      "position": {
+        "left": 80,
+        "top": 80
+      },
+      "tool_id": null,
+      "tool_state": "{\"default\": 0.1, \"validators\": [], \"parameter_type\": \"float\", \"optional\": false}",
+      "tool_version": null,
+      "type": "parameter_input",
+      "uuid": "140b21df-7f64-4b44-ae9c-373c11e52623",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "8": {
+      "annotation": "The amplicon panel FASTA. Used twice, and on purpose by the same dataset: as the bwa mem reference and as the reference the haplotype strings are described against. A haplotype name is a difference from THIS sequence, so a different dataset here silently renames every haplotype.",
+      "content_id": null,
+      "errors": null,
+      "id": 8,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "The amplicon panel FASTA. Used twice, and on purpose by the same dataset: as the bwa mem reference and as the reference the haplotype strings are described against. A haplotype name is a difference from THIS sequence, so a different dataset here silently renames every haplotype.",
+          "name": "panel"
+        }
+      ],
+      "label": "panel",
+      "name": "Input dataset",
+      "outputs": [],
+      "position": {
+        "left": 0,
+        "top": 240
+      },
+      "tool_id": null,
+      "tool_state": "{\"optional\": false, \"tag\": null}",
+      "tool_version": null,
+      "type": "data_input",
+      "uuid": "c13ffb6c-92a7-4e53-9e18-51444cef1dba",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "9": {
+      "annotation": "Build the panel index ONCE and reuse it for every specimen.\nWith bwa_mem and a history reference, Galaxy rebuilds the index inside every mapping job -- 187 redundant builds of the same 11 kb panel for a 187-specimen cohort. The index is a property of the panel, not of the specimen, so it belongs upstream of the fan-out. bwa_mem2's mapper accepts a bwa_mem2_index dataset directly, which makes this expressible.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+      "errors": null,
+      "id": 9,
+      "input_connections": {
+        "reference": {
+          "id": 8,
+          "output_name": "output"
+        }
+      },
+      "inputs": [],
+      "label": "index_panel",
+      "name": "BWA-MEM2 indexer",
+      "outputs": [
+        {
+          "name": "index",
+          "type": "bwa_mem2_index"
+        }
+      ],
+      "position": {
+        "left": 300,
+        "top": 180
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+      "tool_shed_repository": {
+        "changeset_revision": "af91699b8d4c",
+        "name": "bwa_mem2",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "2.3+galaxy0",
+      "type": "tool",
+      "uuid": "a710ee9a-900c-414c-a85f-e9ae2b66ef6c",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "10": {
+      "annotation": "Map to the whole panel, not to one amplicon. Reads from every marker then have somewhere correct to go instead of being forced onto a single target.\nTakes the prebuilt index rather than the FASTA, so no indexing happens here.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+      "errors": null,
+      "id": 10,
+      "input_connections": {
+        "fastq_input|fastq_input1": {
+          "id": 0,
+          "output_name": "output"
+        },
+        "reference_source|ref_file": {
+          "id": 9,
+          "output_name": "index"
+        }
+      },
+      "inputs": [],
+      "label": "map_reads",
+      "name": "BWA-MEM2",
+      "outputs": [
+        {
+          "name": "bam_output",
+          "type": "bam"
+        }
+      ],
+      "position": {
+        "left": 300,
+        "top": 0
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+      "tool_shed_repository": {
+        "changeset_revision": "af91699b8d4c",
+        "name": "bwa_mem2",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"illumina\", \"__current_case__\": 0}, \"fastq_input\": {\"fastq_input_selector\": \"paired_collection\", \"__current_case__\": 2, \"iset_stats\": \"\"}, \"output_sort\": \"coordinate\", \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1}, \"rg\": {\"rg_selector\": \"do_not_set\", \"__current_case__\": 3}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "2.3+galaxy0",
+      "type": "tool",
+      "uuid": "6042141e-1fa4-42c0-94d1-2ec3ee36eab4",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "11": {
+      "annotation": "samtools view -b -q 20 -f 2 -F 3852. -F 3852 is 4+8+256+512+1024+2048: unmapped, mate unmapped, secondary, QC fail, duplicate, supplementary. What survives is the set of reads whose aligned subsequence over a window can be trusted as a string.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+      "errors": null,
+      "id": 11,
+      "input_connections": {
+        "input": {
+          "id": 10,
+          "output_name": "bam_output"
+        }
+      },
+      "inputs": [],
+      "label": "filter_bam",
+      "name": "Samtools view",
+      "outputs": [
+        {
+          "name": "outputsam",
+          "type": "input"
+        }
+      ],
+      "position": {
+        "left": 620,
+        "top": 0
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+      "tool_shed_repository": {
+        "changeset_revision": "5cf9fcc93508",
+        "name": "samtools_view",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"mode\": {\"outtype\": \"selected_reads\", \"__current_case__\": 1, \"filter_config\": {\"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cond_rg\": {\"select_rg\": \"no\", \"__current_case__\": 0}, \"cond_expr\": {\"select_expr\": \"no\", \"__current_case__\": 0}, \"quality\": \"20\", \"library\": \"\", \"cigarcons\": null, \"inclusive_filter\": [\"2\"], \"exclusive_filter\": [\"4\", \"8\", \"256\", \"512\", \"1024\", \"2048\"], \"exclusive_filter_all\": [], \"tag\": \"\", \"qname_file\": null}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"fraction\", \"__current_case__\": 0, \"factor\": \"1.0\", \"seed\": null}}, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"complementary_output\": false, \"adv_output\": {\"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "1.22+galaxy2",
+      "type": "tool",
+      "uuid": "d975898c-0820-4ed1-b9d1-95cbc9af40b2",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "filtered_bam",
+          "output_name": "outputsam",
+          "uuid": "fd04f344-dd55-43e8-8fd8-3151ff355164"
+        }
+      ]
+    },
+    "12": {
+      "annotation": "Cohort-level reduction. Scans a sample of the BAMs and sizes windows per reference sequence from the aligned block length distribution, then tiles only the region reads actually reach. Per reference sequence and not pooled, because amplicons differ in depth and fragment length: one cohort-wide size is set by whichever amplicon is deepest and is then too wide for the shallow ones, which lose their locus entirely.",
+      "content_id": "haplotype_define_windows",
+      "errors": null,
+      "id": 12,
+      "input_connections": {
+        "bams": {
+          "id": 11,
+          "output_name": "outputsam"
+        },
+        "ref": {
+          "id": 8,
+          "output_name": "output"
+        }
+      },
+      "inputs": [],
+      "label": "define_windows",
+      "name": "Define haplotype windows",
+      "outputs": [
+        {
+          "name": "windows",
+          "type": "bed"
+        }
+      ],
+      "position": {
+        "left": 940,
+        "top": 240
+      },
+      "post_job_actions": {},
+      "tool_id": "haplotype_define_windows",
+      "tool_state": "{\"legacy_spanning_target\": \"\", \"min_depth\": \"20\", \"min_spanning\": \"0.3\", \"sample\": \"20\", \"step\": \"0\", \"width_step\": \"10\", \"window_max\": \"0\", \"window_min\": \"40\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "0.7.0+galaxy0",
+      "type": "tool",
+      "uuid": "1a060c2b-f7bc-453e-923e-301a923a7f47",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "windows",
+          "output_name": "windows",
+          "uuid": "4335dddb-2eba-41c5-8c69-c536c3e2b5d0"
+        }
+      ]
+    },
+    "13": {
+      "annotation": "Maps over the BAM collection; every specimen gets the SAME windows. Specimen id left blank so the tool uses the collection element identifier. All three gates are exposed as workflow parameters: min_span spanning reads for the window to be called at all, then min_reads and min_freq for a haplotype within it. min_span fires first and is usually the one that decides whether a window survives.",
+      "content_id": "haplotype_window_caller",
+      "errors": null,
+      "id": 13,
+      "input_connections": {
+        "gates|min_freq": {
+          "id": 2,
+          "output_name": "output"
+        },
+        "gates|min_reads": {
+          "id": 3,
+          "output_name": "output"
+        },
+        "gates|min_span": {
+          "id": 1,
+          "output_name": "output"
+        },
+        "input": {
+          "id": 11,
+          "output_name": "outputsam"
+        },
+        "ref": {
+          "id": 8,
+          "output_name": "output"
+        },
+        "windows": {
+          "id": 12,
+          "output_name": "windows"
+        }
+      },
+      "inputs": [],
+      "label": "call_haplotypes",
+      "name": "Call window haplotypes",
+      "outputs": [
+        {
+          "name": "calls",
+          "type": "tabular"
+        }
+      ],
+      "position": {
+        "left": 1260,
+        "top": 0
+      },
+      "post_job_actions": {},
+      "tool_id": "haplotype_window_caller",
+      "tool_state": "{\"gates\": {\"denoise_edits\": \"1\", \"denoise_ratio\": \"8.0\"}, \"specimen\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "0.7.0+galaxy0",
+      "type": "tool",
+      "uuid": "7c127a49-0cec-4d37-9def-4ebc4d9d5ff5",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "calls",
+          "output_name": "calls",
+          "uuid": "fe1802fd-01c8-4b07-b715-4e731cc8ad3c"
+        }
+      ]
+    },
+    "14": {
+      "annotation": "Reduction: the sheet only means anything across specimens.\nmin_maf DEFAULTS TO 0, i.e. off. It was 0.05, justified by PyEuk weighting a column 1/sqrt(p(1-p)) -- minimised at p=0.5, divergent as p approaches 0, so rare alleles dominate. The pinned engine has not used that weighting since PyEuk 0.4.0: it defaults to heterozygosity 2p(1-p), under which rare columns hold 2.8% of the weight rather than 64.7%. The rationale was obsolete and the filter was doing measurable harm. At 0.05 on the Cyclospora cohort it deleted 33 of 48 columns and 19 of 28 windows, turned 2,443 called specimen-windows into empty locus blocks PyEuk reads as NOT CALLED, and left 82 specimen pairs sharing no locus at all -- their distance is then 1.0 by construction, not by measurement (max distance 1.3746 at 0.05, 0.7172 at 0). Scored against the vendor labels: ARI 0.9737 at 0.05 against 1.0000 at 0. On the Cryptosporidium titration it changes nothing -- same k=2, same 4/6 split, same pure-species controls on the correct sides, two extra columns.\nCaveat, measured not assumed: across five independently derived window sets on the same specimens, min_maf=0 gave 1.0000 on three, 0.9223 on one and 0.8001 on one, while 0.05 spanned a narrower 0.87-0.97. Zero raises the ceiling and widens the spread across windowings. Our deployed windowing is among the good ones, which is a property of this cohort rather than a general guarantee.\np is a fraction of SPECIMENS, not reads, so minor haplotypes within a mixture are untouched either way.",
+      "content_id": "haplotype_window_sheet",
+      "errors": null,
+      "id": 14,
+      "input_connections": {
+        "calls_in": {
+          "id": 13,
+          "output_name": "calls"
+        }
+      },
+      "inputs": [],
+      "label": "build_sheet",
+      "name": "Build haplotype sheet",
+      "outputs": [
+        {
+          "name": "sheet",
+          "type": "tabular"
+        },
+        {
+          "name": "hapmap",
+          "type": "tabular"
+        },
+        {
+          "name": "calls_long",
+          "type": "tabular"
+        },
+        {
+          "name": "dropped",
+          "type": "tabular"
+        }
+      ],
+      "position": {
+        "left": 1580,
+        "top": 120
+      },
+      "post_job_actions": {},
+      "tool_id": "haplotype_window_sheet",
+      "tool_state": "{\"min_freq\": \"0.0\", \"min_maf\": \"0.0\", \"min_reads\": \"0\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "0.7.0+galaxy0",
+      "type": "tool",
+      "uuid": "28493a2b-537f-4f88-abf2-495cc49194af",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "calls_long",
+          "output_name": "calls_long",
+          "uuid": "ace50335-de71-428a-910c-8a2005ee96ff"
+        },
+        {
+          "label": "sheet",
+          "output_name": "sheet",
+          "uuid": "698fc0c4-f33f-45e1-b019-085ec16d90c1"
+        },
+        {
+          "label": "haplotype_map",
+          "output_name": "hapmap",
+          "uuid": "bf6b2131-109d-418e-90eb-6b2de1ba5fa1"
+        }
+      ]
+    },
+    "15": {
+      "annotation": "LABEL-FREE: no gold file. Supplying labels here would make the clustering a fit rather than a prediction.\nResolves against PyEuk at current master, NOT the d8e45a81 pin the Cyclospora LoFreq/PyEuk arm uses. Two post-pin fixes are required here: 37f59a3, without which unobserved allele columns compress every distance about fivefold, and 13b808d, without which the minimum-cluster-size guard makes k&gt;1 unreachable for any cohort of n&lt;=9 and collapsed a 10-specimen 3-species cohort to k=1.",
+      "content_id": "haplotype_pyeuk",
+      "errors": null,
+      "id": 15,
+      "input_connections": {
+        "advanced|cut": {
+          "id": 5,
+          "output_name": "output"
+        },
+        "advanced|linkage_threshold": {
+          "id": 6,
+          "output_name": "output"
+        },
+        "advanced|min_completeness": {
+          "id": 7,
+          "output_name": "output"
+        },
+        "advanced|project_psd": {
+          "id": 4,
+          "output_name": "output"
+        },
+        "sheet": {
+          "id": 14,
+          "output_name": "sheet"
+        }
+      },
+      "inputs": [],
+      "label": "pyeuk",
+      "name": "PyEuk cluster (current)",
+      "outputs": [
+        {
+          "name": "distance_matrix",
+          "type": "tabular"
+        },
+        {
+          "name": "clusters",
+          "type": "tabular"
+        },
+        {
+          "name": "sweep",
+          "type": "json"
+        },
+        {
+          "name": "report",
+          "type": "html"
+        }
+      ],
+      "position": {
+        "left": 1900,
+        "top": 120
+      },
+      "post_job_actions": {},
+      "tool_id": "haplotype_pyeuk",
+      "tool_state": "{\"advanced\": {\"k_min\": \"2\", \"k_max\": \"50\", \"report_excluded\": true}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "0.7.0+galaxy0",
+      "type": "tool",
+      "uuid": "c8149111-ba10-4fa5-b406-d12677f068c4",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "distance_matrix",
+          "output_name": "distance_matrix",
+          "uuid": "7bbe791b-2d1f-47b9-bea3-2dedd0a07455"
+        },
+        {
+          "label": "clusters",
+          "output_name": "clusters",
+          "uuid": "99ba9633-0914-4fd7-8b19-f5458d57872c"
+        }
+      ]
+    }
+  },
+  "tags": [
+    "amplicon",
+    "cyclospora",
+    "mlst",
+    "pyeuk",
+    "typing"
+  ],
+  "uuid": "0e167c07-6644-4391-947b-4b04a76160b6",
+  "version": 0,
+  "release": "0.1"
+}
