@@ -90,8 +90,11 @@ The checklist below intentionally includes every workflow-review requirement fro
 
    ### Changelog
 
-   - [ ] The changelog has an appropriate entry describing the changes.
-   - [ ] The entry follows semantic versioning and includes a version number and date.
+   - [ ] The changelog has a new entry, and it describes what actually changed rather than restating the version.
+   - [ ] The entry heading carries a version number and a date, in the form `## [1.5] - 2026-07-06`.
+   - [ ] The size of the version bump matches the scope of the change. A renamed input or output label is not a patch-level change.
+
+   `planemo workflow_lint --iwc` already checks that the `.ga` `release` field matches the changelog version, and IWC CI runs it on every pull request. Read that result rather than re-deriving it: report a lint failure, do not repeat the check by hand.
 
    ### Test files and data
 
