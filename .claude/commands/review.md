@@ -28,8 +28,9 @@ The checklist below intentionally includes every workflow-review requirement fro
 
    - [ ] A `.dockstore.yml` file is present in the workflow folder. It is required to run tests.
    - [ ] Its authors match the creator metadata in the `.ga` workflow file.
-   - [ ] ORCID identifiers are provided for authors; they are strongly encouraged rather than required.
    - [ ] Its workflow and test file paths resolve to the correct files.
+
+   ORCID identifiers for authors are strongly encouraged but not required. Note missing ones as an optional improvement; never as a blocking finding.
 
    ### License and ownership
 
