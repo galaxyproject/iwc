@@ -10,7 +10,7 @@ This review applies to changes under `workflows/`. If the pull request does not 
 
 Read both `.github/PULL_REQUEST_TEMPLATE.md` and `.github/copilot-instructions.md` from the pull request's base branch before reviewing. Apply the union of their workflow-review requirements. If either file has changed in the pull request, distinguish the existing base-branch policy from the proposed policy change and flag any conflict for human discussion.
 
-The checklist below intentionally includes every workflow-review requirement from the Copilot instructions and adds the execution and reporting procedure for this command.
+The checklist below intentionally includes every workflow-review requirement from the Copilot instructions, adds the contributor-checklist items a reviewer can confirm, and adds the execution and reporting procedure for this command.
 
 ## Your Task
 
@@ -30,6 +30,11 @@ The checklist below intentionally includes every workflow-review requirement fro
    - [ ] Its authors match the creator metadata in the `.ga` workflow file.
    - [ ] ORCID identifiers are provided for authors; they are strongly encouraged rather than required.
    - [ ] Its workflow and test file paths resolve to the correct files.
+
+   ### License and ownership
+
+   - [ ] The `.ga` workflow file has a `license` field, and the license permits unrestricted use, both educational and commercial.
+   - [ ] The workflow folder has an entry in `.github/CODEOWNERS`.
 
    ### Workflow genericity
 
