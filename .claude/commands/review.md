@@ -19,6 +19,7 @@ The checklist below intentionally includes every workflow-review requirement fro
    - Base and head revisions
    - List of changed files
    - The actual file changes (diff)
+   - Relevant CI check names, conclusions, and failure details using `gh pr checks` and, when needed, `gh run view`
 
 2. Read the changed workflow files and enough existing repository examples to understand the applicable IWC conventions. Do not infer compliance from the diff alone when a requirement depends on the complete contents of a file.
 
@@ -93,9 +94,11 @@ The checklist below intentionally includes every workflow-review requirement fro
 
    - [ ] The changelog has a new entry, and it describes what actually changed rather than restating the version.
    - [ ] The entry heading carries a version number and a date, in the form `## [1.5] - 2026-07-06`.
-   - [ ] The size of the version bump matches the scope of the change. A renamed input or output label is not a patch-level change.
+   - [ ] The release bump is appropriate for the scope of the change under the repository's current workflow-versioning practice.
 
-   `planemo workflow_lint --iwc` already checks that the `.ga` `release` field matches the changelog version, and IWC CI runs it on every pull request. Read that result rather than re-deriving it: report a lint failure, do not repeat the check by hand.
+   The Copilot instructions ask reviewers to apply semantic versioning, while `bump_version.py` notes that IWC changelogs do not necessarily follow semantic versioning. Treat an apparently breaking change, including a renamed input or output label, as requiring human versioning review rather than asserting a particular bump category while that policy remains ambiguous.
+
+   `planemo workflow_lint --iwc` checks that the `.ga` `release` field matches the changelog version. When the IWC workflow-lint check ran and its result is accessible, rely on that result: report a lint failure rather than repeating the check by hand. The workflow CI excludes Markdown-only changes, so if the lint check is absent or inaccessible, verify the versions directly or mark the item as unverified; never infer that it passed.
 
    ### Test files and data
 
