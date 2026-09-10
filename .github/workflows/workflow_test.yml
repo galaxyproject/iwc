@@ -190,7 +190,7 @@ jobs:
   deploy-report:
     name: Report deploy status
     needs: [deploy]
-    if: ${{ always() && needs.deploy.result != 'success' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
+    if: ${{ always() && needs.deploy.result == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
     runs-on: ubuntu-latest
     steps:
     # report to the PR if deployment failed
@@ -200,6 +200,7 @@ jobs:
       with:
         sha: ${{ github.event.after }}
     - name: Create comment
+      if: steps.getpr.outputs.number != ''
       uses: peter-evans/create-or-update-comment@v4
       with:
         token: ${{ secrets.PAT }}
