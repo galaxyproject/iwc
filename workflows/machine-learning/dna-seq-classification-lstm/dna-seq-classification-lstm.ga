@@ -1,0 +1,1428 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow performs DNA sequence classification using an LSTM neural network to generate predicted labels from test DNA sequences",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "0000-0002-2068-4695",
+            "name": "Anup Kumar"
+        }
+    ],
+    "format-version": "0.1",
+    "release": "0.1",
+    "help": "# \ud83e\uddec DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon\u2013intron boundary, an intron\u2013exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\n\n---\n\n## Key features\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: 99 (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam  \n- Loss function: categorical crossentropy  \n- Metrics: categorical accuracy  \n\nTraining parameters:\n- Epochs: 10  \n- Batch size: 32\n- Validation split: 10%  \n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values. \n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Metrics reported:\n  - Accuracy\n  - F1-score (macro)\n  - Recall (macro)\n\n- Outputs:\n  - Predictions on test data\n  - Class probabilities\n  - Confusion matrix visualization\n\nA higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained model\n- Prediction results (labels)\n- Prediction probabilities\n- Evaluation metrics\n- Confusion matrix plot\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats.\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\".\n- Suitable for multi-class classification problems\n\n---\n\n## License\nMIT License",
+    "license": "MIT",
+    "name": "Workflow for DNA sequence classification using LSTM neural network (imported from uploaded file)",
+    "readme": "# \ud83e\uddec DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon\u2013intron boundary, an intron\u2013exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\n\n---\n\n## Key features\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: 99 (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam  \n- Loss function: categorical crossentropy  \n- Metrics: categorical accuracy  \n\nTraining parameters:\n- Epochs: 10  \n- Batch size: 32\n- Validation split: 10%  \n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values. \n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Metrics reported:\n  - Accuracy\n  - F1-score (macro)\n  - Recall (macro)\n\n- Outputs:\n  - Predictions on test data\n  - Class probabilities\n  - Confusion matrix visualization\n\nA higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained model\n- Prediction results (labels)\n- Prediction probabilities\n- Evaluation metrics\n- Confusion matrix plot\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats.\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\".\n- Suitable for multi-class classification problems\n\n---\n\n## License\nMIT License",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "DNA sequences in FASTA format",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "DNA sequences in FASTA format",
+                    "name": "DNA sequences"
+                }
+            ],
+            "label": "DNA sequences",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 263.45585409171326
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "fdd460c7-eb78-446c-9db1-1e3946203a99",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Kmer size",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 621.7443971832874,
+                "top": 258.09162870579536
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"3\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "c6771b70-658d-4a59-846e-6026b239e278",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Task specific categories/labels/classes in tabular format",
+            "content_id": null,
+            "errors": null,
+            "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Task specific categories/labels/classes in tabular format",
+                    "name": "Task specific categories/labels/classes of DNA sequences"
+                }
+            ],
+            "label": "Task specific categories/labels/classes of DNA sequences",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 698.0079067476316,
+                "top": 701.3139748540484
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "175b23b7-d075-4237-8fd3-9745d095c3d4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 3,
+            "input_connections": {},
+            "inputs": [],
+            "label": "LSTM layer units",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1329.5765421685157,
+                "top": 1.6376543751732486
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"256\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "341ca658-9c7d-4d5e-967f-cc8b84769fc1",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 4,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Embedding output dimensions",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1592.4482498304658,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"128\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "cdde5eba-7bdb-4ded-b77e-6d2c3ccd07d9",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 5,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Dense layer units",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1459.079433050337,
+                "top": 792.7655729278086
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"64\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "3c90b01f-d96f-4f2b-88ba-31f024a36127",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 6,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Number of training epochs",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1839.1249689643184,
+                "top": 589.0200059083514
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"10\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "23fdeec2-7f8b-462f-b859-fa44a577705f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "errors": null,
+            "id": 7,
+            "input_connections": {},
+            "inputs": [],
+            "label": "Batch size",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_integer",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1836.7122350832867,
+                "top": 710.3334057934867
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "a01f088d0e5e",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"32\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "3b0cbcc3-23dd-4599-b587-2a00f34edead",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.4",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "ref|input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Compute sequence length",
+                    "name": "ref"
+                }
+            ],
+            "label": "Compute sequence length",
+            "name": "Compute sequence length",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 270.92747048254984,
+                "top": 34.70471237901502
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.4",
+            "tool_shed_repository": {
+                "changeset_revision": "5cbde03c1103",
+                "name": "fasta_compute_length",
+                "owner": "devteam",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"ref\": {\"ref_source\": \"history\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}, \"keep_first\": \"0\", \"keep_first_word\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.4",
+            "type": "tool",
+            "uuid": "fc22cd0e-94eb-4698-ad12-0ca15c05be4e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.2",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "encoder_type|fasta_path": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool To categorical",
+                    "name": "encoder_type"
+                }
+            ],
+            "label": null,
+            "name": "To categorical",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "tabular"
+                },
+                {
+                    "name": "outfile_vocab",
+                    "type": "json"
+                }
+            ],
+            "position": {
+                "left": 269.4585236731406,
+                "top": 225.8332229196206
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.2",
+            "tool_shed_repository": {
+                "changeset_revision": "f86c0419af43",
+                "name": "sklearn_to_categorical",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"encoder_type\": {\"task_type\": \"dna_encoder\", \"__current_case__\": 1, \"fasta_path\": {\"__class__\": \"ConnectedValue\"}, \"sequence_encoding\": {\"encoding_method\": \"kmer\", \"__current_case__\": 1, \"kmer_size\": \"3\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.2",
+            "type": "tool",
+            "uuid": "e57cef5e-7360-42c5-a6ec-dbe6532da2a6",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "10": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "in_file": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Compute unique number of classes",
+            "name": "Datamash",
+            "outputs": [
+                {
+                    "name": "out_file",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 958.124528453371,
+                "top": 642.6230638803797
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "aaafc0ac4dd2",
+                "name": "datamash_ops",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"grouping\": null, \"header_in\": false, \"header_out\": false, \"ignore_case\": false, \"in_file\": {\"__class__\": \"ConnectedValue\"}, \"narm\": false, \"need_sort\": false, \"operations\": [{\"__index__\": 0, \"op_name\": \"countunique\", \"op_column\": \"1\"}], \"print_full_line\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.9+galaxy0",
+            "type": "tool",
+            "uuid": "3c65ca7e-127f-4718-aeb1-067d1124c714",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_label_encoder/sklearn_label_encoder/1.0.11.2",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "infile": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Label encoder",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 950.7555526284374,
+                "top": 861.0362996990967
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_label_encoder/sklearn_label_encoder/1.0.11.2",
+            "tool_shed_repository": {
+                "changeset_revision": "ac52a5916963",
+                "name": "sklearn_label_encoder",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"header0\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.2",
+            "type": "tool",
+            "uuid": "b303b6e9-e313-4f1d-855c-ed6ccff327b9",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "in_file": {
+                    "id": 8,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Extract maximum sequence length",
+            "name": "Datamash",
+            "outputs": [
+                {
+                    "name": "out_file",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 510.94122544323284,
+                "top": 52.639433206318216
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "aaafc0ac4dd2",
+                "name": "datamash_ops",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"grouping\": null, \"header_in\": false, \"header_out\": false, \"ignore_case\": false, \"in_file\": {\"__class__\": \"ConnectedValue\"}, \"narm\": false, \"need_sort\": false, \"operations\": [{\"__index__\": 0, \"op_name\": \"max\", \"op_column\": \"2\"}], \"print_full_line\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.9+galaxy0",
+            "type": "tool",
+            "uuid": "a056b0e0-0377-4637-b1c0-8b5c718225a1",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
+            "errors": null,
+            "id": 13,
+            "input_connections": {
+                "infile": {
+                    "id": 9,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Replace Text",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 713.1341952093333,
+                "top": 426.6804708576424
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"infile\": {\"__class__\": \"ConnectedValue\"}, \"replacements\": [{\"__index__\": 0, \"find_pattern\": \"\\\\t\", \"replace_pattern\": \"\\\\n\", \"sed_options\": null}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "9c6057b4-cfa6-40fb-8669-d3a3dc97e99d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "14": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 14,
+            "input_connections": {
+                "input1": {
+                    "id": 10,
+                    "output_name": "out_file"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1200.942978209781,
+                "top": 636.1956209356215
+            },
+            "post_job_actions": {},
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "dcae69b6-0e4c-4e6f-bed5-e4f09e7306ad",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "15": {
+            "annotation": "",
+            "content_id": "Paste1",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
+                "input1": {
+                    "id": 9,
+                    "output_name": "outfile"
+                },
+                "input2": {
+                    "id": 11,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Paste",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1205.9816983367955,
+                "top": 859.6480415618383
+            },
+            "post_job_actions": {},
+            "tool_id": "Paste1",
+            "tool_state": "{\"delimiter\": \"T\", \"input1\": {\"__class__\": \"ConnectedValue\"}, \"input2\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "2cbbfd1b-6a5b-4310-9425-1c728535a358",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "16": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 16,
+            "input_connections": {
+                "input1": {
+                    "id": 12,
+                    "output_name": "out_file"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 748.1120844305219,
+                "top": 33.04047179211632
+            },
+            "post_job_actions": {},
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "33553746-ea05-4a95-a5ba-a70d07918b70",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "17": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "errors": null,
+            "id": 17,
+            "input_connections": {
+                "in_file": {
+                    "id": 13,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Extract maximum index number from all kmers",
+            "name": "Datamash",
+            "outputs": [
+                {
+                    "name": "out_file",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 955.7410621656719,
+                "top": 490.9866146783522
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "aaafc0ac4dd2",
+                "name": "datamash_ops",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"grouping\": null, \"header_in\": false, \"header_out\": false, \"ignore_case\": false, \"in_file\": {\"__class__\": \"ConnectedValue\"}, \"narm\": false, \"need_sort\": false, \"operations\": [{\"__index__\": 0, \"op_name\": \"max\", \"op_column\": \"1\"}], \"print_full_line\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.9+galaxy0",
+            "type": "tool",
+            "uuid": "133bf4e3-a2f0-4c21-bdab-4fae32b8a47a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "18": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_train_test_split/sklearn_train_test_split/1.0.11.2",
+            "errors": null,
+            "id": 18,
+            "input_connections": {
+                "infile_array": {
+                    "id": 15,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Split Dataset",
+            "outputs": [
+                {
+                    "name": "out_train",
+                    "type": "tabular"
+                },
+                {
+                    "name": "out_test",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1440.7555526284375,
+                "top": 981.0362996990967
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_train_test_split/sklearn_train_test_split/1.0.11.2",
+            "tool_shed_repository": {
+                "changeset_revision": "e8e5736b632d",
+                "name": "sklearn_train_test_split",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"header0\": true, \"infile_array\": {\"__class__\": \"ConnectedValue\"}, \"mode_selection\": {\"selected_mode\": \"train_test_split\", \"__current_case__\": 0, \"options\": {\"test_size\": \"0.25\", \"random_state\": \"42\", \"shuffle_selection\": {\"shuffle\": \"simple\", \"__current_case__\": 1}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.2",
+            "type": "tool",
+            "uuid": "771a988f-1cad-4a19-841e-e24174adf92a",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "19": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
+            "errors": null,
+            "id": 19,
+            "input_connections": {
+                "components_0|param_type|component_value": {
+                    "id": 16,
+                    "output_name": "integer_param"
+                },
+                "components_1|param_type|component_value": {
+                    "id": 1,
+                    "output_name": "output_param_integer"
+                }
+            },
+            "inputs": [],
+            "label": "Compute embedding input dimension",
+            "name": "Calculate numeric parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1014.9689104955521,
+                "top": 146.4626432780708
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "0e586762f97b",
+                "name": "calculate_numeric_param",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}, \"arith\": \"-\"}, {\"__index__\": 1, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}, \"arith\": \"+\"}, {\"__index__\": 2, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": \"1\"}, \"arith\": \"\"}], \"output_type\": \"integer\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "818b8c62-7280-4051-a8cf-b58a1e063212",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "20": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 20,
+            "input_connections": {
+                "input1": {
+                    "id": 17,
+                    "output_name": "out_file"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1204.1078158581429,
+                "top": 408.1236701873736
+            },
+            "post_job_actions": {},
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "b9ba426d-1814-4f3d-b7c9-c3b3f9b0cefd",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "21": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 21,
+            "input_connections": {
+                "input": {
+                    "id": 18,
+                    "output_name": "out_train"
+                }
+            },
+            "inputs": [],
+            "label": "y_train",
+            "name": "Cut",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 1834.2694920743816,
+                "top": 836.766362893846
+            },
+            "post_job_actions": {},
+            "tool_id": "Cut1",
+            "tool_state": "{\"columnList\": \"c59\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "1ceb365f-f1e7-4442-88b0-da448f28032f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "22": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 22,
+            "input_connections": {
+                "input": {
+                    "id": 18,
+                    "output_name": "out_train"
+                }
+            },
+            "inputs": [],
+            "label": "X_train",
+            "name": "Cut",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2068.5177433423623,
+                "top": 908.4150312623893
+            },
+            "post_job_actions": {},
+            "tool_id": "Cut1",
+            "tool_state": "{\"columnList\": \"c1-c58\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "284cd62e-3f8f-45a2-b760-d0a3931aaedd",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "23": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 23,
+            "input_connections": {
+                "input": {
+                    "id": 18,
+                    "output_name": "out_test"
+                }
+            },
+            "inputs": [],
+            "label": "X_test",
+            "name": "Cut",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2345.360950714031,
+                "top": 978.1297988965325
+            },
+            "post_job_actions": {},
+            "tool_id": "Cut1",
+            "tool_state": "{\"columnList\": \"c1-c58\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "ca838a28-1ebf-49b8-b947-7c7aece49ad4",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "24": {
+            "annotation": "",
+            "content_id": "Cut1",
+            "errors": null,
+            "id": 24,
+            "input_connections": {
+                "input": {
+                    "id": 18,
+                    "output_name": "out_test"
+                }
+            },
+            "inputs": [],
+            "label": "y_test",
+            "name": "Cut",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2376.9091717333736,
+                "top": 1120.3471821442697
+            },
+            "post_job_actions": {},
+            "tool_id": "Cut1",
+            "tool_state": "{\"columnList\": \"c59\", \"delimiter\": \"T\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.2",
+            "type": "tool",
+            "uuid": "1aa862ee-bb74-4323-8a55-79f2d51bded0",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "25": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
+            "errors": null,
+            "id": 25,
+            "input_connections": {
+                "components_1|param_type|component_value": {
+                    "id": 19,
+                    "output_name": "integer_param"
+                }
+            },
+            "inputs": [],
+            "label": "Compose input dimension to LSTM network",
+            "name": "Compose text parameter value",
+            "outputs": [
+                {
+                    "name": "out1",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1391.0282964426829,
+                "top": 147.52895199208962
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "e188c9826e0f",
+                "name": "compose_text_param",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": \"(\"}}, {\"__index__\": 1, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 1, \"component_value\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 2, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": \",)\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "fa8938d8-103c-4bb2-8102-a6212291de64",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "26": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
+            "errors": null,
+            "id": 26,
+            "input_connections": {
+                "components_0|param_type|component_value": {
+                    "id": 20,
+                    "output_name": "integer_param"
+                }
+            },
+            "inputs": [],
+            "label": "Compute input dimension of embedding layer",
+            "name": "Calculate numeric parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1439.9272325273525,
+                "top": 360.6843968381769
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "0e586762f97b",
+                "name": "calculate_numeric_param",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}, \"arith\": \"+\"}, {\"__index__\": 1, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": \"1\"}, \"arith\": \"\"}], \"output_type\": \"integer\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "2de1b3bd-11af-4da8-90bd-d51c3929208f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "27": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.1",
+            "errors": null,
+            "id": 27,
+            "input_connections": {
+                "infile": {
+                    "id": 21,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": null,
+            "name": "To categorical",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2079.083582152534,
+                "top": 771.3504966061108
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.1",
+            "tool_shed_repository": {
+                "changeset_revision": "89f11e2b0673",
+                "name": "sklearn_to_categorical",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"header0\": false, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"num_classes\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.1",
+            "type": "tool",
+            "uuid": "550e9363-b57e-4f6a-a357-ed3e05393c3e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "28": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_config/keras_model_config/1.0.11.0",
+            "errors": null,
+            "id": 28,
+            "input_connections": {
+                "model_selection|input_shape": {
+                    "id": 25,
+                    "output_name": "out1"
+                },
+                "model_selection|layers_0|layer_selection|input_dim": {
+                    "id": 26,
+                    "output_name": "integer_param"
+                },
+                "model_selection|layers_0|layer_selection|output_dim": {
+                    "id": 4,
+                    "output_name": "output_param_integer"
+                },
+                "model_selection|layers_1|layer_selection|units": {
+                    "id": 3,
+                    "output_name": "output_param_integer"
+                },
+                "model_selection|layers_2|layer_selection|units": {
+                    "id": 3,
+                    "output_name": "output_param_integer"
+                },
+                "model_selection|layers_3|layer_selection|units": {
+                    "id": 5,
+                    "output_name": "output_param_integer"
+                },
+                "model_selection|layers_4|layer_selection|units": {
+                    "id": 14,
+                    "output_name": "integer_param"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Create a deep learning model architecture",
+                    "name": "model_selection"
+                }
+            ],
+            "label": null,
+            "name": "Create a deep learning model architecture",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "json"
+                }
+            ],
+            "position": {
+                "left": 1807.6255127777702,
+                "top": 138.00264812716256
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_config/keras_model_config/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "01131463df86",
+                "name": "keras_model_config",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"model_selection\": {\"model_type\": \"sequential\", \"__current_case__\": 0, \"input_shape\": {\"__class__\": \"ConnectedValue\"}, \"layers\": [{\"__index__\": 0, \"layer_selection\": {\"layer_type\": \"Embedding\", \"__current_case__\": 53, \"input_dim\": {\"__class__\": \"ConnectedValue\"}, \"output_dim\": {\"__class__\": \"ConnectedValue\"}, \"kwargs\": \"\"}}, {\"__index__\": 1, \"layer_selection\": {\"layer_type\": \"LSTM\", \"__current_case__\": 45, \"units\": {\"__class__\": \"ConnectedValue\"}, \"kwargs\": \"return_sequences=True\"}}, {\"__index__\": 2, \"layer_selection\": {\"layer_type\": \"LSTM\", \"__current_case__\": 45, \"units\": {\"__class__\": \"ConnectedValue\"}, \"kwargs\": \"\"}}, {\"__index__\": 3, \"layer_selection\": {\"layer_type\": \"Dense\", \"__current_case__\": 0, \"units\": {\"__class__\": \"ConnectedValue\"}, \"activation\": \"elu\", \"kwargs\": \"\"}}, {\"__index__\": 4, \"layer_selection\": {\"layer_type\": \"Dense\", \"__current_case__\": 0, \"units\": {\"__class__\": \"ConnectedValue\"}, \"activation\": \"softmax\", \"kwargs\": \"\"}}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "d6427237-fdae-40c8-85dd-4cc5df797777",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "29": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_builder/keras_model_builder/1.0.11.0",
+            "errors": null,
+            "id": 29,
+            "input_connections": {
+                "mode_selection|fit_params|batch_size": {
+                    "id": 7,
+                    "output_name": "output_param_integer"
+                },
+                "mode_selection|fit_params|epochs": {
+                    "id": 6,
+                    "output_name": "output_param_integer"
+                },
+                "mode_selection|infile_json": {
+                    "id": 28,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Create deep learning model",
+                    "name": "mode_selection"
+                }
+            ],
+            "label": null,
+            "name": "Create deep learning model",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "h5mlm"
+                }
+            ],
+            "position": {
+                "left": 2078.2247274734314,
+                "top": 528.3939571403739
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_builder/keras_model_builder/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "beeeda757eba",
+                "name": "keras_model_builder",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"mode_selection\": {\"mode_type\": \"train_model\", \"__current_case__\": 0, \"infile_json\": {\"__class__\": \"ConnectedValue\"}, \"learning_type\": \"KerasGClassifier\", \"compile_params\": {\"loss\": \"categorical_crossentropy\", \"optimizer_selection\": {\"optimizer_type\": \"Adam\", \"__current_case__\": 4, \"optimizer_options\": {\"learning_rate\": \"0.001\", \"beta_1\": \"0.9\", \"beta_2\": \"0.999\", \"epsilon\": \"1e-07\", \"amsgrad\": false}}, \"metrics\": [\"categorical_accuracy\"]}, \"fit_params\": {\"epochs\": {\"__class__\": \"ConnectedValue\"}, \"batch_size\": {\"__class__\": \"ConnectedValue\"}, \"steps_per_epoch\": null, \"validation_split\": \"0.1\", \"validation_steps\": null, \"callbacks\": [{\"__index__\": 0, \"callback_selection\": {\"callback_type\": \"None\", \"__current_case__\": 0}}], \"verbose\": \"1\"}, \"random_seed\": null}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "b634d5ef-08d8-4e94-bb9d-4911e406d1c8",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "30": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/1.0.11.0",
+            "errors": null,
+            "id": 30,
+            "input_connections": {
+                "experiment_schemes|infile_estimator": {
+                    "id": 29,
+                    "output_name": "outfile"
+                },
+                "input_options|infile1": {
+                    "id": 22,
+                    "output_name": "out_file1"
+                },
+                "input_options|infile2": {
+                    "id": 27,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Deep learning training and evaluation",
+                    "name": "experiment_schemes"
+                },
+                {
+                    "description": "runtime parameter for tool Deep learning training and evaluation",
+                    "name": "input_options"
+                },
+                {
+                    "description": "runtime parameter for tool Deep learning training and evaluation",
+                    "name": "input_options"
+                }
+            ],
+            "label": null,
+            "name": "Deep learning training and evaluation",
+            "outputs": [
+                {
+                    "name": "outfile_result",
+                    "type": "tabular"
+                },
+                {
+                    "name": "outfile_object",
+                    "type": "h5mlm"
+                },
+                {
+                    "name": "outfile_y_true",
+                    "type": "tabular"
+                },
+                {
+                    "name": "outfile_y_preds",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2310.832448182748,
+                "top": 466.4432217397409
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "aeee74692508",
+                "name": "keras_train_and_eval",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__job_resource\": {\"__job_resource__select\": \"no\", \"__current_case__\": 0}, \"experiment_schemes\": {\"selected_exp_scheme\": \"train_val\", \"__current_case__\": 0, \"infile_estimator\": {\"__class__\": \"ConnectedValue\"}, \"hyperparams_swapping\": {\"param_set\": [{\"__index__\": 0, \"sp_name\": null, \"sp_value\": \"\"}]}, \"test_split\": {\"split_algos\": {\"shuffle\": \"simple\", \"__current_case__\": 1, \"test_size\": \"0.2\", \"random_state\": null}}, \"metrics\": {\"scoring\": {\"primary_scoring\": \"accuracy\", \"__current_case__\": 1, \"secondary_scoring\": [\"f1_macro\", \"recall_macro\"]}}}, \"input_options\": {\"selected_input\": \"tabular\", \"__current_case__\": 0, \"infile1\": {\"__class__\": \"ConnectedValue\"}, \"header1\": false, \"column_selector_options_1\": {\"selected_column_selector_option\": \"all_columns\", \"__current_case__\": 4}, \"infile2\": {\"__class__\": \"ConnectedValue\"}, \"header2\": false, \"column_selector_options_2\": {\"selected_column_selector_option2\": \"all_columns\", \"__current_case__\": 4}}, \"save\": [\"save_estimator\", \"save_prediction\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "44d5736d-df8c-4bfa-9392-8c64dbffb489",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "31": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
+            "errors": null,
+            "id": 31,
+            "input_connections": {
+                "infile_estimator": {
+                    "id": 30,
+                    "output_name": "outfile_object"
+                },
+                "input_options|infile1": {
+                    "id": 23,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Model Prediction",
+                    "name": "input_options"
+                }
+            ],
+            "label": null,
+            "name": "Model Prediction",
+            "outputs": [
+                {
+                    "name": "outfile_predict",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2621.1090124753646,
+                "top": 471.9654639396179
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "475b5171945f",
+                "name": "model_prediction",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/cvmfs/data.galaxyproject.org/managed/len/ucsc/?.len\", \"infile_estimator\": {\"__class__\": \"ConnectedValue\"}, \"input_options\": {\"selected_input\": \"tabular\", \"__current_case__\": 0, \"infile1\": {\"__class__\": \"ConnectedValue\"}, \"header1\": false, \"column_selector_options_1\": {\"selected_column_selector_option\": \"all_columns\", \"__current_case__\": 4}}, \"method\": \"predict\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "0d1b330b-eda9-4883-b9b1-e618d6abbaec",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Predicted labels",
+                    "output_name": "outfile_predict",
+                    "uuid": "7e8dea84-1104-456d-a9e6-33df5a4c1969"
+                }
+            ]
+        },
+        "32": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
+            "errors": null,
+            "id": 32,
+            "input_connections": {
+                "infile_estimator": {
+                    "id": 30,
+                    "output_name": "outfile_object"
+                },
+                "input_options|infile1": {
+                    "id": 23,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Model Prediction",
+                    "name": "input_options"
+                }
+            ],
+            "label": "Model prediction: class probabilities",
+            "name": "Model Prediction",
+            "outputs": [
+                {
+                    "name": "outfile_predict",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 2617.048589917027,
+                "top": 760.7146052380599
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "475b5171945f",
+                "name": "model_prediction",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"infile_estimator\": {\"__class__\": \"ConnectedValue\"}, \"input_options\": {\"selected_input\": \"tabular\", \"__current_case__\": 0, \"infile1\": {\"__class__\": \"ConnectedValue\"}, \"header1\": false, \"column_selector_options_1\": {\"selected_column_selector_option\": \"all_columns\", \"__current_case__\": 4}}, \"method\": \"predict_proba\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "f87684c1-ba66-475d-b563-877f994c6f78",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "33": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/ml_visualization_ex/ml_visualization_ex/1.0.11.0",
+            "errors": null,
+            "id": 33,
+            "input_connections": {
+                "plotting_selection|infile_predicted": {
+                    "id": 31,
+                    "output_name": "outfile_predict"
+                },
+                "plotting_selection|infile_true": {
+                    "id": 24,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Machine Learning Visualization Extension",
+                    "name": "plotting_selection"
+                },
+                {
+                    "description": "runtime parameter for tool Machine Learning Visualization Extension",
+                    "name": "plotting_selection"
+                }
+            ],
+            "label": null,
+            "name": "Machine Learning Visualization Extension",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "html"
+                }
+            ],
+            "position": {
+                "left": 2920.954216362093,
+                "top": 875.1455054239258
+            },
+            "post_job_actions": {
+                "RenameDatasetActionoutput": {
+                    "action_arguments": {
+                        "newname": "Confusion matrix"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/ml_visualization_ex/ml_visualization_ex/1.0.11.0",
+            "tool_shed_repository": {
+                "changeset_revision": "5f9c0e99016f",
+                "name": "ml_visualization_ex",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/cvmfs/data.galaxyproject.org/managed/len/ucsc/?.len\", \"plotting_selection\": {\"plot_type\": \"classification_confusion_matrix\", \"__current_case__\": 6, \"infile_true\": {\"__class__\": \"ConnectedValue\"}, \"header_true\": false, \"column_selector_options_true\": {\"selected_column_selector_option\": \"all_columns\", \"__current_case__\": 4}, \"infile_predicted\": {\"__class__\": \"ConnectedValue\"}, \"header_predicted\": true, \"title\": \"Confusion matrix between true and predicted labels\", \"plot_format\": \"png\", \"plot_color\": \"Greens\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.0",
+            "type": "tool",
+            "uuid": "44239ae1-5adf-49da-8f4c-b9d7e094d1d8",
+            "when": null,
+            "workflow_outputs": []
+        }
+    },
+    "tags": [],
+    "uuid": "acced357-d3ce-4c94-82d1-59a60bee4656",
+    "version": 3
+}
