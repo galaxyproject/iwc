@@ -1,0 +1,270 @@
+{
+  "a_galaxy_workflow": "true",
+  "annotation": "PyEuk Panel Inference: FASTQs + reference genome -> map to genome -> coverage peaks -> amplicon panel FASTA. Reconstructs the panel from data when none is available; output feeds the Standard workflow.",
+  "comments": [],
+  "creator": [
+    {
+      "class": "Person",
+      "name": "Anton Nekrutenko"
+    },
+    {
+      "class": "Person",
+      "name": "Sergei Pond"
+    }
+  ],
+  "format-version": "0.1",
+  "license": "MIT",
+  "name": "PyEuk Panel Inference (derive panel from data)",
+  "steps": {
+    "0": {
+      "annotation": "Adapter/quality-trimmed paired FASTQ, one pair per specimen. The list element identifier IS the specimen id: it becomes column 1 of the calls and the row id of the sheet, so it must match [A-Za-z0-9_.-]+.",
+      "content_id": null,
+      "errors": null,
+      "id": 0,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Adapter/quality-trimmed paired FASTQ, one pair per specimen. The list element identifier IS the specimen id: it becomes column 1 of the calls and the row id of the sheet, so it must match [A-Za-z0-9_.-]+.",
+          "name": "reads"
+        }
+      ],
+      "label": "reads",
+      "name": "Input dataset collection",
+      "outputs": [],
+      "position": {
+        "left": 0,
+        "top": 0
+      },
+      "tool_id": null,
+      "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
+      "tool_version": null,
+      "type": "data_collection_input",
+      "uuid": "e79822d3-2e9f-4212-8dc7-1d59518329a9",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "1": {
+      "annotation": "Reference GENOME the reads are mapped to (peaks = amplicons).",
+      "content_id": null,
+      "errors": null,
+      "id": 1,
+      "input_connections": {},
+      "inputs": [
+        {
+          "description": "Reference GENOME the reads are mapped to (peaks = amplicons).",
+          "name": "genome"
+        }
+      ],
+      "label": "genome",
+      "name": "Input dataset",
+      "outputs": [],
+      "position": {
+        "left": 0,
+        "top": 240
+      },
+      "tool_id": null,
+      "tool_state": "{\"optional\": false, \"tag\": null}",
+      "tool_version": null,
+      "type": "data_input",
+      "uuid": "c13ffb6c-92a7-4e53-9e18-51444cef1dba",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "2": {
+      "annotation": "Build the panel index ONCE and reuse it for every specimen.\nWith bwa_mem and a history reference, Galaxy rebuilds the index inside every mapping job -- 187 redundant builds of the same 11 kb panel for a 187-specimen cohort. The index is a property of the panel, not of the specimen, so it belongs upstream of the fan-out. bwa_mem2's mapper accepts a bwa_mem2_index dataset directly, which makes this expressible.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+      "errors": null,
+      "id": 2,
+      "input_connections": {
+        "reference": {
+          "id": 1,
+          "output_name": "output"
+        }
+      },
+      "inputs": [],
+      "label": "index_panel",
+      "name": "BWA-MEM2 indexer",
+      "outputs": [
+        {
+          "name": "index",
+          "type": "bwa_mem2_index"
+        }
+      ],
+      "position": {
+        "left": 300,
+        "top": 180
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+      "tool_shed_repository": {
+        "changeset_revision": "af91699b8d4c",
+        "name": "bwa_mem2",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "2.3+galaxy0",
+      "type": "tool",
+      "uuid": "a710ee9a-900c-414c-a85f-e9ae2b66ef6c",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "3": {
+      "annotation": "Map to the whole panel, not to one amplicon. Reads from every marker then have somewhere correct to go instead of being forced onto a single target.\nTakes the prebuilt index rather than the FASTA, so no indexing happens here.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+      "errors": null,
+      "id": 3,
+      "input_connections": {
+        "fastq_input|fastq_input1": {
+          "id": 0,
+          "output_name": "output"
+        },
+        "reference_source|ref_file": {
+          "id": 2,
+          "output_name": "index"
+        }
+      },
+      "inputs": [],
+      "label": "map_reads",
+      "name": "BWA-MEM2",
+      "outputs": [
+        {
+          "name": "bam_output",
+          "type": "bam"
+        }
+      ],
+      "position": {
+        "left": 300,
+        "top": 0
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+      "tool_shed_repository": {
+        "changeset_revision": "af91699b8d4c",
+        "name": "bwa_mem2",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"analysis_type\": {\"analysis_type_selector\": \"illumina\", \"__current_case__\": 0}, \"fastq_input\": {\"fastq_input_selector\": \"paired_collection\", \"__current_case__\": 2, \"iset_stats\": \"\"}, \"output_sort\": \"coordinate\", \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1}, \"rg\": {\"rg_selector\": \"do_not_set\", \"__current_case__\": 3}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "2.3+galaxy0",
+      "type": "tool",
+      "uuid": "6042141e-1fa4-42c0-94d1-2ec3ee36eab4",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "4": {
+      "annotation": "samtools view -b -q 20 -f 2 -F 3852. -F 3852 is 4+8+256+512+1024+2048: unmapped, mate unmapped, secondary, QC fail, duplicate, supplementary. What survives is the set of reads whose aligned subsequence over a window can be trusted as a string.",
+      "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+      "errors": null,
+      "id": 4,
+      "input_connections": {
+        "input": {
+          "id": 3,
+          "output_name": "bam_output"
+        }
+      },
+      "inputs": [],
+      "label": "filter_bam",
+      "name": "Samtools view",
+      "outputs": [
+        {
+          "name": "outputsam",
+          "type": "input"
+        }
+      ],
+      "position": {
+        "left": 620,
+        "top": 0
+      },
+      "post_job_actions": {},
+      "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+      "tool_shed_repository": {
+        "changeset_revision": "5cf9fcc93508",
+        "name": "samtools_view",
+        "owner": "iuc",
+        "tool_shed": "toolshed.g2.bx.psu.edu"
+      },
+      "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"mode\": {\"outtype\": \"selected_reads\", \"__current_case__\": 1, \"filter_config\": {\"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cond_rg\": {\"select_rg\": \"no\", \"__current_case__\": 0}, \"cond_expr\": {\"select_expr\": \"no\", \"__current_case__\": 0}, \"quality\": \"20\", \"library\": \"\", \"cigarcons\": null, \"inclusive_filter\": [\"2\"], \"exclusive_filter\": [\"4\", \"8\", \"256\", \"512\", \"1024\", \"2048\"], \"exclusive_filter_all\": [], \"tag\": \"\", \"qname_file\": null}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"fraction\", \"__current_case__\": 0, \"factor\": \"1.0\", \"seed\": null}}, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"complementary_output\": false, \"adv_output\": {\"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "1.22+galaxy2",
+      "type": "tool",
+      "uuid": "d975898c-0820-4ed1-b9d1-95cbc9af40b2",
+      "when": null,
+      "workflow_outputs": []
+    },
+    "5": {
+      "annotation": "Coverage peaks on the genome = amplicons; emits a panel FASTA.",
+      "content_id": "haplotype_derive_panel",
+      "errors": null,
+      "id": 5,
+      "input_connections": {
+        "bams": {
+          "id": 4,
+          "output_name": "outputsam"
+        },
+        "genome": {
+          "id": 1,
+          "output_name": "output"
+        }
+      },
+      "inputs": [],
+      "label": "derive_panel",
+      "name": "Derive amplicon panel",
+      "outputs": [
+        {
+          "name": "panel",
+          "type": "fasta"
+        },
+        {
+          "name": "bed",
+          "type": "bed"
+        },
+        {
+          "name": "qc",
+          "type": "tabular"
+        }
+      ],
+      "position": {
+        "left": 1200,
+        "top": 200
+      },
+      "post_job_actions": {},
+      "tool_id": "haplotype_derive_panel",
+      "tool_state": "{\"advanced\": {\"sample\": \"20\", \"min_depth_frac\": \"0.01\", \"min_abs_depth\": \"30\", \"min_length\": \"80\", \"merge_gap\": \"25\", \"pad\": \"0\", \"prefix\": \"ampl\"}, \"bams\": {\"__class__\": \"ConnectedValue\"}, \"genome\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+      "tool_uuid": null,
+      "tool_version": "0.7.0+galaxy0",
+      "type": "tool",
+      "uuid": "41a473ec-8857-4d6d-b9d3-140ecd1711b2",
+      "when": null,
+      "workflow_outputs": [
+        {
+          "label": "derived panel (FASTA)",
+          "output_name": "panel",
+          "uuid": "07684771-dcf6-421c-9717-97993618fdb6"
+        },
+        {
+          "label": "peaks QC",
+          "output_name": "qc",
+          "uuid": "6391cad2-dcf8-41ca-bf52-2846a1c73c3c"
+        },
+        {
+          "label": "peaks BED",
+          "output_name": "bed",
+          "uuid": "add55790-0f0c-41e4-b06f-07e379807504"
+        }
+      ]
+    }
+  },
+  "tags": [
+    "amplicon",
+    "cyclospora",
+    "mlst",
+    "pyeuk",
+    "typing"
+  ],
+  "uuid": "0e167c07-6644-4391-947b-4b04a76160b6",
+  "version": 0,
+  "release": "0.1"
+}
