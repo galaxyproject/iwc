@@ -27,34 +27,13 @@
         },
         {
             "child_steps": [
-                76,
-                42,
-                16
-            ],
-            "color": "orange",
-            "data": {
-                "title": "Reads with fragment lengths greater than N won't be marked properly paired"
-            },
-            "id": 5,
-            "position": [
-                2360,
-                1540
-            ],
-            "size": [
-                740,
-                310
-            ],
-            "type": "frame"
-        },
-        {
-            "child_steps": [
                 49,
                 91,
                 28,
                 50,
                 29,
-                31,
-                30
+                30,
+                31
             ],
             "color": "lime",
             "data": {
@@ -75,23 +54,23 @@
             "child_steps": [
                 67,
                 63,
-                21,
-                55,
-                43,
-                17,
                 56,
                 44,
                 18,
                 57,
                 45,
                 19,
-                47,
-                22,
                 58,
                 46,
                 20,
+                55,
+                43,
+                17,
                 48,
-                27
+                27,
+                21,
+                47,
+                22
             ],
             "color": "blue",
             "data": {
@@ -118,10 +97,10 @@
                 77,
                 85,
                 86,
-                26,
-                24,
                 25,
                 23,
+                24,
+                26,
                 87,
                 88
             ],
@@ -147,12 +126,12 @@
             "child_steps": [
                 82,
                 73,
-                39,
-                11,
-                7,
                 6,
-                8,
+                7,
                 10,
+                11,
+                39,
+                8,
                 79,
                 80,
                 81
@@ -245,6 +224,27 @@
                 450
             ],
             "type": "frame"
+        },
+        {
+            "child_steps": [
+                76,
+                42,
+                16
+            ],
+            "color": "orange",
+            "data": {
+                "title": "Reads with fragment lengths greater than N won't be marked properly paired"
+            },
+            "id": 5,
+            "position": [
+                2360,
+                1540
+            ],
+            "size": [
+                740,
+                310
+            ],
+            "type": "frame"
         }
     ],
     "creator": [
@@ -264,9 +264,8 @@
     ],
     "format-version": "0.1",
     "license": "MIT",
-    "release": "0.1",
     "name": "Pangenome Variant Calling using VG Giraffe and Google DeepVariant",
-    "readme": "# Pangenome Variant Calling using VG Giraffe and Google DeepVariant\n\nThis workflow performs small variant calling using mapped reads against pangenome reference graphs. It combines *VG Giraffe* for pangenomic read alignment and Google *DeepVariant* for variant calling.\n\nInput reads are chunked for parallel mapping. The chunk size can be specified. If both forward and reverse reads are provided, they are interleaved into a single FASTQ file in the workflow before chunking.\n\nAfter pangenomic read alignment, *VG Giraffe* surjects the graph-based alignments to linear reference coordinates by using the reference paths within the pangenome graph. If the pangenome graph is missing reference paths, all contigs found within the pangenome graph are used as paths. For surjection, the sequences for these paths need to be embedded in the pangenome graph. If sequences are missing, a corresponding XG Graph containing the sequences for the paths can be provided. To target a specific subset of paths in the pangenome graph, a custom path list file can be given. In the workflow, paths from the pangenome graph that match `_decoy`, `_random`, `chrUn_`, `chrEBV`, `chrM` and `chain_` are excluded before surjection. This is not done if a custom path list file is provided.\n\nAfter surjection, the mapped reads are provided in SAM format. The SAM file undergoes post-processing by marking paired reads as properly paired up to a given maximum distance (default 3000 bp; only if a second read is provided). After post-processing, the SAM file is converted into a coordinate-sorted BAM file, which is then split into smaller, path-specific BAM files for parallel analysis with *DeepVariant*.\n\nAccording to [Liao et al., 2023](https://doi.org/10.1038/s41586-023-05896-x), realignment can improve variant calling ([Read more](https://github.com/vgteam/vg_wdl#read-realignment)). By default, mapped reads are locally realigned using *DeepVariant's* built-in realigner before calling variants. Reads that are longer than *DeepVariant's* `Maximum Read Length to Realign` threshold (default 500 bp) are not realigned. Additionally, *DeepVariant's* read normalization is enabled to left-align indels for each read. The linear reference sequences used for variant calling are extracted from the pangenome graph (or corresponding XG Graph if given). The extracted sequences are defined by the paths used during surjection. A custom reference FASTA can be specified if any of the input graphs do not contain all the bases.\n\nIf only a subset of paths starting with a prefix want to be targeted (e.g., GRCh38#0#), a reference prefix can be provided. This also removes the prefix from the paths within the output BAM and VCF files. Since *VG Giraffe* requires paths with the prefix for mapping, any provided custom path list file must retain the prefix in its path names. However, a custom reference FASTA should already have the prefix stripped from its sequence names.\n\nFor benchmarking and validation, hap.py can be enabled by providing a Truth VCF file.\n\n## Inputs\n\n### General\n- Input Pangenome Graph (.gbz file)\n- Pangenome Graph index files:\n  - Minimizer Index to speed up finding matches (seeds) between reads and the graph [Optional] (vg.min file)\n  - Distance Index to quickly cluster seeds [Optional] (vg.dist file)\n  - Zipcodes Index for distance hints to speed up chaining, especially for long reads [Optional] (vg.zipcodes file)\n- Input XG Graph if the Input Pangenome Graph is missing paths for surjection and sequence extraction [Optional] (xg file)\n- First Read (fastqsanger or fastqsanger.gz file)\n- Second Read [Optional] (fastqsanger or fastqsanger.gz file)\n- Number of reads contained in each mapping chunk. For paired reads, make sure this value is even [Default 20000000]\n- Sample Name\n- Path List File listing the specific path names (one per line) from the pangenome graph to specifically target for surjection [Optional] (txt file)\n- Reference to use instead of extracting it from the input pangenome graph (or XG Graph) [Optional] (fasta file)\n- Reference Prefix string (e.g., GRCh38#0#) to only target the paths starting with this prefix for surjection and to strip from the beginning of path names in output files. If set, any given custom Path List File must retain this prefix in its path names for mapping. Any given custom Reference File should already have the prefix stripped from its sequence names [Optional]\n\n### VG Giraffe\n- Name of mapper parameter preset to use [Default 'default']\n- Whether to prune low-complexity or short in-tail anchors while surjecting and force tail realignment [Default 'true']\n- Maximum distance at which VG Giraffe marks paired reads as properly paired [Default 3000]\n- Extra command line options for the mapper [Optional]\n\n### DeepVariant\n- Model Type [Default 'WGS']\n- Names of contigs in the reference that are haploid (without the Reference Prefix if given) [Optional]\n- BED file with pseudo-autosomal regions [Optional] (bed file)\n- Minimum Mapping Quality of reads to use for calling [Optional] [Default 'DeepVariant default for the model type']\n- Whether DeepVariant should use the legacy allele counter behavior. Reverts [this commit](https://github.com/google/deepvariant/commit/fbde0674639a28cb9e8004c7a01bbe25240c7d46) [Default 'false']\n- Whether DeepVariant should normalize reads [Default 'true']\n- Whether DeepVariant should realign reads [Default 'true']\n- Maximum length of a read to realign [Default 500]\n- Whether to disable the small model of DeepVariant [Default 'false']\n- Additional arguments for the make_examples step of DeepVariant [Optional]\n\n### Hap.py\n- Truth VCF File to compare against. Set this value for hap.py evaluation to run [Optional] (vcf file)\n- BED file to evaluate against the Truth VCF file, where false positives will be counted [Optional] (bed file)\n- BED file to restrict hap.py comparison against the Truth VCF file to [Optional] (bed file)\n- Contig or region to restrict hap.py evaluation to [Optional]\n\n## Outputs\n- BAM file from VG Giraffe\n- Unmapped Reads of the BAM file\n- VCF from DeepVariant\n- gVCF from DeepVariant\n- If hap.py is enabled:\n  - Metrics file\n  - Summary file\n  - Results file\n\n## References\n1) Original WDL Workflow: https://github.com/vgteam/vg_wdl#giraffe-deepvariant-workflow\n2) Liao, WW., Asri, M., Ebler, J. et al. A draft human pangenome reference. Nature 617, 312\u2013324 (2023). https://doi.org/10.1038/s41586-023-05896-x",
+    "readme": "# Pangenome Variant Calling using VG Giraffe and Google DeepVariant\n\nThis workflow performs small variant calling using mapped reads against pangenome reference graphs. It combines *VG Giraffe* for pangenomic read alignment and Google *DeepVariant* for variant calling.\n\nInput reads are chunked for parallel mapping. The chunk size can be specified. If both forward and reverse reads are provided, they are interleaved into a single FASTQ file in the workflow before chunking.\n\nAfter pangenomic read alignment, *VG Giraffe* surjects the graph-based alignments to linear reference coordinates by using the reference paths within the pangenome graph. If the pangenome graph is missing reference paths, all contigs found within the pangenome graph are used as paths. For surjection, the sequences for these paths need to be embedded in the pangenome graph. If sequences are missing, a corresponding XG Graph containing the sequences for the paths can be provided. To target a specific subset of paths in the pangenome graph, a custom path list file can be given. In the workflow, paths from the pangenome graph that match `_decoy`, `_random`, `chrUn_`, `chrEBV`, `chrM` and `chain_` are excluded before surjection. This is not done if a custom path list file is provided.\n\nAfter surjection, the mapped reads are provided in SAM format. The SAM file undergoes post-processing by marking paired reads as properly paired up to a given maximum distance (default 3000 bp; only if a second read is provided). After post-processing, the SAM file is converted into a coordinate-sorted BAM file, which is then split into smaller, path-specific BAM files for parallel analysis with *DeepVariant*.\n\nAccording to [Liao et al., 2023](https://doi.org/10.1038/s41586-023-05896-x), realignment can improve variant calling ([Read more](https://github.com/vgteam/vg_wdl#read-realignment)). By default, mapped reads are locally realigned using *DeepVariant's* built-in realigner before calling variants. Reads that are longer than *DeepVariant's* `Maximum Read Length to Realign` threshold (default 500 bp) are not realigned. Additionally, *DeepVariant's* read normalization is enabled to left-align indels for each read. The linear reference sequences used for variant calling are extracted from the pangenome graph (or corresponding XG Graph if given). The extracted sequences are defined by the paths used during surjection. A custom reference FASTA can be specified if any of the input graphs do not contain all the bases.\n\nIf only a subset of paths starting with a prefix want to be targeted (e.g., GRCh38#0#), a reference prefix can be provided. This also removes the prefix from the paths within the output BAM and VCF files. Since *VG Giraffe* requires paths with the prefix for mapping, any provided custom path list file must retain the prefix in its path names. However, a custom reference FASTA should already have the prefix stripped from its sequence names.\n\nFor benchmarking and validation, hap.py can be enabled by providing a Truth VCF file.\n\n## Inputs\n\n### General\n- Input Pangenome Graph (.gbz file)\n- Pangenome Graph index files:\n  - Minimizer Index to speed up finding matches (seeds) between reads and the graph [Optional] (vg.min file)\n  - Distance Index to quickly cluster seeds [Optional] (vg.dist file)\n  - Zipcodes Index for distance hints to speed up chaining, especially for long reads [Optional] (vg.zipcodes file)\n- Input XG Graph if the Input Pangenome Graph is missing paths for surjection and sequence extraction [Optional] (xg file)\n- First Read (fastqsanger or fastqsanger.gz file)\n- Second Read [Optional] (fastqsanger or fastqsanger.gz file)\n- Number of reads contained in each mapping chunk. For paired reads, make sure this value is even [Default 20000000]\n- Sample Name\n- Path List File listing the specific path names (one per line) from the pangenome graph to specifically target for surjection [Optional] (txt file)\n- Reference to use instead of extracting it from the input pangenome graph (or XG Graph) [Optional] (fasta file)\n- Reference Prefix string (e.g., GRCh38#0#) to only target the paths starting with this prefix for surjection and to strip from the beginning of path names in output files. If set, any given custom Path List File must retain this prefix in its path names for mapping. Any given custom Reference File should already have the prefix stripped from its sequence names [Optional]\n\n### VG Giraffe\n- Name of mapper parameter preset to use [Default 'default']\n- Whether to prune low-complexity or short in-tail anchors while surjecting and force tail realignment [Default 'true']\n- Maximum distance at which VG Giraffe marks paired reads as properly paired [Default 3000]\n- Extra command line options for the mapper [Optional]\n\n### DeepVariant\n- Model Type [Default 'WGS']\n- Names of contigs in the reference that are haploid (without the Reference Prefix if given) [Optional]\n- BED file with pseudo-autosomal regions [Optional] (bed file)\n- Minimum Mapping Quality of reads to use for calling [Optional] [Default 'DeepVariant default for the model type']\n- Whether DeepVariant should use the legacy allele counter behavior. Reverts [this commit](https://github.com/google/deepvariant/commit/fbde0674639a28cb9e8004c7a01bbe25240c7d46) [Default 'false']\n- Whether DeepVariant should normalize reads [Default 'true']\n- Whether DeepVariant should realign reads [Default 'true']\n- Maximum length of a read to realign [Default 500]\n- Whether to disable the small model of DeepVariant [Default 'false']\n- Additional arguments for the make_examples step of DeepVariant [Optional]\n\n### Hap.py\n- Truth VCF File to compare against. Set this value for hap.py evaluation to run [Optional] (vcf file)\n- BED file to evaluate against the Truth VCF file, where false positives will be counted [Optional] (bed file)\n- BED file to restrict hap.py comparison against the Truth VCF file to [Optional] (bed file)\n- Contig or region to restrict hap.py evaluation to [Optional]\n\n## Outputs\n- BAM file from VG Giraffe\n- Unmapped Reads of the BAM file\n- VCF from DeepVariant\n- gVCF from DeepVariant\n- If hap.py is enabled:\n  - Metrics file\n  - Summary file\n  - Results file\n\n## References\n1) Original WDL Workflow: https://github.com/vgteam/vg_wdl#giraffe-deepvariant-workflow\n2) Liao, WW., Asri, M., Ebler, J. et al. A draft human pangenome reference. Nature 617, 312–324 (2023). https://doi.org/10.1038/s41586-023-05896-x",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -624,7 +623,7 @@
         },
         "13": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
             "errors": null,
             "id": 13,
             "input_connections": {},
@@ -642,16 +641,16 @@
                 "top": 1960
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": null, \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "51f55c14-39bb-4d4e-9b5d-397288f816b8",
             "when": null,
@@ -848,7 +847,7 @@
         },
         "21": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
             "errors": null,
             "id": 21,
             "input_connections": {},
@@ -866,16 +865,16 @@
                 "top": 1940
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": null, \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "6e2c46df-8c78-434e-9f6b-07eb5650b22b",
             "when": null,
@@ -1322,7 +1321,7 @@
                     },
                     "1": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "errors": null,
                         "id": 1,
                         "input_connections": {
@@ -1345,16 +1344,16 @@
                             "top": 0
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": {\"__class__\": \"ConnectedValue\"}, \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "7762939d-17b9-4c17-9837-c27c12eb1d97",
                         "when": null,
@@ -1362,7 +1361,7 @@
                     },
                     "2": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "errors": null,
                         "id": 2,
                         "input_connections": {
@@ -1385,16 +1384,16 @@
                             "top": 0
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"code\": \"BEGIN {\\n    has_text = 0\\n}\\n/[^ \\\\t\\\\r]/ {\\n    has_text = 1\\n    exit\\n}\\nEND {\\n    if (has_text == 1) {\\n        print \\\"true\\\"\\n    } else {\\n        print \\\"false\\\"\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "9d609429-7f95-410a-99fc-6721e0c1555c",
                         "when": null,
@@ -1493,7 +1492,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "0000c15d-17b2-4f5c-aea9-1c0d44bb157d"
+                "uuid": "0f326ad0-4438-4815-8e70-237a1a96e855"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1598,7 +1597,7 @@
                     },
                     "1": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "errors": null,
                         "id": 1,
                         "input_connections": {},
@@ -1616,16 +1615,16 @@
                             "top": 100
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": \"false\", \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "ff7ea1fa-5ccd-49d1-b396-6d9c3b7f0798",
                         "when": null,
@@ -1677,7 +1676,7 @@
                     },
                     "3": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "errors": null,
                         "id": 3,
                         "input_connections": {
@@ -1708,16 +1707,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"code\": \"BEGIN {\\n    is_only_false = 0\\n}\\nNR == 1 {\\n    if (length($0) > 100) {\\n        exit\\n    }\\n    if ($0 == \\\"false\\\") {\\n        is_only_false = 1\\n    } else {\\n        exit \\n    }\\n}\\nNR > 1 {\\n    is_only_false = 0\\n    exit\\n}\\nEND {\\n    if (is_only_false == 1) {\\n        print \\\"false\\\"\\n    } else {\\n        print \\\"true\\\"\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "290dfae5-d2d6-45ad-adc6-6abef504c48f",
                         "when": null,
@@ -1816,7 +1815,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "1d6fc71c-a4aa-4b6a-8720-ca7c07357c8f"
+                "uuid": "54268db1-397e-49c3-8261-8faac96c7544"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -2365,7 +2364,7 @@
                     },
                     "1": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "errors": null,
                         "id": 1,
                         "input_connections": {},
@@ -2383,16 +2382,16 @@
                             "top": 100
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"token_set\": [{\"__index__\": 0, \"line\": \"false\", \"repeat_select\": {\"repeat_select_opts\": \"user\", \"__current_case__\": 0, \"times\": \"1\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "ff7ea1fa-5ccd-49d1-b396-6d9c3b7f0798",
                         "when": null,
@@ -2444,7 +2443,7 @@
                     },
                     "3": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "errors": null,
                         "id": 3,
                         "input_connections": {
@@ -2475,16 +2474,16 @@
                                 "output_name": "outfile"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "ab83aa685821",
+                            "changeset_revision": "30b60202d990",
                             "name": "text_processing",
                             "owner": "bgruening",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"code\": \"BEGIN {\\n    is_only_false = 0\\n}\\nNR == 1 {\\n    if (length($0) > 100) {\\n        exit\\n    }\\n    if ($0 == \\\"false\\\") {\\n        is_only_false = 1\\n    } else {\\n        exit \\n    }\\n}\\nNR > 1 {\\n    is_only_false = 0\\n    exit\\n}\\nEND {\\n    if (is_only_false == 1) {\\n        print \\\"false\\\"\\n    } else {\\n        print \\\"true\\\"\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "9.5+galaxy3",
+                        "tool_version": "9.11+galaxy0",
                         "type": "tool",
                         "uuid": "290dfae5-d2d6-45ad-adc6-6abef504c48f",
                         "when": null,
@@ -2583,7 +2582,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "1d6fc71c-a4aa-4b6a-8720-ca7c07357c8f"
+                "uuid": "20e06db6-8c23-490b-987f-6c1c25d23610"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -2633,7 +2632,7 @@
         },
         "51": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.11+galaxy0",
             "errors": null,
             "id": 51,
             "input_connections": {
@@ -2656,16 +2655,16 @@
                 "top": 400
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"header\": \"0\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"sortkeys\": [{\"__index__\": 0, \"column\": \"1\", \"start_charpos\": null, \"end_charpos\": null, \"order\": \"\", \"style\": \"V\", \"ignore_case\": true, \"ignore_leading_blanks\": true}], \"unique\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "ab317884-a3aa-4cab-aac2-5e3267c4634f",
             "when": null,
@@ -2673,7 +2672,7 @@
         },
         "52": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.11+galaxy0",
             "errors": null,
             "id": 52,
             "input_connections": {
@@ -2696,16 +2695,16 @@
                 "top": 540
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sort_header_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"header\": \"0\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"sortkeys\": [{\"__index__\": 0, \"column\": \"1\", \"start_charpos\": null, \"end_charpos\": null, \"order\": \"\", \"style\": \"V\", \"ignore_case\": true, \"ignore_leading_blanks\": true}], \"unique\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "a0428f5c-4727-4820-a8f8-ab2fb39dc328",
             "when": null,
@@ -2961,7 +2960,7 @@
         },
         "59": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 59,
             "input_connections": {
@@ -2984,16 +2983,16 @@
                 "top": 400
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"!/(_decoy|_random|chrUn_|chrEBV|chrM|chain_)/ {\\n    contig = $0;\\n    if (!seen[contig]++) {\\n        print contig;\\n    }\\n}\\n\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "a1f27d71-cef5-49b8-9448-8cf065e48426",
             "when": null,
@@ -3001,7 +3000,7 @@
         },
         "60": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 60,
             "input_connections": {
@@ -3024,16 +3023,16 @@
                 "top": 540
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"!/(_decoy|_random|chrUn_|chrEBV|chrM|chain_)/ {\\n    # Split path by the path separator '#'\\n    n = split($0, parts, \\\"#\\\");\\n    \\n    if (n >= 3) {\\n        # HAPLOTYPE (e.g. sample#hap#contig#block) or REFERENCE with Haplotype (e.g.. sample#hap#contig)\\n        contig = parts[3];\\n    } else if (n == 2) {\\n        # REFERENCE without Haplotype (e.g. sample#contig)\\n        contig = parts[2];\\n    } else {\\n        # GENERIC\\n        contig = $0;\\n    }\\n    \\n    # Remove any subranges (e.g. chr1[1000-2000] -> chr1)\\n    sub(/\\\\[.*/, \\\"\\\", contig);\\n    \\n    if (!seen[contig]++) {\\n        print contig;\\n    }\\n}\\n\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "526b05d0-e8e4-42ac-974d-4a19ccb7d003",
             "when": null,
@@ -3085,7 +3084,7 @@
         },
         "62": {
             "annotation": "Concatenates two values with a comma, omitting the comma if either value is missing.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 62,
             "input_connections": {
@@ -3116,16 +3115,16 @@
                 "top": 2060
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    clean_var_1 = VAR1\\n    clean_var_2 = VAR2\\n    \\n    # Strip leading and trailing spaces/tabs\\n    gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", clean_var_1)\\n    gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", clean_var_2)\\n\\n    if (length(clean_var_2) > 0) {\\n        # Append \\\"--\\\" to prune-low-cplx for vg giraffe to understand\\n        clean_var_2 = \\\"--\\\" clean_var_2\\n    }\\n    \\n    if (length(clean_var_1) > 0 && length(clean_var_2) > 0) {\\n        print clean_var_1 \\\",\\\" clean_var_2\\n    } else {\\n        print clean_var_1 clean_var_2\\n    }\\n    exit\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "1503c27d-8437-461a-afcd-4fcfa252ac0d",
             "when": null,
@@ -3133,7 +3132,7 @@
         },
         "63": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 63,
             "input_connections": {
@@ -3180,16 +3179,16 @@
                 "top": 1940
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    n = 0\\n\\n    v1 = VAR1; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v1)\\n    if (v1 != \\\"\\\" && v1 != \\\"1000000\\\") {\\n        v[++n] = \\\"min_mapping_quality=\\\" v1\\n    }\\n\\n    v2 = VAR2; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v2)\\n    if (v2 != \\\"\\\") v[++n] = v2\\n\\n    v3 = VAR3; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v3)\\n    if (v3 != \\\"\\\") v[++n] = v3\\n\\n    v4 = VAR4; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v4)\\n    if (v4 != \\\"\\\") v[++n] = v4\\n\\n    v5 = VAR5; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v5)\\n    if (v5 != \\\"\\\") v[++n] = v5\\n\\n    v6 = VAR6; gsub(/^[ \\\\t]+|[ \\\\t]+$/, \\\"\\\", v6)\\n    if (v6 != \\\"\\\") {\\n        v[++n] = \\\"max_read_length_to_realign=\\\" v6\\n    }\\n\\n    # Concatenate the variables\\n    res = \\\"\\\"\\n    for (i = 1; i <= n; i++) {\\n        res = (i == 1 ? v[i] : res \\\",\\\" v[i])\\n    }\\n\\n    if (res != \\\"\\\") {\\n        print res\\n    }\\n\\n    exit\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 2, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 3, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 4, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 5, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "90be71bb-1c1a-41b1-bf3d-f8f40ddfe6b7",
             "when": null,
@@ -3437,7 +3436,7 @@
         },
         "70": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 70,
             "input_connections": {
@@ -3468,16 +3467,16 @@
                 "top": 510
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    # Convert escaped variables from the prefix back to their original\\n    gsub(/__pd__/, \\\"#\\\", VAR1)\\n    gsub(/__ob__/, \\\"[\\\", VAR1)\\n    gsub(/__cb__/, \\\"]\\\", VAR1)\\n    gsub(/__gt__/, \\\">\\\", VAR1)\\n    gsub(/__lt__/, \\\"<\\\", VAR1)\\n    gsub(/__oc__/, \\\"{\\\", VAR1)\\n    gsub(/__cc__/, \\\"}\\\", VAR1)\\n    gsub(/__at__/, \\\"@\\\", VAR1)\\n}\\n{\\n    if (VAR1 == \\\"\\\" || index($0, VAR1) == 1) {\\n        print $0\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "58d946ef-72f1-451e-8d74-6458a2f6328c",
             "when": "$(inputs.when)",
@@ -3735,7 +3734,7 @@
         },
         "74": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 74,
             "input_connections": {
@@ -3766,16 +3765,16 @@
                 "top": 990
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    # Convert escaped variables from the prefix back to their original\\n    gsub(/__pd__/, \\\"#\\\", VAR1)\\n    gsub(/__ob__/, \\\"[\\\", VAR1)\\n    gsub(/__cb__/, \\\"]\\\", VAR1)\\n    gsub(/__gt__/, \\\">\\\", VAR1)\\n    gsub(/__lt__/, \\\"<\\\", VAR1)\\n    gsub(/__oc__/, \\\"{\\\", VAR1)\\n    gsub(/__cc__/, \\\"}\\\", VAR1)\\n    gsub(/__at__/, \\\"@\\\", VAR1)\\n}\\n{\\n    if (VAR1 != \\\"\\\" && index($0, VAR1) == 1) {\\n        print substr($0, length(VAR1) + 1)\\n    } else {\\n        print $0\\n    }\\n}\\n\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "95440869-2d52-4d1e-a330-0bfc4edd4fdc",
             "when": "$(inputs.when)",
@@ -3783,7 +3782,7 @@
         },
         "75": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 75,
             "input_connections": {
@@ -3822,16 +3821,16 @@
                     "output_name": "outfile"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    # Convert escaped variables from the prefix back to their original\\n    gsub(/__pd__/, \\\"#\\\", VAR1)\\n    gsub(/__ob__/, \\\"[\\\", VAR1)\\n    gsub(/__cb__/, \\\"]\\\", VAR1)\\n    gsub(/__gt__/, \\\">\\\", VAR1)\\n    gsub(/__lt__/, \\\"<\\\", VAR1)\\n    gsub(/__oc__/, \\\"{\\\", VAR1)\\n    gsub(/__cc__/, \\\"}\\\", VAR1)\\n    gsub(/__at__/, \\\"@\\\", VAR1)\\n}\\n/^>/ {\\n    # Adjust the sequence header names\\n    if (VAR1 != \\\"\\\") {\\n        search_str = \\\">\\\" VAR1\\n        if (index($0, search_str) == 1) {\\n            $0 = \\\">\\\" substr($0, length(search_str) + 1)\\n        }\\n    }\\n}\\n{\\n    # Print any other line\\n    print $0\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "ec32eceb-5454-4541-a8f1-277bb603b3bd",
             "when": "$(inputs.when)",
@@ -3839,7 +3838,7 @@
         },
         "76": {
             "annotation": "Reads with fragment lengths greater than N won't be marked properly paired.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 76,
             "input_connections": {
@@ -3870,16 +3869,16 @@
                 "top": 1580
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    FS = \\\"\\\\t\\\";\\n    OFS = \\\"\\\\t\\\";\\n}\\n\\n# Skip all header rows\\n/^@/ {\\n    print;\\n    next;\\n}\\n\\n# Compute over each row \\n{\\n    if (VAR1 <= 0) {\\n        print;\\n        next;\\n    }\\n\\n    # Get fragment length and make it absolute\\n    tlen = $9;\\n    if (tlen < 0) {\\n        tlen = -tlen;\\n    }\\n\\n    # Adjust the Properly paired bit\\n    if (tlen > VAR1 && (int($2 / 2) % 2 == 1)) {\\n        $2 = $2 - 2;\\n    }\\n    print;\\n}\\n\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "ad688042-dd4b-4227-80a2-fb4d74d4effa",
             "when": "$(inputs.when)",
@@ -4031,7 +4030,7 @@
         },
         "80": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
             "id": 80,
             "input_connections": {
@@ -4062,16 +4061,16 @@
                 "top": 1160
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "ab83aa685821",
+                "changeset_revision": "30b60202d990",
                 "name": "text_processing",
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"code\": \"BEGIN {\\n    FS = \\\"\\\\t\\\"\\n    OFS = \\\"\\\\t\\\"\\n    # Convert escaped variables from the prefix back to their original\\n    gsub(/__pd__/, \\\"#\\\", VAR1)\\n    gsub(/__ob__/, \\\"[\\\", VAR1)\\n    gsub(/__cb__/, \\\"]\\\", VAR1)\\n    gsub(/__gt__/, \\\">\\\", VAR1)\\n    gsub(/__lt__/, \\\"<\\\", VAR1)\\n    gsub(/__oc__/, \\\"{\\\", VAR1)\\n    gsub(/__cc__/, \\\"}\\\", VAR1)\\n    gsub(/__at__/, \\\"@\\\", VAR1)\\n}\\n\\n# For @SQ rows, keep only first 3 columns and strip VAR1 from the SN field\\n/^@SQ/ {\\n    search_str = \\\"SN:\\\" VAR1\\n    if (index($2, search_str) == 1) {\\n        $2 = \\\"SN:\\\" substr($2, length(search_str) + 1)\\n    }\\n    print $1, $2, $3\\n    next\\n}\\n\\n# Pass down all other header rows\\n/^@/ {\\n    print $0\\n    next\\n}\\n\\n# For alignment rows\\n{\\n    # Strip the prefix for RNAME and RNEXT\\n    if (index($3, VAR1) == 1) {\\n        $3 = substr($3, length(VAR1) + 1)\\n    }\\n    if ($7 != \\\"=\\\" && $7 != \\\"*\\\") {\\n        if (index($7, VAR1) == 1) {\\n            $7 = substr($7, length(VAR1) + 1)\\n        }\\n    }\\n    print $0\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "9.5+galaxy3",
+            "tool_version": "9.11+galaxy0",
             "type": "tool",
             "uuid": "a63323b1-3d8a-4e77-8ee5-f41d00270980",
             "when": "$(inputs.when)",
@@ -4468,7 +4467,7 @@
                     }
                 },
                 "tags": [],
-                "uuid": "7a2d06bf-f80f-4f8d-a115-37f42f3424cd"
+                "uuid": "a53bdde4-857f-4257-95ec-17bde2f0c50e"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -4890,6 +4889,7 @@
         }
     },
     "tags": [],
-    "uuid": "419ccf00-56de-42f5-8fa1-fcff979038db",
-    "version": 41
+    "uuid": "97147337-e24d-4d6d-bb32-f7947ab67c19",
+    "version": 1,
+    "release": "0.2"
 }
