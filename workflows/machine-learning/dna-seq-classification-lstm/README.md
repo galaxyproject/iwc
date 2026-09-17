@@ -133,8 +133,10 @@ A list of parameters to look out for model optimisation:
   - Predicted labels (validation set)
   - Evaluation metrics (validation set)
     - Accuracy
+    - Categorical accuracy
     - F1-score (macro)
     - Recall (macro)
+    - Loss
 
 A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
 
@@ -142,7 +144,6 @@ A higher F1-score (closer to 1.0) indicates high performance. High classificatio
 
 ## Outputs
 
-- Trained LSTM model
 - Predicted labels (test set)
 - Predicted label probabilities (test set)
 - Evaluation metrics (validation set)
