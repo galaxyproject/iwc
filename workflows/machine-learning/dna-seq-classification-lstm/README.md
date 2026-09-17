@@ -19,7 +19,9 @@ The first column is given as a set of categories/labels/classes and the third co
 
 Other tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
 
-An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements. The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.
+An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.
+The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.
+However, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.
 
 ---
 
@@ -55,6 +57,9 @@ The workflow requires two datasets:
 - Dataset is split into:
   - Training set (75%)
   - Test set (25%)
+- Training set is further split into:
+  - Training set (80%)
+  - Validation set (20%)
 
 ### 3. Feature & label separation
 - Training and test datasets are split into:
@@ -75,7 +80,7 @@ The workflow requires two datasets:
 The workflow builds a Sequential Keras model with:
 
 - Embedding layer:
-  - Input dimension: 99 (vocabulary size for 3-mer encoding + 1)
+  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)
   - Output dimension: 128
   - Number of output dimensions can be tuned for optimal performance
 
@@ -100,13 +105,14 @@ The workflow builds a Sequential Keras model with:
 Training parameters:
 - Epochs: 10
 - Batch size: 32
-- Validation split: 10%
+- Validation split: 20%
 
 ---
 
 ## Model optimisation
 
-Machine and deep learning models need parameter optimisation (also call hyperparameter optimisation) to find the best classification or regression performance for any dataset. The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always a good to tune the parameters to explore their optimal values.
+Machine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.
+The model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.
 
 A list of parameters to look out for model optimisation:
 
@@ -122,27 +128,25 @@ A list of parameters to look out for model optimisation:
 
 ## Evaluation
 
-- Metrics reported:
-  - Accuracy
-  - F1-score (macro)
-  - Recall (macro)
-
 - Outputs:
-  - Predictions on test data
-  - Class probabilities
-  - Confusion matrix visualization
+  - Trained LSTM model
+  - Predicted labels (validation set)
+  - Evaluation metrics (validation set)
+    - Accuracy
+    - F1-score (macro)
+    - Recall (macro)
 
-A higher F1-score (closer to 1.0) indicate high performance. High classification or regression performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
+A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
 
 ---
 
 ## Outputs
 
-- Trained model
-- Prediction results (labels)
-- Prediction probabilities
-- Evaluation metrics
-- Confusion matrix plot
+- Trained LSTM model
+- Predicted labels (test set)
+- Predicted label probabilities (test set)
+- Evaluation metrics (validation set)
+- Confusion matrix (test set)
 
 ---
 
