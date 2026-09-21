@@ -1,5 +1,178 @@
-# Workflow test for pyeuk-standard.
-# DRAFT: green once the pyeuk tools are published to the Tool Shed (depends on Bioconda pyeuk 0.8.0).
-- doc: Smoke test
-  job: {}
-  outputs: {}
+# Workflow test for pyeuk-standard (read-level haplotype typing).
+#
+# Deterministic synthetic cohort committed under test-data/: 8 specimens across a
+# 2-amplicon panel (M1, M2), in two genotypes. The A* specimens carry a single SNP
+# in M1 (76T>C) and are reference-identical at M2; the B* specimens are the mirror
+# (reference-identical at M1, 61C>A at M2). Everything the workflow derives is fixed
+# by construction, so the assertions below are exact. Expected outputs were produced
+# by running PyEuk 0.8.1 (the Tool Shed suite) on this cohort.
+- doc: >-
+    Two-genotype amplicon cohort. Reads -> bwa mem2 -> filter -> two cohort windows
+    (M1_W0001, M2_W0001) -> per-specimen haplotypes -> 8x4 presence/absence sheet ->
+    wIBS distance -> two clusters (A* vs B*).
+  job:
+    reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: A1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    panel:
+      class: File
+      path: test-data/panel.fasta
+      filetype: fasta
+    min_span: 10
+    min_freq: 0.0
+    min_reads: 1
+    cut: count
+    project_psd: false
+    min_completeness: 0.0
+  outputs:
+    windows:
+      asserts:
+      - has_n_lines:
+          n: 2
+      - has_text:
+          text: "M1_W0001"
+      - has_text:
+          text: "M2_W0001"
+    sheet:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_n_columns:
+          n: 5
+      - has_text:
+          text: "Seq_ID"
+    haplotype_map:
+      asserts:
+      - has_n_lines:
+          n: 5
+      - has_text:
+          text: "76T>C"
+      - has_text:
+          text: "61C>A"
+    calls_long:
+      asserts:
+      - has_n_lines:
+          n: 17
+    distance_matrix:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_n_columns:
+          n: 9
+    clusters:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_text:
+          text: "Assigned_cluster"
+      - has_text:
+          text: "A1"
+      - has_text:
+          text: "B4"
+    calls:
+      element_tests:
+        A1:
+          asserts:
+          - has_text:
+              text: "76T>C"
+        B1:
+          asserts:
+          - has_text:
+              text: "61C>A"
