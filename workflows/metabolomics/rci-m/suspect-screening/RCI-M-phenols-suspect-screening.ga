@@ -1,0 +1,612 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "Calculate ions for suspect screening from structures including RT prediction via ML models.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "0000-0001-6744-996X",
+            "name": "Helge Hecht"
+        }
+    ],
+    "format-version": "0.1",
+    "help": "This workflow expects an SDF file for the input as well as an h5mlm file containing the trained RT prediction model. This workflow is intended to be used together with the RCI-M RT prediction model training workflow.",
+    "license": "MIT",
+    "logo_url": "",
+    "name": "RCI-M phenols suspect screening",
+    "readme": "# ELIXIR RCI-M Phenols Suspect Screening Workflow\n\n## Overview\n\nThis Galaxy workflow performs **suspect screening list generation for phenolic compounds** using molecular structures and a trained retention time (RT) prediction model. It integrates cheminformatics tools and machine learning to calculate descriptors, predict RT values, and generate a final list of suspect ions suitable for downstream analysis.\n\nThe workflow is designed to work in conjunction with the **RCI-M RT prediction model training workflow**.\n\n---\n\n## Key Features\n\n- Accepts molecular structures (SDF) as input  \n- Predicts retention times using a trained ML model  \n- Calculates molecular descriptors via RDKit  \n- Generates a cleaned and annotated suspect screening list  \n- Computes ionized forms and m/z values using Isolib  \n- Outputs a ready-to-use suspect ion list for screening  \n\n---\n\n## Inputs\n\n| Input | Format | Description |\n|------|--------|------------|\n| **Input structures** | `.sdf` | Molecular structures for suspect screening |\n| **RT Prediction Model** | `.h5mlm` | Pre-trained ML model for RT prediction |\n\n---\n\n## Workflow Steps\n\n### 1. Structure Preparation\n- Convert input structures from **SDF → SMILES** using OpenBabel\n\n### 2. Descriptor Calculation\n- Compute molecular descriptors using RDKit, including:\n  - LogP\n  - Molecular weight\n  - TPSA\n  - Hydrogen bond donors/acceptors\n  - Aromaticity metrics\n  - Ring counts\n\n### 3. Retention Time Prediction\n- Apply the trained ML model to predict retention times (RT)\n\n### 4. Data Processing\n- Remove headers and merge:\n  - SMILES structures\n  - Predicted RT values\n- Filter out invalid entries (e.g., negative RT values)\n\n### 5. Output Formatting\n- Convert results to CSV format\n- Add headers:  \n  ```\n  smiles,name,rt\n  ```\n\n### 6. Molecular Annotation\n- Add molecular formulas via **MSMetaEnhancer (RDKit)**\n\n### 7. Data Cleaning\n- Remove charge symbols (`+`, `-`) from formulas\n- Filter invalid SMILES entries\n\n### 8. Suspect Ion Generation\n- Generate isotopic patterns and m/z values using **Isolib**\n- Ionization settings:\n  - Mode: **negative**\n  - Adduct: **[M−H]⁻**\n  - Includes isotopes and adduct calculations\n\n---\n\n## Outputs\n\n| Output | Format | Description |\n|--------|--------|------------|\n| **Suspect Ion List** | `.msp` / tabular | Final list including SMILES, RT, formula, and predicted ions |\n\n---\n\n## Workflow Dependencies\n\nThis workflow uses the following Galaxy tools:\n\n- OpenBabel (format conversion)\n- RDKit descriptors\n- Model Prediction (ML inference)\n- MSMetaEnhancer\n- Text processing tools\n- Isolib (ion/isotope library generation)\n\n---\n\n## Usage Notes\n\n- Ensure the RT prediction model (`.h5mlm`) is trained with compatible descriptors  \n- Input structures must be valid and correctly formatted (SDF)  \n- Negative RT predictions are automatically filtered out  \n- The workflow is configured for **negative ionization mode ([M−H]⁻)**  \n\n---\n\n## Example Use Case\n\nThis workflow is suitable for:\n\n- Environmental metabolomics  \n- Non-target/suspect screening in LC-MS  \n- Phenolic compound analysis  \n- Generating inclusion lists for targeted MS workflows  \n\n---\n\n## License\n\nMIT License\n\n---\n\n## Author\n\n**Helge Hecht**  \nORCID: 0000-0001-6744-996X  \n\n---\n\n## Acknowledgements\n\nDeveloped within the ELIXIR CZ infrastructure and leveraging Galaxy tool ecosystem.\n",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },
+    "steps": {
+        "0": {
+            "annotation": "Input structures which to use for suspect screening.",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Input structures which to use for suspect screening.",
+                    "name": "Input structures"
+                }
+            ],
+            "label": "Input structures",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"sdf\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "25c5700c-61db-4b37-ba3b-38fac9cae351",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Model trained with complementary workflow for RT prediction.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Model trained with complementary workflow for RT prediction.",
+                    "name": "RT Prediction Model"
+                }
+            ],
+            "label": "RT Prediction Model",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 600,
+                "top": 50
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"format\": [\"h5mlm\"], \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "214e0817-025b-4bbd-9c95-689eef1c829f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Convert the structures to SMILES format to use for predicting RT values.",
+            "content_id": "CONVERTER_molecules",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Convert to SMI",
+            "name": "OpenBabel converter for molecular formats",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "auto"
+                }
+            ],
+            "position": {
+                "left": 300,
+                "top": 0
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionoutput": {
+                    "action_arguments": {
+                        "newtype": "smi"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "output"
+                },
+                "HideDatasetActionoutput": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output"
+                }
+            },
+            "tool_id": "CONVERTER_molecules",
+            "tool_state": "{\"__input_ext\": \"input\", \"__target_datatype__\": \"smi\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.4.1",
+            "type": "tool",
+            "uuid": "318a96d7-4f5c-4238-9172-b1dfb323cb9e",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Calculate descriptors needed to run the RT prediction model for the suspect screening candidates.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/ctb_rdkit_descriptors/ctb_rdkit_descriptors/2020.03.4+galaxy1",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "infile": {
+                    "id": 2,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Calculate Descriptors for suspect screening list",
+            "name": "Descriptors",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 190
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutfile": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/ctb_rdkit_descriptors/ctb_rdkit_descriptors/2020.03.4+galaxy1",
+            "tool_shed_repository": {
+                "changeset_revision": "0993ac4f4a23",
+                "name": "ctb_rdkit_descriptors",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"smi\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"header\": true, \"infile\": {\"__class__\": \"ConnectedValue\"}, \"select_multiple\": [\"MolLogP\", \"NOCount\", \"NumAromaticCarbocycles\", \"NumAromaticHeterocycles\", \"NumAromaticRings\", \"NumHAcceptors\", \"NumHDonors\", \"NumHeteroatoms\", \"NumRotatableBonds\", \"NumSaturatedCarbocycles\", \"NumSaturatedHeterocycles\", \"NumSaturatedRings\", \"RingCount\", \"SlogP_VSA1\", \"SlogP_VSA2\", \"TPSA\", \"fr_nitro_arom\", \"MolWt\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2020.03.4+galaxy1",
+            "type": "tool",
+            "uuid": "c913d04d-4728-4ea1-a760-ae538d1f95bd",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Run model inference using the descriptors calculated on the suspect screening candidates.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.2",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "infile_estimator": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "input_options|infile1": {
+                    "id": 3,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Model Prediction",
+                    "name": "input_options"
+                }
+            ],
+            "label": "Predict RTs",
+            "name": "Model Prediction",
+            "outputs": [
+                {
+                    "name": "outfile_predict",
+                    "type": "tabular"
+                }
+            ],
+            "position": {
+                "left": 900,
+                "top": 50
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutfile_predict": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile_predict"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.2",
+            "tool_shed_repository": {
+                "changeset_revision": "b6c2289292fa",
+                "name": "model_prediction",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"infile_estimator\": {\"__class__\": \"ConnectedValue\"}, \"input_options\": {\"selected_input\": \"tabular\", \"__current_case__\": 0, \"infile1\": {\"__class__\": \"ConnectedValue\"}, \"header1\": true, \"column_selector_options_1\": {\"selected_column_selector_option\": \"all_but_by_index_number\", \"__current_case__\": 1, \"col1\": [\"1\"]}}, \"method\": \"predict\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.11.2",
+            "type": "tool",
+            "uuid": "282161ff-4afa-4b10-98d5-d37f84c89230",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Remove the header as preparation for merging the predicted RT values with the SMILES structures.",
+            "content_id": "Remove beginning1",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input": {
+                    "id": 4,
+                    "output_name": "outfile_predict"
+                }
+            },
+            "inputs": [],
+            "label": "Remove Header",
+            "name": "Remove beginning",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1200,
+                "top": 50
+            },
+            "post_job_actions": {
+                "HideDatasetActionout_file1": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "Remove beginning1",
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"num_lines\": \"1\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "a0f74441-2659-472a-8231-a22cac104046",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "Join the tables of SMILES and predicted RTs to get the suspect list.",
+            "content_id": "Paste1",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input1": {
+                    "id": 2,
+                    "output_name": "output"
+                },
+                "input2": {
+                    "id": 5,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Join SMILES and RT values",
+            "name": "Paste",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1500,
+                "top": 0
+            },
+            "post_job_actions": {
+                "ChangeDatatypeActionout_file1": {
+                    "action_arguments": {
+                        "newtype": "tabular"
+                    },
+                    "action_type": "ChangeDatatypeAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "Paste1",
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"delimiter\": \"T\", \"input1\": {\"__class__\": \"ConnectedValue\"}, \"input2\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "27e86978-366e-465e-9914-d07b624b93f7",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Filter out candidates which have negative predicted RT values.",
+            "content_id": "Filter1",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input": {
+                    "id": 6,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Filter RTs",
+            "name": "Filter",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1800,
+                "top": 0
+            },
+            "post_job_actions": {
+                "HideDatasetActionout_file1": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "out_file1"
+                }
+            },
+            "tool_id": "Filter1",
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"cond\": \"c3>=0\", \"header_lines\": \"0\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.1",
+            "type": "tool",
+            "uuid": "7d3c0980-bcb8-42fa-bc87-838cab7549d1",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "Convert to CSV since adding a header line is easier for CSV than TSV.",
+            "content_id": "tabular_to_csv",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "tabular": {
+                    "id": 7,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Convert to CSV",
+            "name": "Convert tabular to CSV",
+            "outputs": [
+                {
+                    "name": "csv",
+                    "type": "csv"
+                }
+            ],
+            "position": {
+                "left": 2100,
+                "top": 0
+            },
+            "post_job_actions": {
+                "HideDatasetActioncsv": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "csv"
+                }
+            },
+            "tool_id": "tabular_to_csv",
+            "tool_state": "{\"__input_ext\": \"input\", \"__target_datatype__\": \"csv\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"tabular\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "a7bef090-8e91-4404-839a-edf435581f4f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
+            "annotation": "Re-introduce the header with SMILES, name and RT",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "infile": {
+                    "id": 8,
+                    "output_name": "csv"
+                }
+            },
+            "inputs": [],
+            "label": "Add header",
+            "name": "Add line to file",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2400,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/add_line_to_file/add_line_to_file/0.1.0",
+            "tool_shed_repository": {
+                "changeset_revision": "8e251055b1a9",
+                "name": "add_line_to_file",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"csv\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"options\": \"header\", \"text_input\": \"smiles,name,rt\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "2c0de609-7e10-49b1-b85d-918750f80c95",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "10": {
+            "annotation": "Use RDKit via MSME to add formulas from SMILES strings to the table.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/recetox/msmetaenhancer/msmetaenhancer/0.5.1+galaxy0",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "input_file": {
+                    "id": 9,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Add formula from SMILES",
+            "name": "MSMetaEnhancer",
+            "outputs": [
+                {
+                    "name": "output_file",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2700,
+                "top": 0
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_file": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_file"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/recetox/msmetaenhancer/msmetaenhancer/0.5.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "cfa9638fe182",
+                "name": "msmetaenhancer",
+                "owner": "recetox",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"jobs\": [\"smiles formula RDKit\"], \"options\": {\"logging\": {\"output_log\": \"FALSE\", \"__current_case__\": 1}}, \"ordered_jobs\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.5.1+galaxy0",
+            "type": "tool",
+            "uuid": "1ba208b2-212d-41b8-a16f-0c4bdbe4982c",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
+            "annotation": "Remove +- signs from formulas for molecules listed as ions for compatibility with isolib.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "infile": {
+                    "id": 10,
+                    "output_name": "output_file"
+                }
+            },
+            "inputs": [],
+            "label": "Clean formulas",
+            "name": "Replace Text",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 3000,
+                "top": 0
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutfile": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"replacements\": [{\"__index__\": 0, \"column\": \"4\", \"find_pattern\": \"+\", \"replace_pattern\": null}, {\"__index__\": 1, \"column\": \"4\", \"find_pattern\": \"-\", \"replace_pattern\": null}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "fd528c73-9d5e-471f-a1ec-07262217e960",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "Remove invalid names from the table since they mess up the outputs in isolib.",
+            "content_id": "Filter1",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "input": {
+                    "id": 11,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Remove invalid names",
+            "name": "Filter",
+            "outputs": [
+                {
+                    "name": "out_file1",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 3300,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "Filter1",
+            "tool_state": "{\"__input_ext\": \"input\", \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"cond\": \"c2!=''\", \"header_lines\": \"1\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.1.1",
+            "type": "tool",
+            "uuid": "2a074240-060d-4f55-b53c-3f37392a0a4b",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Compound List",
+                    "output_name": "out_file1",
+                    "uuid": "5fceb36a-b885-4f23-92a6-5d16f3867fc7"
+                }
+            ]
+        },
+        "13": {
+            "annotation": "Calculate list of suspect ions to screen for using isolib, also using adducts to calculate the candidate mz values.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/recetox/isolib/isolib/2.6+galaxy3",
+            "errors": null,
+            "id": 13,
+            "input_connections": {
+                "input_file": {
+                    "id": 12,
+                    "output_name": "out_file1"
+                }
+            },
+            "inputs": [],
+            "label": "Calculate suspect list",
+            "name": "isolib",
+            "outputs": [
+                {
+                    "name": "isotope_library",
+                    "type": "msp"
+                }
+            ],
+            "position": {
+                "left": 3600,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/recetox/isolib/isolib/2.6+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "06f2d0d6d107",
+                "name": "isolib",
+                "owner": "recetox",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"__input_ext\": \"input\", \"append_adduct\": true, \"chromInfo\": \"/opt/galaxy/tool-data/shared/ucsc/chrom/?.len\", \"formatting\": {\"out_format\": \"tabular\", \"__current_case__\": 0, \"append_isotopes\": true}, \"input_file\": {\"__class__\": \"ConnectedValue\"}, \"ionization\": {\"ionization\": \"negative\", \"__current_case__\": 1, \"adducts\": \"M-H\"}, \"rel_to\": {\"value\": \"0\", \"__current_case__\": 0, \"threshold\": \"5.0\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "2.6+galaxy3",
+            "type": "tool",
+            "uuid": "c08607ef-be51-4f87-a636-a1d85b0c6669",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Suspect Screening Ions",
+                    "output_name": "isotope_library",
+                    "uuid": "ea85fc43-eb66-48a2-8654-67539de5b98e"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "c24b3ff7-402c-4c37-87fc-a462e40fa189",
+    "version": 17
+}
