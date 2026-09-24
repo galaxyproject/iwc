@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.5] - 2026-08-31
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/teloscope/teloscope/0.1.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/teloscope/teloscope/0.1.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.30+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.31+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_uniq_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.9+galaxy0`
+
 ## [2.4] - 2026-04-29
 
 ### Automatic update
