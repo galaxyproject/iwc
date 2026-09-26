@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5] - 2026-09-23
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
 ## [0.4] - 2026-09-21
 
 - Add sorting steps because classified bins are at the bottom of the list

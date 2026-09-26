@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5] - 2026-09-23
+
+### Fixed
+- Correct the changeset revision of `map_param_value` to an installable revision
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
 ## [0.4] - 2026-03-17
 - Added an optional step allowing users to select either a built-in reference genome or provide a custom reference genome from their history.
 
