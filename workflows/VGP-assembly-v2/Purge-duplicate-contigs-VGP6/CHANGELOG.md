@@ -5,6 +5,7 @@
 ### Fixes
 - Fix malformed awk expression in the "Rename and unify fasta" subworkflow: the composed rename command had a stray quote (`{print $1"\tcontig"_"NR".H2"}`), causing an awk syntax error. Now composes `{print $1"\tcontig_"NR".H2"}`.
 - `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0`.
+- Correct the Tool Shed revision pins for Map parameter value and both Datamash steps without changing their tool versions.
 
 ## [0.10.5] - 2026-01-26
 
