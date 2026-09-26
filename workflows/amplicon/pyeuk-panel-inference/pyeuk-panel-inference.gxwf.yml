@@ -1,0 +1,150 @@
+class: GalaxyWorkflow
+label: PyEuk Panel Inference (derive an amplicon panel from data)
+doc: >-
+  Reconstruct the amplicon panel FASTA for a cohort that has no panel, then feed it to the
+  standard read-level typing workflow.
+
+  Targeted-amplicon reads do not spread over the genome; they pile up on the amplified
+  regions as sharp coverage peaks against an empty background. Map the reads to the
+  reference GENOME, and each peak is an amplicon whose genome sequence is the panel entry --
+  which is how a curated panel is built in the first place.
+
+  Paired FASTQ per specimen -> bwa-mem2 against the genome -> MAPQ>=20 and proper pairs ->
+  pyeuk derive-panel, which calls the peaks and writes the panel FASTA (plus a BED and a QC
+  table). The peak threshold is data-adaptive (a fraction of the run's own maximum depth),
+  so it needs no retuning across datasets.
+creator:
+  - class: Person
+    identifier: https://orcid.org/0000-0002-5987-8032
+    name: Anton Nekrutenko
+  - class: Person
+    name: Claude Opus 5
+license: MIT
+release: "0.3"
+
+inputs:
+  reads:
+    type: collection
+    collection_type: list:paired
+    doc: >-
+      Adapter/quality-trimmed paired FASTQ, one pair per specimen. A representative subset
+      is enough; derive-panel samples a fixed number of BAMs.
+    position: {top: 431, left: 2}
+  genome:
+    type: data
+    doc: >-
+      The reference GENOME the reads are mapped to (not a panel). derive-panel extracts each
+      coverage peak's sequence from it.
+    position: {top: 290, left: 0}
+
+outputs:
+  derived_panel:
+    outputSource: derive_panel/panel
+    doc: The reconstructed amplicon panel FASTA. A drop-in for the panel input of the standard workflow.
+  peaks_bed:
+    outputSource: derive_panel/bed
+    doc: The peaks as a BED.
+  peaks_qc:
+    outputSource: derive_panel/qc
+    doc: Per-peak QC (depth, length, coordinates).
+
+steps:
+  index_genome:
+    tool_id: toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0
+    label: index_genome
+    doc: Build the genome index once and reuse it for every specimen's mapping job.
+    in:
+      reference: genome
+    out:
+      index: {}
+    position: {top: 0, left: 300}
+
+  map_reads:
+    tool_id: toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0
+    label: map_reads
+    doc: Map each specimen's reads to the whole genome. Amplicon reads land on the amplified regions as coverage peaks.
+    in:
+      reference_source|ref_file: index_genome/index
+      fastq_input|fastq_input1: reads
+    state:
+      reference_source:
+        reference_source_selector: history
+      fastq_input:
+        fastq_input_selector: paired_collection
+        iset_stats: ''
+      rg:
+        rg_selector: do_not_set
+      analysis_type:
+        analysis_type_selector: illumina
+      output_sort: coordinate
+    out:
+      bam_output: {}
+    position: {top: 30, left: 600}
+
+  filter_bam:
+    tool_id: toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2
+    label: filter_bam
+    doc: Keep MAPQ>=20 proper pairs; drop unmapped, secondary, QC-fail, duplicate and supplementary reads so peak calling sees only trustworthy alignments.
+    in:
+      input: map_reads/bam_output
+    state:
+      mode:
+        outtype: selected_reads
+        filter_config:
+          cond_region:
+            select_region: 'no'
+          cond_rg:
+            select_rg: 'no'
+          cond_expr:
+            select_expr: 'no'
+          quality: 20
+          inclusive_filter: ['2']
+          exclusive_filter: ['4', '8', '256', '512', '1024', '2048']
+          exclusive_filter_all: []
+          library: ''
+          cigarcons: ''
+          tag: ''
+          qname_file: null
+        subsample_config:
+          subsampling_mode:
+            select_subsample: fraction
+            factor: 1.0
+            seed: ''
+        output_options:
+          reads_report_type: retained
+          complementary_output: false
+          adv_output:
+            collapsecigar: false
+          output_format:
+            oformat: bam
+      addref_cond:
+        addref_select: 'no'
+    out:
+      outputsam: {}
+    position: {top: 30, left: 900}
+
+  derive_panel:
+    tool_id: haplotype_derive_panel
+    label: derive_panel
+    doc: >-
+      Cohort-level reduction over a sample of the genome-mapped BAMs. Each contiguous
+      coverage peak becomes a panel entry, its sequence taken from the genome.
+    in:
+      bams: filter_bam/outputsam
+      reference_source|ref_file: genome
+    state:
+      reference_source:
+        reference_source_selector: history
+      advanced:
+        sample: 20
+        min_depth_frac: 0.01
+        min_abs_depth: 30
+        min_length: 80
+        merge_gap: 25
+        pad: 0
+        prefix: ampl
+    out:
+      panel: {}
+      bed: {}
+      qc: {}
+    position: {top: 270, left: 1200}

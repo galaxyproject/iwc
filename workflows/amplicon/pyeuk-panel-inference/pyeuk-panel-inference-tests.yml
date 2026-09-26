@@ -1,0 +1,138 @@
+# Workflow test for pyeuk-panel-inference (derive an amplicon panel from data).
+#
+# Same synthetic reads as pyeuk-standard, mapped to a 1.5 kb reference genome
+# (test-data/genome.fasta) in which the two amplicons sit as coverage peaks at
+# chr_test:301-450 and chr_test:901-1050. derive-panel reconstructs both as panel
+# entries ampl_01 / ampl_02. Expected outputs were produced with PyEuk 0.8.1.
+- doc: >-
+    Targeted-amplicon reads pile onto two genome regions as coverage peaks;
+    derive-panel reconstructs a two-entry amplicon panel (ampl_01, ampl_02) with a
+    BED and a per-peak QC table.
+  job:
+    reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: A1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    genome:
+      class: File
+      path: test-data/genome.fasta
+      filetype: fasta
+  outputs:
+    derived_panel:
+      asserts:
+      - has_text:
+          text: ">ampl_01"
+      - has_text:
+          text: ">ampl_02"
+    peaks_bed:
+      asserts:
+      - has_n_lines:
+          n: 2
+      - has_text:
+          text: "chr_test"
+    peaks_qc:
+      asserts:
+      - has_n_lines:
+          n: 3
+      - has_n_columns:
+          n: 7
+      - has_text:
+          text: "ampl_01"
+      - has_text:
+          text: "ampl_02"
