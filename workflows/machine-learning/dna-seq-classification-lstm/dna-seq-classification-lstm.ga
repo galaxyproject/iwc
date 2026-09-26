@@ -5,16 +5,16 @@
     "creator": [
         {
             "class": "Person",
-            "identifier": "0000-0002-2068-4695",
+            "identifier": "https://orcid.org/0000-0002-2068-4695",
             "name": "Anup Kumar"
         }
     ],
     "format-version": "0.1",
-    "help": "# \ud83e\uddec DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon\u2013intron boundary, an intron\u2013exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Metrics reported:\n  - Accuracy\n  - F1-score (macro)\n  - Recall (macro)\n\n- Outputs:\n  - Predictions on test data\n  - Class probabilities\n  - Confusion matrix visualization\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License# \ud83e\uddec DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon\u2013intron boundary, an intron\u2013exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Outputs:\n  - Trained LSTM model\n  - Predicted labels (validation set)\n  - Evaluation metrics (validation set)\n    - Accuracy\n    - F1-score (macro)\n    - Recall (macro)\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License",
+    "help": "# 🧬 DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Metrics reported:\n  - Accuracy\n  - F1-score (macro)\n  - Recall (macro)\n\n- Outputs:\n  - Predictions on test data\n  - Class probabilities\n  - Confusion matrix visualization\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License# 🧬 DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Outputs:\n  - Trained LSTM model\n  - Predicted labels (validation set)\n  - Evaluation metrics (validation set)\n    - Accuracy\n    - F1-score (macro)\n    - Recall (macro)\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License",
     "license": "MIT",
     "release": "0.1",
     "name": "DNA sequence classification using LSTM neural network",
-    "readme": "# \ud83e\uddec DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon\u2013intron boundary, an intron\u2013exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Outputs:\n  - Trained LSTM model\n  - Predicted labels (validation set)\n  - Evaluation metrics (validation set)\n    - Accuracy\n    - F1-score (macro)\n    - Recall (macro)\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License",
+    "readme": "# 🧬 DNA sequence classification using LSTM neural network (Galaxy Workflow)\n\n## Overview\n\nThis workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.\n\n### An example task achieved by the workflow\n\nThe workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:\n\n| Splice junction categories  | Donor                   | DNA sequence                                                 |\n|-----------------------------|-------------------------|--------------------------------------------------------------|\n| EI                          | ATRINS-DONOR-521        | CCAGCTGCATCACAGGAGGCCAGCGAGCAGGTCTGTTCCAAGGGCCTTCGAGCCAGTCTG |\n| IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |\n| N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |\n\nThe first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.\n\n\nOther tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.\n\nAn example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.\nThe dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.\nHowever, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.\n\n---\n\n## Key features\n\n- End-to-end pipeline in Galaxy\n- DNA sequence encoding using k-mer representation\n- Deep learning model built with Keras\n- LSTM-based architecture for sequence learning\n- Automatic train/test split\n- Model evaluation with classification metrics and confusion matrix\n- Prediction of class labels and probabilities\n\n---\n\n## Inputs\n\nThe workflow requires two datasets:\n- DNA sequences (FASTA format). Can contain fixed length or variable length sequences\n- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)\n\n---\n\n## Workflow steps\n\n### 1. Data encoding\n- DNA sequences are converted into numerical format using:\n  - k-mer encoding (k=3)\n- Output: encoded feature matrix\n\n### 2. Data preparation\n- K-mer encoded sequences are merged with labels\n- Dataset is split into:\n  - Training set (75%)\n  - Test set (25%)\n- Training set is further split into:\n  - Training set (80%)\n  - Validation set (20%)\n\n### 3. Feature & label separation\n- Training and test datasets are split into:\n  - X (features): k-mer encoded sequences\n  - y (labels): class labels\n- Labels are converted to categorical (one-hot encoding) representation\n\n### 4. Model training\n- LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.\n\n### 5. Model evaluation\n- The trained model is evaluated on unseen test data on several classification metrics.\n\n---\n\n## Model architecture\n\nThe workflow builds a Sequential Keras model with:\n\n- Embedding layer:\n  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)\n  - Output dimension: 128\n  - Number of output dimensions can be tuned for optimal performance\n\n- LSTM layers:\n  - LSTM (256 units, return sequences)\n  - LSTM (256 units)\n  - Number of LSTM units can be tuned for optimal performance\n\n- Dense layers:\n  - Dense (64 units, ELU activation)\n  - Output Dense (3 units for 3 classes, Softmax)\n  - Number of dense units can be tuned for optimal performance\n\n---\n\n## Model training\n\n- Optimizer: Adam\n- Loss function: categorical crossentropy\n- Metrics: categorical accuracy\n\nTraining parameters:\n- Epochs: 10\n- Batch size: 32\n- Validation split: 20%\n\n---\n\n## Model optimisation\n\nMachine and deep learning models need parameter optimisation (also called hyperparameter optimisation) to find the best classification performance for any dataset.\nThe model architecture in the workflow may not provide optimal accuracy for all datasets. Therefore, it is always good to tune the parameters to explore their optimal values.\n\nA list of parameters to look out for model optimisation:\n\n- Epochs\n- Batch size\n- Learning rate\n- Optimiser\n- Number of LSTM layers and their number of respective units\n- Number of dense layers and their number of respective units\n- Training/test/validate data split size\n\n---\n\n## Evaluation\n\n- Outputs:\n  - Trained LSTM model\n  - Predicted labels (validation set)\n  - Evaluation metrics (validation set)\n    - Accuracy\n    - F1-score (macro)\n    - Recall (macro)\n\nA higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.\n\n---\n\n## Outputs\n\n- Trained LSTM model\n- Predicted labels (test set)\n- Predicted label probabilities (test set)\n- Evaluation metrics (validation set)\n- Confusion matrix (test set)\n\n---\n\n## Usage notes\n\n- Ensure DNA sequences are in FASTA and labels as tabular formats\n- Categories/labels/classes must align with input DNA sequences\n- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to \"Deep learning training and evaluation\" tool. At the bottom of the tool definition, there is an option \"Job Resource Parameters\". Choose \"Specify job resource parameters\" and the in the \"Use GPU resources\", set it to \"Yes\"\n- Suitable for multi-class classification problems\n\n---\n\n## License\n\nMIT License",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -74,268 +74,179 @@
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Length of the k-mers used to encode DNA sequences as integer tokens.",
+            "content_id": null,
             "errors": null,
             "id": 2,
             "input_connections": {},
-            "inputs": [],
-            "label": "K-mer size",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Length of the k-mers used to encode DNA sequences as integer tokens.",
+                    "name": "K-mer size"
                 }
             ],
+            "label": "K-mer size",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 752.3194820306472,
                 "top": 244.80268983624148
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"3\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 3, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "c6771b70-658d-4a59-846e-6026b239e278",
             "when": null,
             "workflow_outputs": []
         },
         "3": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Number of units in each of the two LSTM layers.",
+            "content_id": null,
             "errors": null,
             "id": 3,
             "input_connections": {},
-            "inputs": [],
-            "label": "LSTM layer units",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Number of units in each of the two LSTM layers.",
+                    "name": "LSTM layer units"
                 }
             ],
+            "label": "LSTM layer units",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 1303.0246025640981,
                 "top": 0
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"256\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 256, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "341ca658-9c7d-4d5e-967f-cc8b84769fc1",
             "when": null,
             "workflow_outputs": []
         },
         "4": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Number of output dimensions of the embedding layer.",
+            "content_id": null,
             "errors": null,
             "id": 4,
             "input_connections": {},
-            "inputs": [],
-            "label": "Embedding output dimensions",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Number of output dimensions of the embedding layer.",
+                    "name": "Embedding output dimensions"
                 }
             ],
+            "label": "Embedding output dimensions",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 1580.8566509188643,
                 "top": 13.498048778240518
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"128\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 128, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "cdde5eba-7bdb-4ded-b77e-6d2c3ccd07d9",
             "when": null,
             "workflow_outputs": []
         },
         "5": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Number of units in the hidden dense layer.",
+            "content_id": null,
             "errors": null,
             "id": 5,
             "input_connections": {},
-            "inputs": [],
-            "label": "Dense layer units",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Number of units in the hidden dense layer.",
+                    "name": "Dense layer units"
                 }
             ],
+            "label": "Dense layer units",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 1447.4878341387355,
                 "top": 806.2636217060492
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"64\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 64, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "3c90b01f-d96f-4f2b-88ba-31f024a36127",
             "when": null,
             "workflow_outputs": []
         },
         "6": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Number of epochs used to train the model.",
+            "content_id": null,
             "errors": null,
             "id": 6,
             "input_connections": {},
-            "inputs": [],
-            "label": "Number of training epochs",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Number of epochs used to train the model.",
+                    "name": "Number of training epochs"
                 }
             ],
+            "label": "Number of training epochs",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 1814.9931099120008,
                 "top": 434.004767678969
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"10\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 10, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "23fdeec2-7f8b-462f-b859-fa44a577705f",
             "when": null,
             "workflow_outputs": []
         },
         "7": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
+            "annotation": "Number of samples per gradient update during training.",
+            "content_id": null,
             "errors": null,
             "id": 7,
             "input_connections": {},
-            "inputs": [],
-            "label": "Batch size",
-            "name": "Map parameter value",
-            "outputs": [
+            "inputs": [
                 {
-                    "name": "output_param_integer",
-                    "type": "expression.json"
+                    "description": "Number of samples per gradient update during training.",
+                    "name": "Batch size"
                 }
             ],
+            "label": "Batch size",
+            "name": "Input parameter",
+            "outputs": [],
             "position": {
                 "left": 1813.3752053608912,
                 "top": 564.7090834917673
             },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.1.1",
-            "tool_shed_repository": {
-                "changeset_revision": "a01f088d0e5e",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": \"32\", \"mappings\": []}, \"output_param_type\": \"integer\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.1",
-            "type": "tool",
+            "tool_id": null,
+            "tool_state": "{\"default\": 32, \"validators\": [{\"min\": 1, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
             "uuid": "3b0cbcc3-23dd-4599-b587-2a00f34edead",
             "when": null,
             "workflow_outputs": []
         },
         "8": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.4",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.2",
             "errors": null,
             "id": 8,
             "input_connections": {
-                "ref|input": {
-                    "id": 0,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Compute sequence length",
-                    "name": "ref"
-                }
-            ],
-            "label": "Compute sequence length",
-            "name": "Compute sequence length",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 246.00295080458585,
-                "top": 49.768152649368595
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fasta_compute_length/fasta_compute_length/1.0.4",
-            "tool_shed_repository": {
-                "changeset_revision": "5cbde03c1103",
-                "name": "fasta_compute_length",
-                "owner": "devteam",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"ref\": {\"ref_source\": \"history\", \"__current_case__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}, \"keep_first\": \"0\", \"keep_first_word\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.4",
-            "type": "tool",
-            "uuid": "fc22cd0e-94eb-4698-ad12-0ca15c05be4e",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "9": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.2",
-            "errors": null,
-            "id": 9,
-            "input_connections": {
                 "encoder_type|fasta_path": {
                     "id": 0,
+                    "output_name": "output"
+                },
+                "encoder_type|sequence_encoding|kmer_size": {
+                    "id": 2,
                     "output_name": "output"
                 }
             },
@@ -345,7 +256,7 @@
                     "name": "encoder_type"
                 }
             ],
-            "label": "Convert to categorical labels (DNA sequences)",
+            "label": "K-mer encode DNA sequences",
             "name": "To categorical",
             "outputs": [
                 {
@@ -369,7 +280,7 @@
                 "owner": "bgruening",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"encoder_type\": {\"task_type\": \"dna_encoder\", \"__current_case__\": 1, \"fasta_path\": {\"__class__\": \"ConnectedValue\"}, \"sequence_encoding\": {\"encoding_method\": \"kmer\", \"__current_case__\": 1, \"kmer_size\": \"3\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"encoder_type\": {\"task_type\": \"dna_encoder\", \"__current_case__\": 1, \"fasta_path\": {\"__class__\": \"ConnectedValue\"}, \"sequence_encoding\": {\"encoding_method\": \"kmer\", \"__current_case__\": 1, \"kmer_size\": {\"__class__\": \"ConnectedValue\"}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.0.11.2",
             "type": "tool",
@@ -377,11 +288,85 @@
             "when": null,
             "workflow_outputs": []
         },
+        "9": {
+            "annotation": "The encoder pads all sequences to the same number of k-mer tokens, so the first row gives the number of feature columns.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "infile": {
+                    "id": 8,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Count k-mer columns",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 503.8735720318259,
+                "top": 43.27745516907006
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"NR == 1 { print NF; exit }\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "8a581cf7-c150-4b53-be82-9fd6ab70d38b",
+            "when": null,
+            "workflow_outputs": []
+        },
         "10": {
+            "annotation": "",
+            "content_id": "param_value_from_file",
+            "errors": null,
+            "id": 10,
+            "input_connections": {
+                "input1": {
+                    "id": 9,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Number of k-mer columns",
+            "name": "Parse parameter value",
+            "outputs": [
+                {
+                    "name": "integer_param",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 1043.912790998485,
+                "top": 69.02169352558126
+            },
+            "post_job_actions": {},
+            "tool_id": "param_value_from_file",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.0",
+            "type": "tool",
+            "uuid": "0ba64315-3cb0-4691-b527-b2e5cd307a1b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "11": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
             "errors": null,
-            "id": 10,
+            "id": 11,
             "input_connections": {
                 "in_file": {
                     "id": 1,
@@ -417,11 +402,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "11": {
+        "12": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_label_encoder/sklearn_label_encoder/1.0.11.2",
             "errors": null,
-            "id": 11,
+            "id": 12,
             "input_connections": {
                 "infile": {
                     "id": 1,
@@ -457,46 +442,6 @@
             "when": null,
             "workflow_outputs": []
         },
-        "12": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
-            "errors": null,
-            "id": 12,
-            "input_connections": {
-                "in_file": {
-                    "id": 8,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Extract maximum sequence length",
-            "name": "Datamash",
-            "outputs": [
-                {
-                    "name": "out_file",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 503.8735720318259,
-                "top": 43.27745516907006
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
-            "tool_shed_repository": {
-                "changeset_revision": "aaafc0ac4dd2",
-                "name": "datamash_ops",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"grouping\": null, \"header_in\": false, \"header_out\": false, \"ignore_case\": false, \"in_file\": {\"__class__\": \"ConnectedValue\"}, \"narm\": false, \"need_sort\": false, \"operations\": [{\"__index__\": 0, \"op_name\": \"max\", \"op_column\": \"2\"}], \"print_full_line\": false, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.9+galaxy0",
-            "type": "tool",
-            "uuid": "a056b0e0-0377-4637-b1c0-8b5c718225a1",
-            "when": null,
-            "workflow_outputs": []
-        },
         "13": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3",
@@ -504,12 +449,12 @@
             "id": 13,
             "input_connections": {
                 "infile": {
-                    "id": 9,
+                    "id": 8,
                     "output_name": "outfile"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Split k-mer tokens into one per line",
             "name": "Replace Text",
             "outputs": [
                 {
@@ -544,12 +489,12 @@
             "id": 14,
             "input_connections": {
                 "input1": {
-                    "id": 10,
+                    "id": 11,
                     "output_name": "out_file"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Number of classes",
             "name": "Parse parameter value",
             "outputs": [
                 {
@@ -578,11 +523,11 @@
             "id": 15,
             "input_connections": {
                 "input1": {
-                    "id": 9,
+                    "id": 8,
                     "output_name": "outfile"
                 },
                 "input2": {
-                    "id": 11,
+                    "id": 12,
                     "output_name": "outfile"
                 }
             },
@@ -611,43 +556,9 @@
         },
         "16": {
             "annotation": "",
-            "content_id": "param_value_from_file",
-            "errors": null,
-            "id": 16,
-            "input_connections": {
-                "input1": {
-                    "id": 12,
-                    "output_name": "out_file"
-                }
-            },
-            "inputs": [],
-            "label": null,
-            "name": "Parse parameter value",
-            "outputs": [
-                {
-                    "name": "integer_param",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 757.0294470972912,
-                "top": 29.67021346407108
-            },
-            "post_job_actions": {},
-            "tool_id": "param_value_from_file",
-            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "33553746-ea05-4a95-a5ba-a70d07918b70",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "17": {
-            "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/datamash_ops/datamash_ops/1.9+galaxy0",
             "errors": null,
-            "id": 17,
+            "id": 16,
             "input_connections": {
                 "in_file": {
                     "id": 13,
@@ -683,11 +594,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "18": {
+        "17": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_train_test_split/sklearn_train_test_split/1.0.11.2",
             "errors": null,
-            "id": 18,
+            "id": 17,
             "input_connections": {
                 "infile_array": {
                     "id": 15,
@@ -727,63 +638,19 @@
             "when": null,
             "workflow_outputs": []
         },
-        "19": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
-            "errors": null,
-            "id": 19,
-            "input_connections": {
-                "components_0|param_type|component_value": {
-                    "id": 16,
-                    "output_name": "integer_param"
-                },
-                "components_1|param_type|component_value": {
-                    "id": 2,
-                    "output_name": "output_param_integer"
-                }
-            },
-            "inputs": [],
-            "label": "Compute number of k-mers per sequence",
-            "name": "Calculate numeric parameter value",
-            "outputs": [
-                {
-                    "name": "integer_param",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1043.912790998485,
-                "top": 69.02169352558126
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
-            "tool_shed_repository": {
-                "changeset_revision": "0e586762f97b",
-                "name": "calculate_numeric_param",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}, \"arith\": \"-\"}, {\"__index__\": 1, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}, \"arith\": \"+\"}, {\"__index__\": 2, \"param_type\": {\"select_param_type\": \"integer\", \"__current_case__\": 0, \"component_value\": \"1\"}, \"arith\": \"\"}], \"output_type\": \"integer\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "818b8c62-7280-4051-a8cf-b58a1e063212",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "20": {
+        "18": {
             "annotation": "",
             "content_id": "param_value_from_file",
             "errors": null,
-            "id": 20,
+            "id": 18,
             "input_connections": {
                 "input1": {
-                    "id": 17,
+                    "id": 16,
                     "output_name": "out_file"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Maximum k-mer index",
             "name": "Parse parameter value",
             "outputs": [
                 {
@@ -805,14 +672,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "21": {
+        "19": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 21,
+            "id": 19,
             "input_connections": {
                 "components_1|param_type|component_value": {
-                    "id": 19,
+                    "id": 10,
                     "output_name": "integer_param"
                 }
             },
@@ -845,14 +712,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "22": {
+        "20": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
             "errors": null,
-            "id": 22,
+            "id": 20,
             "input_connections": {
                 "components_0|param_type|component_value": {
-                    "id": 19,
+                    "id": 10,
                     "output_name": "integer_param"
                 }
             },
@@ -885,14 +752,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "23": {
+        "21": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 23,
+            "id": 21,
             "input_connections": {
                 "components_1|param_type|component_value": {
-                    "id": 19,
+                    "id": 10,
                     "output_name": "integer_param"
                 }
             },
@@ -925,14 +792,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "24": {
+        "22": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/calculate_numeric_param/calculate_numeric_param/0.1.0",
             "errors": null,
-            "id": 24,
+            "id": 22,
             "input_connections": {
                 "components_0|param_type|component_value": {
-                    "id": 20,
+                    "id": 18,
                     "output_name": "integer_param"
                 }
             },
@@ -965,14 +832,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "25": {
+        "23": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 25,
+            "id": 23,
             "input_connections": {
                 "components_1|param_type|component_value": {
-                    "id": 22,
+                    "id": 20,
                     "output_name": "integer_param"
                 }
             },
@@ -1005,18 +872,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "26": {
+        "24": {
             "annotation": "",
             "content_id": "Cut1",
             "errors": null,
-            "id": 26,
+            "id": 24,
             "input_connections": {
                 "columnList": {
-                    "id": 23,
+                    "id": 21,
                     "output_name": "out1"
                 },
                 "input": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "out_train"
                 }
             },
@@ -1043,18 +910,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "27": {
+        "25": {
             "annotation": "",
             "content_id": "Cut1",
             "errors": null,
-            "id": 27,
+            "id": 25,
             "input_connections": {
                 "columnList": {
-                    "id": 23,
+                    "id": 21,
                     "output_name": "out1"
                 },
                 "input": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "out_test"
                 }
             },
@@ -1081,35 +948,35 @@
             "when": null,
             "workflow_outputs": []
         },
-        "28": {
+        "26": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_config/keras_model_config/1.0.11.0",
             "errors": null,
-            "id": 28,
+            "id": 26,
             "input_connections": {
                 "model_selection|input_shape": {
-                    "id": 21,
+                    "id": 19,
                     "output_name": "out1"
                 },
                 "model_selection|layers_0|layer_selection|input_dim": {
-                    "id": 24,
+                    "id": 22,
                     "output_name": "integer_param"
                 },
                 "model_selection|layers_0|layer_selection|output_dim": {
                     "id": 4,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "model_selection|layers_1|layer_selection|units": {
                     "id": 3,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "model_selection|layers_2|layer_selection|units": {
                     "id": 3,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "model_selection|layers_3|layer_selection|units": {
                     "id": 5,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "model_selection|layers_4|layer_selection|units": {
                     "id": 14,
@@ -1150,18 +1017,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "29": {
+        "27": {
             "annotation": "",
             "content_id": "Cut1",
             "errors": null,
-            "id": 29,
+            "id": 27,
             "input_connections": {
                 "columnList": {
-                    "id": 25,
+                    "id": 23,
                     "output_name": "out1"
                 },
                 "input": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "out_train"
                 }
             },
@@ -1188,23 +1055,23 @@
             "when": null,
             "workflow_outputs": []
         },
-        "30": {
+        "28": {
             "annotation": "",
             "content_id": "Cut1",
             "errors": null,
-            "id": 30,
+            "id": 28,
             "input_connections": {
                 "columnList": {
-                    "id": 25,
+                    "id": 23,
                     "output_name": "out1"
                 },
                 "input": {
-                    "id": 18,
+                    "id": 17,
                     "output_name": "out_test"
                 }
             },
             "inputs": [],
-            "label": "Test set labels (y_test) ",
+            "label": "Test set labels (y_test)",
             "name": "Cut",
             "outputs": [
                 {
@@ -1226,22 +1093,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "31": {
+        "29": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_model_builder/keras_model_builder/1.0.11.0",
             "errors": null,
-            "id": 31,
+            "id": 29,
             "input_connections": {
                 "mode_selection|fit_params|batch_size": {
                     "id": 7,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "mode_selection|fit_params|epochs": {
                     "id": 6,
-                    "output_name": "output_param_integer"
+                    "output_name": "output"
                 },
                 "mode_selection|infile_json": {
-                    "id": 28,
+                    "id": 26,
                     "output_name": "outfile"
                 }
             },
@@ -1251,7 +1118,7 @@
                     "name": "mode_selection"
                 }
             ],
-            "label": "Create deep learning model architecture ",
+            "label": "Create deep learning model architecture",
             "name": "Create deep learning model",
             "outputs": [
                 {
@@ -1279,14 +1146,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "32": {
+        "30": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/sklearn_to_categorical/sklearn_to_categorical/1.0.11.2",
             "errors": null,
-            "id": 32,
+            "id": 30,
             "input_connections": {
                 "encoder_type|labels_path": {
-                    "id": 29,
+                    "id": 27,
                     "output_name": "out_file1"
                 }
             },
@@ -1324,22 +1191,22 @@
             "when": null,
             "workflow_outputs": []
         },
-        "33": {
+        "31": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/keras_train_and_eval/keras_train_and_eval/1.0.11.0",
             "errors": null,
-            "id": 33,
+            "id": 31,
             "input_connections": {
                 "experiment_schemes|infile_estimator": {
-                    "id": 31,
+                    "id": 29,
                     "output_name": "outfile"
                 },
                 "input_options|infile1": {
-                    "id": 26,
+                    "id": 24,
                     "output_name": "out_file1"
                 },
                 "input_options|infile2": {
-                    "id": 32,
+                    "id": 30,
                     "output_name": "outfile"
                 }
             },
@@ -1403,18 +1270,18 @@
                 }
             ]
         },
-        "34": {
+        "32": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
             "errors": null,
-            "id": 34,
+            "id": 32,
             "input_connections": {
                 "infile_estimator": {
-                    "id": 33,
+                    "id": 31,
                     "output_name": "outfile_object"
                 },
                 "input_options|infile1": {
-                    "id": 27,
+                    "id": 25,
                     "output_name": "out_file1"
                 }
             },
@@ -1458,18 +1325,18 @@
                 }
             ]
         },
-        "35": {
+        "33": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/model_prediction/model_prediction/1.0.11.0",
             "errors": null,
-            "id": 35,
+            "id": 33,
             "input_connections": {
                 "infile_estimator": {
-                    "id": 33,
+                    "id": 31,
                     "output_name": "outfile_object"
                 },
                 "input_options|infile1": {
-                    "id": 27,
+                    "id": 25,
                     "output_name": "out_file1"
                 }
             },
@@ -1513,18 +1380,18 @@
                 }
             ]
         },
-        "36": {
+        "34": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/ml_visualization_ex/ml_visualization_ex/1.0.11.0",
             "errors": null,
-            "id": 36,
+            "id": 34,
             "input_connections": {
                 "plotting_selection|infile_predicted": {
-                    "id": 34,
+                    "id": 32,
                     "output_name": "outfile_predict"
                 },
                 "plotting_selection|infile_true": {
-                    "id": 30,
+                    "id": 28,
                     "output_name": "out_file1"
                 }
             },
