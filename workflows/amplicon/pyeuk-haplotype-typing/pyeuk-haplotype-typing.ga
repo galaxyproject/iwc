@@ -1,0 +1,620 @@
+{
+    "name": "PyEuk amplicon haplotype typing",
+    "a_galaxy_workflow": "true",
+    "format-version": "0.1",
+    "annotation": "This workflow performs read-level haplotype typing of a cohort of targeted-amplicon specimens without a curated allele catalogue: paired-end reads are mapped to an amplicon panel with bwa-mem2 and filtered, analysis windows are derived from the cohort, per-specimen haplotypes are called from reads spanning each window and assembled into a specimen-by-haplotype sheet, and PyEuk computes a distance matrix and a cluster sweep to generate clusters and an HTML report.",
+    "tags": [],
+    "license": "MIT",
+    "release": "0.1",
+    "uuid": "b448fd95-0ba7-46c6-bbb4-dd613edd752e",
+    "creator": [
+        {
+            "name": "Anton Nekrutenko",
+            "identifier": "https://orcid.org/0000-0002-5987-8032",
+            "class": "Person"
+        },
+        {
+            "name": "Sergei Pond",
+            "identifier": "https://orcid.org/0000-0003-4817-4029",
+            "class": "Person"
+        }
+    ],
+    "comments": [],
+    "steps": {
+        "0": {
+            "id": 0,
+            "name": "Paired-end reads",
+            "type": "data_collection_input",
+            "label": "Paired-end reads",
+            "annotation": "Adapter/quality-trimmed paired FASTQ, one pair per specimen. The list element identifier is the specimen id: it becomes column 1 of the calls and the row id of the sheet, so it must match [A-Za-z0-9_.-]+.",
+            "tool_state": "{\"name\": \"Paired-end reads\", \"collection_type\": \"list:paired\"}",
+            "position": {
+                "top": 170,
+                "left": 300
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Paired-end reads",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "02dc4319-c8f6-45ce-b002-ff864c704bc7"
+        },
+        "1": {
+            "id": 1,
+            "name": "Amplicon panel",
+            "type": "data_input",
+            "label": "Amplicon panel",
+            "annotation": "The amplicon panel FASTA, used both as the mapping reference and as the reference the haplotype strings are described against. A haplotype name is a difference from this sequence, so a different panel renames every haplotype.",
+            "tool_state": "{\"name\": \"Amplicon panel\", \"format\": [\"fasta\"]}",
+            "position": {
+                "top": 290,
+                "left": 0
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Amplicon panel",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "6d1f386d-51ed-4810-a27d-bc72590b4e57"
+        },
+        "2": {
+            "id": 2,
+            "name": "Maximum window length",
+            "type": "parameter_input",
+            "label": "Maximum window length",
+            "annotation": "Upper bound on the analysis window length in bp; 0 means no cap. The default of 100 bp resolved every mixture on a Cryptosporidium titration where 250 bp windows did not. Window length trades linkage against sequencing error: shorter windows are spanned by more reads and resolve minor components of mixtures more reliably.",
+            "tool_state": "{\"name\": \"Maximum window length\", \"parameter_type\": \"integer\", \"default\": 100}",
+            "position": {
+                "top": 20,
+                "left": 20
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Maximum window length",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "99e77572-92f2-428d-9a9f-997622900967"
+        },
+        "3": {
+            "id": 3,
+            "name": "Minimum spanning reads per window",
+            "type": "parameter_input",
+            "label": "Minimum spanning reads per window",
+            "annotation": "Minimum total number of reads spanning a window end to end for the window to be called at all. This is the first gate a window has to clear. It is harder on mixed specimens: k co-infecting genotypes split the spanning reads k ways. The default was calibrated on a Cyclospora cohort; re-check it for panels with different amplicon lengths or depths.",
+            "tool_state": "{\"name\": \"Minimum spanning reads per window\", \"parameter_type\": \"integer\", \"default\": 30}",
+            "position": {
+                "top": 30,
+                "left": 30
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Minimum spanning reads per window",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "d89be402-4048-45bd-b002-1e84242d5972"
+        },
+        "4": {
+            "id": 4,
+            "name": "Minimum haplotype frequency",
+            "type": "parameter_input",
+            "label": "Minimum haplotype frequency",
+            "annotation": "Minimum haplotype frequency, the fraction of spanning reads carrying an entire haplotype string (not a per-site allele frequency). Lower it (e.g. 0.005) to detect low-frequency mixture components, and rely on the minimum reads per haplotype to suppress noise.",
+            "tool_state": "{\"name\": \"Minimum haplotype frequency\", \"parameter_type\": \"float\", \"default\": 0.05}",
+            "position": {
+                "top": 40,
+                "left": 40
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Minimum haplotype frequency",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "e7e2f745-d612-4b02-9623-9121d97eb05d"
+        },
+        "5": {
+            "id": 5,
+            "name": "Minimum reads per haplotype",
+            "type": "parameter_input",
+            "label": "Minimum reads per haplotype",
+            "annotation": "Minimum supporting reads per haplotype. This is the noise control that should do the work when the minimum haplotype frequency is lowered.",
+            "tool_state": "{\"name\": \"Minimum reads per haplotype\", \"parameter_type\": \"integer\", \"default\": 10}",
+            "position": {
+                "top": 50,
+                "left": 50
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Minimum reads per haplotype",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "e8292cd7-282f-4687-93e7-dc330811526c"
+        },
+        "6": {
+            "id": 6,
+            "name": "Project distances onto the positive semidefinite cone",
+            "type": "parameter_input",
+            "label": "Project distances onto the positive semidefinite cone",
+            "annotation": "Project the distance matrix onto the positive semidefinite cone by Gram double centering, so distances embed in Euclidean space as Ward linkage assumes. This compresses the closest pairs, so it is off by default; consider enabling it together with the distance tree cut method.",
+            "tool_state": "{\"name\": \"Project distances onto the positive semidefinite cone\", \"parameter_type\": \"boolean\", \"default\": false}",
+            "position": {
+                "top": 60,
+                "left": 60
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Project distances onto the positive semidefinite cone",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "20ce3bb2-85d9-4b6a-9e68-c2fb07358c82"
+        },
+        "7": {
+            "id": 7,
+            "name": "Tree cut method",
+            "type": "parameter_input",
+            "label": "Tree cut method",
+            "annotation": "\"count\" splits the cohort into k groups, with k chosen from the largest merge-height gap (suited to a closed investigation where every specimen belongs somewhere). \"distance\" cuts at a fixed dissimilarity and returns specimens with no near neighbour as singletons (suited to surveillance, where most cases are unrelated).",
+            "tool_state": "{\"name\": \"Tree cut method\", \"parameter_type\": \"text\", \"default\": \"count\", \"restrictions\": [\"count\", \"distance\"]}",
+            "position": {
+                "top": 70,
+                "left": 70
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Tree cut method",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "9a35e5c4-9667-4609-ad19-6ec2d01774c3"
+        },
+        "8": {
+            "id": 8,
+            "name": "Linkage distance threshold",
+            "type": "parameter_input",
+            "label": "Linkage distance threshold",
+            "annotation": "Dissimilarity at which to cut when the tree cut method is \"distance\". Leave unset to calibrate it from the data; the tool reports the value it used.",
+            "tool_state": "{\"name\": \"Linkage distance threshold\", \"parameter_type\": \"float\", \"optional\": true}",
+            "position": {
+                "top": 80,
+                "left": 80
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Linkage distance threshold",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "d3c37e95-b513-40bd-a3ed-34e5f8d06e40"
+        },
+        "9": {
+            "id": 9,
+            "name": "Minimum locus completeness",
+            "type": "parameter_input",
+            "label": "Minimum locus completeness",
+            "annotation": "Minimum fraction of loci a specimen must have called to enter the distance matrix. Panel-dependent. Raise it when a low-completeness tail of specimens produces distances pinned at the no-shared-data ceiling.",
+            "tool_state": "{\"name\": \"Minimum locus completeness\", \"parameter_type\": \"float\", \"default\": 0.1}",
+            "position": {
+                "top": 90,
+                "left": 90
+            },
+            "input_connections": {},
+            "inputs": [
+                {
+                    "name": "Minimum locus completeness",
+                    "description": ""
+                }
+            ],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "4b671f2c-ddd1-42f1-8194-2439c2d52b36"
+        },
+        "10": {
+            "id": 10,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+            "type": "tool",
+            "label": "index_panel",
+            "annotation": "Build the panel index once and reuse it for every specimen, instead of rebuilding it inside every mapping job.",
+            "tool_state": "{\"__page__\": 0}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+            "position": {
+                "top": 0,
+                "left": 300
+            },
+            "input_connections": {
+                "reference": [
+                    {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "049fd10b-1e01-43a9-81f4-938c1d690477",
+            "tool_version": "2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2_idx/2.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "af91699b8d4c",
+                "name": "bwa_mem2",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "11": {
+            "id": 11,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+            "type": "tool",
+            "label": "map_reads",
+            "annotation": "Map to the whole panel, not to one amplicon. Reads from every marker then have somewhere correct to go instead of being forced onto a single target.",
+            "tool_state": "{\"__page__\": 0, \"reference_source\": {\"reference_source_selector\": \"history\"}, \"fastq_input\": {\"fastq_input_selector\": \"paired_collection\", \"iset_stats\": \"\"}, \"rg\": {\"rg_selector\": \"do_not_set\"}, \"analysis_type\": {\"analysis_type_selector\": \"illumina\"}, \"output_sort\": \"coordinate\"}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+            "position": {
+                "top": 30,
+                "left": 600
+            },
+            "input_connections": {
+                "reference_source|ref_file": [
+                    {
+                        "id": 10,
+                        "output_name": "index"
+                    }
+                ],
+                "fastq_input|fastq_input1": [
+                    {
+                        "id": 0,
+                        "output_name": "output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [],
+            "post_job_actions": {},
+            "uuid": "34a4ef66-545d-45af-a897-e2280fd6245f",
+            "tool_version": "2.3+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bwa_mem2/bwa_mem2/2.3+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "af91699b8d4c",
+                "name": "bwa_mem2",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "12": {
+            "id": 12,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+            "type": "tool",
+            "label": "filter_bam",
+            "annotation": "samtools view -b -q 20 -f 2 -F 3852. -F 3852 is 4+8+256+512+1024+2048: unmapped, mate unmapped, secondary, QC fail, duplicate, supplementary. What survives is the set of reads whose aligned subsequence over a window can be trusted as a string.",
+            "tool_state": "{\"__page__\": 0, \"mode\": {\"outtype\": \"selected_reads\", \"filter_config\": {\"cond_region\": {\"select_region\": \"no\"}, \"cond_rg\": {\"select_rg\": \"no\"}, \"cond_expr\": {\"select_expr\": \"no\"}, \"quality\": 20, \"inclusive_filter\": [\"2\"], \"exclusive_filter\": [\"4\", \"8\", \"256\", \"512\", \"1024\", \"2048\"], \"exclusive_filter_all\": [], \"library\": \"\", \"cigarcons\": \"\", \"tag\": \"\", \"qname_file\": null}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"fraction\", \"factor\": 1.0, \"seed\": \"\"}}, \"output_options\": {\"reads_report_type\": \"retained\", \"complementary_output\": false, \"adv_output\": {\"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\"}}}, \"addref_cond\": {\"addref_select\": \"no\"}}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+            "position": {
+                "top": 90,
+                "left": 900
+            },
+            "input_connections": {
+                "input": [
+                    {
+                        "id": 11,
+                        "output_name": "bam_output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [
+                {
+                    "label": "Filtered alignments",
+                    "output_name": "outputsam",
+                    "uuid": "9513facf-2467-4641-b84a-ef223a93cbd4"
+                }
+            ],
+            "post_job_actions": {},
+            "uuid": "53b2b10e-4f7a-4b39-852c-2df9c2518766",
+            "tool_version": "1.22+galaxy2",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+            "tool_shed_repository": {
+                "changeset_revision": "5cf9fcc93508",
+                "name": "samtools_view",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "13": {
+            "id": 13,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_define_windows/haplotype_define_windows/0.8.1+galaxy0",
+            "type": "tool",
+            "label": "define_windows",
+            "annotation": "Cohort-level reduction. Scans a sample of the BAMs and sizes windows per reference sequence from the aligned block length distribution, then tiles only the region reads actually reach. Windows must be identical for every specimen or the sheet's columns do not correspond across rows, so the whole BAM collection enters this step and the resulting BED fans back out to every specimen.",
+            "tool_state": "{\"__page__\": 0, \"reference_source\": {\"reference_source_selector\": \"history\"}, \"sample\": 20, \"min_spanning\": 0.3, \"legacy_spanning_target\": \"\", \"min_depth\": 20, \"window_min\": 40, \"width_step\": 10, \"step\": 0}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_define_windows/haplotype_define_windows/0.8.1+galaxy0",
+            "position": {
+                "top": 340,
+                "left": 1250
+            },
+            "input_connections": {
+                "bams": [
+                    {
+                        "id": 12,
+                        "output_name": "outputsam"
+                    }
+                ],
+                "reference_source|ref_file": [
+                    {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                ],
+                "window_max": [
+                    {
+                        "id": 2,
+                        "output_name": "output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [
+                {
+                    "label": "Haplotype windows",
+                    "output_name": "windows",
+                    "uuid": "d4aa9d27-0fab-4cea-8330-25b84c4b30b6"
+                }
+            ],
+            "post_job_actions": {},
+            "uuid": "e12a253b-b3d7-497c-aca6-3537ae57970d",
+            "tool_version": "0.8.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_define_windows/haplotype_define_windows/0.8.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "ac8be1d5c040",
+                "name": "haplotype_define_windows",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "14": {
+            "id": 14,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_caller/haplotype_window_caller/0.8.1+galaxy0",
+            "type": "tool",
+            "label": "call_haplotypes",
+            "annotation": "Maps over the BAM collection; every specimen gets the same windows. Specimen id left blank so the tool uses the collection element identifier. The haplotype is read off reads that span a window end to end, so it is an observation on one molecule rather than an inference across molecules, which lets mixtures be told apart from a single strain carrying the same mutations.",
+            "tool_state": "{\"__page__\": 0, \"reference_source\": {\"reference_source_selector\": \"history\"}, \"specimen\": \"\", \"gates\": {\"denoise_edits\": 1, \"denoise_ratio\": 8.0}}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_caller/haplotype_window_caller/0.8.1+galaxy0",
+            "position": {
+                "top": 270,
+                "left": 1700
+            },
+            "input_connections": {
+                "input": [
+                    {
+                        "id": 12,
+                        "output_name": "outputsam"
+                    }
+                ],
+                "reference_source|ref_file": [
+                    {
+                        "id": 1,
+                        "output_name": "output"
+                    }
+                ],
+                "windows": [
+                    {
+                        "id": 13,
+                        "output_name": "windows"
+                    }
+                ],
+                "gates|min_span": [
+                    {
+                        "id": 3,
+                        "output_name": "output"
+                    }
+                ],
+                "gates|min_freq": [
+                    {
+                        "id": 4,
+                        "output_name": "output"
+                    }
+                ],
+                "gates|min_reads": [
+                    {
+                        "id": 5,
+                        "output_name": "output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [
+                {
+                    "label": "Window haplotype calls",
+                    "output_name": "calls",
+                    "uuid": "45be92d0-5a9a-49bc-8676-2e71e41af4e5"
+                }
+            ],
+            "post_job_actions": {},
+            "uuid": "213f282c-54ce-46a8-99b7-a0704eeb541e",
+            "tool_version": "0.8.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_caller/haplotype_window_caller/0.8.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "b61ad1cac074",
+                "name": "haplotype_window_caller",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "15": {
+            "id": 15,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_sheet/haplotype_window_sheet/0.8.1+galaxy0",
+            "type": "tool",
+            "label": "build_sheet",
+            "annotation": "Reduction: the sheet only means anything across specimens. The minor-allele filter (min_maf) is off: PyEuk weights columns by heterozygosity 2p(1-p), so rare columns carry little weight, and filtering them turned called specimen-windows into empty locus blocks that PyEuk reads as not called.",
+            "tool_state": "{\"__page__\": 0, \"min_freq\": 0.0, \"min_reads\": 0, \"min_maf\": 0}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_sheet/haplotype_window_sheet/0.8.1+galaxy0",
+            "position": {
+                "top": 270,
+                "left": 2000
+            },
+            "input_connections": {
+                "calls_in": [
+                    {
+                        "id": 14,
+                        "output_name": "calls"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [
+                {
+                    "label": "Haplotype sheet",
+                    "output_name": "sheet",
+                    "uuid": "bd3dc802-30b0-4ef3-9c2f-e3b7eb3bb7fb"
+                },
+                {
+                    "label": "Haplotype map",
+                    "output_name": "hapmap",
+                    "uuid": "fd832dfa-4b61-4dd3-83ed-cec18c8022ca"
+                },
+                {
+                    "label": "Long-format haplotype calls",
+                    "output_name": "calls_long",
+                    "uuid": "fc8a5a3f-5d09-460b-8f00-581b35d71311"
+                }
+            ],
+            "post_job_actions": {},
+            "uuid": "66b0cc13-f7a6-43a7-8abf-64e3cee7606b",
+            "tool_version": "0.8.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_window_sheet/haplotype_window_sheet/0.8.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "a9371b3ad441",
+                "name": "haplotype_window_sheet",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        },
+        "16": {
+            "id": 16,
+            "name": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_pyeuk/haplotype_pyeuk/0.8.1+galaxy0",
+            "type": "tool",
+            "label": "pyeuk",
+            "annotation": "Label-free: no gold file. Supplying labels here would make the clustering a fit rather than a prediction.",
+            "tool_state": "{\"__page__\": 0, \"advanced\": {\"k_min\": 2, \"k_max\": 50, \"report_excluded\": true}}",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_pyeuk/haplotype_pyeuk/0.8.1+galaxy0",
+            "position": {
+                "top": 650,
+                "left": 2350
+            },
+            "input_connections": {
+                "sheet": [
+                    {
+                        "id": 15,
+                        "output_name": "sheet"
+                    }
+                ],
+                "advanced|project_psd": [
+                    {
+                        "id": 6,
+                        "output_name": "output"
+                    }
+                ],
+                "advanced|cut": [
+                    {
+                        "id": 7,
+                        "output_name": "output"
+                    }
+                ],
+                "advanced|linkage_threshold": [
+                    {
+                        "id": 8,
+                        "output_name": "output"
+                    }
+                ],
+                "advanced|min_completeness": [
+                    {
+                        "id": 9,
+                        "output_name": "output"
+                    }
+                ]
+            },
+            "inputs": [],
+            "outputs": [],
+            "workflow_outputs": [
+                {
+                    "label": "Distance matrix",
+                    "output_name": "distance_matrix",
+                    "uuid": "b01e59e5-30c3-4ff6-a445-c770fc1a293c"
+                },
+                {
+                    "label": "Clusters",
+                    "output_name": "clusters",
+                    "uuid": "5bee0b40-f082-4688-b8fe-d81c5ff10c9b"
+                },
+                {
+                    "label": "Cluster sweep",
+                    "output_name": "sweep",
+                    "uuid": "d5da204d-d5c7-4c18-9985-bb652af515f7"
+                },
+                {
+                    "label": "Cluster sweep report",
+                    "output_name": "report",
+                    "uuid": "784e57a2-b8e0-449c-ae47-e4355d4a21a0"
+                }
+            ],
+            "post_job_actions": {},
+            "uuid": "821c40b9-3007-4998-a5c9-671c86ebfc1e",
+            "tool_version": "0.8.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/haplotype_pyeuk/haplotype_pyeuk/0.8.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "fa298249516b",
+                "name": "haplotype_pyeuk",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
+        }
+    }
+}

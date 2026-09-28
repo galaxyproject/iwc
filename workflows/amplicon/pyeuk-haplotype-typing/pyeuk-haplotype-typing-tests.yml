@@ -1,4 +1,4 @@
-# Workflow test for pyeuk-standard (read-level haplotype typing).
+# Workflow test for pyeuk-haplotype-typing (read-level haplotype typing).
 #
 # Deterministic synthetic cohort committed under test-data/: 8 specimens across a
 # 2-amplicon panel (M1, M2), in two genotypes. The A* specimens carry a single SNP
@@ -11,7 +11,7 @@
     (M1_W0001, M2_W0001) -> per-specimen haplotypes -> 8x4 presence/absence sheet ->
     wIBS distance -> two clusters (A* vs B*).
   job:
-    reads:
+    Paired-end reads:
       class: Collection
       collection_type: list:paired
       elements:
@@ -111,18 +111,19 @@
           class: File
           path: test-data/B4_R2.fastqsanger.gz
           filetype: fastqsanger.gz
-    panel:
+    Amplicon panel:
       class: File
       path: test-data/panel.fasta
       filetype: fasta
-    min_span: 10
-    min_freq: 0.0
-    min_reads: 1
-    cut: count
-    project_psd: false
-    min_completeness: 0.0
+    Maximum window length: 0
+    Minimum spanning reads per window: 10
+    Minimum haplotype frequency: 0.0
+    Minimum reads per haplotype: 1
+    Tree cut method: count
+    Project distances onto the positive semidefinite cone: false
+    Minimum locus completeness: 0.0
   outputs:
-    windows:
+    Haplotype windows:
       asserts:
       - has_n_lines:
           n: 2
@@ -130,7 +131,7 @@
           text: "M1_W0001"
       - has_text:
           text: "M2_W0001"
-    sheet:
+    Haplotype sheet:
       asserts:
       - has_n_lines:
           n: 9
@@ -138,7 +139,7 @@
           n: 5
       - has_text:
           text: "Seq_ID"
-    haplotype_map:
+    Haplotype map:
       asserts:
       - has_n_lines:
           n: 5
@@ -146,17 +147,17 @@
           text: "76T>C"
       - has_text:
           text: "61C>A"
-    calls_long:
+    Long-format haplotype calls:
       asserts:
       - has_n_lines:
           n: 17
-    distance_matrix:
+    Distance matrix:
       asserts:
       - has_n_lines:
           n: 9
       - has_n_columns:
           n: 9
-    clusters:
+    Clusters:
       asserts:
       - has_n_lines:
           n: 9
@@ -166,7 +167,17 @@
           text: "A1"
       - has_text:
           text: "B4"
-    calls:
+    Cluster sweep:
+      asserts:
+      - has_text:
+          text: "count_range"
+      - has_text:
+          text: "stable_cores"
+    Cluster sweep report:
+      asserts:
+      - has_text:
+          text: "html"
+    Window haplotype calls:
       element_tests:
         A1:
           asserts:
