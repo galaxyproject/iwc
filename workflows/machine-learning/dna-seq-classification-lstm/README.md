@@ -40,8 +40,10 @@ However, the current workflow is designed for classification tasks and will requ
 ## Inputs
 
 The workflow requires two datasets:
-- DNA sequences (FASTA format). Can contain fixed length or variable length sequences
-- Categories/labels/classes for DNA sequences (tabular format) (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences)
+- DNA sequences (FASTA format). Can contain fixed length or variable length sequences. Shorter sequences are padded to the length of the longest sequence
+- Categories/labels/classes for DNA sequences (tabular format): a single column with one label per line, no header, in the same order as the FASTA records (e.g. splice junctions (exon-intron, intron-exon and neither) corresponding to DNA sequences). For the example dataset above, this is the first column only
+
+The model and training parameters (k-mer size, embedding output dimensions, LSTM layer units, dense layer units, number of training epochs and batch size) are exposed as workflow parameters and can be changed when launching the workflow.
 
 ---
 
@@ -49,7 +51,7 @@ The workflow requires two datasets:
 
 ### 1. Data encoding
 - DNA sequences are converted into numerical format using:
-  - k-mer encoding (k=3)
+  - k-mer encoding (default k=3, set by the "K-mer size" parameter)
 - Output: encoded feature matrix
 
 ### 2. Data preparation
@@ -59,7 +61,7 @@ The workflow requires two datasets:
   - Test set (25%)
 - Training set is further split into:
   - Training set (80%)
-  - Validation set (20%)
+  - Validation set (20%), used to compute the evaluation metrics
 
 ### 3. Feature & label separation
 - Training and test datasets are split into:
@@ -80,18 +82,18 @@ The workflow requires two datasets:
 The workflow builds a Sequential Keras model with:
 
 - Embedding layer:
-  - Input dimension: computed from input data (vocabulary size for 3-mer encoding + 1)
-  - Output dimension: 128
+  - Input dimension: computed from input data (size of the k-mer vocabulary)
+  - Output dimension: 128 (default)
   - Number of output dimensions can be tuned for optimal performance
 
 - LSTM layers:
-  - LSTM (256 units, return sequences)
-  - LSTM (256 units)
+  - LSTM (256 units by default, return sequences)
+  - LSTM (256 units by default)
   - Number of LSTM units can be tuned for optimal performance
 
 - Dense layers:
-  - Dense (64 units, ELU activation)
-  - Output Dense (3 units for 3 classes, Softmax)
+  - Dense (64 units by default, ELU activation)
+  - Output Dense (one unit per class, computed from the labels, Softmax)
   - Number of dense units can be tuned for optimal performance
 
 ---
@@ -103,9 +105,10 @@ The workflow builds a Sequential Keras model with:
 - Metrics: categorical accuracy
 
 Training parameters:
-- Epochs: 10
-- Batch size: 32
-- Validation split: 20%
+- Epochs: 10 (default)
+- Batch size: 32 (default)
+- Validation split during model fitting: 10% of the training set (used by Keras to monitor training)
+- Held-out validation set for evaluation: 20% of the training set (see Data preparation)
 
 ---
 
@@ -128,15 +131,13 @@ A list of parameters to look out for model optimisation:
 
 ## Evaluation
 
-- Outputs:
-  - Trained LSTM model
-  - Predicted labels (validation set)
-  - Evaluation metrics (validation set)
-    - Accuracy
-    - Categorical accuracy
-    - F1-score (macro)
-    - Recall (macro)
-    - Loss
+The trained model is evaluated on the held-out validation set. The "Evaluation metrics (validation set)" output reports:
+
+- Accuracy
+- Categorical accuracy
+- F1-score (macro)
+- Recall (macro)
+- Loss
 
 A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
 
@@ -155,7 +156,7 @@ A higher F1-score (closer to 1.0) indicates high performance. High classificatio
 
 - Ensure DNA sequences are in FASTA and labels as tabular formats
 - Categories/labels/classes must align with input DNA sequences
-- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and the in the "Use GPU resources", set it to "Yes"
+- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and then in the "Use GPU resources", set it to "Yes"
 - Suitable for multi-class classification problems
 
 ---
