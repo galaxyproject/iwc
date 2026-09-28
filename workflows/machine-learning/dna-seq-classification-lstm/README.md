@@ -145,6 +145,7 @@ A higher F1-score (closer to 1.0) indicates high performance. High classificatio
 
 ## Outputs
 
+- Encoding vocabulary (DNA sequence labels to index mapping)
 - Predicted labels (test set)
 - Predicted label probabilities (test set)
 - Evaluation metrics (validation set)
