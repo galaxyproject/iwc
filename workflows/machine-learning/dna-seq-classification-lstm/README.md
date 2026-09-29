@@ -2,11 +2,11 @@
 
 ## Overview
 
-This workflow implements a deep learning pipeline for DNA sequence classification task using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model performance.
+This workflow implements a deep learning pipeline for DNA sequence classification tasks using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding splice-junction categories or classes (EI, IE, N) in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model's performance.
 
 ### An example task achieved by the workflow
 
-The workflow can be used to perform DNA sequence classification (60bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence according to whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:
+The workflow can be used to perform DNA sequence classification (60 bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence based on whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:
 
 | Splice junction categories  | Donor                   | DNA sequence                                                 |
 |-----------------------------|-------------------------|--------------------------------------------------------------|
@@ -14,14 +14,14 @@ The workflow can be used to perform DNA sequence classification (60bp long short
 | IE                          | HUMMHCP52-ACCEPTOR-1763 | CGCTCAGCCCGCTCCTTTCACCCTCTGCAGGAGAGCCTCGTGGCAGGCCAGTGGAGGGAC |
 | N                           | HUMPOMC-NEG-421         | CGGAGACCCAACGCCATCCATAATTAAGTTCTTCCTGAGGGCGAGCGGCCAGGTGCGCCT |
 
-The first column is given as a set of categories/labels/classes and the third column is used as a set of DNA sequences.
+The first column contains a set of categories/labels/classes and the third column contains a set of DNA sequences.
 
 
-Other tasks can include predicting protein binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
+Other tasks can include predicting protein-binding sites - whether a DNA fragment can bind to a certain protein. The labels in this task would be non-binding (0) or binding (1) and features would be DNA sequences.
 
-An example of regression task can be found in [Gosai, S et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.
+An example of a regression task can be found in [Gosai, S. et al](https://www.nature.com/articles/s41586-024-08070-z) which studies gene expression regulation by cis-regulatory elements.
 The dataset from the publication is available at [Hugging Face](https://huggingface.co/datasets/HuggingFaceBio/malinois-mpra-regression) which has DNA fragments matched with their gene expression for different cell types for the supervised DNA-to-activity regression task.
-However, the current workflow is designed for classification tasks and will require modifications to be used for regression tasks.
+However, the current workflow is designed for classification tasks and will require modifications for use in regression tasks.
 
 ---
 
@@ -67,7 +67,7 @@ The model and training parameters (k-mer size, embedding output dimensions, LSTM
 - Training and test datasets are split into:
   - X (features): k-mer encoded sequences
   - y (labels): class labels
-- Labels are converted to categorical (one-hot encoding) representation
+- Labels are converted to categorical (one-hot encoded) representation
 
 ### 4. Model training
 - LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.
@@ -87,7 +87,7 @@ The workflow builds a Sequential Keras model with:
   - Number of output dimensions can be tuned for optimal performance
 
 - LSTM layers:
-  - LSTM (256 units by default, return sequences)
+  - LSTM (256 units by default, returns sequences)
   - LSTM (256 units by default)
   - Number of LSTM units can be tuned for optimal performance
 
@@ -102,7 +102,7 @@ The workflow builds a Sequential Keras model with:
 
 - Optimizer: Adam
 - Loss function: categorical crossentropy
-- Metrics: categorical accuracy
+- Metric: categorical accuracy
 
 Training parameters:
 - Epochs: 10 (default)
@@ -139,7 +139,7 @@ The trained model is evaluated on the held-out validation set. The "Evaluation m
 - Recall (macro)
 - Loss
 
-A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies from dataset to dataset and heavily depends on model architecture and data quality.
+A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies across datasets and heavily depends on model architecture and data quality.
 
 ---
 
