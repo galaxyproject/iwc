@@ -2,11 +2,11 @@
 
 ## Overview
 
-This workflow implements a deep learning pipeline for DNA sequence classification tasks using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding splice-junction categories or classes (EI, IE, N) in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model's performance.
+This workflow implements a deep learning pipeline for DNA sequence classification tasks using an LSTM-based neural network. It takes DNA sequences/fragments in FASTA format and their corresponding task specific categories/labels/classes in tabular format, processes them into numerical representations, trains the deep learning model, and evaluates the trained model's performance.
 
 ### An example task achieved by the workflow
 
-The workflow can be used to perform DNA sequence classification (60 bp long short reads) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence based on whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:
+The workflow can be used to perform DNA sequence classification (60 bp gene sequence fragments) on splice-junction gene sequences. In an example task, the workflow takes raw DNA sequence data as input and classifies each sequence based on whether it contains an exon–intron boundary, an intron–exon boundary, or no splice junction using an LSTM-based deep learning model. These classes correspond to donor sites (EI), acceptor sites (IE), and neither (N). During splicing, non-coding introns are removed and coding exons are joined together before a gene is translated into a protein. Detecting these splice-junction boundaries from DNA sequences helps in understanding gene structure and function. More information about such a dataset can be found in this [blogpost](https://galaxyproject.org/news/2026-04-28-tabpfn-v2-5/#splice-junction-gene-sequences). The blogpost uses a publicly available dataset that contains DNA sequences and their respective splice junction categories or classes as EI, IE and N. The dataset snippet is shared below:
 
 | Splice junction categories  | Donor                   | DNA sequence                                                 |
 |-----------------------------|-------------------------|--------------------------------------------------------------|
@@ -32,7 +32,7 @@ However, the current workflow is designed for classification tasks and will requ
 - Deep learning model built with Keras
 - LSTM-based architecture for sequence learning
 - Automatic train/test split
-- Model evaluation with classification metrics and confusion matrix
+- Model prediction with classification metrics and confusion matrix
 - Prediction of class labels and probabilities
 
 ---
@@ -58,10 +58,10 @@ The model and training parameters (k-mer size, embedding output dimensions, LSTM
 - K-mer encoded sequences are merged with labels
 - Dataset is split into:
   - Training set (75%)
-  - Test set (25%)
+  - Test set (25%), used to compute confusion matrix and predicted labels and probabilities
 - Training set is further split into:
-  - Training set (80%)
-  - Validation set (20%), used to compute the evaluation metrics
+  - Training set (80% of original training set), used to train the model
+  - Validation set (20% of original training set), used to compute the evaluation metrics
 
 ### 3. Feature & label separation
 - Training and test datasets are split into:
@@ -72,8 +72,8 @@ The model and training parameters (k-mer size, embedding output dimensions, LSTM
 ### 4. Model training
 - LSTM-based deep learning model is trained to map k-mer encoded DNA sequences to their task-specific labels.
 
-### 5. Model evaluation
-- The trained model is evaluated on unseen test data on several classification metrics.
+### 5. Model prediction
+- The trained model is used to make predictions on unseen test data (25% test set).
 
 ---
 
@@ -107,8 +107,7 @@ The workflow builds a Sequential Keras model with:
 Training parameters:
 - Epochs: 10 (default)
 - Batch size: 32 (default)
-- Validation split during model fitting: 10% of the training set (used by Keras to monitor training)
-- Held-out validation set for evaluation: 20% of the training set (see Data preparation)
+- Held-out validation set for prediction: 20% of the training set, used by Keras to monitor training (see Data preparation)
 
 ---
 
@@ -129,7 +128,7 @@ A list of parameters to look out for model optimisation:
 
 ---
 
-## Evaluation
+## Evaluation (validation set)
 
 The trained model is evaluated on the held-out validation set. The "Evaluation metrics (validation set)" output reports:
 
@@ -138,6 +137,18 @@ The trained model is evaluated on the held-out validation set. The "Evaluation m
 - F1-score (macro)
 - Recall (macro)
 - Loss
+
+A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies across datasets and heavily depends on model architecture and data quality.
+
+---
+
+## Prediction (test set)
+
+The trained model is used to make predictions on the test set. It outputs:
+
+- Confusion matrix
+- Predicted labels
+- Predicted label probabilities
 
 A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies across datasets and heavily depends on model architecture and data quality.
 
