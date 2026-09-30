@@ -107,7 +107,10 @@ The workflow builds a Sequential Keras model with:
 Training parameters:
 - Epochs: 10 (default)
 - Batch size: 32 (default)
-- Held-out validation set for prediction: 20% of the training set, used by Keras to monitor training (see Data preparation)
+- Learning rate: 0.001 (default for Adam optimizer)
+- Held-out validation set for prediction: 20% of the training set, used by Keras to monitor training (see Data preparation).
+
+If the held-out validation data is not set in "Deep learning training and evaluation" tool, the workflow by default will set aside 10% of the training data for validation ("Create deep learning model architecture" tool sets it by default and ignored when validation split is set in "Deep learning training and evaluation" tool).
 
 ---
 
@@ -125,6 +128,24 @@ A list of parameters to look out for model optimisation:
 - Number of LSTM layers and their number of respective units
 - Number of dense layers and their number of respective units
 - Training/test/validate data split size
+
+The following parameters are exposed as workflow parameters with their default values and can be changed when launching the workflow:
+
+- K-mer size: 3
+- LSTM layer units: 256
+- Embedding output dimensions: 128
+- Dense layer units: 64
+- Number of training epochs: 10
+- Batch size: 32
+
+The following parameters are not exposed as workflow parameters (default values are given) and can be changed by editing the workflow:
+
+- Optimiser: Adam
+- Loss function: categorical crossentropy
+- Accuracy metric: categorical accuracy
+- Training/test/validate data split size: 75% training, 25% test, 20% of training for validation (if set explicitly in "Deep learning training and evaluation" tool, otherwise 10% of training data is used for validation)
+- Learning rate: 0.001 (default for Adam optimiser)
+- Activation functions: Exponential linear unit (ELU) for dense layers, Softmax for output layer
 
 ---
 
@@ -150,8 +171,6 @@ The trained model is used to make predictions on the test set. It outputs:
 - Predicted labels
 - Predicted label probabilities
 
-A higher F1-score (closer to 1.0) indicates high performance. High classification performance is not an objective metric, varies across datasets and heavily depends on model architecture and data quality.
-
 ---
 
 ## Outputs
@@ -162,13 +181,19 @@ A higher F1-score (closer to 1.0) indicates high performance. High classificatio
 - Evaluation metrics (validation set)
 - Confusion matrix (test set)
 
+The integer values representing the predicted classes in following output datasets are mapped to their respective class labels using the "Encoding vocabulary" output dataset.
+
+- Predicted labels (test set)
+- Columns of Predicted label probabilities (test set) 
+- Confusion matrix (test set)
+
 ---
 
 ## Usage notes
 
 - Ensure DNA sequences are in FASTA and labels as tabular formats
 - Categories/labels/classes must align with input DNA sequences
-- Enable GPU for faster performance - consider this option when dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and then in the "Use GPU resources", set it to "Yes"
+- Enable GPU for faster performance - consider this option when the dataset is large (tested on Nvidia GPUs). To enable it, open the workflow and go to "Deep learning training and evaluation" tool. At the bottom of the tool definition, there is an option "Job Resource Parameters". Choose "Specify job resource parameters" and then in the "Use GPU resources", set it to "Yes". If not, the workflow will run on CPU. Please note that this option is only available if the Galaxy instance has configured it (e.g. https://usegalaxy.eu/).
 - Suitable for multi-class classification problems
 
 ---
