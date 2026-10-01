@@ -1,7 +1,26 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "Downstream amplicon workflow with optional negative/positive sequencing controls (enter 0 when a control type is absent), control QC, decontamination, control removal, a separate MMUPHin batch-correction branch, and MaAsLin3 differential-abundance analyses on the analysis-ready data before MMUPHin correction.",
+    "annotation": "Downstream amplicon workflow with optional negative/positive sequencing controls, optional MMUPHin batch-effect correction, control QC, decontamination, control removal, and MaAsLin3 differential-abundance analyses on the analysis-ready data before MMUPHin correction. Enter 0 when a control type or batch correction is absent.",
     "comments": [
+        {
+            "child_steps": [
+                45
+            ],
+            "color": "none",
+            "data": {
+                "title": "4. Analysis-ready data"
+            },
+            "id": 12,
+            "position": [
+                5655.1,
+                1309.3
+            ],
+            "size": [
+                390,
+                390
+            ],
+            "type": "frame"
+        },
         {
             "color": "none",
             "data": {
@@ -76,12 +95,12 @@
         },
         {
             "child_steps": [
-                10,
-                7,
-                8,
                 9,
                 6,
-                5
+                5,
+                10,
+                7,
+                8
             ],
             "color": "none",
             "data": {
@@ -125,37 +144,18 @@
         {
             "color": "none",
             "data": {
-                "text": "## 5. Batch-effect correction\n\nMMUPHin generates a batch-corrected ASV abundance table and a reconstructed batch-corrected phyloseq object. This is a separate downstream-output branch and its corrected abundances are not used as input to MaAsLin3."
+                "text": "## 5. Batch-effect correction\n\n**Optional MMUPHin batch-effect correction**: when a Batch-ID column is provided, MMUPHin produces a batch-corrected ASV table and reconstructs a batch-corrected phyloseq object as a separate output. Enter `0` for the Batch-ID column number to skip this branch."
             },
             "id": 13,
             "position": [
-                5900,
-                490
+                5902,
+                492
             ],
             "size": [
                 1500,
                 150
             ],
             "type": "markdown"
-        },
-        {
-            "child_steps": [
-                45
-            ],
-            "color": "none",
-            "data": {
-                "title": "4. Analysis-ready data"
-            },
-            "id": 12,
-            "position": [
-                5655.1,
-                1309.3
-            ],
-            "size": [
-                390,
-                390
-            ],
-            "type": "frame"
         },
         {
             "color": "none",
@@ -216,13 +216,13 @@
                 26,
                 30,
                 34,
-                42,
                 36,
                 37,
                 38,
                 39,
                 40,
                 41,
+                42,
                 43,
                 44
             ],
@@ -422,8 +422,8 @@
     "format-version": "0.1",
     "license": "MIT",
     "logo_url": "",
-    "name": "Multivariable Association Analysis of Amplicon Data (optional controls; reviewed) (imported from uploaded file)",
-    "readme": "# Multivariable Association Analysis of Amplicon Data\n\nThis workflow performs downstream analysis of amplicon sequencing data from a phyloseq object and matching sample metadata.\n\n## Optional sequencing controls\n\nThe negative- and positive-control inputs use the convention **0 = this control type is absent**. When a control type is absent, the corresponding QC/removal branch is skipped and the workflow continues through the fallback path.\n\nWhen negative controls are supplied, **Decontam** is run before control samples are removed. Positive controls are used for QC and are removed before the downstream analyses.\n\n## Two downstream branches\n\nAfter decontamination/control removal, the workflow intentionally splits into two separate branches:\n\n1. **MMUPHin batch-effect correction** \u2014 produces a batch-corrected ASV table and reconstructs a batch-corrected phyloseq object as a separate output.\n2. **MaAsLin3 differential-abundance analysis** \u2014 intentionally uses the analysis-ready, control-filtered data **before MMUPHin batch correction**. This is done at the ASV level and after taxonomic agglomeration to Genus.\n\nThe MMUPHin-corrected object is therefore **not** used as the MaAsLin3 input.\n\n## Main inputs\n\n- Phyloseq object\n- Matching metadata table\n- Negative-control metadata column number (`0` if absent)\n- Positive-control metadata column number (`0` if absent)\n- Batch-ID metadata column number\n- MaAsLin3 model formula\n- MaAsLin3 reference level\n- MaAsLin3 maximum significance threshold\n- MaAsLin3 normalization method\n- MaAsLin3 transformation\n- MaAsLin3 q-value correction method\n\nThe MaAsLin3 model formula should use metadata column names and should not include the leading `~`.\n\n## QC plots\n\nThe control-QC plots are labelled by processing stage. Heatmaps use a visible white-to-red abundance gradient. Ordination plots colour samples by the corresponding control-status metadata variable.\n\n## Volcano plot\n\nThe ASV-level volcano plot uses the complete MaAsLin3 `result_all` table. The MaAsLin3 `coef` column is used as the effect-size axis, while `pval_individual` and `qval_individual` provide the p-value/FDR columns. The volcano significance threshold is connected to the workflow-level MaAsLin3 maximum-significance input.\n",
+    "name": "Multivariable Association Analysis of Amplicon Data",
+    "readme": "# Multivariable Association Analysis of Amplicon Data\n\nThis workflow performs downstream analysis of amplicon sequencing data from a phyloseq object and matching sample metadata.\n\n## Optional sequencing controls\n\nThe negative- and positive-control inputs use the convention **0 = this control type is absent**. When a control type is absent, the corresponding QC/removal branch is skipped and the workflow continues through the fallback path.\n\nWhen negative controls are supplied, **Decontam** is run before control samples are removed. Positive controls are used for QC and are removed before the downstream analyses.\n\n## Two downstream branches\n\nAfter decontamination/control removal, the workflow intentionally splits into two separate branches:\n\n1. **MMUPHin batch-effect correction** \u2014 produces a batch-corrected ASV table and reconstructs a batch-corrected phyloseq object as a separate output.\n2. **MaAsLin3 differential-abundance analysis** \u2014 intentionally uses the analysis-ready, control-filtered data **before MMUPHin batch correction**. This is done at the ASV level and after taxonomic agglomeration to Genus.\n\nThe MMUPHin-corrected object is therefore **not** used as the MaAsLin3 input.\n\n## Main inputs\n\n- Phyloseq object\n- Matching metadata table\n- Negative-control metadata column number (`0` if absent)\n- Positive-control metadata column number (`0` if absent)\n- Batch-ID metadata column number (`0` if absent)\n- MaAsLin3 model formula\n- MaAsLin3 reference level\n- MaAsLin3 maximum significance threshold\n- MaAsLin3 normalization method\n- MaAsLin3 transformation\n- MaAsLin3 q-value correction method\n\nThe MaAsLin3 model formula should use metadata column names and should not include the leading `~`.\n\n## QC plots\n\nThe control-QC plots are labelled by processing stage. Heatmaps use a visible white-to-red abundance gradient. Ordination plots colour samples by the corresponding control-status metadata variable.\n\n## Volcano plot\n\nThe ASV-level volcano plot uses the complete MaAsLin3 `result_all` table. The MaAsLin3 `coef` column is used as the effect-size axis, while `pval_individual` and `qval_individual` provide the p-value/FDR columns. The volcano significance threshold is connected to the workflow-level MaAsLin3 maximum-significance input.\n",
     "report": {
         "markdown": "# Multivariable Association Analysis of Amplicon Data\n\n## Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Key outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow overview\n```galaxy\nworkflow_display()\n```\n\n**Design note:** MMUPHin batch correction is a separate output branch. MaAsLin3 intentionally uses the control-filtered data before MMUPHin correction.\n"
     },
@@ -537,23 +537,23 @@
             "workflow_outputs": []
         },
         "4": {
-            "annotation": "Column number in the metadata containing the batch identifier used for batch-effect correction.",
+            "annotation": "Column number in the metadata containing the batch identifier used for batch-effect correction. ",
             "content_id": null,
             "errors": null,
             "id": 4,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Column number in the metadata containing the batch identifier used for batch-effect correction.",
-                    "name": "Batch-ID column number"
+                    "description": "Column number in the metadata containing the batch identifier used for batch-effect correction. ",
+                    "name": "Batch-ID column number (0 = none)"
                 }
             ],
-            "label": "Batch-ID column number",
+            "label": "Batch-ID column number (0 = none)",
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 39.992904120275625,
-                "top": 1947.439414050869
+                "left": 40.356295873318665,
+                "top": 1947.8094462293361
             },
             "tool_id": null,
             "tool_state": "{\"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
@@ -975,8 +975,8 @@
                 }
             ],
             "position": {
-                "left": 5936.5409120350305,
-                "top": 736.3234425843926
+                "left": 5935.764522316343,
+                "top": 736.3125211703376
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
@@ -1583,14 +1583,14 @@
             "when": "$(inputs.when)",
             "workflow_outputs": [
                 {
-                    "label": "library_size_vs_control",
-                    "output_name": "library_size_vs_control",
-                    "uuid": "4429658e-f453-4aff-9f0b-97338944c009"
-                },
-                {
                     "label": "prevalence",
                     "output_name": "prevalence",
                     "uuid": "a69f88c6-6061-4b80-905b-88b59c9a40f0"
+                },
+                {
+                    "label": "library_size_vs_control",
+                    "output_name": "library_size_vs_control",
+                    "uuid": "4429658e-f453-4aff-9f0b-97338944c009"
                 }
             ]
         },
@@ -3026,14 +3026,14 @@
                     "uuid": "c813680b-f498-444c-b3ef-2abde4154d5d"
                 },
                 {
-                    "label": "MaAsLin3 all results (ASV level)",
-                    "output_name": "result_all",
-                    "uuid": "6c2d64a8-f370-49ba-95f8-0fa3900abc37"
-                },
-                {
                     "label": "ASV-level summary plot",
                     "output_name": "summary_pdf",
                     "uuid": "ac2f912e-d23f-4417-8c20-a5dc244a4b1e"
+                },
+                {
+                    "label": "MaAsLin3 all results (ASV level)",
+                    "output_name": "result_all",
+                    "uuid": "6c2d64a8-f370-49ba-95f8-0fa3900abc37"
                 }
             ]
         },
@@ -3094,6 +3094,10 @@
                 "style_cond|type_cond|pick_from_0|value": {
                     "id": 46,
                     "output_name": "output"
+                },
+                "when": {
+                    "id": 16,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [],
@@ -3106,8 +3110,8 @@
                 }
             ],
             "position": {
-                "left": 6545.356059589068,
-                "top": 778.54775361923
+                "left": 6544.960366223164,
+                "top": 778.1635828804237
             },
             "post_job_actions": {
                 "HideDatasetActiondata_param": {
@@ -3128,7 +3132,7 @@
             "tool_version": "0.2.0",
             "type": "tool",
             "uuid": "0330ed19-1e47-43d0-85a6-9a45599b4c6a",
-            "when": null,
+            "when": "$(inputs.when)",
             "workflow_outputs": []
         },
         "50": {
@@ -3381,6 +3385,10 @@
                 "infile": {
                     "id": 49,
                     "output_name": "data_param"
+                },
+                "when": {
+                    "id": 16,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [],
@@ -3415,7 +3423,7 @@
             "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "011250ab-8867-4112-baf5-64e6be619586",
-            "when": null,
+            "when": "$(inputs.when)",
             "workflow_outputs": []
         },
         "53": {
@@ -3435,6 +3443,10 @@
                 "taxonomy": {
                     "id": 45,
                     "output_name": "tax"
+                },
+                "when": {
+                    "id": 16,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [
@@ -3464,8 +3476,8 @@
                 }
             ],
             "position": {
-                "left": 7112.163456389188,
-                "top": 730.4922453933481
+                "left": 7115.185899746052,
+                "top": 704.2665060945434
             },
             "post_job_actions": {
                 "HideDatasetActionampvis": {
@@ -3496,7 +3508,7 @@
             "tool_version": "2.8.11+galaxy4",
             "type": "tool",
             "uuid": "49632a3f-dcb3-41b8-ad4e-6d2ba6c91bb9",
-            "when": null,
+            "when": "$(inputs.when)",
             "workflow_outputs": []
         },
         "54": {
@@ -3508,6 +3520,10 @@
                 "data": {
                     "id": 53,
                     "output_name": "ampvis"
+                },
+                "when": {
+                    "id": 16,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [],
@@ -3532,8 +3548,8 @@
                 }
             ],
             "position": {
-                "left": 7449.334047387056,
-                "top": 768.2309885989891
+                "left": 7442.3951313298985,
+                "top": 754.0111536667429
             },
             "post_job_actions": {
                 "HideDatasetActionmeta": {
@@ -3599,7 +3615,7 @@
             "tool_version": "2.8.11+galaxy4",
             "type": "tool",
             "uuid": "f3343aec-7e95-4f24-b9e0-283489f4e8ab",
-            "when": null,
+            "when": "$(inputs.when)",
             "workflow_outputs": [
                 {
                     "label": "MMUPHin batch-corrected phyloseq object",
@@ -3617,6 +3633,7 @@
         "batch-effect-correction",
         "differential-abundance"
     ],
-    "uuid": "e38d450a-aa3f-4a1b-a2a3-b839fe701321",
-    "version": 5
+    "uuid": "ed954aa7-f333-4727-9371-ae68dff63229",
+    "version": 1,
+    "release": "0.1"
 }
