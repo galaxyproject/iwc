@@ -14,7 +14,6 @@ This workflow takes paired-end Illumina (**short-reads**) fastq(.gz) files and e
 - A list of paired datasets corresponding to paired-end raw reads in `fastqsanger` or `fastqsanger.gz` format.
 - Qualified quality score: The quality value that a base is qualified to have.
 - Minimal read length: Reads shorter than this value will be discarded.
-- Cutting mean quality: The bases in the sliding window with mean quality below this value will be cut.
 - [Optional] Adapter to remove on forward reads and reverse reads
 
 ## Output Datasets
