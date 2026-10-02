@@ -6,6 +6,10 @@
 - Update authors and add the FAIRyMAGs consortium as author
 - Add a README to the workflow
 
+### Fixed
+- Check taxonomy mapping collection members in workflow tests.
+- Use a numeric value for the kMetaShot alignment fraction test input.
+
 ## [0.4] - 2026-09-21
 
 - Add sorting steps because classified bins are at the bottom of the list
