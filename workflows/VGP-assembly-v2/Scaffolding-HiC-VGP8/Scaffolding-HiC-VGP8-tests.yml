@@ -1,20 +1,20 @@
 - doc: Test outline for Scaffolding-with-Hi-C-data-VGP8
   job:
-    Assembly GFA:
+    Assembly GFA: &assembly_gfa
       class: File
       location: https://zenodo.org/records/17190637/files/Assembly%20GFA.gfa1
       filetype: gfa1
       hashes:
       - hash_function: SHA-1
         hash_value: 674d80de5c15f407a7f8c194d0fa098bef9ae53b
-    Estimated genome size - Parameter File:
+    Estimated genome size - Parameter File: &genome_size
       class: File
       location: https://zenodo.org/records/17190637/files/Estimated%20genome%20size%20-%20Parameter%20File.expression.json
       filetype: expression.json
       hashes:
       - hash_function: SHA-1
         hash_value: 71cb196fbcdbf99c80d431de60704386d3a92d5f
-    Hi-C reads:
+    Hi-C reads: &hic_reads
       class: Collection
       collection_type: list:paired
       elements:
@@ -165,6 +165,7 @@
     Species Name: test
     Assembly Name: test
     Haplotype: Haplotype 1
+    Use BWA-mem instead of BWA-mem2: false
     Trim Hi-C Data?: false
     Minimum Mapping Quality: 10
     Database for Busco Lineage: v5
@@ -201,8 +202,8 @@
     Hi-C maps:
       asserts:
       - has_size:
-          value: 835200
-          delta: 50000
+          value: 1196776
+          delta: 60000
     Hi-C Alignment Stats pre-scaffolding:
       asserts:
       - has_text:
@@ -234,11 +235,125 @@
       - has_size:
           value: 2185479
           delta: 500000
-    Deduplicated Hi-C alignments on contigs:
+    Contigs Hi-C alignments:
       asserts:
       - has_size:
           value: 3759316
           delta: 100000
+    Hi-C duplication stats on contigs:
+      asserts:
+      - has_text:
+          text: "PAIRED: 33952"
+      - has_text:
+          text: "WRITTEN: 32701"
+      - has_text:
+          text: "DUPLICATE PAIR: 4510"
+    Merged Hi-C Alignments on Contigs:
+      asserts:
+      - has_size:
+          value: 4026905
+          delta: 200000
+    Scaffolds Compleasm Summary:
+      asserts:
+      - has_text:
+          text: "S:0.00%, 0"
+
+- doc: Test the BWA-MEM alignment path (instead of BWA-MEM2)
+  job:
+    Assembly GFA: *assembly_gfa
+    Estimated genome size - Parameter File: *genome_size
+    Hi-C reads: *hic_reads
+    Species Name: test
+    Assembly Name: test
+    Haplotype: Haplotype 1
+    Use BWA-mem instead of BWA-mem2: true
+    Trim Hi-C Data?: false
+    Minimum Mapping Quality: 10
+    Database for Busco Lineage: v5
+    Lineage: vertebrata_odb10
+    Restriction enzymes: arima2
+  outputs:
+    Suffixed AGP:
+      asserts:
+      - has_text:
+          text: "scaffold_1.H1"
+    'Reconciliated Scaffolds: gfa':
+      asserts:
+      - has_n_lines:
+          n: 5
+    Assembly Statistics for s2:
+      asserts:
+      - has_text:
+          text: "Total scaffold length\t5,788,676"
+    Scaffolding Plots:
+      asserts:
+      - has_size:
+          value: 118911
+          delta: 30000
+    Hi-C Alignment Stats scaffolds:
+      asserts:
+      - has_text:
+          text: "SN\treads mapped and paired:\t33952"
+    Hi-C alignments on Scaffolds stats multiqc:
+      asserts:
+      - has_text:
+          text: "Hi-C Alignment Stats pre-scaffolding for Haplotype 1\t1.26354"
+      - has_text:
+          text: "Hi-C Alignment Stats scaffolds for Haplotype 1\t1.26353\t0.0\t0.033956"
+    Hi-C maps:
+      asserts:
+      - has_size:
+          value: 1196776
+          delta: 60000
+    Hi-C Alignment Stats pre-scaffolding:
+      asserts:
+      - has_text:
+          text: "SN\treads mapped and paired:\t33952"
+    Compleasm Full Table Busco:
+      asserts:
+      - has_n_lines:
+          n: 3355
+    Summary Numbers Scaffolds:
+      asserts:
+      - has_text:
+          text: "reads mapped and paired:\t33952"
+    Merged Alignment stats:
+      asserts:
+      - has_text:
+          text: "bases mapped:\t5093400\t5093400"
+    Summary Numbers Contigs:
+      asserts:
+      - has_text:
+          text: "bases mapped:\t5093400"
+    'Hi-C duplication stats on scaffolds: Raw':
+      asserts:
+      - has_text:
+          text: "total_dups\t1327"
+      - has_text:
+          text: "total_nodups\t5990"
+    'Hi-C duplication stats on scaffolds: MultiQc':
+      asserts:
+      - has_size:
+          value: 2183696
+          delta: 500000
+    Contigs Hi-C alignments:
+      asserts:
+      - has_size:
+          value: 3764499
+          delta: 100000
+    Hi-C duplication stats on contigs:
+      asserts:
+      - has_text:
+          text: "PAIRED: 33952"
+      - has_text:
+          text: "WRITTEN: 32701"
+      - has_text:
+          text: "DUPLICATE PAIR: 4510"
+    Merged Hi-C Alignments on Contigs:
+      asserts:
+      - has_size:
+          value: 4034231
+          delta: 200000
     Scaffolds Compleasm Summary:
       asserts:
       - has_text:
