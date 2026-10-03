@@ -1,0 +1,100 @@
+- doc: Test with negative controls, positive controls and batch-effect correction
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '13'
+    Positive-control column number (0 = none): '14'
+    Batch-ID column number (0 = none): '11'
+    MaAsLin3 model formula: nest_box
+    MaAsLin3 reference level: nest_box,PIR207
+    MaAsLin3 maximum significance (q-value): '0.05'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+  outputs:
+    MMUPHin batch-corrected ASV table:
+      path: test-data/Batch-corrected ASV table.tabular
+
+    MaAsLin3 significant features (ASV level):
+      path: test-data/MaAsLin3 significant features (ASV level).tabular
+
+    MaAsLin3 all results (ASV level):
+      asserts:
+        - that: has_n_lines
+          min: 2
+        - that: has_text
+          text: "feature"
+        - that: has_text
+          text: "metadata"
+        - that: has_text
+          text: "coef"
+
+    MaAsLin3 volcano plot (ASV level):
+      asserts:
+        - that: has_size
+          min: 10000
+
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+        - that: has_n_lines
+          min: 2
+        - that: has_text
+          text: "feature"
+        - that: has_text
+          text: "metadata"
+        - that: has_text
+          text: "coef"
+
+    MaAsLin3 significant features (taxonomic level):
+      path: test-data/MaAsLin3 significant features (taxonomic level).tabular
+
+    MMUPHin batch-corrected phyloseq object:
+      asserts:
+        - that: has_size
+          size: 18000
+          delta: 10000
+
+- doc: Test without sequencing controls and without batch-effect correction
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '0'
+    Positive-control column number (0 = none): '0'
+    Batch-ID column number (0 = none): '0'
+    MaAsLin3 model formula: nest_box
+    MaAsLin3 reference level: nest_box,PIR207
+    MaAsLin3 maximum significance (q-value): '0.05'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+        - that: has_size
+          min: 1000
+
+    MaAsLin3 all results (ASV level):
+      asserts:
+        - that: has_n_lines
+          min: 2
+        - that: has_text
+          text: "coef"
+
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+        - that: has_n_lines
+          min: 2
+        - that: has_text
+          text: "coef"
