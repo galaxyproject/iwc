@@ -1,4 +1,4 @@
-# Basic Assembly
+# Metagenomic Assembly
 
 This workflow provides a standardized and modular approach for metagenomic assembly. It generates assemblies from paired-end short reads, with optional support for long reads.
 
