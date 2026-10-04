@@ -10,6 +10,8 @@ The multi-sample approach is more computationally demanding than single-sample b
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
+This workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.
+
 ## Inputs
 
 - Paired-end read collection
