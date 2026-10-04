@@ -4,6 +4,8 @@ This workflow uses paired-end reads and their corresponding assemblies, generate
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
+This workflow is the binning section of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.
+
 ## Inputs
 
 - Paired-end read collection
