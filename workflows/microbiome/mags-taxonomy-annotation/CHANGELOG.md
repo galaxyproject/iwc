@@ -9,6 +9,7 @@
 ### Fixed
 - Check taxonomy mapping collection members in workflow tests.
 - Use a numeric value for the kMetaShot alignment fraction test input.
+- Skip kMetaShot-dependent processing steps when kMetaShot is disabled.
 
 ## [0.4] - 2026-09-21
 
