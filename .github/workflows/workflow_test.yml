@@ -59,28 +59,47 @@ jobs:
 
   # Detect if any changed repo contains a .wt_instance file
   # and set environment to 'secret-env' (if there is such a file)
-  # or None (otherwise) 
+  # or None (otherwise).
+  # Pull requests from forks don't get the secret, so their .wt_instance
+  # repos are left out here and tested by workflow_test_external.yml instead.
   determine_env:
     name: Determine github environment to use
     needs: setup
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.check.outputs.environment }}
+      repository-list: ${{ steps.check.outputs.repository-list }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - id: check
+        env:
+          REPOSITORY_LIST: ${{ needs.setup.outputs.repository-list }}
+          FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
         run: |
-          echo "environment=" >> $GITHUB_OUTPUT
-          for repo in $(echo "${{ needs.setup.outputs.repository-list }}" | tr ',' '\n'); do
+          environment=""
+          repos=()
+          for repo in $(echo "$REPOSITORY_LIST" | tr ',' '\n'); do
             if [[ -f "$repo/.wt_instance" ]]; then
               echo "Found $repo/.wt_instance"
-              echo "environment=secret-env" >> $GITHUB_OUTPUT
-              break
+              if [[ "$FORK_PR" == "true" ]]; then
+                echo "::notice::Not testing $repo here: it is tested on $(tr -d '\r\n' < "$repo/.wt_instance"), which needs a secret that pull requests from forks don't get. It is tested by the 'Galaxy Workflow Tests on external instances for PRs from forks' run once a maintainer approves it."
+                continue
+              fi
+              environment="secret-env"
             fi
+            repos+=("$repo")
           done
-          echo "Will use $(cat $GITHUB_OUTPUT)"
+          echo "environment=$environment" >> "$GITHUB_OUTPUT"
+          {
+            echo 'repository-list<<EOF'
+            if (( ${#repos[@]} )); then
+              printf '%s\n' "${repos[@]}"
+            fi
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
 
   test:
     name: Test workflows
@@ -92,7 +111,7 @@ jobs:
       chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
       chunk-list: ${{ needs.setup.outputs.chunk-list }}
       python-version-list: "[\"3.11\"]"
-      repository-list: ${{ needs.setup.outputs.repository-list }}
+      repository-list: ${{ needs.determine_env.outputs.repository-list }}
       galaxy-fork: galaxyproject
       galaxy-branch: release_26.1
       check-outputs: false
