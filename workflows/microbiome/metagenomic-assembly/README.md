@@ -12,8 +12,10 @@ The main purpose of this workflow is to provide a basic and reusable assembly co
 
 Instead of including assembler-specific steps in every workflow, this workflow provides a common assembly module that can be reused wherever metagenomic assembly is required. This helps reduce duplication between workflows and makes larger workflows easier to understand, maintain, and update.
 
-This workflow is the assembly section of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.(check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
-A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
+This workflow is the assembly section of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy. It is part of a suite of workflows for end-to-end metagenome-assembled genome (MAG) generation (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy.
+
+The workflow requires Galaxy 26.0 or later.
 
 ## Workflow Logic
 
