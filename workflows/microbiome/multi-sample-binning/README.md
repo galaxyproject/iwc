@@ -10,7 +10,8 @@ The multi-sample approach is more computationally demanding than single-sample b
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
-This workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.
+This workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.(check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
 
 ## Inputs
 
@@ -60,3 +61,9 @@ The standard binning workflow should therefore be preferred when binning needs t
 
   - DAS Tool
   - Binette
+
+## Funding
+
+This workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).
+
+The project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.
