@@ -31,7 +31,8 @@ This workflow provides a standardized and modular workflow for metagenomic binni
 
 Using binning as an independent workflow provides better control over the inputs, binning parameters, and outputs. It also allows users to reuse the same binning strategy in different analysis pipelines without having to include unnecessary upstream or downstream steps. This modular design is particularly useful when the generated bins are intended for a specific downstream analysis, such as taxonomic classification, genome annotation, functional analysis, or benchmarking.
 
-In contrast, the IWC Metagenome-Assembled Genomes (MAGs) generation workflow (https://iwc.galaxyproject.org/workflow/mags-building-main/) is designed as a comprehensive end-to-end solution. It performs metagenome assembly and multi-tool binning of paired short reads and optional long reads, followed by dereplication and analysis of MAG quality and abundance. This makes it well suited for users who want to generate and evaluate MAGs without requiring a specialized downstream workflow.
+In contrast, the IWC Metagenome-Assembled Genomes (MAGs) generation workflow (https://iwc.galaxyproject.org/workflow/mags-building-main/) is designed as a comprehensive end-to-end solution. It performs metagenome assembly and multi-tool binning of paired short reads and optional long reads, followed by dereplication and analysis of MAG quality and abundance. This makes it well suited for users who want to generate and evaluate MAGs without requiring a specialized downstream workflow.(check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
 
 The standard binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
 
@@ -50,3 +51,9 @@ The standard binning workflow should therefore be preferred when binning needs t
 
   - DAS Tool
   - Binette
+
+## Funding
+
+This workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).
+
+The project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.
