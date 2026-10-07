@@ -104,7 +104,7 @@ jobs:
   test:
     name: Test workflows
     needs: [setup, determine_env]
-    if: ${{ needs.setup.outputs.repository-list != '' }}
+    if: ${{ needs.determine_env.outputs.repository-list != '' }}
     uses: ./.github/workflows/test_workflows.yml
     with:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
@@ -121,8 +121,8 @@ jobs:
   combine_outputs:
     # same as tool step
     name: Combine chunked test results
-    needs: [setup, test]
-    if: ${{ always() && needs.setup.outputs.repository-list != '' }}
+    needs: [setup, determine_env, test]
+    if: ${{ always() && needs.determine_env.outputs.repository-list != '' }}
     strategy:
       matrix:
         python-version: ['3.11']
@@ -231,10 +231,12 @@ jobs:
 
   determine-success:
     name: Check workflow success
-    needs: [setup, lint, combine_outputs]
+    needs: [setup, lint, determine_env, combine_outputs]
     if: ${{ always() && github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
     - name: Check status
-      if: ${{ needs.combine_outputs.result != 'skipped' && (needs.lint.result != 'success' || needs.combine_outputs.result != 'success') }}
+      # lint and tests are skipped when nothing (left) to check, e.g. when a
+      # fork PR only changes workflows tested by workflow_test_external.yml
+      if: ${{ needs.setup.result != 'success' || needs.determine_env.result != 'success' || !contains(fromJSON('["success", "skipped"]'), needs.lint.result) || !contains(fromJSON('["success", "skipped"]'), needs.combine_outputs.result) }}
       run: exit 1
