@@ -8,22 +8,20 @@ This workflow is the binning section of the [MAGs generation workflow](../mags-b
 
 ## Inputs
 
-- Paired-end read collection
-  - quality-trimmed and host-removed
-- List of corresponding `Assemblies`
-  - assemblies element identifiers must match the read sample identifiers
-- Set if COMEBin should run or not
-  - It is recommend to use it but it can take a while since it is a ML based method
-- Set the read length for CONCOCT
-  - The read length is required by CONCOCT to accurately calculate contig coverage from mapped sequencing reads
-- Choose the bin refinement tool
-  - There are 3 options to choose: either run DAS Tool or/and Binette
+  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.
+  - The sample names are used as coverage columns for the binners.
+- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
+  - Every sample's reads are mapped against there corresponding assembly, so the element identifier has to match
+- **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
+- **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.
+- **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
+- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
 
 ## Outputs
 
-- Bins from each binner
-- The refinement bins form the chosen bin refinement tool(s)
-- quality reports and/or summary files from the chosen bin refinement tool(s)
+- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (if COMEBin was run): one list of bins per assembly.
+- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (if DAS Tool was run): the refined bins, a per-bin summary (completeness and redundancy based on single-copy genes) and the contig-to-bin assignments.
+- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (if Binette was run): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.
 
 ## Why use this workflow
 
@@ -32,7 +30,7 @@ This workflow provides a standardized and modular workflow for metagenomic binni
 Using binning as an independent workflow provides better control over the inputs, binning parameters, and outputs. It also allows users to reuse the same binning strategy in different analysis pipelines without having to include unnecessary upstream or downstream steps. This modular design is particularly useful when the generated bins are intended for a specific downstream analysis, such as taxonomic classification, genome annotation, functional analysis, or benchmarking.
 
 In contrast, the IWC Metagenome-Assembled Genomes (MAGs) generation workflow (https://iwc.galaxyproject.org/workflow/mags-building-main/) is designed as a comprehensive end-to-end solution. It performs metagenome assembly and multi-tool binning of paired short reads and optional long reads, followed by dereplication and analysis of MAG quality and abundance. This makes it well suited for users who want to generate and evaluate MAGs without requiring a specialized downstream workflow.(check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
-A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.
 
 The standard binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
 
