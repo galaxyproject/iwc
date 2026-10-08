@@ -1,0 +1,132 @@
+- doc: >-
+    Synthetic FMT case (simulate_reads.py, https://doi.org/10.5281/zenodo.23236298) against the MetaPhlAn TOY database:
+    the donor's Eubacterium rectale strain (t__SGB4933_group) is transferred to the patient
+    and replaces the pre-FMT strain, and the patient's Parabacteroides distasonis strain
+    (t__SGB1934) persists from pre- to post-FMT.
+  job:
+    Raw Reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: PreFMT
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/23236298/files/PreFMT_R1.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: c248cee7e25b3ef2f01c63a453c92a75f7f69a41
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/23236298/files/PreFMT_R2.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 1871383e5d7a081b78b11f7787f6b6db442acd7c
+      - class: Collection
+        collection_type: paired
+        identifier: Donor
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/23236298/files/Donor_R1.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: a499e863bb7e9dee8fec7ea7d7d2c7e351103677
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/23236298/files/Donor_R2.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 5ff5f6db7bc4877e4bad6fd80efc81d6bc399ac7
+      - class: Collection
+        collection_type: paired
+        identifier: PostFMT
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/23236298/files/PostFMT_R1.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 25393820f83870d1473148250dc82664825a0ec3
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/23236298/files/PostFMT_R2.fastq.gz
+          filetype: fastqsanger.gz
+          hashes:
+          - hash_function: SHA-1
+            hash_value: 0ad868ee2959d9922928d01ccd7390cad93b08c8
+    "Preprocessing: Select Host reference genome": sacCer3
+    "Preprocessing: Select Sequencer for Trimmomatic": NexteraPE
+    Select MetaPhlAn Database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
+    Select SameStr database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
+    "SameStr Convert: Percent identity": 0.9
+    "SameStr Convert: Minimum alignment length": 40
+    "SameStr Convert: Minimum base quality": 20
+    "SameStr Convert: Minimum alignment quality": 0
+    "SameStr Convert: Minimum vertical coverage": 3
+    "SameStr Filter: Minimum samples per clade": 2
+    "SameStr Filter: Marker truncation length": 50
+    "SameStr Filter: Nucleotides minimum variant coverage": 2
+    "SameStr Filter: Minimum variant coverage fraction": 0.05
+    "SameStr Filter: Minimum position coverage": 1
+    "SameStr Filter: Position coverage standard deviation cutoff": 3.0
+    "SameStr Filter: Minimum horizontal coverage": 5000
+    "SameStr Filter: Minimum sample coverage per position": 2
+    "SameStr Summarize: Minimum overlap for comparison": 5000
+    "SameStr Summarize: Minimum similarity for shared strains": 0.999
+  outputs:
+    "SameStr SNV profile statistics":
+      element_tests:
+        t__SGB4933_group:
+          asserts:
+            - that: has_n_lines
+              n: 4
+            - that: has_line_matching
+              expression: "^Donor\t.*"
+            - that: has_line_matching
+              expression: "^PreFMT\t.*"
+            - that: has_line_matching
+              expression: "^PostFMT\t.*"
+        t__SGB1934:
+          asserts:
+            - that: has_n_lines
+              n: 3
+            - that: has_line_matching
+              expression: "^PreFMT\t.*"
+            - that: has_line_matching
+              expression: "^PostFMT\t.*"
+    "taxon counts":
+      asserts:
+        - that: has_line_matching
+          expression: "^Donor\t1\t1\t1\t1\t1\t1\t1\t1$"
+        - that: has_line_matching
+          expression: "^PreFMT\t1\t2\t2\t2\t2\t2\t2\t2$"
+        - that: has_line_matching
+          expression: "^PostFMT\t1\t2\t2\t2\t2\t2\t2\t2$"
+    "strain events":
+      asserts:
+        - that: has_n_lines
+          n: 5
+        - that: has_line_matching
+          expression: "^Donor\tPostFMT\tt__SGB4933_group\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+        - that: has_line_matching
+          expression: "^Donor\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
+        - that: has_line_matching
+          expression: "^PostFMT\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
+        - that: has_line_matching
+          expression: "^PostFMT\tPreFMT\tt__SGB1934\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+    "Strain co-occurrence table":
+      asserts:
+        - that: has_line_matching
+          expression: "^Donor\tPostFMT(\t1){10}$"
+        - that: has_line_matching
+          expression: "^Donor\tPreFMT(\t1){8}\t0\t1$"
+        - that: has_line_matching
+          expression: "^PostFMT\tPreFMT\t1(\t2){7}\t1\t2$"
