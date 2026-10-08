@@ -2,6 +2,9 @@
 
 ## [0.2] - 2026-07-27
 
+### Manual update
+- Force input `BAM or CRAM files` to be BAM or CRAM format.
+
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/3.5.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/4.0.0+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_correlation/deeptools_plot_correlation/3.5.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_plot_correlation/deeptools_plot_correlation/4.0.0+galaxy1`
