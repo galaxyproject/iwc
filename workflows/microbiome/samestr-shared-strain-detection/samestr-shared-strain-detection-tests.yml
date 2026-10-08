@@ -2,9 +2,10 @@
     Synthetic FMT case (simulate_reads.py, https://doi.org/10.5281/zenodo.23236298) against the MetaPhlAn TOY database:
     the donor's Eubacterium rectale strain (t__SGB4933_group) is transferred to the patient
     and replaces the pre-FMT strain, and the patient's Parabacteroides distasonis strain
-    (t__SGB1934) persists from pre- to post-FMT.
+    (t__SGB1934) persists from pre- to post-FMT. The Post_FMT sample identifier contains an
+    underscore to check that sample names survive into the SameStr clade identifiers.
   job:
-    Raw Reads:
+    Paired-end reads:
       class: Collection
       collection_type: list:paired
       elements:
@@ -46,7 +47,7 @@
             hash_value: 5ff5f6db7bc4877e4bad6fd80efc81d6bc399ac7
       - class: Collection
         collection_type: paired
-        identifier: PostFMT
+        identifier: Post_FMT
         elements:
         - class: File
           identifier: forward
@@ -62,10 +63,10 @@
           hashes:
           - hash_function: SHA-1
             hash_value: 0ad868ee2959d9922928d01ccd7390cad93b08c8
-    "Preprocessing: Select Host reference genome": sacCer3
-    "Preprocessing: Select Sequencer for Trimmomatic": NexteraPE
-    Select MetaPhlAn Database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
-    Select SameStr database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
+    "Preprocessing: Host reference genome": sacCer3
+    "Preprocessing: Trimmomatic adapter set": NexteraPE
+    MetaPhlAn database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
+    SameStr database: mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026
     "SameStr Convert: Percent identity": 0.9
     "SameStr Convert: Minimum alignment length": 40
     "SameStr Convert: Minimum base quality": 20
@@ -73,7 +74,7 @@
     "SameStr Convert: Minimum vertical coverage": 3
     "SameStr Filter: Minimum samples per clade": 2
     "SameStr Filter: Marker truncation length": 50
-    "SameStr Filter: Nucleotides minimum variant coverage": 2
+    "SameStr Filter: Minimum variant coverage (reads)": 2
     "SameStr Filter: Minimum variant coverage fraction": 0.05
     "SameStr Filter: Minimum position coverage": 1
     "SameStr Filter: Position coverage standard deviation cutoff": 3.0
@@ -82,6 +83,26 @@
     "SameStr Summarize: Minimum overlap for comparison": 5000
     "SameStr Summarize: Minimum similarity for shared strains": 0.999
   outputs:
+    Taxonomic profile:
+      element_tests:
+        Donor:
+          asserts:
+            - that: has_text
+              text: "s__Eubacterium_rectale|t__SGB4933_group"
+            - that: not_has_text
+              text: "t__SGB1934"
+        PreFMT:
+          asserts:
+            - that: has_text
+              text: "s__Eubacterium_rectale|t__SGB4933_group"
+            - that: has_text
+              text: "t__SGB1934"
+        Post_FMT:
+          asserts:
+            - that: has_text
+              text: "s__Eubacterium_rectale|t__SGB4933_group"
+            - that: has_text
+              text: "t__SGB1934"
     "SameStr SNV profile statistics":
       element_tests:
         t__SGB4933_group:
@@ -93,7 +114,7 @@
             - that: has_line_matching
               expression: "^PreFMT\t.*"
             - that: has_line_matching
-              expression: "^PostFMT\t.*"
+              expression: "^Post_FMT\t.*"
         t__SGB1934:
           asserts:
             - that: has_n_lines
@@ -101,32 +122,32 @@
             - that: has_line_matching
               expression: "^PreFMT\t.*"
             - that: has_line_matching
-              expression: "^PostFMT\t.*"
-    "taxon counts":
+              expression: "^Post_FMT\t.*"
+    Taxon counts:
       asserts:
         - that: has_line_matching
           expression: "^Donor\t1\t1\t1\t1\t1\t1\t1\t1$"
         - that: has_line_matching
           expression: "^PreFMT\t1\t2\t2\t2\t2\t2\t2\t2$"
         - that: has_line_matching
-          expression: "^PostFMT\t1\t2\t2\t2\t2\t2\t2\t2$"
-    "strain events":
+          expression: "^Post_FMT\t1\t2\t2\t2\t2\t2\t2\t2$"
+    Strain events:
       asserts:
         - that: has_n_lines
           n: 5
         - that: has_line_matching
-          expression: "^Donor\tPostFMT\tt__SGB4933_group\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+          expression: "^Donor\tPost_FMT\tt__SGB4933_group\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
         - that: has_line_matching
           expression: "^Donor\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
         - that: has_line_matching
-          expression: "^PostFMT\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
+          expression: "^Post_FMT\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
         - that: has_line_matching
-          expression: "^PostFMT\tPreFMT\tt__SGB1934\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+          expression: "^Post_FMT\tPreFMT\tt__SGB1934\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
     "Strain co-occurrence table":
       asserts:
         - that: has_line_matching
-          expression: "^Donor\tPostFMT(\t1){10}$"
+          expression: "^Donor\tPost_FMT(\t1){10}$"
         - that: has_line_matching
           expression: "^Donor\tPreFMT(\t1){8}\t0\t1$"
         - that: has_line_matching
-          expression: "^PostFMT\tPreFMT\t1(\t2){7}\t1\t2$"
+          expression: "^Post_FMT\tPreFMT\t1(\t2){7}\t1\t2$"

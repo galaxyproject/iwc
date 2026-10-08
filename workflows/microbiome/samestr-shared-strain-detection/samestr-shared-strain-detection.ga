@@ -4,11 +4,11 @@
     "comments": [
         {
             "child_steps": [
-                40
+                39
             ],
             "color": "green",
             "data": {
-                "title": "Preprocessing Clade and marker setting steps"
+                "title": "Strain sharing summary"
             },
             "id": 4,
             "position": [
@@ -23,7 +23,7 @@
         },
         {
             "child_steps": [
-                38
+                37
             ],
             "color": "green",
             "data": {
@@ -67,7 +67,7 @@
             ],
             "color": "yellow",
             "data": {
-                "title": "Preprocessing Clade and marker setting steps"
+                "title": "Preprocessing: trimming and host removal"
             },
             "id": 1,
             "position": [
@@ -112,24 +112,24 @@
     "release": "0.1",
     "license": "MIT",
     "name": "SameStr-based shared strain detection from paired-end metagenomic data",
-    "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic sequencing reads from multiple samples. It performs the following steps:\n\n- **Preprocessing**: Quality trimming and host read removal using KneadData\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn4 or mOTUs for taxonomic classification and marker-based alignment\n- **Strain detection**: SameStr tools identify strains across samples and compute pairwise strain comparisons using Maximum Variant Profile Similarity (MVS) scores.\n\n## Inputs\n\n- **Raw Reads**: A collection of paired-end FASTQ files from one or more samples to compare\n- **Select MetaPhlAn Database**: Optional. Selecting a database runs MetaPhlAn as the taxonomic profiler and marker-based aligner.\n- **Select mOTUs Database**: Optional. Selecting a database runs mOTUs as the taxonomic profiler and marker-based aligner.\n- At least one of the two databases must be selected, or the workflow will fail. If both are selected, both tools run, but SameStr uses the MetaPhlAn output.\n\n## Outputs\n\n - **SameStr results**: SNV profile summary statistics, taxon counts, strain events, and co-occurrence tables, generated from MetaPhlAn output if a MetaPhlAn database was selected, otherwise from mOTUs output.",
+    "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic reads from several samples and finds\nstrains they share, for example strains transmitted from a donor to a recipient after a faecal\nmicrobiota transplant, or strains persisting in one person over time. It uses\n[SameStr](https://github.com/danielpodlesny/samestr)\n([Podlesny et al. 2022, *Microbiome*](https://doi.org/10.1186/s40168-022-01251-w)), which compares\nsingle-nucleotide variant (SNV) profiles of species-specific marker genes between samples.\n\nIt performs the following steps:\n\n- **Preprocessing**: quality trimming (Trimmomatic) and host read removal (Bowtie2) with KneadData.\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn 4 or mOTUs, depending on the\n  selected database, profiles each sample and aligns its reads to the profiler's marker genes.\n- **Strain detection**:\n  - SameStr Convert turns each sample's marker alignments into per-clade SNV profiles.\n  - SameStr Merge and SameStr Filter combine them across samples and keep high-confidence variants.\n  - SameStr Stats, Compare and Summarize compute pairwise Maximum Variant Profile Similarity (MVS)\n    scores and call shared strains.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection of FASTQ files (`fastqsanger` or\n  `fastqsanger.gz`), one element per sample. Strains are compared between samples, so provide at\n  least two.\n- **Preprocessing: Trimmomatic adapter set**: the adapter sequences Trimmomatic clips (default `NexteraPE`).\n- **Preprocessing: Host reference genome**: the Bowtie2 index of the host genome whose reads are\n  removed (default `hg38`, human).\n- **MetaPhlAn database** and **mOTUs database**: both are optional, and the database you select\n  decides which profiler runs. Select exactly one:\n  - with neither selected, the workflow fails;\n  - with both selected, both profilers run, but SameStr uses only the MetaPhlAn results.\n- **SameStr database**: the SameStr marker database. It must be built from the same profiler\n  database as the one selected above (the same MetaPhlAn or mOTUs database version).\n- **SameStr Convert / Filter / Summarize parameters**: the alignment, variant, position, sample\n  and similarity thresholds of the SameStr steps. The defaults are SameStr's own defaults, and\n  each input's help text describes it.\n\n## Outputs\n\n- **Taxonomic profile**: the taxonomic profile of each sample, from MetaPhlAn (or mOTUs if no\n  MetaPhlAn database was selected).\n- **SameStr SNV profile statistics**: one table per clade with the marker coverage and variant\n  statistics of each sample.\n- **Strain events**: one row per sample pair and clade. It gives the MVS similarity, the number of\n  overlapping positions, and the call: `shared_strain` if the pair shares the strain,\n  `other_strain` if it carries different strains.\n- **Taxon counts**: for each sample, the number of taxa detected at each rank from kingdom to clade.\n- **Strain co-occurrence table**: for each sample pair, the number of taxa shared at each rank,\n  the number of shared strains, and the number of clades analyzed at strain level.\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
     "steps": {
         "0": {
-            "annotation": "Raw paired-end sequencing reads in FASTQ format. ",
+            "annotation": "Paired-end shotgun metagenomic reads (FASTQ) as a list:paired collection, one element per sample. At least two samples are needed to compare strains.",
             "content_id": null,
             "errors": null,
             "id": 0,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Raw paired-end sequencing reads in FASTQ format. ",
-                    "name": "Raw Reads"
+                    "description": "Paired-end shotgun metagenomic reads (FASTQ) as a list:paired collection, one element per sample. At least two samples are needed to compare strains.",
+                    "name": "Paired-end reads"
                 }
             ],
-            "label": "Raw Reads",
+            "label": "Paired-end reads",
             "name": "Input dataset collection",
             "outputs": [],
             "position": {
@@ -145,18 +145,18 @@
             "workflow_outputs": []
         },
         "1": {
-            "annotation": "Select the sequencer for Trimmomatic",
+            "annotation": "Adapter sequences that Trimmomatic clips from the reads, e.g. NexteraPE, TruSeq2 or TruSeq3.",
             "content_id": null,
             "errors": null,
             "id": 1,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Select the sequencer for Trimmomatic",
-                    "name": "Preprocessing: Select Sequencer for Trimmomatic"
+                    "description": "Adapter sequences that Trimmomatic clips from the reads, e.g. NexteraPE, TruSeq2 or TruSeq3.",
+                    "name": "Preprocessing: Trimmomatic adapter set"
                 }
             ],
-            "label": "Preprocessing: Select Sequencer for Trimmomatic",
+            "label": "Preprocessing: Trimmomatic adapter set",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -172,18 +172,18 @@
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "Select the host reference genome for removing contaminating reads. ",
+            "annotation": "Bowtie2 index of the host genome whose reads KneadData removes, e.g. hg38 for human samples.",
             "content_id": null,
             "errors": null,
             "id": 2,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Select the host reference genome for removing contaminating reads. ",
-                    "name": "Preprocessing: Select Host reference genome"
+                    "description": "Bowtie2 index of the host genome whose reads KneadData removes, e.g. hg38 for human samples.",
+                    "name": "Preprocessing: Host reference genome"
                 }
             ],
-            "label": "Preprocessing: Select Host reference genome",
+            "label": "Preprocessing: Host reference genome",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -191,7 +191,7 @@
                 "top": 485
             },
             "tool_id": null,
-            "tool_state": "{\"default\": \"hg19\", \"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_state": "{\"default\": \"hg38\", \"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
             "uuid": "e710b4b9-599b-4078-a281-4de4893899b7",
@@ -199,18 +199,18 @@
             "workflow_outputs": []
         },
         "3": {
-            "annotation": "Choose a mOTUs reference database to run mOTUs as the taxonomic profiler and marker-based aligner. At least one of the MetaPhlAn or mOTUs databases must be selected for the workflow to run correctly.",
+            "annotation": "mOTUs database. Select it to use mOTUs as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
             "content_id": null,
             "errors": null,
             "id": 3,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Choose a mOTUs reference database to run mOTUs as the taxonomic profiler and marker-based aligner. At least one of the MetaPhlAn or mOTUs databases must be selected for the workflow to run correctly.",
-                    "name": "Select mOTUs Database"
+                    "description": "mOTUs database. Select it to use mOTUs as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                    "name": "mOTUs database"
                 }
             ],
-            "label": "Select mOTUs Database",
+            "label": "mOTUs database",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -226,18 +226,18 @@
             "workflow_outputs": []
         },
         "4": {
-            "annotation": "Choose a MetaPhlAn reference database to run MetaPhlAn as the taxonomic profiler and marker-based aligner. At least one of the MetaPhlAn or mOTUs databases must be selected for the workflow to run correctly. ",
+            "annotation": "MetaPhlAn database. Select it to use MetaPhlAn as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
             "content_id": null,
             "errors": null,
             "id": 4,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Choose a MetaPhlAn reference database to run MetaPhlAn as the taxonomic profiler and marker-based aligner. At least one of the MetaPhlAn or mOTUs databases must be selected for the workflow to run correctly. ",
-                    "name": "Select MetaPhlAn Database"
+                    "description": "MetaPhlAn database. Select it to use MetaPhlAn as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                    "name": "MetaPhlAn database"
                 }
             ],
-            "label": "Select MetaPhlAn Database",
+            "label": "MetaPhlAn database",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -253,18 +253,18 @@
             "workflow_outputs": []
         },
         "5": {
-            "annotation": "Select SameStr database. Only select databases that match the selected profiler",
+            "annotation": "SameStr marker database. It must be built from the same profiler database as the one selected above (same MetaPhlAn or mOTUs database version).",
             "content_id": null,
             "errors": null,
             "id": 5,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Select SameStr database. Only select databases that match the selected profiler",
-                    "name": "Select SameStr database"
+                    "description": "SameStr marker database. It must be built from the same profiler database as the one selected above (same MetaPhlAn or mOTUs database version).",
+                    "name": "SameStr database"
                 }
             ],
-            "label": "Select SameStr database",
+            "label": "SameStr database",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -469,18 +469,18 @@
             "workflow_outputs": []
         },
         "13": {
-            "annotation": "Sample Variant Filtering: Remove variants with nucleotide coverage below this threshold (default: 2)",
+            "annotation": "Sample Variant Filtering: Remove variants supported by fewer than this number of reads (default: 2)",
             "content_id": null,
             "errors": null,
             "id": 13,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Sample Variant Filtering: Remove variants with nucleotide coverage below this threshold (default: 2)",
-                    "name": "SameStr Filter: Nucleotides minimum variant coverage"
+                    "description": "Sample Variant Filtering: Remove variants supported by fewer than this number of reads (default: 2)",
+                    "name": "SameStr Filter: Minimum variant coverage (reads)"
                 }
             ],
-            "label": "SameStr Filter: Nucleotides minimum variant coverage",
+            "label": "SameStr Filter: Minimum variant coverage (reads)",
             "name": "Input parameter",
             "outputs": [],
             "position": {
@@ -550,14 +550,14 @@
             "workflow_outputs": []
         },
         "16": {
-            "annotation": "Sample Position Filtering: Remove positions with coverage outside mean \u00b1 this standard deviation (default: 3.0).",
+            "annotation": "Sample Position Filtering: Remove positions with coverage outside mean ± this standard deviation (default: 3.0).",
             "content_id": null,
             "errors": null,
             "id": 16,
             "input_connections": {},
             "inputs": [
                 {
-                    "description": "Sample Position Filtering: Remove positions with coverage outside mean \u00b1 this standard deviation (default: 3.0).",
+                    "description": "Sample Position Filtering: Remove positions with coverage outside mean ± this standard deviation (default: 3.0).",
                     "name": "SameStr Filter: Position coverage standard deviation cutoff"
                 }
             ],
@@ -781,7 +781,7 @@
                     "name": "input_param_type"
                 }
             ],
-            "label": null,
+            "label": "Run mOTUs",
             "name": "Map parameter value",
             "outputs": [
                 {
@@ -826,7 +826,7 @@
                     "name": "input_param_type"
                 }
             ],
-            "label": null,
+            "label": "Run MetaPhlAn",
             "name": "Map parameter value",
             "outputs": [
                 {
@@ -855,7 +855,7 @@
             "workflow_outputs": []
         },
         "24": {
-            "annotation": "Concatenate paired reads and orphaned ",
+            "annotation": "Concatenate the trimmed, host-filtered paired reads and orphaned reads of each sample for profiling",
             "content_id": "cat1",
             "errors": null,
             "id": 24,
@@ -875,7 +875,7 @@
                     "name": "input1"
                 }
             ],
-            "label": null,
+            "label": "Concatenate paired and orphaned reads",
             "name": "Concatenate multiple datasets or collections",
             "outputs": [
                 {
@@ -965,12 +965,7 @@
                     "output_name": "output_param_boolean"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool MetaPhlAn",
-                    "name": "analysis"
-                }
-            ],
+            "inputs": [],
             "label": "MetaPhlAn",
             "name": "MetaPhlAn",
             "outputs": [
@@ -999,7 +994,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.2\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": {\"__class__\": \"RuntimeValue\"}, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": false}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.2\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": null, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": false}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "4.2.4+galaxy0",
             "type": "tool",
@@ -1008,7 +1003,7 @@
             "workflow_outputs": []
         },
         "27": {
-            "annotation": "mOTUs_profiler",
+            "annotation": "Generate taxonomic profiles and marker gene alignments with mOTUs for SameStr",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/motus/motus_profiler/3.1.0+galaxy1",
             "errors": null,
             "id": 27,
@@ -1031,7 +1026,7 @@
                 }
             },
             "inputs": [],
-            "label": "mOTUs_profiler",
+            "label": "mOTUs",
             "name": "mOTUs_profiler",
             "outputs": [
                 {
@@ -1079,7 +1074,7 @@
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Select taxonomic profile",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -1105,7 +1100,13 @@
             "type": "tool",
             "uuid": "d472fd45-e7d9-4508-82ae-ccbf0ec98c5f",
             "when": null,
-            "workflow_outputs": []
+            "workflow_outputs": [
+                {
+                    "label": "Taxonomic profile",
+                    "output_name": "data_param",
+                    "uuid": "6c0f3b43-2b0e-4a3c-9a35-5f1a8f4c2e71"
+                }
+            ]
         },
         "29": {
             "annotation": "Selects the MetaPhlAn alignment file if available, otherwise uses the mOTUs alignment file",
@@ -1123,7 +1124,7 @@
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Select marker alignment",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -1285,8 +1286,8 @@
             "workflow_outputs": []
         },
         "32": {
-            "annotation": "Flatten collection to allow cross-sample SNV profile comparison. Note:  this modifies element identifiers by adding an underscore, which makes naming afterwards unstable for SameStr",
-            "content_id": "__FLATTEN__",
+            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (<clade>.<sample>) are kept, so they stay unique and sample names may contain underscores.",
+            "content_id": "__APPLY_RULES__",
             "errors": null,
             "id": 32,
             "input_connections": {
@@ -1296,41 +1297,7 @@
                 }
             },
             "inputs": [],
-            "label": null,
-            "name": "Flatten collection",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1863.6452355710771,
-                "top": 752.2782175982525
-            },
-            "post_job_actions": {},
-            "tool_id": "__FLATTEN__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "6f555254-4e61-4bd0-bbb9-2f6aeca3fc7c",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "33": {
-            "annotation": "Apply rules",
-            "content_id": "__APPLY_RULES__",
-            "errors": null,
-            "id": 33,
-            "input_connections": {
-                "input": {
-                    "id": 32,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": null,
+            "label": "Collect SNV profiles across samples",
             "name": "Apply rules",
             "outputs": [
                 {
@@ -1344,7 +1311,7 @@
             },
             "post_job_actions": {},
             "tool_id": "__APPLY_RULES__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [1], \"type\": \"list_identifiers\"}], \"rules\": [{\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"allow_unmatched\": false, \"error\": null, \"expression\": \"^[^_]+_(.*)$\", \"group_count\": null, \"replacement\": \"\\\\1\", \"target_column\": 0, \"type\": \"add_column_regex\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [1], \"type\": \"list_identifiers\"}], \"rules\": [{\"type\": \"add_column_metadata\", \"value\": \"identifier0\"}, {\"type\": \"add_column_metadata\", \"value\": \"identifier1\"}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
@@ -1352,18 +1319,18 @@
             "when": null,
             "workflow_outputs": []
         },
-        "34": {
+        "33": {
             "annotation": "Merge SNV profiles from multiple samples for cross-sample strain comparison",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy0",
             "errors": null,
-            "id": 34,
+            "id": 33,
             "input_connections": {
                 "database": {
                     "id": 5,
                     "output_name": "output"
                 },
                 "input_files": {
-                    "id": 33,
+                    "id": 32,
                     "output_name": "output"
                 }
             },
@@ -1400,11 +1367,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "35": {
+        "34": {
             "annotation": "Filter SNV profiles to retain high confidence variants for strain analysis",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy0",
             "errors": null,
-            "id": 35,
+            "id": 34,
             "input_connections": {
                 "clade_settings|clade_min_samples": {
                     "id": 11,
@@ -1423,11 +1390,11 @@
                     "output_name": "output"
                 },
                 "input_names": {
-                    "id": 34,
+                    "id": 33,
                     "output_name": "sample_name"
                 },
                 "input_snvs": {
-                    "id": 34,
+                    "id": 33,
                     "output_name": "npz_files"
                 },
                 "sample_filtering|samples_min_n_hcov": {
@@ -1489,7 +1456,7 @@
                     "name": "sample_variant_filtering"
                 }
             ],
-            "label": null,
+            "label": "SameStr Filter",
             "name": "SameStr Filter",
             "outputs": [
                 {
@@ -1513,7 +1480,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"clade_settings\": {\"clade_min_samples\": {\"__class__\": \"ConnectedValue\"}, \"marker_selection\": {\"retain_or_drop\": \"\", \"__current_case__\": 0}, \"marker_trunc_len\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"global_position_filtering\": {\"global_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"global_pos_min_f_vcov\": \"0.0\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"output_settings\": {\"keep_poly\": false, \"keep_mono\": false, \"delete_pos\": false}, \"sample_filtering\": {\"samples_select\": {\"__class__\": \"RuntimeValue\"}, \"samples_min_n_hcov\": {\"__class__\": \"ConnectedValue\"}, \"samples_min_f_hcov\": \"0.0\", \"samples_min_m_vcov\": \"0.0\"}, \"sample_position_filtering\": {\"sample_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_pos_min_sd_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"sample_variant_filtering\": {\"sample_var_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_var_min_f_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"clade_settings\": {\"clade_min_samples\": {\"__class__\": \"ConnectedValue\"}, \"marker_selection\": {\"retain_or_drop\": \"\", \"__current_case__\": 0}, \"marker_trunc_len\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"global_position_filtering\": {\"global_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"global_pos_min_f_vcov\": \"0.0\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"output_settings\": {\"keep_poly\": false, \"keep_mono\": false, \"delete_pos\": false}, \"sample_filtering\": {\"samples_select\": null, \"samples_min_n_hcov\": {\"__class__\": \"ConnectedValue\"}, \"samples_min_f_hcov\": \"0.0\", \"samples_min_m_vcov\": \"0.0\"}, \"sample_position_filtering\": {\"sample_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_pos_min_sd_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"sample_variant_filtering\": {\"sample_var_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_var_min_f_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.2025.111+galaxy0",
             "type": "tool",
@@ -1521,24 +1488,19 @@
             "when": null,
             "workflow_outputs": []
         },
-        "36": {
-            "annotation": "empty datasets with insufficient coverage or no SNVs detected",
+        "35": {
+            "annotation": "Remove empty filtered SNV profiles (clades with insufficient coverage or no SNVs) before statistics and comparison",
             "content_id": "__FILTER_EMPTY_DATASETS__",
             "errors": null,
-            "id": 36,
+            "id": 35,
             "input_connections": {
                 "input": {
-                    "id": 35,
+                    "id": 34,
                     "output_name": "filtered_profile"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Filter empty datasets",
-                    "name": "replacement"
-                }
-            ],
-            "label": null,
+            "inputs": [],
+            "label": "Drop empty SNV profiles",
             "name": "Filter empty datasets",
             "outputs": [
                 {
@@ -1552,7 +1514,7 @@
             },
             "post_job_actions": {},
             "tool_id": "__FILTER_EMPTY_DATASETS__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
@@ -1560,24 +1522,19 @@
             "when": null,
             "workflow_outputs": []
         },
-        "37": {
-            "annotation": "empty datasets with insufficient coverage or no SNVs detected",
+        "36": {
+            "annotation": "Remove the sample name lists of clades whose filtered SNV profiles are empty",
             "content_id": "__FILTER_EMPTY_DATASETS__",
             "errors": null,
-            "id": 37,
+            "id": 36,
             "input_connections": {
                 "input": {
-                    "id": 35,
+                    "id": 34,
                     "output_name": "sample_names"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Filter empty datasets",
-                    "name": "replacement"
-                }
-            ],
-            "label": null,
+            "inputs": [],
+            "label": "Drop empty sample name lists",
             "name": "Filter empty datasets",
             "outputs": [
                 {
@@ -1591,7 +1548,7 @@
             },
             "post_job_actions": {},
             "tool_id": "__FILTER_EMPTY_DATASETS__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
@@ -1599,27 +1556,27 @@
             "when": null,
             "workflow_outputs": []
         },
-        "38": {
+        "37": {
             "annotation": "Generate summary statistics of SNV profiles per sample",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy0",
             "errors": null,
-            "id": 38,
+            "id": 37,
             "input_connections": {
                 "database": {
                     "id": 5,
                     "output_name": "output"
                 },
                 "input_names": {
-                    "id": 37,
+                    "id": 36,
                     "output_name": "output"
                 },
                 "input_snvs": {
-                    "id": 36,
+                    "id": 35,
                     "output_name": "output"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "SameStr Stats",
             "name": "SameStr Stats",
             "outputs": [
                 {
@@ -1653,27 +1610,27 @@
                 }
             ]
         },
-        "39": {
+        "38": {
             "annotation": "Compare SNV profiles across samples to identify shared strains",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy0",
             "errors": null,
-            "id": 39,
+            "id": 38,
             "input_connections": {
                 "database": {
                     "id": 5,
                     "output_name": "output"
                 },
                 "input_names": {
-                    "id": 37,
+                    "id": 36,
                     "output_name": "output"
                 },
                 "input_snvs": {
-                    "id": 36,
+                    "id": 35,
                     "output_name": "output"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "SameStr Compare",
             "name": "SameStr Compare",
             "outputs": [
                 {
@@ -1709,11 +1666,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "40": {
+        "39": {
             "annotation": "Summarize strain sharing results across all sample pairs",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy0",
             "errors": null,
-            "id": 40,
+            "id": 39,
             "input_connections": {
                 "arguments|aln_pair_min_overlap": {
                     "id": 19,
@@ -1728,11 +1685,11 @@
                     "output_name": "output"
                 },
                 "overlaps": {
-                    "id": 39,
+                    "id": 38,
                     "output_name": "overlap_file"
                 },
                 "similarities": {
-                    "id": 39,
+                    "id": 38,
                     "output_name": "fraction_file"
                 },
                 "tax_profiles": {
@@ -1750,7 +1707,7 @@
                     "name": "arguments"
                 }
             ],
-            "label": null,
+            "label": "SameStr Summarize",
             "name": "SameStr Summarize",
             "outputs": [
                 {
@@ -1791,12 +1748,12 @@
                     "uuid": "d6ff3e38-553f-477d-abe4-c2fea58de5b8"
                 },
                 {
-                    "label": "strain events",
+                    "label": "Strain events",
                     "output_name": "strain_events",
                     "uuid": "55e3b5b7-c520-4abd-8842-630b04ca0c77"
                 },
                 {
-                    "label": "taxon counts",
+                    "label": "Taxon counts",
                     "output_name": "taxon_counts",
                     "uuid": "2d00d764-3651-4f77-bf9e-a54b1e155e59"
                 }
