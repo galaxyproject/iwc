@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9] - 2026-10-01
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.0.4+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy1`
+
+## [0.8] - 2026-09-23
+
+### Fixed
+- Correct the changeset revision of `coverm_genome` to an installable revision
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
 ## [0.7] - 2026-08-03
 
 ### Automatic update
