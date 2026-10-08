@@ -6,31 +6,30 @@ In contrast to single-sample binning, the multi-sample approach uses information
 
 In this workflow, each sample's reads are mapped against each sample's assembly, and each assembly is subsequently binned separately using the cross-sample coverage information. This differs from multi-sample approaches that concatenate assemblies and perform a joint binning step before splitting the resulting bins by sample.
 
-The multi-sample approach is more computationally demanding than single-sample binning because it requires additional read mappings and processes a larger amount of data. When each of N samples is mapped against each of N sample assemblies, the number of mapping operations scales approximately as N². However, the resulting cross-sample coverage information can improve binning, particularly when organisms show different relative abundances across samples.
+The multi-sample approach is more computationally demanding than single-sample binning because it requires additional read mappings and processes a larger amount of data. When the reads of N samples are mapped against N assemblies, the number of mapping jobs, the number of BAM files and the number of intermediate read copies all scale as N², so storage requirements grow quickly with the number of samples. However, the resulting cross-sample coverage information can improve binning, particularly when organisms show different relative abundances across samples. For a large number of samples, or for samples from unrelated environments where cross-sample coverage adds little information, single-sample binning is the cheaper choice.
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
-This workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.(check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
-A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
+This workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.
 
 ## Inputs
 
-- Paired-end read collection
-  - quality-trimmed and host-removed
-- List of corresponding `Assemblies`
-  - assemblies element identifiers must match the read sample identifiers
-- Set if COMEBin should run or not
-  - It is recommend to use it but it can take a while since it is a ML based method
-- Set the read length for CONCOCT
-  - The read length is required by CONCOCT to accurately calculate contig coverage from mapped sequencing reads
-- Choose the bin refinement tool
-  - There are 3 options to choose: either run DAS Tool or/and Binette
+- **Paired-end reads**: a `list:paired` collection with one element per sample.
+  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.
+  - The sample names are used as coverage columns for the binners.
+- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
+  - Every sample's reads are mapped against every assembly, so the element identifiers of the two collections do not need to match. The number of assemblies does not need to equal the number of read samples either: a single co-assembly binned with the coverage of all samples is a valid input.
+- **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
+- **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.
+- **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
+- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
 
 ## Outputs
 
-- Bins from each binner
-- The refinement bins form the chosen bin refinement tool(s)
-- quality reports and/or summary files from the chosen bin refinement tool(s)
+- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (if COMEBin was run): one list of bins per assembly.
+- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (if DAS Tool was run): the refined bins, a per-bin summary (completeness and redundancy based on single-copy genes) and the contig-to-bin assignments.
+- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (if Binette was run): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.
 
 ## Why use this workflow
 
@@ -40,7 +39,7 @@ Using binning as an independent workflow provides better control over the inputs
 
 In contrast, the IWC Metagenome-Assembled Genomes (MAGs) generation workflow (https://iwc.galaxyproject.org/workflow/mags-building-main/) is designed as a comprehensive end-to-end solution. It performs metagenome assembly and multi-tool binning of paired short reads and optional long reads, followed by dereplication and analysis of MAG quality and abundance. This makes it well suited for users who want to generate and evaluate MAGs without requiring a specialized downstream workflow.
 
-The standard binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
+This binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
 
 ## Workflow logic
 
