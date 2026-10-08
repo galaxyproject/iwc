@@ -34,7 +34,7 @@ A dedicated [learning pathway](https://galaxyproject.github.io/training-material
 
 The standard binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
 
-It should also be noted that this workflow can restrict Upstream. For example, it is possible to restrict the workflow so that the User can only use one of the two refinement tools or can restrict it to only one specific refirment tool.
+It should also be noted that this workflow can restrict Upstream. For example, it is possible to restrict the workflow so that the User can only use one of the two refinement tools or can restrict it to only one specific refinement tool.
 
 ## Workflow logic
 
