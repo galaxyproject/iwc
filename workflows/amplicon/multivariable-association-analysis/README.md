@@ -30,6 +30,8 @@ together with the sample metadata.
   data has no positive controls.
 - **Batch-ID column number (0 = none)**: metadata column with the batch
   identifier used by MMUPHin. Enter `0` to skip batch-effect correction.
+- **Decontam threshold**: probability threshold used by Decontam to classify
+  features as contaminants (default `0.1`).
 - **MaAsLin3 model formula**: formula using metadata column names, without the
   leading `~` (for example `disease + age`). See the
   [MaAsLin3 tutorial](https://www.bioconductor.org/packages/release/bioc/vignettes/maaslin3/inst/doc/maaslin3_tutorial.html) for
@@ -38,6 +40,8 @@ together with the sample metadata.
   as `variable,reference`.
 - **MaAsLin3 maximum significance (q-value)**, **normalization**,
   **transformation** and **q-value correction**: passed to both MaAsLin3 runs.
+- **Taxonomic agglomeration rank**: rank used to agglomerate features before
+  the taxonomic-level MaAsLin3 run, for example `Genus` or `Family`.
 
 ## What the workflow does
 
@@ -50,7 +54,7 @@ together with the sample metadata.
    - **MMUPHin batch-effect correction** produces a batch-corrected ASV table
      and phyloseq object for use in any further analysis.
    - **MaAsLin3** is run on the analysis-ready data *before* batch correction,
-     both at ASV level and after agglomeration to genus level. MaAsLin3 models
+     both at ASV level and after agglomeration to the selected taxonomic rank. MaAsLin3 models
      covariates directly, so to account for batch effects, add the batch
      variable to the MaAsLin3 model formula instead of using the MMUPHin
      output.
@@ -63,6 +67,6 @@ together with the sample metadata.
   batch correction).
 - MMUPHin batch-corrected ASV table, phyloseq object and diagnostic plot (only
   when a batch column is provided).
-- MaAsLin3 results at ASV level and at genus level: all results, significant
+- MaAsLin3 results at ASV level and at the selected taxonomic level: all results, significant
   features and a summary plot.
-- Volcano plot of the ASV-level MaAsLin3 results.
+- Volcano plot of the ASV-level MaAsLin3 results (abundance model).
