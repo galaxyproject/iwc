@@ -426,7 +426,7 @@
     "license": "MIT",
     "logo_url": "",
     "name": "Multivariable Association Analysis of Amplicon Data",
-    "readme": "# Multivariable Association Analysis of Amplicon Data\n\nThis workflow performs downstream analysis of processed amplicon sequencing\ndata, starting from a phyloseq object (ASV/OTU abundance table and taxonomy)\nand a matching sample metadata table. It covers sequencing-control QC,\ncontaminant identification and removal with Decontam, batch-effect correction\nwith MMUPHin, taxonomic agglomeration and multivariable association analysis\nwith MaAsLin3.\n\n## Relationship to other IWC amplicon workflows\n\nThis workflow starts where the amplicon processing workflows stop. Reads can\nfirst be processed with workflows such as DADA2 or with tools such as Lotus2\nto obtain a phyloseq object. Use this workflow to analyse that phyloseq object\ntogether with the sample metadata.\n\n## Inputs\n\n- **Phyloseq object**: ASV/OTU abundance table with a 7-rank taxonomy\n  (Kingdom, Phylum, Class, Order, Family, Genus, Species).\n- **Metadata**: tabular sample metadata with a header line. The first column\n  must contain the sample identifiers, matching the sample names in the\n  phyloseq object.\n- **Negative-control column number (0 = none)**: metadata column with binary\n  `0`/`1` values, where `1` marks a negative control sample. Enter `0` if the\n  data has no negative controls; Decontam and the negative-control QC are then\n  skipped.\n- **Positive-control column number (0 = none)**: metadata column with binary\n  `0`/`1` values, where `1` marks a positive control sample. Enter `0` if the\n  data has no positive controls.\n- **Batch-ID column number (0 = none)**: metadata column with the batch\n  identifier used by MMUPHin. Enter `0` to skip batch-effect correction.\n- **MaAsLin3 model formula**: formula using metadata column names, without the\n  leading `~` (for example `disease + age`). See the\n  [MaAsLin3 tutorial](https://www.bioconductor.org/packages/release/bioc/vignettes/maaslin3/inst/doc/maaslin3_tutorial.html) for\n  the syntax.\n- **MaAsLin3 reference level**: reference for a categorical variable, written\n  as `variable,reference`.\n- **MaAsLin3 maximum significance (q-value)**, **normalization**,\n  **transformation** and **q-value correction**: passed to both MaAsLin3 runs.\n\n## What the workflow does\n\n1. Negative controls, if provided, are used by Decontam to identify and remove\n   contaminant ASVs. QC heatmaps and ordinations of the control samples are\n   produced before and after decontamination.\n2. Negative- and positive-control samples are removed, giving the\n   analysis-ready data.\n3. The workflow then splits into two independent branches:\n   - **MMUPHin batch-effect correction** produces a batch-corrected ASV table\n     and phyloseq object for use in any further analysis.\n   - **MaAsLin3** is run on the analysis-ready data *before* batch correction,\n     both at ASV level and after agglomeration to genus level. MaAsLin3 models\n     covariates directly, so to account for batch effects, add the batch\n     variable to the MaAsLin3 model formula instead of using the MMUPHin\n     output.\n\n## Outputs\n\n- Decontam plots and control-QC heatmaps and ordinations (only when the\n  corresponding controls are provided).\n- Analysis-ready phyloseq object (controls and contaminants removed, before\n  batch correction).\n- MMUPHin batch-corrected ASV table, phyloseq object and diagnostic plot (only\n  when a batch column is provided).\n- MaAsLin3 results at ASV level and at genus level: all results, significant\n  features and a summary plot.\n- The ASV-level volcano plot uses the abundance-model associations from the MaAsLin3 result_all table.\n",
+    "readme": "# Multivariable Association Analysis of Amplicon Data\n\nThis workflow performs downstream analysis of processed amplicon sequencing\ndata, starting from a phyloseq object (ASV/OTU abundance table and taxonomy)\nand a matching sample metadata table. It covers sequencing-control QC,\ncontaminant identification and removal with Decontam, batch-effect correction\nwith MMUPHin, taxonomic agglomeration and multivariable association analysis\nwith MaAsLin3.\n\n## Relationship to other IWC amplicon workflows\n\nThis workflow starts where the amplicon processing workflows stop. Reads can\nfirst be processed with workflows such as DADA2 or with tools such as Lotus2\nto obtain a phyloseq object. Use this workflow to analyse that phyloseq object\ntogether with the sample metadata.\n\n## Inputs\n\n- **Phyloseq object**: ASV/OTU abundance table with a 7-rank taxonomy\n  (Kingdom, Phylum, Class, Order, Family, Genus, Species).\n- **Metadata**: tabular sample metadata with a header line. The first column\n  must contain the sample identifiers, matching the sample names in the\n  phyloseq object.\n- **Negative-control column number (0 = none)**: metadata column with binary\n  `0`/`1` values, where `1` marks a negative control sample. Enter `0` if the\n  data has no negative controls; Decontam and the negative-control QC are then\n  skipped.\n- **Positive-control column number (0 = none)**: metadata column with binary\n  `0`/`1` values, where `1` marks a positive control sample. Enter `0` if the\n  data has no positive controls.\n- **Batch-ID column number (0 = none)**: metadata column with the batch\n  identifier used by MMUPHin. Enter `0` to skip batch-effect correction.\n- **Decontam threshold**: probability threshold used by Decontam to classify\n  features as contaminants (default `0.1`).\n- **MaAsLin3 model formula**: formula using metadata column names, without the\n  leading `~` (for example `disease + age`). See the\n  [MaAsLin3 tutorial](https://www.bioconductor.org/packages/release/bioc/vignettes/maaslin3/inst/doc/maaslin3_tutorial.html) for\n  the syntax.\n- **MaAsLin3 reference level**: reference for a categorical variable, written\n  as `variable,reference`.\n- **MaAsLin3 maximum significance (q-value)**, **normalization**,\n  **transformation** and **q-value correction**: passed to both MaAsLin3 runs.\n- **Taxonomic agglomeration rank**: rank used to agglomerate features before\n  the taxonomic-level MaAsLin3 run, for example `Genus` or `Family`.\n\n## What the workflow does\n\n1. Negative controls, if provided, are used by Decontam to identify and remove\n   contaminant ASVs. QC heatmaps and ordinations of the control samples are\n   produced before and after decontamination.\n2. Negative- and positive-control samples are removed, giving the\n   analysis-ready data.\n3. The workflow then splits into two independent branches:\n   - **MMUPHin batch-effect correction** produces a batch-corrected ASV table\n     and phyloseq object for use in any further analysis.\n   - **MaAsLin3** is run on the analysis-ready data *before* batch correction,\n     both at ASV level and after agglomeration to the selected taxonomic rank. MaAsLin3 models\n     covariates directly, so to account for batch effects, add the batch\n     variable to the MaAsLin3 model formula instead of using the MMUPHin\n     output.\n\n## Outputs\n\n- Decontam plots and control-QC heatmaps and ordinations (only when the\n  corresponding controls are provided).\n- Analysis-ready phyloseq object (controls and contaminants removed, before\n  batch correction).\n- MMUPHin batch-corrected ASV table, phyloseq object and diagnostic plot (only\n  when a batch column is provided).\n- MaAsLin3 results at ASV level and at the selected taxonomic level: all results, significant\n  features and a summary plot.\n- Volcano plot of the ASV-level MaAsLin3 results (abundance model).\n",
     "report": {
         "markdown": "# Multivariable Association Analysis of Amplicon Data\n\n## Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Key outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow overview\n```galaxy\nworkflow_display()\n```\n\n**Design note:** MMUPHin batch correction is a separate output branch. MaAsLin3 intentionally uses the control-filtered data before MMUPHin correction.\n"
     },
@@ -3114,7 +3114,7 @@
                 }
             },
             "inputs": [],
-            "label": "Taxonomic agglomeration \u2014 (before MMUPHin correction)",
+            "label": "Taxonomic agglomeration (before MMUPHin correction)",
             "name": "Phyloseq Taxonomic Agglomeration",
             "outputs": [
                 {
@@ -3201,22 +3201,22 @@
             "workflow_outputs": []
         },
         "52": {
-            "annotation": "Retains abundance-model associations from the MaAsLin3 result_all table for ASV-level volcano plot visualization.",
-            "content_id": "Filter1",
+            "annotation": "Keeps the header and the abundance-model rows of the MaAsLin3 result_all table for the ASV-level volcano plot. MaAsLin3 writes quoted values, so quotes are stripped before comparing the model column.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
             "errors": null,
             "id": 52,
             "input_connections": {
-                "input": {
+                "infile": {
                     "id": 49,
                     "output_name": "result_all"
                 }
             },
             "inputs": [],
             "label": "Filter MaAsLin3 results \u2014 abundance model",
-            "name": "Filter",
+            "name": "Text reformatting",
             "outputs": [
                 {
-                    "name": "out_file1",
+                    "name": "outfile",
                     "type": "input"
                 }
             ],
@@ -3224,15 +3224,27 @@
                 "left": 6829.944902115057,
                 "top": 2617.1189791960173
             },
-            "post_job_actions": {},
-            "tool_id": "Filter1",
-            "tool_state": "{\"cond\": \"c13 == 'abundance'\", \"header_lines\": \"1\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "post_job_actions": {
+                "HideDatasetActionoutfile": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "outfile"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_state": "{\"code\": \"{ model = $13; gsub(/\\\"/, \\\"\\\", model) }\\nNR == 1 || model == \\\"abundance\\\"\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.1.1",
+            "tool_version": "9.5+galaxy3",
             "type": "tool",
             "uuid": "c9a5baab-b429-4113-b2ce-2f19cee26604",
             "when": null,
-            "workflow_outputs": []
+            "workflow_outputs": [],
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }
         },
         "53": {
             "annotation": "",
@@ -3468,7 +3480,7 @@
             "input_connections": {
                 "input": {
                     "id": 52,
-                    "output_name": "out_file1"
+                    "output_name": "outfile"
                 },
                 "signif_thresh": {
                     "id": 8,
