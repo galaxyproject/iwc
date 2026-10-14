@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.3] - 2026-10-14
+
+### Tool update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.6+galaxy0` to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3` to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_slopbed/2.31.1+galaxy0` to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_slopbed/2.31.1+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0` to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/4.0.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1` to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
+
+### Manual changes
+- New QC with ATACseqQC: TSS enrichment plot is added to MultiQC and TSS enrichment score computed on the first chromosome of the BAM from a GTF provided by the user.
+- The fragment size distribution is now normalized to more easily compare between samples with different sequencing depth.
+
+### Other info
+- The change of bedtools implies that the proposed genomes were only the 'dbkey' and now are any fasta for which a `fasta_index` has been computed. If you favorite genome disappears contact your galaxy administrator.
+
 ## [2.2] - 2026-07-13
 
 ### Automatic update
