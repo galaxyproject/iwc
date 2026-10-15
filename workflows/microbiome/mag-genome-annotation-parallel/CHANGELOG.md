@@ -3,7 +3,10 @@
 ## [0.6] - 2026-10-15
 
 ### Changed
-- Modify two of the default parameters for bakta. Bakta now always operates in metagenome mode, and the input header is retained for the output.
+- Bakta now runs in metagenome mode (`--meta`) and keeps the original contig headers (`--keep-contig-headers`), so contig IDs in the Bakta outputs match those of the input MAGs and the other annotation tools.
+- Updated `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2` to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy3`; earlier wrapper versions ignored the metagenome mode setting.
+- Removed the Bakta circular genome plot output, which Bakta does not produce in metagenome mode.
+- Added the Bakta GFF3 annotation as a workflow output.
 
 ## [0.5] - 2026-09-07
 
