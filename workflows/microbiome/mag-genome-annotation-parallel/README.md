@@ -61,6 +61,8 @@ All outputs are consolidated into a single MultiQC report providing a global ove
 ## Input Requirements
 MAG assemblies (FASTA format) provided as a collection in Galaxy.
 
+Bakta runs in metagenome mode and keeps the original contig headers, so contig IDs in the Bakta outputs match the input FASTA files. Contig IDs must therefore be unique within each MAG.
+
 ## Expected Outputs
 
 - Per-MAG annotation files
