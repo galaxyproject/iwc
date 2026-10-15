@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6] - 2026-10-15
+
+### Changed
+- Modify two of the default parameters for bakta. Bakta now always operates in metagenome mode, and the input header is retained for the output.
+
 ## [0.5] - 2026-09-07
 
 ### Automatic update
