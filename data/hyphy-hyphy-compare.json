@@ -132,7 +132,7 @@
             },
             "3": {
                 "annotation": "Clean Foreground Sequences List",
-                "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                 "errors": null,
                 "id": 3,
                 "input_connections": {
@@ -155,16 +155,16 @@
                     "top": 418.1484375
                 },
                 "post_job_actions": {},
-                "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+                "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
                 "tool_shed_repository": {
-                    "changeset_revision": "ab83aa685821",
+                    "changeset_revision": "30b60202d990",
                     "name": "text_processing",
                     "owner": "bgruening",
                     "tool_shed": "toolshed.g2.bx.psu.edu"
                 },
                 "tool_state": "{\"code\": \"{\\n    gsub(/^[[:space:]]+|[[:space:]]+$/, \\\"\\\")\\n    if (length($0)) {                         \\n        gsub(/[^0-9A-Za-z_]/, \\\"_\\\")       \\n        print\\n    }\\n}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                 "tool_uuid": null,
-                "tool_version": "9.5+galaxy3",
+                "tool_version": "9.11+galaxy0",
                 "type": "tool",
                 "uuid": "0b8654fe-35ff-44ba-ad46-d55cc369ea7b",
                 "when": null,
@@ -401,9 +401,9 @@
             }
         },
         "tags": [],
-        "uuid": "9357601d-c7cf-4341-bf87-a5b0fca7e57b",
+        "uuid": "68b38c63-ac14-47d2-aa64-40a6742ad09f",
         "version": 1,
-        "release": "0.2"
+        "release": "0.3"
     },
     "workflow_job_input": {
         "Codon-aware alignment(s)": {
@@ -434,10 +434,10 @@
         }
     },
     "readme": "# HyPhy Workflows for Comparative Genomics\n\nThis directory contains Galaxy workflows for running HyPhy (Hypothesis Testing using Phylogenies) selection analysis pipelines on coding sequences.\n\n## Workflows\n\n> **Current scope**: These workflow are tuned for viral analyses. Genes containing internal stop codons or ongoing recombination may produce failures or, worse, yield misleading HyPhy estimates. Treat bacterial/eukaryotic runs with caution unless you have validated inputs.\n\n### 1. CAPHEINE: Combined HyPhy Core and Compare (`capheine-core-and-compare.ga`)\n\nThe main workflow that orchestrates the complete HyPhy pipeline, including codon-aware preprocessing and optional branch-comparison analyses. Inspired by the [veg/capheine](https://github.com/veg/capheine) Nextflow implementation, version 1.1.0.\n\n**Inputs:**\n- **Reference GTF** (required): GTF annotation for the reference genome\n- **Reference Fasta** (required): Genome FASTA for the reference assembly\n- **Unaligned sequences** (required): List collection of FASTA files, one per sample\n- **Foreground regexp** (optional): Regular expression to match foreground sequence names for branch labeling\n- **Foreground list** (optional): Dataset with cleaned sequence identifiers for foreground branches\n\n**Behavior:**\n- If neither regex nor list is provided \u2192 runs Core workflow only\n- If regex is provided \u2192 derives foreground set from matches and runs Compare module\n- If only list is provided \u2192 uses it directly for Compare module\n- If both are provided \u2192 regex takes precedence, list is ignored\n\n**Outputs:**\n\n*Core outputs (always produced):*\n- Codon-aware alignments (collection, FASTA)\n- Gene trees (collection, Newick)\n- HyPhy MEME results (collection, JSON)\n- HyPhy PRIME results (collection, JSON)\n- HyPhy BUSTED results (collection, JSON)\n- HyPhy FEL results (collection, JSON)\n\n*Compare outputs (when foreground info provided):*\n- Labeled trees (collection, Newick)\n- HyPhy CFEL results (collection, JSON)\n- HyPhy RELAX results (collection, JSON)\n\n### 2. HyPhy Core (`hyphy-core.ga`)\n\nSubworkflow for codon-aware preprocessing and core selection analyses.\n\n### 3. HyPhy Compare (`hyphy-compare.ga`)\n\nSubworkflow for branch-comparison analyses (CFEL and RELAX).\n\n### 4. HyPhy Preprocessing (`hyphy-preprocessing.ga`)\n\nSubworkflow for sequence cleanup and codon-aware alignment.\n\n## Test Data\n\nThe `test-data/` directory contains:\n- `denv1_genome.fasta`: Reference genome FASTA for Dengue virus 1 (NC_001477.1)\n- `denv1_ref.gtf`: GTF annotation for two DENV1 CDS regions (capsid protein C and prM; coords 95\u2013394 and 437\u2013934)\n- `denv1_ref_cds.fasta`: Pre-extracted CDS sequences (retained for reference; not used as a workflow input in v0.2+)\n- `foreground_seqs_list.txt`: Example foreground sequence identifiers\n- `unaligned_seqs/`: Directory with 39 unaligned FASTA files for testing\n\n## Running Tests\n\nTests are defined in `capheine-core-and-compare-tests.yml` with four scenarios:\n1. Core only (reference GTF + reference Fasta + unaligned sequences)\n2. Core + Compare with regex (no foreground list)\n3. Core + Compare with foreground list (no regex)\n4. Core + Compare with all inputs (regex takes precedence)\n\n## References\n\n- HyPhy: [https://github.com/veg/hyphy](https://github.com/veg/hyphy)\n- CAPHEINE Nextflow: [https://github.com/veg/capheine](https://github.com/veg/capheine)\n",
-    "changelog": "# Changelog\n\n## [0.2] - 2026-07-02\n\n### Changed\n- Replaced single `reference cds` input with `reference GTF` + `reference Fasta` inputs across all HyPhy workflows\n  - Enables automated CDS extraction from annotated reference genomes\n  - Aligns workflow parameters with BRC Analytics `ASSEMBLY_FASTA_URL` and `GENE_MODEL_URL` variables\n- Updated CAPHEINE, HyPhy Core, HyPhy Compare, and HyPhy Preprocessing to version 0.2\n- Replaced `denv1_ref_cds.fasta` with `denv1_genome.fasta` (NC_001477.1 full genome) as the reference FASTA test input\n- Added `denv1_ref.gtf` with coordinates for two DENV1 CDS regions (capsid protein C and prM)\n- Updated test parameter files to use genome FASTA + GTF inputs\n\n## [0.1] - 2026-02-26\n\n### Added\n- Initial release of HyPhy workflows for comparative genomics\n- CAPHEINE: Combined HyPhy Core and Compare workflow\n  - Orchestrates complete HyPhy pipeline with codon-aware preprocessing\n  - Optional branch-comparison analyses (CFEL and RELAX)\n  - Supports foreground/background branch labeling via regex or explicit list\n- HyPhy Core subworkflow\n  - Codon-aware preprocessing and alignment\n  - Core selection analyses (MEME, PRIME, BUSTED, FEL)\n- HyPhy Compare subworkflow\n  - Branch-comparison analyses (CFEL and RELAX)\n- HyPhy Preprocessing subworkflow\n  - Sequence cleanup and codon-aware alignment\n- Comprehensive test suite with 4 scenarios for CAPHEINE workflow\n- Test data including DENV1 reference CDS and 39 unaligned sequences\n",
+    "changelog": "# Changelog\n\n## [0.3] - 2026-08-24\n\n### Automatic update\n- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`\n- `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/3.1.3+galaxy1`\n- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`\n- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sorted_uniq/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sorted_uniq/9.11+galaxy0`\n- `toolshed.g2.bx.psu.edu/repos/iuc/drhip/drhip/0.1.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/drhip/drhip/0.1.5+galaxy0`\n\n## [0.2] - 2026-07-02\n\n### Changed\n- Replaced single `reference cds` input with `reference GTF` + `reference Fasta` inputs across all HyPhy workflows\n  - Enables automated CDS extraction from annotated reference genomes\n  - Aligns workflow parameters with BRC Analytics `ASSEMBLY_FASTA_URL` and `GENE_MODEL_URL` variables\n- Updated CAPHEINE, HyPhy Core, HyPhy Compare, and HyPhy Preprocessing to version 0.2\n- Replaced `denv1_ref_cds.fasta` with `denv1_genome.fasta` (NC_001477.1 full genome) as the reference FASTA test input\n- Added `denv1_ref.gtf` with coordinates for two DENV1 CDS regions (capsid protein C and prM)\n- Updated test parameter files to use genome FASTA + GTF inputs\n\n## [0.1] - 2026-02-26\n\n### Added\n- Initial release of HyPhy workflows for comparative genomics\n- CAPHEINE: Combined HyPhy Core and Compare workflow\n  - Orchestrates complete HyPhy pipeline with codon-aware preprocessing\n  - Optional branch-comparison analyses (CFEL and RELAX)\n  - Supports foreground/background branch labeling via regex or explicit list\n- HyPhy Core subworkflow\n  - Codon-aware preprocessing and alignment\n  - Core selection analyses (MEME, PRIME, BUSTED, FEL)\n- HyPhy Compare subworkflow\n  - Branch-comparison analyses (CFEL and RELAX)\n- HyPhy Preprocessing subworkflow\n  - Sequence cleanup and codon-aware alignment\n- Comprehensive test suite with 4 scenarios for CAPHEINE workflow\n- Test data including DENV1 reference CDS and 39 unaligned sequences\n",
     "diagrams": "# Workflow diagrams\n\n## HyPhy: Compare\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Codon-aware alignment(s)\"]@{ shape: docs }\n1[\"\u2139\ufe0f Phylogenetic tree(s)\"]@{ shape: docs }\n2[\"\u2139\ufe0f Foreground Sequences List\"]@{ shape: doc }\n3[\"Clean Foreground Sequences List\"]@{ shape: process }\n2 --> 3\n4[\"Label Foreground Branches\"]@{ shape: process }\n1 --> 4\n3 --> 4\n5[\"Label Reference Branches\"]@{ shape: process }\n4 --> 5\n3 --> 5\n6[\"RELAX\"]@{ shape: process }\n0 --> 6\n5 --> 6\n7[\"Contrast-FEL\"]@{ shape: process }\n0 --> 7\n5 --> 7\n```\n",
     "diagram_svg": null,
-    "updated": "2026-07-02T00:00:00",
+    "updated": "2026-08-24T00:00:00",
     "trsID": "#workflow/github.com/iwc-workflows/hyphy/hyphy-compare",
     "iwcID": "hyphy-hyphy-compare",
     "repoPath": "./workflows/comparative_genomics/hyphy",
