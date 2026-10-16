@@ -1,0 +1,180 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import IWCHeader from "../components/IWCHeader.astro";
+import WorkflowGlyph from "../components/WorkflowGlyph.vue";
+import { loadManifest, getAllWorkflows } from "../utils/manifest";
+import { glyphDomain, GLYPH_DOMAINS } from "../utils/workflowGlyph";
+import type { Workflow } from "../models/workflow";
+
+const workflows: Workflow[] = getAllWorkflows(await loadManifest());
+const groups = GLYPH_DOMAINS.map((d) => ({
+    domain: d,
+    workflows: workflows
+        .filter((w) => glyphDomain(w.collections).key === d.key)
+        .sort((a, b) => a.definition.name.localeCompare(b.definition.name)),
+})).filter((g) => g.workflows.length);
+
+const showcaseNames = [
+    "BigWig Replicates Averaging Workflow",
+    "BREW3R",
+    "Gene-based Pathogen Identification",
+    "K-mer profiling and reads statistics VGP1",
+    "MGnify's amplicon pipeline v5.0 - rRNA prediction",
+    "Single-Cell RNA-seq Analysis: Scanpy Preprocessing",
+];
+const showcase = showcaseNames
+    .map((n) => workflows.find((w) => w.definition.name.startsWith(n.slice(0, 40))))
+    .filter((w): w is Workflow => Boolean(w));
+---
+
+<BaseLayout title="Workflow glyphs (spike)">
+    <IWCHeader />
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+        <h1 class="text-3xl font-bold text-ebony-clay-900 border-l-4 border-hokey-pokey-500 pl-3 -ml-3 mb-2">
+            Workflow glyphs
+        </h1>
+        <p class="text-chicago-700 max-w-3xl mb-6">
+            Each glyph is drawn from the workflow's own step graph. Inputs sit on the left (or at the centre of a
+            bloom), and every column is one stage of the pipeline. Branches are where the workflow fans out, and gold
+            marks the steps that produce the workflow's outputs. The tint groups related collections.
+        </p>
+
+        <section class="mb-10">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-3">Legend</h2>
+            <ul class="flex flex-wrap gap-x-8 gap-y-2 text-sm text-chicago-700">
+                <li>
+                    <span class="inline-block w-3 h-3 rounded-full bg-ebony-clay-300 align-middle mr-1"></span> dataset input
+                </li>
+                <li>
+                    <span
+                        class="inline-block w-3 h-3 rounded-full bg-ebony-clay-300 align-middle mr-1 shadow-[-3px_3px_0_rgba(162,169,194,0.45)]"
+                    ></span> collection input
+                </li>
+                <li>
+                    <span class="inline-block w-2 h-2 rounded-full bg-ebony-clay-300 align-middle mr-1"></span> tool step
+                </li>
+                <li>
+                    <span class="inline-block w-3 h-3 rounded-full border-2 border-ebony-clay-300 align-middle mr-1"
+                    ></span> subworkflow
+                </li>
+                <li>
+                    <span class="inline-block w-3 h-3 rounded-full bg-gold align-middle mr-1"></span> produces a workflow
+                    output
+                </li>
+            </ul>
+            <div class="flex flex-wrap gap-3 mt-4">
+                {
+                    GLYPH_DOMAINS.filter((d) => d.key !== "general").map((d) => (
+                        <span
+                            class="text-xs px-2 py-1 rounded text-white"
+                            style={`background: linear-gradient(135deg, ${d.from}, ${d.to})`}>
+                            {d.label}
+                        </span>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">Simple to complex</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {
+                    showcase.map((w) => (
+                        <figure class="flex flex-col items-center gap-2">
+                            <WorkflowGlyph
+                                steps={w.definition.steps}
+                                collections={w.collections}
+                                size={128}
+                                title={w.definition.name}
+                            />
+                            <WorkflowGlyph
+                                steps={w.definition.steps}
+                                collections={w.collections}
+                                size={128}
+                                variant="bloom"
+                                title={w.definition.name}
+                            />
+                            <figcaption class="text-xs text-center text-chicago-700 leading-tight">
+                                {w.definition.name}
+                            </figcaption>
+                        </figure>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">At card sizes (64 / 40 / 32 px)</h2>
+            <div class="flex flex-wrap gap-6">
+                {
+                    showcase.map((w) => (
+                        <div class="flex items-end gap-2">
+                            <WorkflowGlyph steps={w.definition.steps} collections={w.collections} size={64} />
+                            <WorkflowGlyph steps={w.definition.steps} collections={w.collections} size={40} />
+                            <WorkflowGlyph steps={w.definition.steps} collections={w.collections} size={32} />
+                            <WorkflowGlyph
+                                steps={w.definition.steps}
+                                collections={w.collections}
+                                size={40}
+                                variant="bloom"
+                            />
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">In a card (mock-up)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {
+                    showcase.map((w) => (
+                        <div class="bg-white border border-ebony-clay-100 rounded-lg shadow-sm flex flex-col">
+                            <div class="p-3 flex items-start gap-3">
+                                <WorkflowGlyph
+                                    steps={w.definition.steps}
+                                    collections={w.collections}
+                                    size={44}
+                                    title={w.definition.name}
+                                />
+                                <h3 class="font-bold text-lg text-ebony-clay-900 leading-snug">{w.definition.name}</h3>
+                            </div>
+                            <p class="px-3 pb-3 text-sm text-chicago-700 line-clamp-3">{w.definition.annotation}</p>
+                            <div class="mt-auto p-3 border-t border-ebony-clay-100 text-xs text-chicago-500">
+                                {w.collections.join(", ")}
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        {
+            groups.map((g) => (
+                <section class="mb-10">
+                    <h2 class="font-bold text-lg text-ebony-clay-900 mb-3">{g.domain.label}</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {g.workflows.map((w) => (
+                            <div class="flex items-center gap-3 bg-white border border-ebony-clay-100 rounded-lg p-2 shadow-sm">
+                                <WorkflowGlyph
+                                    steps={w.definition.steps}
+                                    collections={w.collections}
+                                    size={56}
+                                    title={w.definition.name}
+                                />
+                                <WorkflowGlyph
+                                    steps={w.definition.steps}
+                                    collections={w.collections}
+                                    size={56}
+                                    variant="bloom"
+                                    title={w.definition.name}
+                                />
+                                <span class="text-sm text-ebony-clay-800 leading-snug">{w.definition.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            ))
+        }
+    </main>
+</BaseLayout>
