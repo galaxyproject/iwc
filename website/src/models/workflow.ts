@@ -19,6 +19,19 @@ export interface LightweightWorkflow {
     };
 }
 
+// Search index entry - flat structure loaded from search-index.json
+export interface SearchIndexEntry {
+    iwcID: string;
+    trsID: string;
+    uuid: string;
+    name: string;
+    annotation: string;
+    tags: string[];
+    release: string;
+    collections: string[];
+    updated: string | null;
+}
+
 // Define the interface for a single workflow
 export interface Workflow {
     name: string;
@@ -26,15 +39,17 @@ export interface Workflow {
     publish: boolean;
     primaryDescriptorPath: string;
     testParameterFiles: string[];
-    tests: any[]; // replace with actual interface from openapi schema
+    tests: unknown[]; // TODO: replace with actual interface from openapi schema
     authors: Author[];
     definition: WorkflowDefinition;
     readme: string;
     changelog: string;
     updated: string;
     diagrams: string;
+    diagram_svg?: string;
     trsID: string;
     iwcID: string;
+    repoPath: string;
     categories: string[];
     collections: string[];
     doi?: string;
@@ -73,7 +88,7 @@ interface Creator {
 interface Step {
     annotation: string;
     content_id: string | null;
-    errors: any | null;
+    errors: unknown | null;
     id: number;
     input_connections: { [key: string]: InputConnection };
     inputs: Input[];

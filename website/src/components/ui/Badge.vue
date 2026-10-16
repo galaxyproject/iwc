@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from "vue";
+import { type HTMLAttributes } from "vue";
 import { type BadgeVariantProps, badgeVariants } from "./badge-variants";
 import { cn } from "@/lib/utils";
 

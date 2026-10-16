@@ -17,7 +17,7 @@
     "format-version": "0.1",
     "help": "## Input datasets\n\n- **Paired collection of sequencing data**: a list of pairs of sequencing datasets, one fw-/rv-reads pair per sequenced isolate\n- **Fasta reference genome**: a suitable reference genome for your virus provided in FASTA format\n- **Reference annotation**: genome annotations of the reference sequence in GTF format. **Please make sure it is matching your reference genome sequence!**\n- **Primer scheme** (optional): If provided, indicates ampliconic data and will trigger primer trimming and removal of reads that extend beyond amplicon boundaries.\n  **Please make sure the scheme matches your reference sequence and that the format of the dataset is set to bed!**\n\n## Input parameters\n\n- **Supporting read fraction to call variant**: This sets the lower threshold for the fraction of variannt-supporting reads needed at a site to call that variant.\n\n  The value can be set to a floating point number between 0.05 (very sensitive calling) and 0.25 (more noise-resistant calling, the default).\n\n  This setting also affects the frequency threshold used for consensus building, which will be set to 0.95 minus the configured value, i.e. with the default setting of 0.25, the most frequent bases at each site will be added up until their combined fraction reaches 0.95 - 0.25 = 0.7 and the IUPAC ambiguity code representing all contributing bases will be used in the consensus.\n  With a setting of 0.05, bases will be added up until they reach a combined fraction of 0.95 - 0.05 = 0.9, i.e. IUPAC ambiguity codes will get incorporated with a higher chance.\n  In summary, with a higher setting of this parameter the workflow will generate less (but more reliable) variant calls and a cleaner consensus with less ambiguity codes.\n \n  **Minimum quality score to consider base for variant calling**: The workflow default for this parameter is 20 and it will be applied to both variant calling and consensus building.\n\n## Outputs:\n\n- **Processed mapped reads (filtered and realigned)**: the filtered and realigned mapped reads in BAM format that serve as input for variant calling and consensus building for **non-ampliconic** data\n- **Processed mapped reads (filtered and realigned, primers trimmed)**: the filtered, realigned and primer-trimmed mapped reads in BAM format that serve as input for variant calling and consensus building for **ampliconic** data\n- **SnpEff-annotated variants**: a collection of SnpEff-annotated variant calls in vcf format, one dataset per sample in the batch\n- **Combined variant report for all samples**: a concatenated, flat tabular report of variants and their annotations from all samples\n- **Per-sample consensus genomes**: a collection of consensus sequences in Fasta format, one dataset per sample\n- **Combined consensus genomes for all samples**: the consensus sequences of all samples concatenated in multi-Fasta format\n- **Quality control report**: report of quality control results from fastp, samtools stats (on the results of mapping with bwa-mem) and Qualimap BamQC (on the filtered mapped reads) aggregated with MultiQC\n\n## Known issues and limitations\n\n- Non-matching reference genome sequence, genome annotation and/or primer scheme\n\n  It is critical for analysis results that the sequence assumed in the genome annotation and, if provided, in the primer scheme input is the same as the reference sequence. Violation of this condition can lead to failures of the workflow run at the SnpEff build or ivar trim (for ampliconic data) steps, but can also cause misannotations of variant effects, wrong primer trimming or inappropriate read elimination before variant calling and consensus building in seemingly successful workflow runs.\n\n- Failing pimer trimming for ampliconic data\n\n  This is usually caused by one of the following issues with your **primer scheme input**:\n  \n  - The format of the primer scheme dataset in your history is not set to **bed**, but to e.g. *interval*.\n  \n    You either selected the wrong format when uploading the data, or you had Galaxy autodetect the format and it wasn't recognized as bed.\n    Please change the dataset format manually in this case and rerun the WF.\n\n  - The primer scheme might not be fully parseable by Galaxy's ivar trim wrapper.\n  \n    In particular, the tool applies the regular expression pattern:\n    `.*_(?P<amplicon_number>\\d+).*_(?P<primer_orientation>L(?:EFT)?|R(?:IGHT)?)` to the primer names in column 4 of the primer scheme to deduce amplicon names and primer orientation. This means that it will be able to parse primer names like the following correctly:\n    ``nCoV-2019_1_LEFT`` (parsed as forward primer of amplicon 1), ``400_2_out_R`` (parsed as reverse primer of amplicon 2), ``QIAseq_163-2_LEFT`` (parsed as forward primer of amplicon 163) or `177e6ebb_0_LEFT_0` (parsed as one of several alternative forward primers of amplicon 177e6ebb),\n    but more exotic names might fail parsing.\n    \n    If parsing of the primer names is the issue, then you need to edit the names on column 4 of your primer scheme file to pass the regular expression pattern.\n\n- Failure to annotate all translation products in complex viral genes\n\n  This generic workflow can currently, at the annotation step, not handle all ways in which your virus may produce several translation products from a single viral gene. Alternative translation products resulting from ribosomal slippage or polymerase stuttering will, for example, not be annotated in the *SnpEff-annotated variants* and the *Combined variant report for all samples* outputs of the workflow.\n  For other translation products stemming from, for example, the use of alternative start codons or alternative ribosomal entry points, successful annotation will depend on the details of how those products are represented in your *Reference annotation* input.\n\n  When running the workflow for the first time with a new *Reference annotation*, always check carefully the predicted effects on genes, transcripts and proteins in the *SnpEff-annotated variants* and the *Combined variant report for all samples* outputs to understand virus and annotation-file specific problems and limitations before basing your interpretation on those reports.",
     "license": "AGPL-3.0-or-later",
-    "release": "0.1",
+    "release": "0.2",
     "name": "Variant calling and consensus construction from paired end short read data of non-segmented viral genomes",
     "readme": "# Variant calling and consensus sequence construction from paired-end sequencing data of simple non-segmented viruses\n\nThis workflow performs variant calling and consensus sequence generation for batches of Illumina PE sequenced viruses with uncomplicated and stable genome structure (like e.g. Morbilliviruses).\nIt can handle both ampliconic and non-ampliconic data. If a primer scheme is provided as optional input, this is taken to indicate ampliconic sequencing data and the scheme will be used as the basis for trimming of primer sequences from mapped reads and for the exclusion of reads mapping beyond amplicon boundaries. Without a primer scheme non-ampliconic data is assumed.\n\nIt uses:\n- **fastp** for sequenced reads pre-processing,\n- **bwa mem** for mapping\n- **samtools view** to keep only reads mapped in a proper pair with a mapping quality > 20\n- **lofreq viterbi** to realign mapped reads around indels\n- **ivar trim** for trimming of primer sequences from mapped reads and read filtering; gets skipped if no *\"Primer scheme\"* input is provided\n- **ivar call** and **ivar consensus** for parallel calling of variants and consensus sequence generation\n- **SnpEff** for annotating variant calls with their functional genomic effects on the features declared in the *\"Reference annotation\"*\n- **SnipSift** for extracting information from SnpEff annotated VCFs into tabular variant reports\n- **fastp**, **samtools stats**, **Qualimap bamqc** and **MultiQC** for reporting on quality control results\n",
     "report": {
@@ -200,7 +200,7 @@
         },
         "6": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3",
             "errors": null,
             "id": 6,
             "input_connections": {
@@ -252,15 +252,15 @@
                     "output_name": "report_json"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3",
             "tool_shed_repository": {
-                "changeset_revision": "281054a26e41",
+                "changeset_revision": "f875da9d433c",
                 "name": "fastp",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"filter_options\": {\"quality_filtering_options\": {\"disable_quality_filtering\": false, \"qualified_quality_phred\": null, \"unqualified_percent_limit\": null, \"n_base_limit\": null}, \"length_filtering_options\": {\"disable_length_filtering\": false, \"length_required\": null, \"length_limit\": null}, \"low_complexity_filter\": {\"enable_low_complexity_filter\": false, \"complexity_threshold\": null}}, \"output_options\": {\"report_html\": true, \"report_json\": true}, \"overrepresented_sequence_analysis\": {\"overrepresentation_analysis\": false, \"overrepresentation_sampling\": null}, \"read_mod_options\": {\"polyg_tail_trimming\": {\"trimming_select\": \"\", \"__current_case__\": 1, \"poly_g_min_len\": null}, \"polyx_tail_trimming\": {\"polyx_trimming_select\": \"\", \"__current_case__\": 1}, \"umi_processing\": {\"umi\": false, \"umi_loc\": \"\", \"umi_len\": null, \"umi_prefix\": \"\"}, \"cutting_by_quality_options\": {\"cut_by_quality5\": false, \"cut_by_quality3\": false, \"cut_window_size\": null, \"cut_mean_quality\": null}, \"base_correction_options\": {\"correction\": false}}, \"single_paired\": {\"single_paired_selector\": \"paired_collection\", \"__current_case__\": 1, \"paired_input\": {\"__class__\": \"ConnectedValue\"}, \"merge_reads\": {\"merge\": \"\", \"__current_case__\": 1}, \"adapter_trimming_options\": {\"disable_adapter_trimming\": false, \"adapter_sequence1\": \"\", \"adapter_sequence2\": \"\", \"detect_adapter_for_pe\": false}, \"global_trimming_options\": {\"trim_front1\": null, \"trim_tail1\": null, \"trim_front2\": null, \"trim_tail2\": null}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "1.0.1+galaxy0",
+            "tool_state": "{\"duplicated_reads\": {\"handling_options\": {\"eval_dups\": \"--dont_eval_duplication\", \"__current_case__\": 0}}, \"filter_options\": {\"quality_filtering_options\": {\"disable_quality_filtering\": false, \"qualified_quality_phred\": null, \"unqualified_percent_limit\": null, \"n_base_limit\": null}, \"length_filtering_options\": {\"disable_length_filtering\": false, \"length_required\": null, \"length_limit\": null}, \"low_complexity_filter\": {\"enable_low_complexity_filter\": false, \"complexity_threshold\": null}}, \"output_options\": {\"report_html\": true, \"report_json\": true}, \"overrepresented_sequence_analysis\": {\"overrepresentation_analysis\": false, \"overrepresentation_sampling\": null}, \"read_mod_options\": {\"polyg_tail_trimming\": {\"trimming_select\": \"\", \"__current_case__\": 1, \"poly_g_min_len\": null}, \"polyx_tail_trimming\": {\"polyx_trimming_select\": \"\", \"__current_case__\": 1}, \"umi_processing\": {\"umi\": false, \"umi_loc\": \"\", \"umi_len\": null, \"umi_prefix\": \"\"}, \"cutting_by_quality_options\": {\"cut_front_select\": {\"cut_front\": \"\", \"__current_case__\": 1}, \"cut_tail_select\": {\"cut_tail\": \"\", \"__current_case__\": 1}, \"cut_right_select\": {\"cut_right\": \"\", \"__current_case__\": 1}}, \"base_correction_options\": {\"correction\": false}}, \"single_paired\": {\"single_paired_selector\": \"paired_collection\", \"__current_case__\": 1, \"paired_input\": {\"__class__\": \"RuntimeValue\"}, \"merge_reads\": {\"merge\": \"\", \"__current_case__\": 1}, \"adapter_trimming_options\": {\"disable_adapter_trimming\": false, \"adapter_sequence1\": \"\", \"adapter_sequence2\": \"\", \"detect_adapter_for_pe\": false}, \"global_trimming_options\": {\"trim_front1\": null, \"trim_tail1\": null, \"trim_front2\": null, \"trim_tail2\": null}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.1+galaxy3",
             "type": "tool",
             "uuid": "95d5a64f-6646-46a2-9b15-c4320d58aa4b",
             "when": null,
@@ -268,7 +268,7 @@
         },
         "7": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff_build_gb/5.2+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff_build_gb/5.2+galaxy1",
             "errors": null,
             "id": 7,
             "input_connections": {
@@ -300,15 +300,15 @@
                 "top": 275.9659417336482
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff_build_gb/5.2+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff_build_gb/5.2+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "c7275bd8b4d6",
+                "changeset_revision": "3aae4f16ac9e",
                 "name": "snpeff",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"codon_table\": \"Standard\", \"genome_version\": \"MeV\", \"input_type\": {\"input_type_selector\": \"gtf\", \"__current_case__\": 2, \"input\": {\"__class__\": \"ConnectedValue\"}, \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1, \"input_fasta\": {\"__class__\": \"ConnectedValue\"}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "5.2+galaxy0",
+            "tool_state": "{\"codon_table\": \"Standard\", \"genome_version\": \"viralDB\", \"input_type\": {\"input_type_selector\": \"gtf\", \"__current_case__\": 2, \"input\": {\"__class__\": \"RuntimeValue\"}, \"reference_source\": {\"reference_source_selector\": \"history\", \"__current_case__\": 1, \"input_fasta\": {\"__class__\": \"RuntimeValue\"}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "5.2+galaxy1",
             "type": "tool",
             "uuid": "1ad16193-7a1e-4054-96ec-09dc5ffec4fd",
             "when": null,
@@ -508,16 +508,29 @@
         },
         "12": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.7",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.8",
             "errors": null,
             "id": 12,
             "input_connections": {
                 "input": {
                     "id": 11,
                     "output_name": "bam_output"
+                },
+                "addref_cond|ref": {
+                    "id": 2,
+                    "output_name": "output"
                 }
             },
-            "inputs": [],
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Samtools stats",
+                    "name": "addref_cond"
+                },
+                {
+                    "description": "runtime parameter for tool Samtools stats",
+                    "name": "input"
+                }
+            ],
             "label": null,
             "name": "Samtools stats",
             "outputs": [
@@ -537,15 +550,15 @@
                     "output_name": "output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.7",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/samtools_stats/samtools_stats/2.0.8",
             "tool_shed_repository": {
-                "changeset_revision": "1ed8ed887035",
+                "changeset_revision": "57934e90e27c",
                 "name": "samtools_stats",
                 "owner": "devteam",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cov_threshold\": null, \"coverage_cond\": {\"coverage_select\": \"no\", \"__current_case__\": 0}, \"filter_by_flags\": {\"filter_flags\": \"nofilter\", \"__current_case__\": 1}, \"gc_depth\": null, \"input\": {\"__class__\": \"ConnectedValue\"}, \"insert_size\": null, \"most_inserts\": null, \"read_group\": null, \"read_length\": null, \"remove_dups\": false, \"remove_overlaps\": false, \"sparse\": false, \"split_output_cond\": {\"split_output_selector\": \"no\", \"__current_case__\": 0}, \"trim_quality\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "2.0.7",
+            "tool_state": "{\"addref_cond\": {\"addref_select\": \"history\", \"__current_case__\": 1, \"ref\": {\"__class__\": \"RuntimeValue\"}}, \"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cov_threshold\": null, \"coverage_cond\": {\"coverage_select\": \"no\", \"__current_case__\": 0}, \"filter_by_flags\": {\"filter_flags\": \"nofilter\", \"__current_case__\": 1}, \"gc_depth\": null, \"input\": {\"__class__\": \"RuntimeValue\"}, \"insert_size\": null, \"most_inserts\": null, \"read_group\": null, \"read_length\": null, \"remove_dups\": false, \"remove_overlaps\": false, \"sparse\": false, \"split_output_cond\": {\"split_output_selector\": \"no\", \"__current_case__\": 0}, \"trim_quality\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "2.0.8",
             "type": "tool",
             "uuid": "8a619ad0-d116-4d7a-bc77-483505041230",
             "when": null,
@@ -553,7 +566,7 @@
         },
         "13": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.21+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1",
             "errors": null,
             "id": 13,
             "input_connections": {
@@ -582,15 +595,15 @@
                     "output_name": "outputsam"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.21+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "48bbbcb692ce",
+                "changeset_revision": "5ec526530725",
                 "name": "samtools_view",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mode\": {\"outtype\": \"selected_reads\", \"__current_case__\": 1, \"filter_config\": {\"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cond_rg\": {\"select_rg\": \"no\", \"__current_case__\": 0}, \"cond_expr\": {\"select_expr\": \"no\", \"__current_case__\": 0}, \"quality\": \"20\", \"library\": \"\", \"cigarcons\": null, \"inclusive_filter\": [\"1\", \"2\"], \"exclusive_filter\": null, \"exclusive_filter_all\": null, \"tag\": null, \"qname_file\": {\"__class__\": \"RuntimeValue\"}}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"fraction\", \"__current_case__\": 0, \"factor\": \"1.0\", \"seed\": null}}, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"complementary_output\": false, \"adv_output\": {\"readtags\": [], \"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "1.21+galaxy0",
+            "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"input\": {\"__class__\": \"RuntimeValue\"}, \"mode\": {\"outtype\": \"selected_reads\", \"__current_case__\": 1, \"filter_config\": {\"cond_region\": {\"select_region\": \"no\", \"__current_case__\": 0}, \"cond_rg\": {\"select_rg\": \"no\", \"__current_case__\": 0}, \"cond_expr\": {\"select_expr\": \"no\", \"__current_case__\": 0}, \"quality\": \"20\", \"library\": \"\", \"cigarcons\": null, \"inclusive_filter\": [\"1\", \"2\"], \"exclusive_filter\": null, \"exclusive_filter_all\": null, \"tag\": null, \"qname_file\": {\"__class__\": \"RuntimeValue\"}}, \"subsample_config\": {\"subsampling_mode\": {\"select_subsample\": \"fraction\", \"__current_case__\": 0, \"factor\": \"1.0\", \"seed\": null}}, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"complementary_output\": false, \"adv_output\": {\"readtags\": [], \"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.22+galaxy1",
             "type": "tool",
             "uuid": "2297fc41-c298-4c00-b736-d1869d288414",
             "when": null,
@@ -1027,7 +1040,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/ivar_variants/ivar_variants/1.4.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "1ef68546d37f",
+                "changeset_revision": "5e5dfc9e71e2",
                 "name": "ivar_variants",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -1080,7 +1093,7 @@
             },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/ivar_consensus/ivar_consensus/1.4.4+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "253935875d96",
+                "changeset_revision": "1c5448133894",
                 "name": "ivar_consensus",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
@@ -1094,7 +1107,7 @@
         },
         "23": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.2+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.2+galaxy1",
             "errors": null,
             "id": 23,
             "input_connections": {
@@ -1108,6 +1121,10 @@
                 }
             },
             "inputs": [
+                {
+                    "description": "runtime parameter for tool SnpEff eff:",
+                    "name": "input"
+                },
                 {
                     "description": "runtime parameter for tool SnpEff eff:",
                     "name": "intervals"
@@ -1144,15 +1161,15 @@
                     "output_name": "snpeff_output"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.2+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.2+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "c7275bd8b4d6",
+                "changeset_revision": "3aae4f16ac9e",
                 "name": "snpeff",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"annotations\": null, \"chr\": null, \"csvStats\": false, \"filter\": {\"specificEffects\": \"no\", \"__current_case__\": 0}, \"filterOut\": null, \"generate_stats\": true, \"input\": {\"__class__\": \"ConnectedValue\"}, \"inputFormat\": \"vcf\", \"intervals\": {\"__class__\": \"RuntimeValue\"}, \"noLog\": true, \"outputFormat\": \"vcf\", \"snpDb\": {\"genomeSrc\": \"custom\", \"__current_case__\": 3, \"snpeff_db\": {\"__class__\": \"ConnectedValue\"}, \"codon_table\": \"Standard\"}, \"spliceRegion\": {\"setSpliceRegions\": \"no\", \"__current_case__\": 0}, \"spliceSiteSize\": \"2\", \"transcripts\": {\"__class__\": \"RuntimeValue\"}, \"udLength\": \"0\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_version": "5.2+galaxy0",
+            "tool_state": "{\"annotations\": null, \"chr\": null, \"csvStats\": false, \"filter\": {\"specificEffects\": \"no\", \"__current_case__\": 0}, \"filterOut\": null, \"generate_gene_stats\": false, \"generate_stats\": true, \"input\": {\"__class__\": \"RuntimeValue\"}, \"inputFormat\": \"vcf\", \"intervals\": {\"__class__\": \"RuntimeValue\"}, \"noLog\": true, \"outputFormat\": \"vcf\", \"snpDb\": {\"genomeSrc\": \"custom\", \"__current_case__\": 3, \"snpeff_db\": {\"__class__\": \"RuntimeValue\"}, \"codon_table\": \"Standard\"}, \"spliceRegion\": {\"setSpliceRegions\": \"no\", \"__current_case__\": 0}, \"spliceSiteSize\": \"2\", \"transcripts\": {\"__class__\": \"RuntimeValue\"}, \"udLength\": \"0\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "5.2+galaxy1",
             "type": "tool",
             "uuid": "130dd1b6-8df0-4efe-9062-753c5a133084",
             "when": null,
@@ -1359,7 +1376,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"empty_text\": \".\", \"extract\": \"CHROM POS REF ALT QUAL DP AF DP4 ANN[*].EFFECT ANN[*].IMPACT ANN[*].GENE ANN[*].HGVS_C ANN[*].HGVS_P\", \"input\": {\"__class__\": \"RuntimeValue\"}, \"one_effect_per_line\": false, \"separator\": \",\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"empty_text\": \".\", \"extract\": \"CHROM POS REF ALT QUAL DP AF DP4 ANN[*].EFFECT ANN[*].IMPACT ANN[*].GENE ANN[*].TRID ANN[*].HGVS_C ANN[*].HGVS_P\", \"input\": {\"__class__\": \"RuntimeValue\"}, \"one_effect_per_line\": false, \"separator\": \",\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_version": "4.3+t.galaxy0",
             "type": "tool",
             "uuid": "4937a68b-ef1b-4d1b-8544-2dbbb744d7bb",

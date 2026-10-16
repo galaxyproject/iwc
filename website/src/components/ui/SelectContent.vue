@@ -8,6 +8,7 @@ interface Props extends SelectContentProps {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+    class: undefined,
     position: "popper",
 });
 </script>

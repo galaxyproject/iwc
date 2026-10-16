@@ -67,7 +67,7 @@ def get_dockstore_details(trsID):
         else:
             print("No 'id' field found in the top-level data.")
     else:
-        print(f"Failed to retrieve details. Status code: {response.status_code}")
+        print(f"Failed to retrieve details for {trsID} from {url_details}. Status code: {response.status_code}")
     return details, categories, collections
 
 
@@ -82,7 +82,7 @@ def extract_date_from_changelog(changelog_content):
     # Regular expression to match the date pattern in the first changelog entry
     # Looks for patterns like "## [0.13] 2025-01-27" and extracts the date
     date_match = re.search(
-        r"##\s*\[[^\]]+\]\s*-\s*(\d{4}-\d{2}-\d{2})", changelog_content
+        r"##\s*\[[^\]]+\]\s*-?\s*(\d{4}-\d{2}-\d{2})", changelog_content
     )
 
     if date_match:
@@ -162,6 +162,10 @@ def find_and_load_compliant_workflows(directory):
                 workflow["diagrams"] = read_contents(
                     f"{os.path.splitext(workflow_path)[0]}_diagrams.md"
                 )
+                # Load SVG diagram if it exists
+                workflow["diagram_svg"] = read_contents(
+                    f"{os.path.splitext(workflow_path)[0]}-diagram.svg"
+                )
 
                 # Extract update date from changelog
                 update_date = extract_date_from_changelog(changelog_content)
@@ -180,6 +184,7 @@ def find_and_load_compliant_workflows(directory):
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
                 workflow["iwcID"] = create_safe_identifier(trsID)
+                workflow["repoPath"] = root
 
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
@@ -239,7 +244,9 @@ def path_to_location(input_item, root):
                 # Add filetype if not present
                 # TODO: fix up the tests instead of guessing!
                 location = input_item["location"]
-                if "fastq.gz" in location:
+                if ".fq.gz" in location:
+                    filetype = "fastqsanger.gz"
+                elif "fastq.gz" in location:
                     filetype = "fastqsanger.gz"
                 elif "fastqsanger.gz" in location:
                     filetype = "fastqsanger.gz"
@@ -263,6 +270,14 @@ def path_to_location(input_item, root):
                     filetype = "csv"
                 elif "bed" in location:
                     filetype = "bed"
+                elif ".raw" in location:
+                    filetype = "thermo.raw"
+                elif ".mgf" in location:
+                    filetype = "mgf"
+                elif ".pdb" in location:
+                    filetype = "pdb"
+                elif ".sdf" in location:
+                    filetype = "sdf"
                 else:
                     filetype = "auto"
                     print("Unknown filetype for", location)
@@ -384,3 +399,27 @@ if __name__ == "__main__":
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
+
+    # Generate lightweight search index for the website
+    # Contains all fields needed for search AND display (replaces LightweightWorkflow)
+    search_index = []
+    for item in workflow_data:
+        for workflow in item["workflows"]:
+            definition = workflow.get("definition", {})
+
+            search_entry = {
+                "iwcID": workflow["iwcID"],
+                "trsID": workflow["trsID"],
+                "uuid": definition.get("uuid", ""),
+                "name": definition.get("name", workflow.get("name", "")),
+                "annotation": definition.get("annotation", "") or "",
+                "tags": definition.get("tags") or [],
+                "release": definition.get("release", ""),
+                "collections": workflow.get("collections", []),
+                "updated": workflow.get("updated"),
+            }
+            search_index.append(search_entry)
+
+    search_index_path = os.path.join(OUTPUT_DIR, "search-index.json")
+    write_to_json(search_index, search_index_path)
+    print(f"Search index written to {search_index_path} ({len(search_index)} entries)")
