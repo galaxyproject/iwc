@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.4] - 2026-10-12
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.4.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_grep_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
+
+## [1.3] - 2026-07-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.6+galaxy0`
+
+## [1.2] - 2026-06-22
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1`
+
 ## [1.1] - 2026-04-06
 
 ### Automatic update
