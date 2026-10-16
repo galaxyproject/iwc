@@ -22,7 +22,7 @@ jobs:
       python-version-list: "[\"3.11\"]"
       max-chunks: 4
       galaxy-fork: galaxyproject
-      galaxy-branch: release_26.0
+      galaxy-branch: release_26.1
 
   # Planemo lint the changed repositories
   lint:
@@ -57,25 +57,72 @@ jobs:
         repository-list: "${{ needs.setup.outputs.repository-list }}"
         additional-planemo-options: --iwc
 
+  # Detect if any changed repo contains a .wt_instance file
+  # and set environment to 'secret-env' (if there is such a file)
+  # or None (otherwise).
+  # Pull requests from forks don't get the secret, so their .wt_instance
+  # repos are left out here and tested by workflow_test_external.yml instead.
+  determine_env:
+    name: Determine github environment to use
+    needs: setup
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.check.outputs.environment }}
+      repository-list: ${{ steps.check.outputs.repository-list }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - id: check
+        env:
+          REPOSITORY_LIST: ${{ needs.setup.outputs.repository-list }}
+          FORK_PR: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          environment=""
+          repos=()
+          for repo in $(echo "$REPOSITORY_LIST" | tr ',' '\n'); do
+            if [[ -f "$repo/.wt_instance" ]]; then
+              echo "Found $repo/.wt_instance"
+              if [[ "$FORK_PR" == "true" ]]; then
+                echo "::notice::Not testing $repo here: it is tested on $(tr -d '\r\n' < "$repo/.wt_instance"), which needs a secret that pull requests from forks don't get. It is tested by the 'Galaxy Workflow Tests on external instances for PRs from forks' run once a maintainer approves it."
+                continue
+              fi
+              environment="secret-env"
+            fi
+            repos+=("$repo")
+          done
+          echo "environment=$environment" >> "$GITHUB_OUTPUT"
+          {
+            echo 'repository-list<<EOF'
+            if (( ${#repos[@]} )); then
+              printf '%s\n' "${repos[@]}"
+            fi
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
+
   test:
     name: Test workflows
-    needs: setup
-    if: needs.setup.outputs.repository-list != ''
+    needs: [setup, determine_env]
+    if: ${{ needs.determine_env.outputs.repository-list != '' }}
     uses: ./.github/workflows/test_workflows.yml
     with:
       galaxy-head-sha: ${{ needs.setup.outputs.galaxy-head-sha }}
       chunk-count: ${{ fromJSON(needs.setup.outputs.chunk-count) }}
       chunk-list: ${{ needs.setup.outputs.chunk-list }}
       python-version-list: "[\"3.11\"]"
-      repository-list: ${{ needs.setup.outputs.repository-list }}
+      repository-list: ${{ needs.determine_env.outputs.repository-list }}
       galaxy-fork: galaxyproject
-      galaxy-branch: release_25.1
+      galaxy-branch: release_26.1
       check-outputs: false
+      galaxy-user-key-environment: ${{ needs.determine_env.outputs.environment }}
+    secrets: inherit
 
   combine_outputs:
     # same as tool step
     name: Combine chunked test results
-    needs: [setup, test]
+    needs: [setup, determine_env, test]
+    if: ${{ always() && needs.determine_env.outputs.repository-list != '' }}
     strategy:
       matrix:
         python-version: ['3.11']
@@ -162,7 +209,7 @@ jobs:
   deploy-report:
     name: Report deploy status
     needs: [deploy]
-    if: ${{ always() && needs.deploy.result != 'success' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
+    if: ${{ always() && needs.deploy.result == 'failure' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'galaxyproject' }}
     runs-on: ubuntu-latest
     steps:
     # report to the PR if deployment failed
@@ -172,6 +219,7 @@ jobs:
       with:
         sha: ${{ github.event.after }}
     - name: Create comment
+      if: steps.getpr.outputs.number != ''
       uses: peter-evans/create-or-update-comment@v4
       with:
         token: ${{ secrets.PAT }}
@@ -183,10 +231,12 @@ jobs:
 
   determine-success:
     name: Check workflow success
-    needs: [setup, lint, combine_outputs]
+    needs: [setup, lint, determine_env, combine_outputs]
     if: ${{ always() && github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
     - name: Check status
-      if: ${{ needs.combine_outputs.result != 'skipped' && (needs.lint.result != 'success' || needs.combine_outputs.result != 'success') }}
+      # lint and tests are skipped when nothing (left) to check, e.g. when a
+      # fork PR only changes workflows tested by workflow_test_external.yml
+      if: ${{ needs.setup.result != 'success' || needs.determine_env.result != 'success' || !contains(fromJSON('["success", "skipped"]'), needs.lint.result) || !contains(fromJSON('["success", "skipped"]'), needs.combine_outputs.result) }}
       run: exit 1
