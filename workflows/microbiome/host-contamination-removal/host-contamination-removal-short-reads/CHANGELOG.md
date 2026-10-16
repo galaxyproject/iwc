@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.4] - 2026-03-17
+- Added an optional step allowing users to select either a built-in reference genome or provide a custom reference genome from their history.
+
 ## [0.3] - 2026-01-19
 
 ### Automatic update
