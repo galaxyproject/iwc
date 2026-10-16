@@ -6,14 +6,14 @@
 
 ## Inputs values
 
-- adapters sequences: this depends on the library preparation. If you don't know, use FastQC to determine if it is Truseq or Nextera.
-- reference_genome: this field will be adapted to the genomes available for bowtie2.
-- effective_genome_size: this is used by MACS2 and may be entered manually (indications are provided for heavily used genomes).
-- normalize_profile: Whether you want to have a profile normalized as Signal to Million Fragments.
+- Percentage of bad quality bases per read: fastp will discard any read which has more than this percentage of bases with a quality below 30. This depends on your read length.
+- Reference genome: this field will be adapted to the genomes available for bowtie2.
+- Effective genome size: this is used by MACS2 and may be entered manually (indications are provided for heavily used genomes).
+- Normalize profile: Whether you want to have a profile normalized as Signal to Million Fragments.
 
 ## Processing
 
-- The workflow will remove illumina adapters and low quality bases and filter out any pair with mate smaller than 15bp.
+- The workflow will remove illumina adapters using read overlap and filter out any read smaller than 15bp after adapter removal. All reads with too many low quality bases will be discarded.
 - The filtered reads are mapped with bowtie2 with default parameters.
 - The BAM is filtered to keep only MAPQ30 and concordant pairs.
 - The peaks are called with MACS2 which at the same time generates a coverage file (normalized or not).

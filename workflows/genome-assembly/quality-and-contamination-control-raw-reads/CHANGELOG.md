@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.11] - 2025-11-28
+
+### Automatic update
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.26.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0`
+
+### Removed
+
+* Remove Recentrifuge
+* Remove some Tooldistillator input because the main information is not found in these files
+
+
 ## [1.1.10] - 2025-07-21
 
 ### Automatic update

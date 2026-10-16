@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.8] 2026-03-15
+
+- added MultiQC to collect all tabular files and create a HTML report of them
+- added a column regex operation to remove the ignore sign of ABRicate output header to make it usable for MulitQC 
+
+## [1.1.7] 2025-12-01
+
+### Automatic update
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.26.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0`
+
+### Removed
+
+* Remove some Tooldistillator input because the main information is not found in these files
+
 ## [1.1.6] 2025-06-18
 
 ### Manual update
