@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3] - 2026-07-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/lecorguille/msnbase_readmsdata/msnbase_readmsdata/2.16.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/lecorguille/msnbase_readmsdata/msnbase_readmsdata/2.16.1+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_xcmsset/abims_xcms_xcmsSet/3.12.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_xcmsset/abims_xcms_xcmsSet/3.12.0+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_plot_chromatogram/xcms_plot_chromatogram/3.12.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_plot_chromatogram/xcms_plot_chromatogram/3.12.0+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_merge/xcms_merge/3.12.0+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/lecorguille/xcms_merge/xcms_merge/3.12.0+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/ethevenot/checkformat/checkFormat/3.0.0` was updated to `toolshed.g2.bx.psu.edu/repos/ethevenot/checkformat/checkFormat/4.0.0+galaxy0`
+
 ## [0.2] - 2025-05-05
 
 ### Automatic update
