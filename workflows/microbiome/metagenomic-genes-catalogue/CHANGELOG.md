@@ -5,7 +5,6 @@
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/17-b804f+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/mmseqs2_easy_linclust_clustering/mmseqs2_easy_linclust_clustering/18-8cc5c+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/iuc/amrfinderplus/amrfinderplus/3.12.8+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/amrfinderplus/amrfinderplus/4.2.7+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/1.4.0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/abricate/abricate/1.4.0+galaxy1`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_line/9.11+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_replace_in_column/9.11+galaxy0`
