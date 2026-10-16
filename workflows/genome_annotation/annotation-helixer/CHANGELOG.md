@@ -5,6 +5,9 @@
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/5.8.0+galaxy2`
 
+### Fixed
+- BUSCO steps now use the `v5` (odb10) cached database; the previous `all+2024-03-21-114020` entry is no longer available
+
 ## [0.3] - 2025-07-18
 
 ### Changed
