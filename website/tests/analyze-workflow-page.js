@@ -67,7 +67,7 @@ async function analyzeWorkflowPage() {
 
     // 7. Test Galaxy instance selector
     console.log("\nTesting Galaxy instance selector...");
-    const firstSelect = await page.locator("select").first();
+    const firstSelect = page.locator("select").first();
     if (firstSelect) {
         await firstSelect.selectOption({ index: 1 });
         console.log("  ✓ Selected instance from dropdown");
@@ -78,7 +78,7 @@ async function analyzeWorkflowPage() {
     console.log("Analyzing visual consistency...");
 
     // Get tab styling
-    const activeTab = await page.locator('nav[aria-label="Tabs"] button.border-bay-of-many-700').first();
+    const activeTab = page.locator('nav[aria-label="Tabs"] button.border-bay-of-many-700').first();
     const activeTabStyles = await activeTab.evaluate((el) => {
         const styles = window.getComputedStyle(el);
         return {
@@ -91,7 +91,7 @@ async function analyzeWorkflowPage() {
 
     // 9. Check for accessibility attributes
     console.log("Checking accessibility...");
-    const tabsNav = await page.locator('nav[aria-label="Tabs"]').first();
+    const tabsNav = page.locator('nav[aria-label="Tabs"]').first();
     if (tabsNav) {
         console.log("  ✓ Tabs have aria-label");
         console.log("  NOTE: shadcn Tabs would add aria-selected, aria-controls, etc.\n");

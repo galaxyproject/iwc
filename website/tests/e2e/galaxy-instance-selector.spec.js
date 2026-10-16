@@ -9,6 +9,7 @@ const DEFAULT_INSTANCES = [
     "https://usegalaxy.fr",
     "https://test.galaxyproject.org",
     "https://galaxy.cfdeworkspace.org",
+    "https://usegalaxy.cz",
 ];
 
 test.describe("Galaxy Instance Selector", () => {
