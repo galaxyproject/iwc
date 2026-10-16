@@ -1,12 +1,28 @@
+export const IWC_SITE_URL = "https://iwc.galaxyproject.org";
+
 /**
  * Formats an ISO timestamp into a readable date string.
  *
  * @param isoString - The ISO timestamp string to format.
  * @returns A formatted date string in the format "Month Day, Year".
  */
-export function formatDate(isoString: string): string {
+export function formatDate(isoString: string | null): string {
+    if (!isoString) return "";
     const date = new Date(isoString);
     return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
+/**
+ * Navigates to a collection page by converting the collection name to a URL slug.
+ *
+ * @param collection - The collection name to navigate to.
+ */
+export function navigateToCollection(collection: string): void {
+    const slug = collection
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+    window.location.href = `/collection/${slug}`;
 }
 
 /**
@@ -56,7 +72,7 @@ export function normalizeGalaxyUrl(url: string): string | null {
             return null;
         }
         return url;
-    } catch (e) {
+    } catch {
         // Invalid URL
         return null;
     }
