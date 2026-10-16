@@ -33,7 +33,7 @@ const isSearching = computed(() => localSearchQuery.value.trim().length > 0);
 
 // Sort workflows by updated date (use props directly, no store subscription needed)
 const sortedWorkflows = computed(() =>
-    props.workflows.slice().sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()),
+    props.workflows.slice().sort((a, b) => new Date(b.updated ?? 0).getTime() - new Date(a.updated ?? 0).getTime()),
 );
 
 // Fuse.js configuration (flat structure now)
@@ -183,11 +183,36 @@ searchQueryStore.subscribe((value) => {
             </div>
         </Transition>
 
-        <Transition name="fade">
-            <div v-if="filteredWorkflows.length === 0" class="text-center py-12 text-chicago-500">
-                <p class="text-xl">No workflows found matching your criteria.</p>
-            </div>
-        </Transition>
+        <!-- External workflow sources / empty state -->
+        <div
+            class="mt-8 py-5 px-6 rounded-lg border border-chicago-200 bg-chicago-50 text-center text-sm text-chicago-600">
+            <p v-if="filteredWorkflows.length === 0" class="text-xl text-chicago-500 mb-3">
+                No workflows found matching your criteria.
+            </p>
+            <span v-if="filteredWorkflows.length === 0">Try searching for Galaxy workflows on </span>
+            <span v-else>Find more Galaxy workflows on </span>
+            <a
+                href="https://dockstore.org/search?descriptorType=Galaxy&descriptorType=gxformat2&entryType=workflows&searchMode=files"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >Dockstore</a
+            >,
+            <a
+                href="https://workflowhub.eu/workflows?filter%5Bworkflow_type%5D=galaxy"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >WorkflowHub</a
+            >, and the
+            <a
+                href="https://training.galaxyproject.org/training-material/workflows/list"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-hokey-pokey-700 underline hover:text-hokey-pokey-900"
+                >Galaxy Training Network</a
+            >.
+        </div>
     </div>
 </template>
 
