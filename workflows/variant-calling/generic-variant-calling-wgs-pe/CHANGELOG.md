@@ -14,6 +14,9 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/lofreq_call/lofreq_call/2.1.5+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/lofreq_call/lofreq_call/2.1.5+galaxy3`
 - `toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/4.3+T.galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpeff/snpEff/5.4+galaxy0`
 
+### Changed
+- Reference sequence ids now keep their GenBank version (e.g. `KP849471.1` instead of `KP849471`). SnpEff 5.4 names chromosomes after the GenBank VERSION, so stripping the version left every variant unannotated (`ERROR_CHROMOSOME_NOT_FOUND`).
+
 
 ## [0.1.1] - 2023-11-20
 
