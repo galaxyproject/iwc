@@ -1,0 +1,185 @@
+# Secrets are not passed to `pull_request` runs from forks, but workflows with a
+# `.wt_instance` file are tested on that external Galaxy instance and need
+# GALAXY_USER_KEY. So for PRs from forks these workflows are tested here, on
+# `pull_request_target`, with the PR's workflow directories checked out, once
+# a maintainer approves the pr-secrets environment. Approving runs the PR's
+# workflow tests with the secret, so review the diff (in particular
+# `.wt_instance` and the test definitions) and check that the run is for the
+# reviewed commit (its SHA is in the job name) first.
+# Before that approval only base branch code runs, and the PR's files are only
+# read through git. Note that `pull_request_target` always uses this file from
+# the base branch.
+# workflow_test.yml leaves these workflows out of the fork PR test job.
+name: Galaxy Workflow Tests on external instances for PRs from forks
+on:
+  pull_request_target:
+    paths-ignore:
+      - '**/*.md'
+      - 'scripts/**'
+      - 'website/**'
+
+permissions:
+  contents: read
+
+# Cancel superseded runs of a PR, so only the run for the latest commit can be
+# approved.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  # instances GALAXY_USER_KEY holds a key for
+  ALLOWED_INSTANCES: usegalaxy.org
+
+jobs:
+  setup:
+    name: Determine workflows to test on external instances
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      repository-list: ${{ steps.discover.outputs.repository-list }}
+      sparse-checkout: ${{ steps.discover.outputs.sparse-checkout }}
+    steps:
+    # base branch checkout, the PR head is only fetched as git objects
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        filter: blob:none
+        persist-credentials: false
+    - name: Find changed workflows that are tested on an external instance
+      id: discover
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      run: |
+        git fetch --no-tags --filter=blob:none origin "$HEAD_SHA"
+        base=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+        repos=()
+        while read -r mode _ _ instance_file; do
+          repo=$(dirname "$instance_file")
+          if git diff --quiet "$base" "$HEAD_SHA" -- "$repo"; then
+            continue
+          fi
+          if [[ ! "$repo" =~ ^workflows/[A-Za-z0-9._/-]+$ ]]; then
+            echo "::error::Unexpected workflow directory name $repo"
+            exit 1
+          fi
+          # symlinks could point the instance check or test data elsewhere
+          if [[ "$mode" != 100644 ]] || git ls-tree -r "$HEAD_SHA" -- "$repo" | awk '$1 == "120000" { found = 1 } END { exit !found }'; then
+            echo "::error::$repo must not contain symbolic links"
+            exit 1
+          fi
+          if ! git ls-tree --name-only "$HEAD_SHA" -- "$repo/" | grep -qE '\.(ga|gxwf\.ya?ml)$'; then
+            echo "::error::$instance_file is not next to a workflow"
+            exit 1
+          fi
+          instance=$(git show "$HEAD_SHA:$instance_file" | tr -d '\r\n')
+          if [[ " $ALLOWED_INSTANCES " != *" $instance "* ]]; then
+            echo "::error::$instance_file names $instance, which is not one of: $ALLOWED_INSTANCES"
+            exit 1
+          fi
+          echo "$repo is tested on $instance"
+          repos+=("$repo")
+        done < <(git ls-tree -r "$HEAD_SHA" -- workflows | awk -F'\t' '$2 ~ /\/\.wt_instance$/ { print $1 " " $2 }')
+        delimiter=$(openssl rand -hex 16)
+        {
+          echo "repository-list<<$delimiter"
+          if (( ${#repos[@]} )); then
+            printf '%s\n' "${repos[@]}"
+          fi
+          echo "$delimiter"
+          echo "sparse-checkout<<$delimiter"
+          if (( ${#repos[@]} )); then
+            printf '/%s/\n' "${repos[@]}"
+          fi
+          echo "$delimiter"
+        } >> "$GITHUB_OUTPUT"
+        if (( ${#repos[@]} )); then
+          {
+            echo "Commit: $HEAD_SHA"
+            echo
+            printf -- '- %s\n' "${repos[@]}"
+          } >> "$GITHUB_STEP_SUMMARY"
+        fi
+    # without required reviewers the test job would run fork code with the
+    # secret without anyone approving it
+    - name: Check that pr-secrets requires approval
+      if: steps.discover.outputs.repository-list != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        rules=$(gh api "repos/$GITHUB_REPOSITORY/environments/pr-secrets" --jq '[.protection_rules[].type] | join(",")')
+        if [[ ",$rules," != *",required_reviewers,"* ]]; then
+          echo "::error::The pr-secrets environment must require reviewers before fork PRs can be tested with its secret"
+          exit 1
+        fi
+
+  test:
+    name: Test workflows on external instances (${{ github.event.pull_request.head.sha }})
+    needs: setup
+    if: needs.setup.outputs.repository-list != ''
+    runs-on: ubuntu-latest
+    # holds GALAXY_USER_KEY and requires a maintainer's approval (see top of file)
+    environment: pr-secrets
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 1
+        persist-credentials: false
+        # only the workflow directories under test, nothing else from the PR
+        sparse-checkout: ${{ needs.setup.outputs.sparse-checkout }}
+        sparse-checkout-cone-mode: false
+        # checking out fork PR code on pull_request_target is the point of this
+        # job; it only runs after the pr-secrets approval (see top of file)
+        allow-unsafe-pr-checkout: true
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Planemo test workflows
+      uses: galaxyproject/planemo-ci-action@v1
+      with:
+        mode: test
+        workflows: true
+        repository-list: ${{ needs.setup.outputs.repository-list }}
+        galaxy-fork: galaxyproject
+        galaxy-branch: release_26.1
+        chunk: 0
+        chunk-count: 1
+        galaxy-user-key: ${{ secrets.GALAXY_USER_KEY }}
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: 'Workflow test output'
+        path: upload
+
+  combine_outputs:
+    name: Combine test results
+    needs: [setup, test]
+    if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), needs.test.result) }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Combine outputs
+      uses: galaxyproject/planemo-ci-action@v1
+      with:
+        mode: combine
+        html-report: true
+        markdown-report: true
+    - run: cat upload/tool_test_output.md >> "$GITHUB_STEP_SUMMARY"
+    - uses: actions/upload-artifact@v4
+      with:
+        name: 'All tool test results'
+        path: upload
+    - name: Check outputs
+      uses: galaxyproject/planemo-ci-action@v1
+      with:
+        mode: check
