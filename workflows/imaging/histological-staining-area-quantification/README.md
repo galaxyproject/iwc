@@ -2,9 +2,19 @@
 
 ## Overview
 This workflow quantifies stained tissue areas in brightfield histological images 
-using colour deconvolution and automated thresholding. It is designed for 
-3-channel stainings compatible with the H-E-DAB (HED) colour space, such as 
-Masson's Trichrome (MT) and Immunohistochemistry (IHC).
+using colour deconvolution and automated thresholding. Input images are first 
+normalized with CLAHE (Contrast Limited Adaptive Histogram Equalization) to reduce 
+staining variability before deconvolution. It is designed for 3-channel stainings 
+compatible with the H-E-DAB (HED) colour space, such as Masson's Trichrome (MT) 
+and Immunohistochemistry (IHC).
+
+## What does this workflow do?
+1. **Stain intensity normalization** (CLAHE) equalizes pixel intensity across images to reduce staining variability.
+2. **Colour deconvolution** separates the normalized image into individual stain channels (HED).
+3. **Channel splitting and extraction** isolates the target stain channel (default: Channel 2).
+4. **Automated thresholding** (Li method) generates a binary mask of stained vs. unstained regions.
+5. **Feature extraction** quantifies staining area and intensity per sample.
+6. **Output collation** merges all per-sample results into a single tabular file.
 
 ## Inputs
 - **Format:** TIFF
