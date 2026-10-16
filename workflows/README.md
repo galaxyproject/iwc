@@ -184,7 +184,7 @@ For example:
 workflows/<category>/<workflow>/.wt_instance
 ```
 
-When a pull request changes a workflow directory containing `.wt_instance`, the PR test job runs in the protected GitHub environment that provides the `GALAXY_USER_KEY` secret for that instance. This may require approval from maintainers before the test job can access the secret and run.
+When a pull request changes a workflow directory containing `.wt_instance`, the workflow is tested in the GitHub environment that provides the `GALAXY_USER_KEY` secret for that instance. GitHub doesn't pass secrets to `pull_request` runs from forks, so for pull requests from forks the regular test job skips these workflows. They are tested instead by a separate `pull_request_target` run ("Galaxy Workflow Tests on external instances for PRs from forks") with the pull request's workflow directories, in the `pr-secrets` environment, which a maintainer must approve. Before approving, review the pull request, in particular `.wt_instance` and the test definitions, and check that the commit in the job name is the one you reviewed.
 
 ##### Use build-in indexes
 
