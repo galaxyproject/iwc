@@ -11,7 +11,7 @@ import Tabs from "./ui/Tabs.vue";
 import TabsList from "./ui/TabsList.vue";
 import TabsTrigger from "./ui/TabsTrigger.vue";
 import TabsContent from "./ui/TabsContent.vue";
-import { formatDate, normalizeGalaxyUrl } from "../utils";
+import { formatDate, normalizeGalaxyUrl, IWC_SITE_URL } from "../utils";
 
 const props = defineProps<{
     workflow: Workflow;
@@ -77,6 +77,7 @@ async function createLandingPage() {
                 workflow_target_type: "trs_url",
                 request_state: job,
                 public: true,
+                origin: IWC_SITE_URL,
             }),
         });
 
@@ -193,12 +194,20 @@ onMounted(() => {
                         <!-- SVG visualization if available -->
                         <div v-if="workflow.diagram_svg" class="mb-8">
                             <h2>Workflow Overview</h2>
-                            <div class="border rounded-lg overflow-hidden shadow-sm" v-html="workflow.diagram_svg"></div>
+                            <div
+                                class="border rounded-lg overflow-hidden shadow-sm"
+                                v-html="workflow.diagram_svg"></div>
                         </div>
                         <!-- Mermaid diagrams (strip the generic "# Workflow diagrams" h1 and descriptive h2) -->
                         <div v-if="tabs.find((t) => t.value === 'diagram')?.content">
                             <h2>Step Diagram</h2>
-                            <MarkdownRenderer :markdown-content="tabs.find((t) => t.value === 'diagram')?.content?.replace(/^# Workflow diagrams\n+/i, '').replace(/^## .+\n+/, '') || ''" />
+                            <MarkdownRenderer
+                                :markdown-content="
+                                    tabs
+                                        .find((t) => t.value === 'diagram')
+                                        ?.content?.replace(/^# Workflow diagrams\n+/i, '')
+                                        .replace(/^## .+\n+/, '') || ''
+                                " />
                         </div>
                         <p v-if="!workflow.diagram_svg && !tabs.find((t) => t.value === 'diagram')?.content">
                             No diagram available for this workflow.
@@ -286,7 +295,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
@@ -295,7 +304,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;https://iwc.galaxyproject.org/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
                             </div>
 
                             <div class="mb-6">
@@ -388,7 +397,10 @@ onMounted(() => {
                     </li>
                     <li>
                         <strong class="text-ebony-clay-900">GitHub: </strong>
-                        <a :href="githubWorkflowUrl" target="_blank" class="text-bay-of-many-700 hover:underline break-all">
+                        <a
+                            :href="githubWorkflowUrl"
+                            target="_blank"
+                            class="text-bay-of-many-700 hover:underline break-all">
                             {{ githubWorkflowUrl }} ↗
                         </a>
                     </li>

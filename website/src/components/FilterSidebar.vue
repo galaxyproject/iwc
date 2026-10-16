@@ -15,7 +15,7 @@ const { selected, collectionCounts, sortedCollections, handleFilterClick } = use
 <template>
     <aside class="hidden md:block w-48 lg:w-56 shrink-0 pr-6">
         <div class="sticky top-4">
-            <h3 class="text-xs font-semibold text-chicago-400 uppercase tracking-wider mb-3">Categories</h3>
+            <h3 class="text-xs font-semibold text-chicago-500 uppercase tracking-wider mb-3">Categories</h3>
 
             <TooltipProvider :delay-duration="300">
                 <nav class="flex flex-col gap-1">
@@ -35,7 +35,7 @@ const { selected, collectionCounts, sortedCollections, handleFilterClick } = use
                                     class="text-xs tabular-nums transition-colors ml-2 shrink-0"
                                     :class="{
                                         'text-hokey-pokey-500': selected.includes(filter),
-                                        'text-chicago-400 group-hover:text-chicago-500': !selected.includes(filter),
+                                        'text-chicago-500 group-hover:text-chicago-600': !selected.includes(filter),
                                     }">
                                     {{ collectionCounts[filter] || 0 }}
                                 </span>

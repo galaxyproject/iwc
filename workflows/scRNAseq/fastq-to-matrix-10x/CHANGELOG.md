@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.6] - 2026-06-22
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11b+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11b+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1`
+
+## [0.6.5] - 2026-04-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3`
+
 ## [0.6.4] - 2026-01-19
 
 ### Automatic update

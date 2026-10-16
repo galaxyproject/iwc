@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.12] - 2026-08-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sed_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+
+
+## [0.11] - 2026-07-14
+
+### Manual update
+- Manual release bump after the previous update
+  
+## [0.10] - 2026-07-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy3`
+
+## [0.9] - 2026-04-27
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.3+galaxy0`
+
 ## [0.8] - 2026-02-23
 
 ### Automatic update

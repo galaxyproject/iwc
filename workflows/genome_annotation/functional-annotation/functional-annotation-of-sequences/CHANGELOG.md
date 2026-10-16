@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3] - 2026-03-27
+
+- Set a parameter from Add toolshed.g2.bx.psu.edu/repos/iuc/kegg_pathways_completeness/kegg_pathways_completeness/1.3.0+galaxy0 to true to have a second and more detailed per contig output
+
 ## [0.2] - 2026-02-07
 
 - Change the input to a collection such that multiple sequences can be run in parallel

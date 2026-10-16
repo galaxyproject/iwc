@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.8] - 2026-10-12
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_multiintersectbed/2.31.1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_multiintersectbed/2.31.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/4.0.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/4.0.0+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_intersectbed/2.31.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bedtools/bedtools_intersectbed/2.31.1+galaxy1`
+
+## [1.7] - 2026-09-18
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/3.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_average/deeptools_bigwig_average/4.0.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sorted_uniq/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_sorted_uniq/9.11+galaxy0`
+
+## [1.6] - 2026-06-01
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy1`
+
+## [1.5] - 2026-04-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy2`
+
+### Manual change
+- Add the README in the workflow
+
 ## [1.4] - 2026-01-19
 
 ### Automatic update

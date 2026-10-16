@@ -1,3 +1,5 @@
+export const IWC_SITE_URL = "https://iwc.galaxyproject.org";
+
 /**
  * Formats an ISO timestamp into a readable date string.
  *
