@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.3] - 2026-02-09
+
+### Changed
+
+- Simplified the entire logic for handling samples for which reference selection
+  with VAPOR fails either entirely or for individual segments. The change
+  reduces the number of steps in this workflow considerably without affecting
+  functionality.
+
+  Note: This simplification requires the replacement dataset option added to the
+  "Filter failed datasets" tool in version 1.1.0, which first shipped
+  with Galaxy 25.0.
+
+  Thanks Simon Bray for adding the tool option!
+
+### Updated tools
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/0.24.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.1.0+galaxy0`.
+
+  With this tool update fastp gets executed with the --dont_eval_duplication
+  option, i.e. the fastp report will no longer contain the duplicate estimate
+  for the raw reads.
+  An estimate of duplicated reads based on mapping results is still available
+  as part of the "QC reports for mapping results" workflow output.
+
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.20+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy1`.
+- `toolshed.g2.bx.psu.edu/repos/iuc/vapor/vapor/1.0.2+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/vapor/vapor/1.0.3+galaxy0`.
+- `toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_subseq/1.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/seqtk/seqtk_subseq/1.5+galaxy0`.
+- `toolshed.g2.bx.psu.edu/repos/rnateam/mafft/rbc_mafft/7.526+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/rnateam/mafft/rbc_mafft/7.526+galaxy2`.
+- `toolshed.g2.bx.psu.edu/repos/iuc/snipit/snipit/1.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snipit/snipit/1.7+galaxy0`.
+- `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/2.4.0+galaxy1`.
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3`.
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3`.
+
 ## [0.2] - 2025-05-02
 
 ### Changed
