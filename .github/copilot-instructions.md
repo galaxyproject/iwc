@@ -1,5 +1,7 @@
 # GitHub Copilot Instructions for IWC
 
+> When editing this file, mirror the change into `.claude/commands/review.md`, which must remain a superset of these review requirements.
+
 ## Scope
 These instructions apply ONLY to changes in the `workflows/` folder.
 
