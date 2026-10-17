@@ -17,6 +17,9 @@
 ### Changed
 - Reference sequence ids now keep their GenBank version (e.g. `KP849471.1` instead of `KP849471`). SnpEff 5.4 names chromosomes after the GenBank VERSION, so stripping the version left every variant unannotated (`ERROR_CHROMOSOME_NOT_FOUND`).
 
+### Added
+- Optional `Strip version from reference sequence ids` input (default: false). When set, the workflow also outputs `Fasta sequences for genbank file without version`, the reference FASTA with ids as in 0.1.1 (e.g. `KP849471`).
+
 
 ## [0.1.1] - 2023-11-20
 
