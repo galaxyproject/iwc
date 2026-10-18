@@ -1,4 +1,4 @@
-# Workflow test for pyeuk-haplotype-typing (read-level haplotype typing).
+# Workflow tests for pyeuk-haplotype-typing (read-level haplotype typing).
 #
 # Deterministic synthetic cohort committed under test-data/: 8 specimens across a
 # 2-amplicon panel (M1, M2), in two genotypes. The A* specimens carry a single SNP
@@ -6,10 +6,17 @@
 # (reference-identical at M1, 61C>A at M2). Everything the workflow derives is fixed
 # by construction, so the assertions below are exact. Expected outputs were produced
 # by running PyEuk 0.8.1 (the Tool Shed suite) on this cohort.
+#
+# Test 1 relaxes every gate (single full-length window, no frequency/read/completeness
+# filters). Test 2 runs the workflow defaults (100 bp maximum window, 30 spanning
+# reads, 5% haplotype frequency, 10 reads per haplotype, 0.1 completeness) with the
+# distance tree cut. Each specimen carries 80 read pairs per amplicon, so every
+# default gate passes and each 150 bp amplicon is split into a 100 bp window holding
+# the SNP and a 50 bp reference-identical window.
 - doc: >-
-    Two-genotype amplicon cohort. Reads -> bwa mem2 -> filter -> two cohort windows
-    (M1_W0001, M2_W0001) -> per-specimen haplotypes -> 8x4 presence/absence sheet ->
-    wIBS distance -> two clusters (A* vs B*).
+    Two-genotype amplicon cohort with relaxed gates. Reads -> bwa mem2 -> filter ->
+    two cohort windows (M1_W0001, M2_W0001) -> per-specimen haplotypes -> 8x4
+    presence/absence sheet -> wIBS distance -> two clusters (A* vs B*).
   job:
     Paired-end reads:
       class: Collection
@@ -127,18 +134,18 @@
       asserts:
       - has_n_lines:
           n: 2
-      - has_text:
-          text: "M1_W0001"
-      - has_text:
-          text: "M2_W0001"
+      - has_line:
+          line: "M1\t0\t150\tM1_W0001"
+      - has_line:
+          line: "M2\t0\t150\tM2_W0001"
     Haplotype sheet:
       asserts:
       - has_n_lines:
           n: 9
       - has_n_columns:
           n: 5
-      - has_text:
-          text: "Seq_ID"
+      - has_line:
+          line: "Seq_ID\tM1_W0001_Hap_1\tM1_W0001_Hap_2\tM2_W0001_Hap_1\tM2_W0001_Hap_2"
     Haplotype map:
       asserts:
       - has_n_lines:
@@ -157,33 +164,255 @@
           n: 9
       - has_n_columns:
           n: 9
+      # A* are identical to each other and 0.5 from every B*, and vice versa.
+      - has_line_matching:
+          expression: 'A[1-4](\t0){4}(\t0\.5){4}'
+          n: 4
+      - has_line_matching:
+          expression: 'B[1-4](\t0\.5){4}(\t0){4}'
+          n: 4
     Clusters:
       asserts:
       - has_n_lines:
           n: 9
-      - has_text:
-          text: "Assigned_cluster"
-      - has_text:
-          text: "A1"
-      - has_text:
-          text: "B4"
+      - has_line:
+          line: "Seq_ID\tAssigned_cluster"
+      # All A* specimens share one cluster id, all B* specimens share a different one.
+      - has_text_matching:
+          expression: '(?m)^A1\t(\d+)\nA2\t\1\nA3\t\1\nA4\t\1\nB1\t(?!\1\n)(\d+)\nB2\t\2\nB3\t\2\nB4\t\2$'
     Cluster sweep:
       asserts:
+      - has_text_matching:
+          expression: '"count_range": \[\s*2,\s*2\s*\]'
       - has_text:
-          text: "count_range"
+          text: '"confident": true'
       - has_text:
-          text: "stable_cores"
+          text: '"n_stable_cores": 2'
     Cluster sweep report:
       asserts:
       - has_text:
-          text: "html"
+          text: "2 clusters (confident: count selectors agree)"
+      - has_text:
+          text: "8 specimens"
+      # The stable-core table lists the A* and B* specimens as two separate cores.
+      - has_text_matching:
+          expression: '<td>A[1-4], A[1-4], A[1-4], A[1-4]</td>'
+      - has_text_matching:
+          expression: '<td>B[1-4], B[1-4], B[1-4], B[1-4]</td>'
     Window haplotype calls:
       element_tests:
         A1:
           asserts:
+          - has_n_lines:
+              n: 3
           - has_text:
               text: "76T>C"
         B1:
           asserts:
+          - has_n_lines:
+              n: 3
+          - has_text:
+              text: "61C>A"
+- doc: >-
+    Same cohort with the workflow's default parameters and the distance tree cut.
+    Each amplicon is split into a 100 bp window carrying the SNP (W0001) and a
+    reference-identical 50 bp window (W0101), giving an 8x6 sheet; the
+    reference-identical windows carry no information, so the distances and the
+    A*/B* split are unchanged.
+  job:
+    Paired-end reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: A1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    Amplicon panel:
+      class: File
+      path: test-data/panel.fasta
+      filetype: fasta
+    Tree cut method: distance
+  outputs:
+    Haplotype windows:
+      asserts:
+      - has_n_lines:
+          n: 4
+      - has_line:
+          line: "M1\t0\t100\tM1_W0001"
+      - has_line:
+          line: "M1\t100\t150\tM1_W0101"
+      - has_line:
+          line: "M2\t0\t100\tM2_W0001"
+      - has_line:
+          line: "M2\t100\t150\tM2_W0101"
+    Haplotype sheet:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_n_columns:
+          n: 7
+      - has_line:
+          line: "Seq_ID\tM1_W0001_Hap_1\tM1_W0001_Hap_2\tM1_W0101_Hap_1\tM2_W0001_Hap_1\tM2_W0001_Hap_2\tM2_W0101_Hap_1"
+    Haplotype map:
+      asserts:
+      - has_n_lines:
+          n: 7
+      - has_line_matching:
+          expression: 'M1_W0001_Hap_\d\tM1_W0001\tM1\t1\t100\t76T>C\t4'
+      - has_line_matching:
+          expression: 'M2_W0001_Hap_\d\tM2_W0001\tM2\t1\t100\t61C>A\t4'
+      - has_line_matching:
+          expression: 'M[12]_W0101_Hap_1\tM[12]_W0101\tM[12]\t101\t150\t=\t8'
+          n: 2
+    Long-format haplotype calls:
+      asserts:
+      - has_n_lines:
+          n: 33
+    Distance matrix:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_n_columns:
+          n: 9
+      # A* are identical to each other and 0.5 from every B*, and vice versa.
+      - has_line_matching:
+          expression: 'A[1-4](\t0){4}(\t0\.5){4}'
+          n: 4
+      - has_line_matching:
+          expression: 'B[1-4](\t0\.5){4}(\t0){4}'
+          n: 4
+    Clusters:
+      asserts:
+      - has_n_lines:
+          n: 9
+      - has_line:
+          line: "Seq_ID\tAssigned_cluster"
+      # All A* specimens share one cluster id, all B* specimens share a different one.
+      - has_text_matching:
+          expression: '(?m)^A1\t(\d+)\nA2\t\1\nA3\t\1\nA4\t\1\nB1\t(?!\1\n)(\d+)\nB2\t\2\nB3\t\2\nB4\t\2$'
+    Cluster sweep:
+      asserts:
+      - has_text_matching:
+          expression: '"count_range": \[\s*2,\s*2\s*\]'
+      - has_text:
+          text: '"confident": true'
+      - has_text:
+          text: '"n_stable_cores": 2'
+    Cluster sweep report:
+      asserts:
+      - has_text:
+          text: "2 clusters (confident: count selectors agree)"
+      - has_text:
+          text: "8 specimens"
+      # The stable-core table lists the A* and B* specimens as two separate cores.
+      - has_text_matching:
+          expression: '<td>A[1-4], A[1-4], A[1-4], A[1-4]</td>'
+      - has_text_matching:
+          expression: '<td>B[1-4], B[1-4], B[1-4], B[1-4]</td>'
+    Window haplotype calls:
+      element_tests:
+        A1:
+          asserts:
+          - has_n_lines:
+              n: 5
+          - has_text:
+              text: "76T>C"
+        B1:
+          asserts:
+          - has_n_lines:
+              n: 5
           - has_text:
               text: "61C>A"
