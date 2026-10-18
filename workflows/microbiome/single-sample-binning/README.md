@@ -4,14 +4,17 @@ This workflow uses paired-end reads and their corresponding assemblies, generate
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
+In contrast to the [multi-sample binning workflow](../multi-sample-binning/), which maps the reads of every sample against the assemblies of all samples to obtain cross-sample coverage, this workflow maps each sample's reads only against its own assembly. Single-sample binning therefore needs far fewer mapping jobs and much less storage, especially for many samples, but usually produces somewhat worse bins, because the binners cannot use abundance patterns across samples. Prefer multi-sample binning when resources allow and the samples come from related environments; use single-sample binning for large numbers of samples, unrelated samples, or limited storage.
+
 This workflow is the binning section of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy.
 
 ## Inputs
 
+- **Paired-end reads**: a `list:paired` collection with one element per sample.
   - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.
   - The sample names are used as coverage columns for the binners.
 - **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
-  - Every sample's reads are mapped against there corresponding assembly, so the element identifier has to match
+  - Every sample's reads are mapped against their corresponding assembly. The two collections are paired by position, not by element identifier, so they must have the same number of elements, in the same order (e.g. sorted the same way).
 - **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
 - **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.
 - **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
@@ -34,7 +37,7 @@ A dedicated [learning pathway](https://galaxyproject.github.io/training-material
 
 The standard binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.
 
-It should also be noted that this workflow can restrict Upstream. For example, it is possible to restrict the workflow so that the User can only use one of the two refinement tools or can restrict it to only one specific refinement tool.
+When this workflow is used as a subworkflow, the parent workflow can restrict its options, for example by fixing the **Bin refinement tool** parameter so that users can only run one specific refinement tool.
 
 ## Workflow logic
 
