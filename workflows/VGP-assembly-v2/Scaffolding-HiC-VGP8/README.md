@@ -14,10 +14,10 @@ Example of VGP trajectory :
 2. Assembly Name [text] Name of the assembly.
 3. Genome assembly [gfa]
 4. Haplotype being scaffolded (Will be added to scaffold names: e.g. `>scaffold_01_H1`)
-5. Use BWA-mem instead of BWA-mem2? [boolean] (Default: `no`). If `yes`, Hi-C reads are aligned with BWA-MEM rather than BWA-MEM2. Use this if BWA-MEM2 fails or is unavailable.
+5. Use BWA-MEM instead of BWA-MEM2? [boolean] (Default: `no`). If `yes`, Hi-C reads are aligned with BWA-MEM rather than BWA-MEM2. Use this if BWA-MEM2 fails or is unavailable.
 6. HiC reads paired collection [fastq]
 7. Trim Hi-C data? If `yes`, trim five bases at the beginning of each read. Use with Arima Hi-C data if the Hi-C map looks "noisy" and the reads haven't been trimmed before.
-8. Minimum Mapping Quality [int] (Default:20). Minimum mapping quality for Hi-C alignments. Set to 0 if you want no filtering.
+8. Minimum Mapping Quality [int] (Default: 10). Minimum mapping quality for Hi-C alignments. Set to 0 if you want no filtering.
 9. Database for Compleasm lineage (recommended: latest)
 10. Compleasm lineage (recommended for VGP data: vertebrata)
 11. Restriction enzyme sequence (recommended for VGP data: Arima Hi-C 2.0)
@@ -35,4 +35,4 @@ Example of VGP trajectory :
 7. QC: Size plot.
 8. QC: Compleasm summary and full table.
 9. QC: Pretext Maps before and after scaffolding.
-10. QC: Statistics on Hi-C alignements before and after scaffolding
+10. QC: Statistics on Hi-C alignments before and after scaffolding
