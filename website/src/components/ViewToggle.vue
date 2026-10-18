@@ -16,17 +16,17 @@ const isGrid = computed(() => mode.value === "grid");
 
 <template>
     <div class="flex items-center">
-        <div class="relative inline-flex rounded-full bg-ebony-clay-100 p-1">
+        <div class="relative inline-flex rounded-lg bg-ebony-clay-100 p-1">
             <!-- Sliding pill indicator -->
             <div
-                class="absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-full bg-hokey-pokey-500 shadow-md transition-all duration-300 ease-out"
+                class="absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-md bg-hokey-pokey-500 shadow-md transition-all duration-300 ease-out"
                 :class="isGrid ? 'left-[calc(50%+1px)]' : 'left-1'" />
 
             <!-- List button -->
             <button
                 :aria-pressed="!isGrid"
                 aria-label="List view"
-                class="relative z-10 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
+                class="relative z-10 inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
                 :class="!isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'"
                 @click="handleValueChange('list')">
                 <List
@@ -40,7 +40,7 @@ const isGrid = computed(() => mode.value === "grid");
             <button
                 :aria-pressed="isGrid"
                 aria-label="Grid view"
-                class="relative z-10 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
+                class="relative z-10 inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors duration-300"
                 :class="isGrid ? 'text-ebony-clay-950' : 'text-chicago-600 hover:text-chicago-800'"
                 @click="handleValueChange('grid')">
                 <LayoutGrid

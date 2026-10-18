@@ -32,7 +32,7 @@ The workflow provides a subtyping report, the consensus sequences arranged by ge
 
   **NOTE 3**: Datasets in this collection must not use colons (`:`) as part of their names.
 
-  **NOTE 4**: A well-formatted collection of Influenza A reference sequences suitable for most analysis needs is linked from the "Data resources" section of the page: https://virology.usegalaxy.eu/published/page?id=a04ab8d6ecb698fa.
+  **NOTE 4**: A well-formatted collection of Influenza A reference sequences suitable for most analysis needs is linked from the "Data resources" section of the page: https://virology.usegalaxy.eu/published/page?id=a04ab8d6ecb698fa. The underlying per-segment FASTA files to build the collection are deposited at https://doi.org/10.5281/zenodo.15364147.
 
 ## Outputs:
 
@@ -51,4 +51,3 @@ The workflow provides a subtyping report, the consensus sequences arranged by ge
 ## Related training material
 
 https://gxy.io/GTN:T00308 guides you through a simplified, manual analysis that still includes the key steps of this workflow.
-

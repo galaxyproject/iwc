@@ -7,7 +7,12 @@ This workflow is also the subject of a Galaxy Training Network tutorial (current
 It differs from [this workflow](https://github.com/galaxyproject/iwc/tree/main/workflows/sars-cov-2-variant-calling/sars-cov-2-pe-illumina-artic-variant-calling) in
 that it does not use `lofreq` and is aimed at rapid analysis of majority variants and lineage/clade assignment with `pangolin` and `nextclade`.
 
+Note:
+The version of nextclade used in this workflow is rather outdated.
+For up-to-date nextclade assignments consider analyzing the Combined Consensus Genomes output at https://clades.nextstrain.org/.
+
 TODO:
 
-1. Add support for QC using negative and positive controls
-2. Integrate with phylogeny tools including IQTree and UShER (and possibly more).
+1. Get nextclade on Galaxy updated and use it here.
+2. Add support for QC using negative and positive controls.
+3. Integrate with phylogeny tools including IQTree and UShER (and possibly more).

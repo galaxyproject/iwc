@@ -1,44 +1,45 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "@nanostores/vue";
-import { allWorkflows, collectionSearchQuery } from "../stores/workflowStore";
+import { ref, onMounted } from "vue";
+import MarkdownRenderer from "./MarkdownRenderer.vue";
 
 const props = defineProps<{
     collectionName: string;
-    showBackLink?: boolean;
 }>();
 
-const workflows = useStore(allWorkflows);
-const searchQuery = useStore(collectionSearchQuery);
+const collectionDescription = ref<string | null>(null);
+const isLoading = ref(true);
 
-// Filter workflows by the selected collection
-const collectionWorkflows = computed(() =>
-    workflows.value.filter((workflow) =>
-        workflow.collections.some((col) => col.toLowerCase() === props.collectionName.toLowerCase()),
-    ),
-);
+// Load collection description
+async function loadCollectionDescription(collection: string) {
+    try {
+        const response = await fetch(`/category-descriptions/${collection.toLowerCase().replace(/ /g, "-")}.md`);
+        if (response.ok) {
+            collectionDescription.value = await response.text();
+        } else {
+            collectionDescription.value = null;
+        }
+    } catch (error) {
+        collectionDescription.value = null;
+        console.error(`Error fetching description for ${collection}:`, error);
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+onMounted(() => {
+    loadCollectionDescription(props.collectionName);
+});
 </script>
 
 <template>
-    <div class="w-full p-4 bg-ebony-clay text-center">
-        <h2 class="text-lg text-white font-semibold mb-4">
-            Discover {{ collectionWorkflows.length }} workflow{{ collectionWorkflows.length !== 1 ? "s" : "" }} in this
-            collection
-        </h2>
-
-        <div class="max-w-6xl w-full mx-auto">
-            <input
-                :value="searchQuery"
-                type="text"
-                :placeholder="`Search ${collectionName} workflows`"
-                class="w-full p-3 border border-ebony-clay-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow"
-                @input="collectionSearchQuery.set($event.target.value)" />
-        </div>
-
-        <div v-if="showBackLink" class="mt-4">
-            <a href="/" class="text-white hover:text-hokey-pokey-300 underline transition-colors">
-                ← Back to all workflows
-            </a>
+    <div>
+        <!-- Description card with gold accent -->
+        <div
+            v-if="!isLoading && collectionDescription"
+            class="max-w-4xl mx-auto mb-6 bg-white border border-ebony-clay-100 rounded-lg shadow-md px-6 py-4 text-left">
+            <div class="prose prose-lg !max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                <MarkdownRenderer :markdown-content="collectionDescription" />
+            </div>
         </div>
     </div>
 </template>
