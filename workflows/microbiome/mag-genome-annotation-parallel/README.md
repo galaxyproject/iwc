@@ -66,6 +66,7 @@ Bakta runs in metagenome mode and keeps the original contig headers, so contig I
 ## Expected Outputs
 
 - Per-MAG annotation files
+- Per-MAG Bakta log files, recording the Bakta run settings (e.g. metagenome mode)
 - Standardized annotation tables
 - Merged genome annotation matrices
 - Summary statistics files
