@@ -1,0 +1,501 @@
+# Tests for Multivariable_Association_Analysis_of_Amplicon_Data.ga
+# Five combinations supported by the current fixture (30 samples).
+# sample0/sample3 are positive controls; sample1/sample2 are negative controls.
+# All four controls have batch=NA; all 26 non-control samples have a batch value.
+# MMUPHin requires complete batch values, so batch correction is enabled only
+# when both control types are removed. Batch-on tests retaining either control
+# type need separate suitable fixtures and are not covered by this file.
+# No metadata values were filled or changed.
+# 0: negative + positive + batch; 1: all off; 2: negative only;
+# 3: positive only; 4: negative + positive, batch off (formerly test index 5).
+# Output labels match the main workflow, including heatmap trailing spaces.
+# Assert only active outputs; omission is not an explicit absence assertion.
+# Existing significance expectations in the two original tests are retained.
+# The all-off case previously hit a container mount timeout and needs rerunning.
+# This revised suite has been checked statically, not executed in Galaxy.
+
+- doc: Test with negative controls enabled, positive controls enabled, and batch correction enabled
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '13'
+    Positive-control column number (0 = none): '14'
+    Batch-ID column number (0 = none): '11'
+    Decontam threshold: 0.1
+    MaAsLin3 model formula: valley
+    MaAsLin3 reference level: valley,Fango
+    MaAsLin3 maximum significance (q-value): '0.95'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+    Taxonomic agglomeration rank: Genus
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+      - that: has_size
+        min: 1000
+    MaAsLin3 significant features (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+      - that: has_text
+        text: valley
+    MaAsLin3 all results (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 significant features (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+      - that: has_text
+        text: valley
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 volcano plot (ASV level) abundance:
+      asserts:
+      - that: has_size
+        min: 10000
+    MaAsLin3 volcano plot (ASV level) prevalence:
+      asserts:
+      - that: has_size
+        min: 10000
+    Decontam prevalence plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    Decontam library size vs control plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    'Negative-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    'Positive-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    MMUPHin batch-corrected ASV table:
+      path: test-data/Batch-corrected ASV table.tabular
+    MMUPHin diagnostic plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    MMUPHin batch-corrected phyloseq object:
+      asserts:
+      - that: has_size
+        size: 18000
+        delta: 1800
+- doc: Test with negative controls disabled, positive controls disabled, and batch correction disabled
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '0'
+    Positive-control column number (0 = none): '0'
+    Batch-ID column number (0 = none): '0'
+    Decontam threshold: 0.1
+    MaAsLin3 model formula: valley
+    MaAsLin3 reference level: valley,Fango
+    MaAsLin3 maximum significance (q-value): '0.95'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+    Taxonomic agglomeration rank: Genus
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+      - that: has_size
+        min: 1000
+    MaAsLin3 significant features (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+      - that: has_text
+        text: valley
+    MaAsLin3 all results (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 significant features (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+      - that: has_text
+        text: valley
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 volcano plot (ASV level) abundance:
+      asserts:
+      - that: has_size
+        min: 10000
+    MaAsLin3 volcano plot (ASV level) prevalence:
+      asserts:
+      - that: has_size
+        min: 10000
+- doc: Test with negative controls enabled, positive controls disabled, and batch correction disabled
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '13'
+    Positive-control column number (0 = none): '0'
+    Batch-ID column number (0 = none): '0'
+    Decontam threshold: 0.1
+    MaAsLin3 model formula: valley
+    MaAsLin3 reference level: valley,Fango
+    MaAsLin3 maximum significance (q-value): '0.95'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+    Taxonomic agglomeration rank: Genus
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+      - that: has_size
+        min: 1000
+    MaAsLin3 significant features (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 significant features (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 volcano plot (ASV level) abundance:
+      asserts:
+      - that: has_size
+        min: 10000
+    MaAsLin3 volcano plot (ASV level) prevalence:
+      asserts:
+      - that: has_size
+        min: 10000
+    Decontam prevalence plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    Decontam library size vs control plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    'Negative-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+- doc: Test with negative controls disabled, positive controls enabled, and batch correction disabled
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '0'
+    Positive-control column number (0 = none): '14'
+    Batch-ID column number (0 = none): '0'
+    Decontam threshold: 0.1
+    MaAsLin3 model formula: valley
+    MaAsLin3 reference level: valley,Fango
+    MaAsLin3 maximum significance (q-value): '0.95'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+    Taxonomic agglomeration rank: Genus
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+      - that: has_size
+        min: 1000
+    MaAsLin3 significant features (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 significant features (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 volcano plot (ASV level) abundance:
+      asserts:
+      - that: has_size
+        min: 10000
+    MaAsLin3 volcano plot (ASV level) prevalence:
+      asserts:
+      - that: has_size
+        min: 10000
+    'Positive-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
+- doc: Test with negative controls enabled, positive controls enabled, and batch correction disabled
+  job:
+    Phyloseq object:
+      class: File
+      path: test-data/Phyloseq object.phyloseq
+      filetype: phyloseq
+    Metadata:
+      class: File
+      path: test-data/Metadata.tabular
+      filetype: tabular
+    Negative-control column number (0 = none): '13'
+    Positive-control column number (0 = none): '14'
+    Batch-ID column number (0 = none): '0'
+    Decontam threshold: 0.1
+    MaAsLin3 model formula: valley
+    MaAsLin3 reference level: valley,Fango
+    MaAsLin3 maximum significance (q-value): '0.95'
+    MaAsLin3 normalization: TSS
+    MaAsLin3 transformation: LOG
+    MaAsLin3 q-value correction: BH
+    Taxonomic agglomeration rank: Genus
+  outputs:
+    Analysis-ready phyloseq object:
+      asserts:
+      - that: has_size
+        min: 1000
+    MaAsLin3 significant features (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (ASV level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 significant features (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 1
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 all results (taxonomic level):
+      asserts:
+      - that: has_n_lines
+        min: 2
+      - that: has_text
+        text: feature
+      - that: has_text
+        text: metadata
+      - that: has_text
+        text: coef
+    MaAsLin3 volcano plot (ASV level) abundance:
+      asserts:
+      - that: has_size
+        min: 10000
+    MaAsLin3 volcano plot (ASV level) prevalence:
+      asserts:
+      - that: has_size
+        min: 10000
+    Decontam prevalence plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    Decontam library size vs control plot:
+      asserts:
+      - that: has_size
+        min: 1000
+    'Negative-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by negative controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    'Positive-control heatmap ':
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination heatmap by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
+    Post-decontamination ordination by positive controls:
+      asserts:
+      - that: has_size
+        min: 1000
