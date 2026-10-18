@@ -12,6 +12,16 @@ const config = {
     use: {
         baseURL: `http://localhost:${port}`,
     },
+    projects: [
+        {
+            name: "desktop",
+            use: { viewport: { width: 1280, height: 720 } },
+        },
+        {
+            name: "mobile",
+            use: { viewport: { width: 390, height: 844 }, isMobile: true },
+        },
+    ],
     reporter: process.env.CI ? "github" : "html",
 };
 

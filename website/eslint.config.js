@@ -1,12 +1,15 @@
 import js from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
+import eslintPluginAstro from "eslint-plugin-astro";
 import globals from "globals";
 
-export default tseslint.config(
+export default defineConfig(
     js.configs.recommended,
     ...tseslint.configs.recommended,
     ...pluginVue.configs["flat/recommended"],
+    ...eslintPluginAstro.configs.recommended,
 
     {
         files: ["**/*.vue"],

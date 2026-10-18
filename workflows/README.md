@@ -166,6 +166,26 @@ If your tests are not passing because you made an error into your test file you 
 planemo workflow_test_on_invocation --galaxy_url <your_prefered_galaxy_server> --galaxy_user_key <your_api_key> <workflow-tests.yml> <invocation_id>
 ```
 
+#### Request testing against an external Galaxy instance
+
+By default, IWC workflow tests run on a Galaxy instance started by the GitHub Actions worker. This is the preferred setup because it keeps tests reproducible, reviewable, and independent of shared public Galaxy infrastructure.
+
+Testing against an external Galaxy instance is a last resort. Only request it for workflows that cannot reasonably pass on the GitHub worker instance, for example because they require infrastructure or reference data that cannot be made available in CI. Do not use this to work around ordinary test failures, missing test data, tool installation problems, or workflows that can be reduced to a smaller CI-friendly test case.
+
+To request external-instance testing for a workflow repository, add a file named `.wt_instance` to that workflow directory. The file must contain the target instance name:
+
+```text
+usegalaxy.org
+```
+
+For example:
+
+```text
+workflows/<category>/<workflow>/.wt_instance
+```
+
+When a pull request changes a workflow directory containing `.wt_instance`, the workflow is tested in the GitHub environment that provides the `GALAXY_USER_KEY` secret for that instance. GitHub doesn't pass secrets to `pull_request` runs from forks, so for pull requests from forks the regular test job skips these workflows. They are tested instead by a separate `pull_request_target` run ("Galaxy Workflow Tests on external instances for PRs from forks") with the pull request's workflow directories, in the `pr-secrets` environment, which a maintainer must approve. Before approving, review the pull request, in particular `.wt_instance` and the test definitions, and check that the commit in the job name is the one you reviewed.
+
 ##### Use build-in indexes
 
 If your workflow is using build-in indexes, note that the CI will use CVMFS. You can browse the available indexes at http://datacache.galaxyproject.org/. 
@@ -249,6 +269,7 @@ The workflows submitted to iwc are updated automatically. We describe here where
 ## Reviews
 
 Your PR will be reviewed by an IWC member as soon as possible, following the guidelines in https://github.com/galaxyproject/iwc/blob/main/.github/PULL_REQUEST_TEMPLATE.md. To speed up reviews please familiarize with this checklist. A claude slash command is available to automate part of the review process, use `/review <pr number>` to run it.
+Please add yourself to the .github/CODEOWNERS file so you will be notified when there are PRs that modify your workflow.
 
 ### FAQ
 - A workflow has not been updated while it has tools that have newer versions available?

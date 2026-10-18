@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4] - 2026-03-17
+- Added an optional step allowing users to select either a built-in reference genome or provide a custom reference genome from their history.
+
+## [0.3] - 2026-01-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.27+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0`
+
 ## [0.2] - 2025-12-08
 
 ### Changes
