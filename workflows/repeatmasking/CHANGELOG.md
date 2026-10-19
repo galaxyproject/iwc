@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2] - 2026-09-14
+## [0.2] - 2026-10-19
 
 ### Changed
 - RepeatMasker takes its repeat families from a Dfam library installed through the `repeatmasker_famdb` data table. Two new required inputs select the library ("Dfam library") and the species or clade to take families for ("Repeat source species"). The RepeatMasker Conda package no longer ships a Dfam library, so the previous version could not run.
