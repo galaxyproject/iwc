@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.8] - 2026-10-18
+
+### Changed
+- Re-enable fastp duplication analysis, which fastp 0.24.0 ran by default and the fastp 1.3.7 wrapper turns off. The fastp and MultiQC reports include duplication statistics again; reads are not deduplicated.
+
 ## [0.1.7] - 2026-09-21
 
 ### Automatic update
