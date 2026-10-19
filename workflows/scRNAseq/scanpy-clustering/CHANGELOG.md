@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/0.13.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/0.13.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.13.3+galaxy0`
+
 ## [0.2] - 2026-09-07
 
 ### Automatic update
