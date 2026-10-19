@@ -27,7 +27,7 @@ The eggNOG-mapper output collection can be generated, for example, with the IWC 
 	- BiGG reactions
 	- PFAM domains
 
-2. **Abundance calculation** by counting each annotation term in every sample, while ignoring missing annotations represented by `-`.
+2. **Abundance calculation** by counting each annotation term in every sample. Comma-separated values are split into individual terms, and multi-letter COG categories (e.g. `KT`) are split into single-letter categories, so a protein is counted once for each of its categories. Proteins without an annotation of a given type (`-`) are counted in an `unannotated` row.
 
 3. **Consolidation** by joining the per-sample tables for each annotation type and combining all annotation types into a single table.
 
@@ -36,7 +36,7 @@ The eggNOG-mapper output collection can be generated, for example, with the IWC 
 - Separate abundance tables for eggNOG ortholog groups, COG categories, GO terms, EC numbers, KEGG KOs, KEGG pathways, KEGG modules, KEGG reactions, KEGG reaction classes, BRITE hierarchies, KEGG TC identifiers, CAZy families, BiGG reactions, and PFAM domains.
 - **eggNOG-mapper annotation abundance table**: a combined table containing all annotation types, their identifiers, and their per-sample abundances.
 
-Outputs for annotation types that are absent from the input data may be empty.
+For annotation types that are absent from the input data, the tables only contain the `unannotated` row.
 
 ## Comparison with similar workflows
 
