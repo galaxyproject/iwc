@@ -1,0 +1,335 @@
+- doc: MEGAHIT ignores long reads with unrelated identifiers and different group counts
+  job:
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: test_minigut
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed nanopore reads from grouped samples:
+      collection_type: list
+      elements:
+      - identifier: unrelated_nanopore
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      class: Collection
+    Trimmed PacBio reads from grouped samples:
+      collection_type: list
+      elements:
+      - identifier: unrelated_pacbio_1
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      - identifier: unrelated_pacbio_2
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      class: Collection
+    Choose Assembler: MEGAHIT
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+  outputs:
+    Quast HTML report:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_size:
+              value: 382796
+              delta: 20000
+    Quast report:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_n_lines:
+              n: 22
+              delta: 5
+    Final assemblies:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_text:
+              text: '>'
+          - has_size:
+              value: 1827686
+              delta: 250000
+- doc: Test for Metagenomic Assembly long read test
+  job:
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: test_minigut
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed nanopore reads from grouped samples:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: test_minigut
+        location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz
+    Trimmed PacBio reads from grouped samples: null
+    Choose Assembler: metaSPAdes
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+  outputs:
+    Quast HTML report:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_size:
+              value: 382796
+              delta: 20000
+    Quast report:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_n_lines:
+              n: 22
+              delta: 5
+    Final assemblies:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_text:
+              text: '>'
+          - has_size:
+              value: 1777444
+              delta: 250000
+    metaSPAdes assembly graph:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_size:
+              value: 3566077
+              delta: 500000
+    metaSPAdes scaffolds:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_size:
+              value: 1777339
+              delta: 250000
+    metaSPAdes assembly graph with scaffolds:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_size:
+              value: 1753943
+              delta: 250000
+- doc: Test for Metagenomic Assembly with a custom assembly
+  job:
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: marine_pooled
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/17107943/files/workflow_test_forward.fastqsanger
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/17107943/files/workflow_test_reverse.fastqsanger
+    Trimmed nanopore reads from grouped samples: null
+    Trimmed PacBio reads from grouped samples: null
+    Choose Assembler: Custom Assembly
+    Custom Assemblies:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: marine_pooled
+        location: https://zenodo.org/records/17107943/files/workflow_test_assamble.fasta
+    Minimum length of contigs to output: 200
+  outputs:
+    Final assemblies:
+      class: Collection
+      element_tests:
+        marine_pooled:
+          asserts:
+          - has_size:
+              value: 13587784
+    Quast report:
+      class: Collection
+      element_tests:
+        marine_pooled:
+          asserts:
+          - has_n_lines:
+              n: 22
+              delta: 5
+- doc: Custom assemblies are matched by identifier even when their collection order
+    is reversed; unused long reads are ignored
+  job:
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: marine_pooled
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/17107943/files/workflow_test_forward.fastqsanger
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/17107943/files/workflow_test_reverse.fastqsanger
+      - class: Collection
+        collection_type: paired
+        identifier: test_minigut
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed nanopore reads from grouped samples:
+      collection_type: list
+      elements:
+      - identifier: unrelated_1
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      - identifier: unrelated_2
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      - identifier: unrelated_3
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      class: Collection
+    Trimmed PacBio reads from grouped samples:
+      collection_type: list
+      elements:
+      - identifier: unrelated_pacbio
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      class: Collection
+    Choose Assembler: Custom Assembly
+    Custom Assemblies:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: test_minigut
+        path: test-data/custom-contigs.fasta
+        filetype: fasta
+      - class: File
+        identifier: marine_pooled
+        location: https://zenodo.org/records/17107943/files/workflow_test_assamble.fasta
+    Minimum length of contigs to output: 200
+  outputs:
+    Final assemblies:
+      class: Collection
+      element_tests:
+        marine_pooled:
+          asserts:
+          - has_size:
+              value: 13587784
+        test_minigut:
+          asserts:
+          - has_text:
+              text: '>custom_minigut_contig'
+          - has_size:
+              value: 2043
+    Quast report:
+      class: Collection
+      element_tests:
+        marine_pooled:
+          asserts:
+          - has_n_lines:
+              n: 22
+              delta: 5
+        test_minigut:
+          asserts:
+          - has_text_matching:
+              expression: Total length\s+2000
+          - has_n_lines:
+              n: 22
+              delta: 5
+- doc: metaSPAdes accepts long reads for a subset of sample groups
+  job:
+    Trimmed paired reads from grouped samples:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        collection_type: paired
+        identifier: test_minigut
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+      - class: Collection
+        collection_type: paired
+        identifier: short_read_only
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Trimmed nanopore reads from grouped samples:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: test_minigut
+        location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz
+    Trimmed PacBio reads from grouped samples: null
+    Choose Assembler: metaSPAdes
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+  outputs:
+    Final assemblies:
+      class: Collection
+      element_tests:
+        test_minigut:
+          asserts:
+          - has_text:
+              text: '>'
+          - has_size:
+              value: 1777444
+              delta: 300000
+        short_read_only:
+          asserts:
+          - has_text:
+              text: '>'
+          - has_size:
+              value: 1777444
+              delta: 300000
