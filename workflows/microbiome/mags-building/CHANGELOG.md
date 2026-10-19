@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Preserve selected sample structure for absent optional long reads after grouping, including skipped assembler branches.
 - Replace pre-grouped read inputs with internal original/grouped/hybrid selection.
 - Embed separate grouping, assembly and binning workflows.
 - Add Single/Multi/Both coverage selection (default Single) and DAS Tool/Binette/Both refinement.
