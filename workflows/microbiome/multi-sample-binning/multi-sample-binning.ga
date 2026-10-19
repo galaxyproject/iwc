@@ -744,7 +744,13 @@
             "type": "tool",
             "uuid": "99fd59a2-f822-4cf5-9be4-5bdf2d55c43d",
             "when": null,
-            "workflow_outputs": []
+            "workflow_outputs": [
+                {
+                    "label": "Coverage depth matrices",
+                    "output_name": "outputDepth",
+                    "uuid": "cd6f16f1-f3c9-4afa-90d2-f8e8a5cc0937"
+                }
+            ]
         },
         "18": {
             "annotation": "",
@@ -1525,6 +1531,14 @@
                 "when": {
                     "id": 9,
                     "output_name": "output_param_boolean"
+                },
+                "min_completeness": {
+                    "id": 33,
+                    "output_name": "output"
+                },
+                "contamination_weight": {
+                    "id": 34,
+                    "output_name": "output"
                 }
             },
             "inputs": [
@@ -1583,7 +1597,7 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"contamination_weight\": \"2\", \"contig2bin_tables\": {\"__class__\": \"ConnectedValue\"}, \"contigs\": {\"__class__\": \"ConnectedValue\"}, \"database_type\": {\"is_select\": \"cached\", \"__current_case__\": 1, \"datamanager\": {\"__class__\": \"ConnectedValue\"}}, \"min_completeness\": \"40\", \"proteins\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"contamination_weight\": {\"__class__\": \"ConnectedValue\"}, \"contig2bin_tables\": {\"__class__\": \"ConnectedValue\"}, \"contigs\": {\"__class__\": \"ConnectedValue\"}, \"database_type\": {\"is_select\": \"cached\", \"__current_case__\": 1, \"datamanager\": {\"__class__\": \"ConnectedValue\"}}, \"min_completeness\": {\"__class__\": \"ConnectedValue\"}, \"proteins\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.2.1+galaxy0",
             "type": "tool",
@@ -1606,9 +1620,66 @@
                     "uuid": "a10382ed-1d4b-45ad-89b5-79cd5041ec66"
                 }
             ]
+        },
+        "33": {
+            "annotation": "Minimum bin completeness percentage for Binette refinement.",
+            "content_id": null,
+            "errors": null,
+            "id": 33,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Minimum MAG completeness percentage for bin refinement (binette) and dereplication (drep)",
+                    "name": "Minimum MAG completeness percentage"
+                }
+            ],
+            "label": "Minimum MAG completeness percentage",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 5730.37010398056,
+                "top": 1191.0939624823973
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 40, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "5bda60c5-a966-4b1c-8612-b4233809617f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "34": {
+            "annotation": "This weight is used for the scoring the bins. A low weight favor complete bins over low contaminated bins (--contamination_weight)",
+            "content_id": null,
+            "errors": null,
+            "id": 34,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "This weight is used for the scoring the bins. A low weight favor complete bins over low contaminated bins (--contamination_weight)",
+                    "name": "Contamination weight (Binette)"
+                }
+            ],
+            "label": "Contamination weight (Binette)",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 5721.867017043314,
+                "top": 1347.9338055273925
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "e34d00f4-d290-4217-a1c1-120ff5f37ee9",
+            "when": null,
+            "workflow_outputs": []
         }
     },
-    "tags": [],
+    "tags": [
+        "agentic-foundry-mags"
+    ],
     "uuid": "9b674961-0b3c-4f8f-97e6-f225e018198f",
-    "version": 1
+    "version": 1,
+    "readme": "# Multi-sample binning workflow\n\nThis workflow uses paired-end reads and their corresponding assemblies, generated by any assembler, to produce metagenomic bins using multiple binning tools. Each binner uses a different approach to identify and group contigs into bins.\n\nIn contrast to single-sample binning, the multi-sample approach uses information across multiple samples during binning. Reads from each sample are mapped against the assemblies from all samples to generate cross-sample coverage information. This provides the binners with additional information that can help distinguish contigs based on their abundance patterns across samples.\n\nIn this workflow, each sample's reads are mapped against each sample's assembly, and each assembly is subsequently binned separately using the cross-sample coverage information. This differs from multi-sample approaches that concatenate assemblies and perform a joint binning step before splitting the resulting bins by sample.\n\nThe multi-sample approach is more computationally demanding than single-sample binning because it requires additional read mappings and processes a larger amount of data. When the reads of N samples are mapped against N assemblies, the number of mapping jobs, the number of BAM files and the number of intermediate read copies all scale as N², so storage requirements grow quickly with the number of samples. However, the resulting cross-sample coverage information can improve binning, particularly when organisms show different relative abundances across samples. For a large number of samples, or for samples from unrelated environments where cross-sample coverage adds little information, single-sample binning is the cheaper choice.\n\nAfter binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.\n\nThis workflow is the binning section, with the added multi-sample logic, of the [MAGs generation workflow](../mags-building/), extracted so that MAGs generation and other workflows can reuse it instead of maintaining their own copy (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection with one element per sample.\n  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.\n  - The sample names are used as coverage columns for the binners.\n- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).\n  - Every sample's reads are mapped against every assembly, so the element identifiers of the two collections do not need to match. The number of assemblies does not need to equal the number of read samples either: a single co-assembly binned with the coverage of all samples is a valid input.\n- **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.\n- **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.\n- **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.\n- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.\n- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette; does not filter DAS Tool output.\n- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.\n\nSemiBin uses co-binning mode in this workflow. Its Galaxy wrapper does not expose a pretrained-model environment selector in that mode.\n\n## Outputs\n\n- **Coverage depth matrices**: one JGI depth table per assembly, containing coverage from all original samples.\n- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (if COMEBin was run): one list of bins per assembly.\n- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (if DAS Tool was run): the refined bins, a per-bin summary (completeness and redundancy based on single-copy genes) and the contig-to-bin assignments.\n- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (if Binette was run): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.\n\n## Why use this workflow\n\nThis workflow provides a standardized and modular workflow for metagenomic binning that can be integrated into larger metagenomic analysis workflows. Its main purpose is to separate the binning step from other parts of MAG analysis, making complex workflows easier to understand, maintain, and adapt.\n\nUsing binning as an independent workflow provides better control over the inputs, binning parameters, and outputs. It also allows users to reuse the same binning strategy in different analysis pipelines without having to include unnecessary upstream or downstream steps. This modular design is particularly useful when the generated bins are intended for a specific downstream analysis, such as taxonomic classification, genome annotation, functional analysis, or benchmarking.\n\nIn contrast, the IWC Metagenome-Assembled Genomes (MAGs) generation workflow (https://iwc.galaxyproject.org/workflow/mags-building-main/) is designed as a comprehensive end-to-end solution. It performs metagenome assembly and multi-tool binning of paired short reads and optional long reads, followed by dereplication and analysis of MAG quality and abundance. This makes it well suited for users who want to generate and evaluate MAGs without requiring a specialized downstream workflow.\n\nThis binning workflow should therefore be preferred when binning needs to be incorporated as one component of a larger or more specialized analysis. It reduces workflow complexity, improves the overview of individual analysis steps, and makes it easier to modify or replace downstream analyses independently.\n\nIt should also be noted that this workflow can restrict Upstream. For example, it is possible to restrict the workflow so that the User can only use one of the two refinement tools or can restrict it to only one specific refinement tool.\n\n## Workflow logic\n\n- Preprocess reads and assemblies for binning.\n- Generate cross-sample coverage information:\n  \n  - Map the reads from each sample against the assemblies from all samples.\n\n- Perform binning using multiple binners:\n\n  - CONCOCT\n  - MaxBin2\n  - MetaBAT2\n  - SemiBin\n  - COMEBin\n\n- Refine the resulting bins using one or both refinement tools:\n\n  - DAS Tool\n  - Binette\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n"
 }
