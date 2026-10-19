@@ -6,12 +6,15 @@ const props = withDefaults(
     defineProps<{
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         steps: Record<string, any>;
+        // Stable per-workflow key for SVG ids, so builds are deterministic and
+        // inline glyphs of different workflows don't share a gradient id.
+        uid?: string;
         collections?: string[];
         size?: number;
         variant?: "flow" | "bloom";
         title?: string;
     }>(),
-    { size: 64, variant: "flow", collections: () => [], title: undefined },
+    { uid: undefined, size: 64, variant: "flow", collections: () => [], title: undefined },
 );
 
 const VIEW = 100;
@@ -20,7 +23,13 @@ const GOLD = "#FFD700";
 
 const graph = computed(() => buildGlyphGraph(props.steps));
 const domain = computed(() => glyphDomain(props.collections));
-const gradientId = computed(() => `g-${Math.random().toString(36).slice(2, 9)}`);
+// The gradient only depends on the domain, so repeated ids for the same
+// workflow on one page resolve to identical definitions.
+const gradientId = computed(() => `glyph-${(props.uid ?? domain.value.key).replace(/[^A-Za-z0-9_-]/g, "")}`);
+
+// A tenth of a viewBox unit is well under a pixel at any size we draw, and
+// every extra digit is repeated across every glyph on the page.
+const rd = (v: number) => Math.round(v * 10) / 10;
 
 // One viewBox unit expressed in rendered pixels, so marks can keep a minimum
 // physical size and stay legible on small cards.
@@ -29,11 +38,11 @@ const nodeCount = computed(() => graph.value.nodes.length);
 
 const nodeRadius = computed(() => {
     const byDensity = Math.min(7, Math.max(2.4, 15 / Math.sqrt(nodeCount.value + 2)));
-    return Math.max(byDensity, 1.25 * pxUnit.value);
+    return rd(Math.max(byDensity, 1.25 * pxUnit.value));
 });
 const strokeWidth = computed(() => {
     const byDensity = Math.min(3.4, Math.max(1, 7 / Math.sqrt(nodeCount.value + 2)));
-    return Math.max(byDensity, 0.75 * pxUnit.value);
+    return rd(Math.max(byDensity, 0.75 * pxUnit.value));
 });
 
 function layoutPoint(x: number, y: number): Point {
@@ -73,7 +82,8 @@ const fit = computed(() => {
 });
 
 function place(n: GlyphNode): Point {
-    return fit.value(layoutPoint(n.x, n.y));
+    const p = fit.value(layoutPoint(n.x, n.y));
+    return { x: rd(p.x), y: rd(p.y) };
 }
 
 const placed = computed(() => new Map(graph.value.nodes.map((n) => [n.id, { node: n, at: place(n) }])));
@@ -84,8 +94,8 @@ function edgePath(fromId: string, toId: string): string {
     if (props.variant === "flow") {
         const p = place(a);
         const q = place(b);
-        const mx = (p.x + q.x) / 2;
-        return `M${p.x.toFixed(2)} ${p.y.toFixed(2)}C${mx.toFixed(2)} ${p.y.toFixed(2)} ${mx.toFixed(2)} ${q.y.toFixed(2)} ${q.x.toFixed(2)} ${q.y.toFixed(2)}`;
+        const mx = rd((p.x + q.x) / 2);
+        return `M${p.x} ${p.y}C${mx} ${p.y} ${mx} ${q.y} ${q.x} ${q.y}`;
     }
     // Sample the same S-curve in layout space and bend it through polar
     // space, so radial edges sweep as arcs rather than cutting chords.
@@ -97,7 +107,7 @@ function edgePath(fromId: string, toId: string): string {
         const x = a.x + (b.x - a.x) * t;
         const y = a.y + (b.y - a.y) * ease;
         const p = fit.value(layoutPoint(x, y));
-        pts.push(`${p.x.toFixed(2)} ${p.y.toFixed(2)}`);
+        pts.push(`${rd(p.x)} ${rd(p.y)}`);
     }
     return `M${pts.join("L")}`;
 }
@@ -105,6 +115,12 @@ function edgePath(fromId: string, toId: string): string {
 const edges = computed(() => graph.value.edges.map((e) => ({ key: `${e.from}-${e.to}`, d: edgePath(e.from, e.to) })));
 const nodes = computed(() => Array.from(placed.value.values()));
 const outputs = computed(() => nodes.value.filter((n) => n.node.isFinal));
+const ofKind = (kind: GlyphNode["kind"]) => computed(() => nodes.value.filter((n) => n.node.kind === kind));
+const datasets = ofKind("data");
+const collectionInputs = ofKind("collection");
+const subworkflows = ofKind("subworkflow");
+const tools = computed(() => nodes.value.filter((n) => n.node.kind === "tool" && !n.node.isFinal));
+const finalTools = computed(() => nodes.value.filter((n) => n.node.kind === "tool" && n.node.isFinal));
 // Past a few dozen steps individual dots turn to grit, so tool steps recede
 // into the threads and the inputs and final products carry the shape.
 const dense = computed(() => nodeCount.value > 26);
@@ -116,6 +132,9 @@ const haloScale = computed(() => (outputs.value.length > 6 ? 1.45 : outputs.valu
 // At thumbnail sizes a dense graph's tool dots are noise; keep only its threads.
 const hideTools = computed(() => dense.value && props.size <= 40);
 const haloOpacity = computed(() => (outputs.value.length > 6 ? 0.16 : 0.22));
+const inputRadius = computed(() => rd(nodeRadius.value * 1.05));
+const toolRadius = computed(() => rd(nodeRadius.value * (dense.value ? 0.42 : 0.7)));
+const finalRadius = computed(() => rd(nodeRadius.value * (manyOutputs.value ? 0.7 : 0.95)));
 
 const label = computed(() => {
     const g = graph.value;
@@ -126,6 +145,7 @@ const label = computed(() => {
 
 <template>
     <svg
+        xmlns="http://www.w3.org/2000/svg"
         :width="size"
         :height="size"
         :viewBox="`0 0 ${VIEW} ${VIEW}`"
@@ -166,48 +186,43 @@ const label = computed(() => {
             :key="`halo-${o.node.id}`"
             :cx="o.at.x"
             :cy="o.at.y"
-            :r="nodeRadius * haloScale"
+            :r="rd(nodeRadius * haloScale)"
             :fill="GOLD"
             :fill-opacity="haloOpacity" />
 
-        <g v-for="n in nodes" :key="n.node.id">
-            <template v-if="n.node.kind === 'collection'">
-                <!-- A collection is many datasets: draw it as a small stack. -->
+        <!-- One loop per mark so each step renders as a single element and shared
+             attributes sit on the group: this markup repeats for every card. -->
+        <g v-if="!hideTools" :fill="domain.line" :fill-opacity="dense ? 0.7 : 0.9">
+            <circle v-for="n in tools" :key="n.node.id" :cx="n.at.x" :cy="n.at.y" :r="toolRadius" />
+        </g>
+        <g :fill="domain.line">
+            <circle v-for="n in datasets" :key="n.node.id" :cx="n.at.x" :cy="n.at.y" :r="inputRadius" />
+            <!-- A collection is many datasets: draw it as a small stack. -->
+            <g v-for="n in collectionInputs" :key="n.node.id">
                 <circle
-                    :cx="n.at.x - nodeRadius * 0.55"
-                    :cy="n.at.y + nodeRadius * 0.55"
-                    :r="nodeRadius * 1.05"
-                    :fill="domain.line"
+                    :cx="rd(n.at.x - nodeRadius * 0.55)"
+                    :cy="rd(n.at.y + nodeRadius * 0.55)"
+                    :r="inputRadius"
                     fill-opacity="0.35" />
-                <circle :cx="n.at.x" :cy="n.at.y" :r="nodeRadius * 1.05" :fill="domain.line" />
-            </template>
+                <circle :cx="n.at.x" :cy="n.at.y" :r="inputRadius" />
+            </g>
+        </g>
+        <g v-for="n in subworkflows" :key="n.node.id">
             <circle
-                v-else-if="n.node.kind === 'data'"
                 :cx="n.at.x"
                 :cy="n.at.y"
-                :r="nodeRadius * 1.05"
-                :fill="domain.line" />
-            <template v-else-if="n.node.kind === 'subworkflow'">
-                <circle
-                    :cx="n.at.x"
-                    :cy="n.at.y"
-                    :r="nodeRadius * 1.25"
-                    :fill="n.node.isFinal ? GOLD : domain.from"
-                    :stroke="n.node.isFinal ? GOLD : domain.line"
-                    :stroke-width="strokeWidth" />
-                <circle
-                    :cx="n.at.x"
-                    :cy="n.at.y"
-                    :r="nodeRadius * 0.45"
-                    :fill="n.node.isFinal ? domain.from : domain.line" />
-            </template>
+                :r="rd(nodeRadius * 1.25)"
+                :fill="n.node.isFinal ? GOLD : domain.from"
+                :stroke="n.node.isFinal ? GOLD : domain.line"
+                :stroke-width="strokeWidth" />
             <circle
-                v-else-if="n.node.isFinal || !hideTools"
                 :cx="n.at.x"
                 :cy="n.at.y"
-                :r="n.node.isFinal ? nodeRadius * (manyOutputs ? 0.7 : 0.95) : nodeRadius * (dense ? 0.42 : 0.7)"
-                :fill="n.node.isFinal ? GOLD : domain.line"
-                :fill-opacity="n.node.isFinal ? 1 : dense ? 0.7 : 0.9" />
+                :r="rd(nodeRadius * 0.45)"
+                :fill="n.node.isFinal ? domain.from : domain.line" />
+        </g>
+        <g :fill="GOLD">
+            <circle v-for="n in finalTools" :key="n.node.id" :cx="n.at.x" :cy="n.at.y" :r="finalRadius" />
         </g>
     </svg>
 </template>

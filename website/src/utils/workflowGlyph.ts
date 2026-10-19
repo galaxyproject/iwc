@@ -19,7 +19,6 @@ export interface GlyphNode {
     id: string;
     kind: StepKind;
     depth: number;
-    isOutput: boolean;
     // A labelled output that nothing downstream consumes: one of the things
     // the workflow actually hands back to the user.
     isFinal: boolean;
@@ -208,7 +207,6 @@ export function buildGlyphGraph(steps: Record<string, RawStep>): GlyphGraph {
             id,
             kind,
             depth: d,
-            isOutput,
             isFinal: isOutput && !(children.get(id)?.length ?? 0),
             x: maxDepth ? d / maxDepth : 0.5,
             y: (y.get(id)! - mid) / span,
