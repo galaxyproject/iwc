@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Derive CONCOCT read length from both input mates using a read-count-weighted mean.
+- Make all five binners independently optional and enabled by default.
+- Place grouping, coverage strategy and bin-refiner selection first in the input form; correct grouping-column help.
+- Enclose stage tools and embedded workflows in native frames with Markdown explanations.
 - Preserve selected sample structure for absent optional long reads after grouping, including skipped assembler branches.
 - Replace pre-grouped read inputs with internal original/grouped/hybrid selection.
 - Embed separate grouping, assembly and binning workflows.

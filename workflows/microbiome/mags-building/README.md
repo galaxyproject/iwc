@@ -10,6 +10,8 @@ binning, and multi-coverage binning. Refiner reconciliation remains in the paren
 The original downstream quality assessment, dereplication, abundance estimation,
 and reporting are retained.
 
+The input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.
+
 ## Inputs and grouping
 
 - **Trimmed reads**: original samples as a `list:paired` collection.
@@ -56,6 +58,16 @@ for both coverage branches. The parent merges selected refiner outputs per branc
 before merging coverage branches. Binette receives parent completeness and
 contamination-weight controls. SemiBin's environment selector applies only to
 single mode: its co-mode wrapper does not expose that parameter.
+
+**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and
+**Run MaxBin2?** independently enable each binner; all default to **yes**.
+Keep at least one binner enabled. Disabled binners contribute empty candidate
+tables rather than blocking the selected refiner.
+
+CONCOCT read length is computed automatically from both input mates: total
+sequence length divided by total read count, rounded to the nearest integer.
+Single uses selected/group-merged reads; Multi uses all original samples. No
+manual read-length input is required.
 
 Published checkpoints include coverage depth matrices and raw/refined bin outputs
 for each coverage strategy, in addition to the original downstream results.
