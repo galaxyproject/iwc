@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+- Replace pre-grouped read inputs with internal original/grouped/hybrid selection.
+- Embed separate grouping, assembly and binning workflows.
+- Add Single/Multi/Both coverage selection (default Single) and DAS Tool/Binette/Both refinement.
+- Reconcile refiner and coverage outputs without retaining skipped-branch placeholders.
+- Preserve downstream MAG quality assessment, dereplication, abundance and reports.
+- Add coverage checkpoints, a grouping/coverage test matrix and editor stage annotations.
+- Breaking input change: release selection remains pending review; current release field is unchanged.
+
 ## [0.7] - 2026-08-03
 
 ### Automatic update
