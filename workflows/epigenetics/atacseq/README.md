@@ -5,12 +5,13 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 
 ## Inputs dataset
 
-- The workflow needs a single input which is a list of dataset pairs of fastqsanger.
+- A list of dataset pairs of fastqsanger.
+- A GTF file with gene annotations (this is used for the TSS enrichment).
 
 ## Inputs values
 
 - Percentage of bad quality bases per read: fastp will discard any read which has more than this percentage of bases with a quality below 30. This depends on your read length.
-- Reference genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (dbkeys table)
+- Reference genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (`bowtie2_indexes` and `fasta_indexes` table)
 - Effective genome size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
 - Bin size: this is used when normalization of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs.
 
@@ -20,8 +21,8 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 - The filtered reads are mapped with bowtie2 allowing dovetail and fragment length up to 1kb.
 - The BAM is filtered to keep only MAPQ30, concordant pairs and pairs outside of the mitochondria.
 - The PCR duplicates are removed with Picard (only from version 0.8).
-- The BAM is converted to BED to enable macs2 to take both pairs into account.
-- The peaks are called with macs2 which at the same time generates a coverage file.
+- The BAM is converted to BED to enable MACS2 to take both pairs into account.
+- The peaks are called with MACS2 which at the same time generates a coverage file.
 - The coverage file is converted to bigwig
 - The amount of reads 500bp from summits and the total number of reads are computed.
 - Two normalizations are computed:
@@ -30,8 +31,9 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 - Other QC are performed:
   - A histogram with fragment length is computed.
   - The evaluation of percentage of reads to chrM or MT is computed.
+  - The TSS enrichment profile and TSS enrichment scores are computed with ATACseqQC.
 - A multiQC is run to have an overview of the QC.
 
 ### Warning
 
-- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding len file for use in bedtools slopbed.
+- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding fasta index to use in bedtools slopbed.
