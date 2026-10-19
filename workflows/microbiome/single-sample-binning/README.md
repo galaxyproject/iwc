@@ -19,9 +19,13 @@ This workflow is the binning section of the [MAGs generation workflow](../mags-b
 - **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.
 - **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
 - **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
+- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette; does not filter DAS Tool output.
+- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.
+- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model environment for SemiBin single-sample mode.
 
 ## Outputs
 
+- **Coverage depth matrices**: one JGI depth table per assembly, containing coverage from that assembly's own paired-end reads.
 - **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (if COMEBin was run): one list of bins per assembly.
 - **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (if DAS Tool was run): the refined bins, a per-bin summary (completeness and redundancy based on single-copy genes) and the contig-to-bin assignments.
 - **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (if Binette was run): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.
