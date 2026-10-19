@@ -21,13 +21,18 @@ A dedicated [learning pathway](https://galaxyproject.github.io/training-material
 - **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
   - Every sample's reads are mapped against every assembly, so the element identifiers of the two collections do not need to match. The number of assemblies does not need to equal the number of read samples either: a single co-assembly binned with the coverage of all samples is a valid input.
 - **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
-- **Read length (CONCOCT)** (default: 100): the mean read length, required by CONCOCT to calculate contig coverage from the mapped reads. It can be estimated with FastQC.
 - **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
 - **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
 - **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette; does not filter DAS Tool output.
 - **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.
 
 SemiBin uses co-binning mode in this workflow. Its Galaxy wrapper does not expose a pretrained-model environment selector in that mode.
+
+## Automatic read length and binner selection
+
+CONCOCT read length is derived automatically using SeqKit statistics from both mates of every input sample. The workflow sums sequence lengths and read counts, divides total bases by total reads, and rounds to the nearest integer. This is a read-count-weighted mean, not an unweighted average of sample means. Multi coverage uses all original per-sample reads. No manual read-length input is required.
+
+**Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and **Run MaxBin2?** independently enable each binner; all default to **yes**. Keep at least one binner enabled. Disabled binners contribute empty candidate tables rather than blocking the selected refiner. Raw binner outputs are available only when that binner runs.
 
 ## Outputs
 
