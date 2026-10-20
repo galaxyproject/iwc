@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6] - 2026-10-15
+
+### Changed
+- Bakta now runs in metagenome mode (`--meta`) and keeps the original contig headers (`--keep-contig-headers`), so contig IDs in the Bakta outputs match those of the input MAGs and the other annotation tools.
+- Updated `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2` to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy3`; earlier wrapper versions ignored the metagenome mode setting.
+- Removed the Bakta circular genome plot output, which Bakta does not produce in metagenome mode.
+- Added the Bakta GFF3 annotation as a workflow output.
+- Added the Bakta log as a workflow output (`Bakta log`); it records the run settings, e.g. `meta mode: True`.
+- Renamed the embedded subworkflow from "Bacterial Genome Annotation - IWC" to "Bacterial Genome Annotation for MAGs", since its Bakta settings now differ from the IWC bacterial genome annotation workflow.
+
 ## [0.5] - 2026-09-07
 
 ### Automatic update
