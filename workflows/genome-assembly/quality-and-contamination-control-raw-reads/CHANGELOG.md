@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.13] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.0.1+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.4.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0`
+
+## [1.1.12] - 2025-12-08
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.1.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.1+galaxy0`
+
 ## [1.1.11] - 2025-11-28
 
 ### Automatic update

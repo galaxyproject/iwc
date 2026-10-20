@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.13] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.10+galaxy0`
+
+## [0.9.12] - 2026-09-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
+
 ## [0.9.11] - 2026-08-31
 
 ### Automatic update

@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.10.8] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.10+galaxy0`
+
+## [0.10.7] - 2026-09-28
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.28+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/2.31+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/column_maker/Add_a_column1/2.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cut_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_find_and_replace/9.11+galaxy0`
+
+## [0.10.6] - 2026-09-21
+
+### Fixes
+- Fix malformed awk expression in the "Rename and unify fasta" subworkflow: the composed rename command had a stray quote (`{print $1"\tcontig"_"NR".H2"}`), causing an awk syntax error. Now composes `{print $1"\tcontig_"NR".H2"}`.
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0`.
+- Correct the Tool Shed revision pins for Map parameter value and both Datamash steps without changing their tool versions.
+
 ## [0.10.5] - 2026-01-26
 
 ### Manual changes
