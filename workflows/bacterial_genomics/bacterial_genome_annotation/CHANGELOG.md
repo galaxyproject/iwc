@@ -4,8 +4,6 @@
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy3`
-- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0`
-- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0`
 
 ## [1.2.1] - 2026-10-05
 
