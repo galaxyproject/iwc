@@ -21,7 +21,7 @@ A dedicated [learning pathway](https://galaxyproject.github.io/training-material
 - **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
   - Every sample's reads are mapped against every assembly, so the element identifiers of the two collections do not need to match. The number of assemblies does not need to equal the number of read samples either: a single co-assembly binned with the coverage of all samples is a valid input.
 - **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
-- **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
+- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.
 - **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
 - **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette; does not filter DAS Tool output.
 - **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.
