@@ -2,6 +2,9 @@
 
 This workflow generates taxonomic annotations for MAGs using GTDB-Tk and kMetaShot. With the integration of additional tools, MAGs also receive corresponding taxonomic classifications from NCBI.
 
+This workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
+
 ## Workflow logic
 The workflow first runs GTDB-Tk and kMetaShot (optional) to generate a summary file. From this file, it extracts the GTDB lineage for each MAG and reformats it so that the GTDB–NCBI mapping tool can translate GTDB names into their corresponding NCBI names. These NCBI names are then passed to another tool, which resolves them into the corresponding NCBI taxIDs.
 
@@ -25,3 +28,9 @@ This workflow produces the following main outputs:
 - NCBI name-to-taxID mapping file(s)
 - A complete merged table containing all mappings
 - MultiQC HTML report with GTDB-Tk and the full mapping table as input as well as kMetaShot if run
+
+## Funding
+
+This workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).
+
+The project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.
