@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5] - 2026-10-20
+
+### Added
+- Embed the eggNOG-mapper annotation abundance-table workflow from IWC PR #1390 and expose its 14 per-annotation tables and combined table.
+- Enable abundance-table generation by default, with a boolean control to disable it and automatic skipping when eggNOG annotation is disabled.
+- Test enabled, explicitly disabled and InterProScan-only configurations while retaining the existing annotation and pathway-completeness checks.
+
+## [0.4] - 2026-09-23
+
+### Fixed
+- Correct the changeset revisions of `map_param_value` and `filter_tabular` to installable revisions
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
 ## [0.3] - 2026-03-27
 
 - Set a parameter from Add toolshed.g2.bx.psu.edu/repos/iuc/kegg_pathways_completeness/kegg_pathways_completeness/1.3.0+galaxy0 to true to have a second and more detailed per contig output
