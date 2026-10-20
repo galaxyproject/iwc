@@ -10,6 +10,9 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
 - `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0`
 
+### Fixed
+- Rename the ABRicate `#FILE` header for MultiQC with Replace Text (`tp_replace_in_line`) instead of Column Regex Find And Replace, which could not run on a header-only report (no virulence genes found).
+
 ## [1.1.8] 2026-03-15
 
 - added MultiQC to collect all tabular files and create a HTML report of them
