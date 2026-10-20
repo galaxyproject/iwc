@@ -361,12 +361,17 @@
             "class": "Person",
             "identifier": "https://orcid.org/0000-0003-3813-0823",
             "name": "Anna Syme"
+        },
+        {
+            "class": "Organization",
+            "name": "FAIRyMAGs consortium",
+            "url": "https://github.com/usegalaxy-eu/FAIRyMAGs"
         }
     ],
     "format-version": "0.1",
     "license": "MIT",
     "name": "Metagenome-Assembled Genomes (MAGs) generation",
-    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles paired short reads and optional long reads, bins assemblies with multiple coverage strategies, refines the bins, and reports dereplicated MAGs and their quality and abundance.\n\n## Modular workflow logic\n\nThe parent contains separate embedded workflows for paired short-read grouping,\nnanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage\nbinning, and multi-coverage binning. Refiner reconciliation remains in the parent.\nThe original downstream quality assessment, dereplication, abundance estimation,\nand reporting are retained.\n\nThe input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.\n\n## Inputs and grouping\n\n- **Trimmed reads**: original samples as a `list:paired` collection.\n- **Trimmed nanopore reads** and **Trimmed PacBio reads**: independent optional\n  original-read `list` collections. Long reads are used only by metaSPAdes.\n- **Metadata**: optional TSV/CSV with sample identifiers in the first column and\n  a grouping column selected by **Sample grouping column** (default `group`).\n- **Use grouping?** selects **Use original samples** (default), **Use grouping**,\n  or **Use grouping and original samples**. The hybrid union is grouped-first;\n  duplicate identifiers keep the grouped entry. Use distinct sample/group names\n  to avoid unintended collisions. Group identifiers must not contain underscores\n  because of the pinned fastq_groupmerge output discovery pattern.\n- With grouping enabled, provide metadata when explicit groups are required.\n  The underlying groupmerge tool merges all samples if metadata is absent.\n- Group short and long reads consistently. Single-end metadata identifiers refer\n  to the input element/file identifiers; paired metadata identifiers refer to\n  the pair identifiers. `fastq_groupmerge` is pinned at `1.0.2+galaxy0`.\n- Custom assemblies must match the selected original/grouped/hybrid read\n  identifiers and order. Five per-sample FASTAs do not become a co-assembly when\n  their reads are grouped; assemble the group or supply its genuine assembly.\n\n## Coverage strategies\n\n**Binning strategy** selects:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped\n  against its corresponding original sample or group-merged reads. A co-assembly\n  therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all\n  original per-sample read sets, including when assembly uses groups. Individual\n  sample coverage profiles are retained rather than replaced by merged reads.\n- **Both**: run both branches and retain the union of their refined bins; append\n  `_#` suffixes for conflicting flattened identifiers before downstream processing.\n\nA member-restricted alternative would map only the individual samples belonging\nto each co-assembly. This differs from both pooled single coverage and all-sample\nmulti coverage and is **not implemented** here. There is no automatic fallback\nbetween the selected binning strategies.\n\n## Refinement controls and outputs\n\n**Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**\nfor both coverage branches. The parent merges selected refiner outputs per branch\nbefore merging coverage branches. Binette receives parent completeness and\ncontamination-weight controls. SemiBin's environment selector applies only to\nsingle mode: its co-mode wrapper does not expose that parameter.\n\n**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and\n**Run MaxBin2?** independently enable each binner; all default to **yes**.\nKeep at least one binner enabled. Disabled binners contribute empty candidate\ntables rather than blocking the selected refiner.\n\nCONCOCT read length is computed automatically from both input mates: total\nsequence length divided by total read count, rounded to the nearest integer.\nSingle uses selected/group-merged reads; Multi uses all original samples. No\nmanual read-length input is required.\n\nPublished checkpoints include coverage depth matrices and raw/refined bin outputs\nfor each coverage strategy, in addition to the original downstream results.\nCoverage tables have three leading JGI fields followed by coverage/variance pairs:\none pair for single coverage, one pair per original sample for multi coverage.\n\n## MAG quality and dereplication\n\nCheckM2 does not report quality for degenerate or extremely short bins. dRep is therefore restricted to bins that CheckM2 actually assessed: the quality table is reduced to its identifier column and the flattened bin collection is filtered to that list before dereplication. This keeps the genome list and the quality metadata consistent, so a single unassessed bin cannot abort dereplication and the downstream abundance and report steps.\n\n## MAGs Annotation and Quality Control\n\nAfter binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:\n\n* **Quality Control** via QUAST and CheckM/CheckM2\n* **Abundance Estimation** per sample with CoverM\n\nIn previous versions, genome annotation and taxonomic annotation were also performed. This can now be done with dedicated and more comprehensive IWC workflows if needed:\n\n* [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n* [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n* [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n* [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\nAll results are consolidated into a single **MultiQC report**.\n\n## Input Requirements\n\nInput reads must be quality-filtered, with host reads removed.\nSee other MAG workflows in IWC for quality filtering and host removal.\n\n**Short reads:**\n\n* QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)\n* Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)\n\n**Long reads:**\n\n* QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)\n* Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)\n",
+    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles paired short reads and optional long reads, bins assemblies with multiple coverage strategies, refines the bins, and reports dereplicated MAGs and their quality and abundance.\n\nThis workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.\n\n## Modular workflow logic\n\nThe parent contains separate embedded workflows for paired short-read grouping,\nnanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage\nbinning, and multi-coverage binning. Refiner reconciliation remains in the parent.\nThe original downstream quality assessment, dereplication, abundance estimation,\nand reporting are retained.\n\nThe input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.\n\n## Inputs and grouping\n\n- **Trimmed reads**: original samples as a `list:paired` collection.\n- **Trimmed nanopore reads** and **Trimmed PacBio reads**: independent optional\n  original-read `list` collections. Long reads are used only by metaSPAdes.\n- **Metadata**: optional TSV/CSV with sample identifiers in the first column and\n  a grouping column selected by **Sample grouping column** (default `group`).\n- **Use grouping?** selects **Use original samples** (default), **Use grouping**,\n  or **Use grouping and original samples**. The hybrid union is grouped-first;\n  duplicate identifiers keep the grouped entry. Use distinct sample/group names\n  to avoid unintended collisions. Group identifiers must not contain underscores\n  because of the pinned fastq_groupmerge output discovery pattern.\n- With grouping enabled, provide metadata when explicit groups are required.\n  The underlying groupmerge tool merges all samples if metadata is absent.\n- Group short and long reads consistently. Single-end metadata identifiers refer\n  to the input element/file identifiers; paired metadata identifiers refer to\n  the pair identifiers. `fastq_groupmerge` is pinned at `1.0.2+galaxy0`.\n- Custom assemblies must match the selected original/grouped/hybrid read\n  identifiers and order. Five per-sample FASTAs do not become a co-assembly when\n  their reads are grouped; assemble the group or supply its genuine assembly.\n\n## Coverage strategies\n\n**Binning strategy** selects:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped\n  against its corresponding original sample or group-merged reads. A co-assembly\n  therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all\n  original per-sample read sets, including when assembly uses groups. Individual\n  sample coverage profiles are retained rather than replaced by merged reads.\n- **Both**: run both branches and retain the union of their refined bins; append\n  `_#` suffixes for conflicting flattened identifiers before downstream processing.\n\nA member-restricted alternative would map only the individual samples belonging\nto each co-assembly. This differs from both pooled single coverage and all-sample\nmulti coverage and is **not implemented** here. There is no automatic fallback\nbetween the selected binning strategies.\n\n## Refinement controls and outputs\n\n**Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**\nfor both coverage branches. The parent merges selected refiner outputs per branch\nbefore merging coverage branches. Binette receives parent completeness and\ncontamination-weight controls. SemiBin's environment selector applies only to\nsingle mode: its co-mode wrapper does not expose that parameter.\n\n**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and\n**Run MaxBin2?** independently enable each binner; all default to **yes**.\nKeep at least one binner enabled. Disabled binners contribute empty candidate\ntables rather than blocking the selected refiner.\n\nCONCOCT read length is computed automatically from both input mates: total\nsequence length divided by total read count, rounded to the nearest integer.\nSingle uses selected/group-merged reads; Multi uses all original samples. No\nmanual read-length input is required.\n\nPublished checkpoints include coverage depth matrices and raw/refined bin outputs\nfor each coverage strategy, in addition to the original downstream results.\nCoverage tables have three leading JGI fields followed by coverage/variance pairs:\none pair for single coverage, one pair per original sample for multi coverage.\n\n## MAG quality and dereplication\n\nCheckM2 does not report quality for degenerate or extremely short bins. dRep is therefore restricted to bins that CheckM2 actually assessed: the quality table is reduced to its identifier column and the flattened bin collection is filtered to that list before dereplication. This keeps the genome list and the quality metadata consistent, so a single unassessed bin cannot abort dereplication and the downstream abundance and report steps.\n\n## MAGs Annotation and Quality Control\n\nAfter binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:\n\n* **Quality Control** via QUAST and CheckM/CheckM2\n* **Abundance Estimation** per sample with CoverM\n\nIn previous versions, genome annotation and taxonomic annotation were also performed. This can now be done with dedicated and more comprehensive IWC workflows if needed:\n\n* [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n* [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n* [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n* [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\nAll results are consolidated into a single **MultiQC report**.\n\n## Input Requirements\n\nInput reads must be quality-filtered, with host reads removed.\nSee other MAG workflows in IWC for quality filtering and host removal.\n\n**Short reads:**\n\n* QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)\n* Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)\n\n**Long reads:**\n\n* QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)\n* Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)\n\n## Optional Modifications\n\nSome modifications can be made via the workflow editor for specific use cases:\n\n* Compare binners/bin refinement: add CheckM/CheckM2 to each binner/refiner and compare completeness, contamination, and number of bins.\n* Downstream: compare differential abundance of MAGs in your samples based on metadata using Maaslin2.\n* Downstream: compare your MAGs to a catalogue of MAGs for similar samples. Download desired MAGs from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and query your MAGs via the [MGnify API](https://www.ebi.ac.uk/metagenomics/browse/genomes?browse-by=mag-search); download the genomes and compare in Galaxy, e.g., using dRep.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n\n## Talks and Posters\n\n* **ELIXIR All Hands Meeting 2025:** [Slides](https://f1000research.com/slides/14-595)\n* **Galaxy Community Conference 2026 (GCC2026):** [Poster and Talk](https://zenodo.org/records/21128145)\n* **HAL 2026:** [Publication](https://hal.science/hal-05724928)\n* **FAIRyMAGs - a series of FAIR Galaxy workflows for the generation of metagenome assembled genomes** [Preprint](https://doi.org/10.64898/2026.07.31.741430)\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -6390,7 +6395,6 @@
                             10,
                             11,
                             12,
-                            13,
                             14,
                             15,
                             16,
@@ -6854,7 +6858,7 @@
                     },
                     "12": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastq_paired_end_deinterlacer/fastq_paired_end_deinterlacer/1.1.5+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastq_paired_end_deinterlacer/fastq_paired_end_deinterlacer/1.2+galaxy0",
                         "errors": null,
                         "id": 12,
                         "input_connections": {
@@ -6868,11 +6872,7 @@
                         "name": "FASTQ de-interlacer",
                         "outputs": [
                             {
-                                "name": "output1_pairs_file",
-                                "type": "input"
-                            },
-                            {
-                                "name": "output2_pairs_file",
+                                "name": "pairs",
                                 "type": "input"
                             },
                             {
@@ -6889,56 +6889,18 @@
                             "top": 770
                         },
                         "post_job_actions": {},
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastq_paired_end_deinterlacer/fastq_paired_end_deinterlacer/1.1.5+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/devteam/fastq_paired_end_deinterlacer/fastq_paired_end_deinterlacer/1.2+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "523c2aff0376",
+                            "changeset_revision": "c48cf4699be7",
                             "name": "fastq_paired_end_deinterlacer",
                             "owner": "devteam",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.1.5+galaxy2",
+                        "tool_version": "1.2+galaxy0",
                         "type": "tool",
                         "uuid": "f2ceb841-7e7a-4fef-a75a-ebe9588ec0b8",
-                        "when": null,
-                        "workflow_outputs": []
-                    },
-                    "13": {
-                        "annotation": "",
-                        "content_id": "__ZIP_COLLECTION__",
-                        "errors": null,
-                        "id": 13,
-                        "input_connections": {
-                            "input_forward": {
-                                "id": 12,
-                                "output_name": "output1_pairs_file"
-                            },
-                            "input_reverse": {
-                                "id": 12,
-                                "output_name": "output2_pairs_file"
-                            }
-                        },
-                        "inputs": [],
-                        "label": "zip reads back together",
-                        "name": "Zip collections",
-                        "outputs": [
-                            {
-                                "name": "output",
-                                "type": "input"
-                            }
-                        ],
-                        "position": {
-                            "left": 2600,
-                            "top": 770
-                        },
-                        "post_job_actions": {},
-                        "tool_id": "__ZIP_COLLECTION__",
-                        "tool_state": "{\"input_forward\": {\"__class__\": \"ConnectedValue\"}, \"input_reverse\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-                        "tool_uuid": null,
-                        "tool_version": "1.0.0",
-                        "type": "tool",
-                        "uuid": "6e1e2bbe-ceaa-4fb2-8ac1-e345981b9c57",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -6949,8 +6911,8 @@
                         "id": 14,
                         "input_connections": {
                             "library|input_1": {
-                                "id": 13,
-                                "output_name": "output"
+                                "id": 12,
+                                "output_name": "pairs"
                             },
                             "reference_genome|own_file": {
                                 "id": 11,
@@ -7046,7 +7008,7 @@
                     },
                     "16": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy1",
                         "errors": null,
                         "id": 16,
                         "input_connections": {
@@ -7085,16 +7047,16 @@
                                 "output_name": "bins"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy1",
                         "tool_shed_repository": {
-                            "changeset_revision": "cd1d8332bc04",
+                            "changeset_revision": "7e66a24282a7",
                             "name": "comebin",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"assembly_file\": {\"__class__\": \"ConnectedValue\"}, \"bam_files\": {\"__class__\": \"ConnectedValue\"}, \"batch\": \"1024\", \"emb_comebin\": \"2048\", \"emb_cov\": \"2048\", \"learning\": \"6\", \"loss\": \"0.15\", \"max_edges\": \"100\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.1.0+galaxy0",
+                        "tool_version": "1.1.0+galaxy1",
                         "type": "tool",
                         "uuid": "1e418b96-e22e-4cd0-a95d-d1aed1211125",
                         "when": "$(inputs.when)",

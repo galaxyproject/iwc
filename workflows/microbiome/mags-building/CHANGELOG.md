@@ -16,6 +16,8 @@
 
 ### Changed
 
+- Incorporate IWC PR #1435 in the embedded Multi workflow: COMEBin 1.1.0+galaxy1 and FASTQ de-interlacer 1.2+galaxy0; connect Bowtie2 directly to `pairs` and remove the obsolete zip step.
+- Carry forward the MAG-generation authorship, FAIRyMAGs learning-pathway, funding and publication documentation from PR #1370, while retaining the modular interface documentation.
 - Grouping, coverage strategy and bin-refiner selection now lead the input form; the grouping-column help text is corrected.
 - All five binners (including COMEBin) are independently optional and enabled by default.
 - CONCOCT read length is derived automatically from both input mates using a read-count-weighted mean.
