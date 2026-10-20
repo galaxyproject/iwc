@@ -1,15 +1,15 @@
 # Changelog
 
-## [4.0] - 2026-07-08
+## [4.0] - 2026-10-18
 
 ### Changes
-- Add option to align Hi-C reads with BWA-MEM instead of BWA-MEM2 (new `Use BWA-mem instead of BWA-mem2` parameter) for large genomes.
-- Replace the `Trim, Align, deduplicate Hi-C - Scaffolding` subworkflow by `Deduplication and optional alignement on contigs`: Hi-C trimming now happens in the main workflow, and the alignment step is delegated to the new `optional alignement` subworkflow that selects between BWA-MEM and BWA-MEM2.
-- Remove the `Deduplicated Hi-C alignments on contigs` output, replaced by `Contigs Hi-C alignments`.
-- Rename output `Merged Hi-C Alignments on contigs` to `Merged Hi-C Alignments on Contigs`.
-- Remove the contigs-level Pairtools outputs `Pairtools Multiqc Stats on contigs` and `Pairtools Multiqc on contigs: Plots`, and the contigs-level duplication outputs `Hi-C duplication stats on contigs: Raw` and `Hi-C duplication stats on contigs: MultiQc`. Duplication statistics on contigs are now reported by the single `Hi-C duplication stats on contigs` output produced by Samtools markdup.
+- Add option to align Hi-C reads with BWA-MEM instead of BWA-MEM2 (new `Use BWA-MEM instead of BWA-MEM2` parameter) for large genomes. When it is set, the BWA-MEM2 indexers are skipped.
+- Replace the `Trim, Align, deduplicate Hi-C - Scaffolding` subworkflow by `Deduplication and optional alignment on contigs`: Hi-C trimming now happens in the main workflow, and the trimmed reads are used for both the contig and the scaffold alignments. The scaffold alignment step is delegated to the new `optional alignment` subworkflow that selects between BWA-MEM and BWA-MEM2.
+- Duplication statistics on contigs are now reported only by the `Hi-C duplication stats on contigs` output produced by Samtools markdup.
 - Remove the `Column join` (collection_column_join) step, no longer needed.
 
+### Removed
+- Contig-level Pairtools outputs: `Pairtools Multiqc Stats on contigs`, `Pairtools Multiqc on contigs: Plots`, `Hi-C duplication stats on contigs: Raw` and `Hi-C duplication stats on contigs: MultiQc`.
 
 ### Automatic update
 - `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`

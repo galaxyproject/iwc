@@ -165,7 +165,7 @@
     Species Name: test
     Assembly Name: test
     Haplotype: Haplotype 1
-    Use BWA-mem instead of BWA-mem2: false
+    Use BWA-MEM instead of BWA-MEM2: false
     Trim Hi-C Data?: false
     Minimum Mapping Quality: 10
     Database for Busco Lineage: v5
@@ -235,7 +235,7 @@
       - has_size:
           value: 2185479
           delta: 500000
-    Contigs Hi-C alignments:
+    Deduplicated Hi-C alignments on contigs:
       asserts:
       - has_size:
           value: 3759316
@@ -248,7 +248,7 @@
           text: "WRITTEN: 32701"
       - has_text:
           text: "DUPLICATE PAIR: 4510"
-    Merged Hi-C Alignments on Contigs:
+    Merged Hi-C Alignments on contigs:
       asserts:
       - has_size:
           value: 4026905
@@ -266,7 +266,7 @@
     Species Name: test
     Assembly Name: test
     Haplotype: Haplotype 1
-    Use BWA-mem instead of BWA-mem2: true
+    Use BWA-MEM instead of BWA-MEM2: true
     Trim Hi-C Data?: false
     Minimum Mapping Quality: 10
     Database for Busco Lineage: v5
@@ -336,7 +336,7 @@
       - has_size:
           value: 2183696
           delta: 500000
-    Contigs Hi-C alignments:
+    Deduplicated Hi-C alignments on contigs:
       asserts:
       - has_size:
           value: 3764499
@@ -349,7 +349,7 @@
           text: "WRITTEN: 32701"
       - has_text:
           text: "DUPLICATE PAIR: 4510"
-    Merged Hi-C Alignments on Contigs:
+    Merged Hi-C Alignments on contigs:
       asserts:
       - has_size:
           value: 4034231
@@ -358,3 +358,37 @@
       asserts:
       - has_text:
           text: "S:0.00%, 0"
+
+- doc: Test Hi-C trimming, trimmed reads must be used for the contig and scaffold alignments
+  job:
+    Assembly GFA: *assembly_gfa
+    Estimated genome size - Parameter File: *genome_size
+    Hi-C reads: *hic_reads
+    Species Name: test
+    Assembly Name: test
+    Haplotype: Haplotype 1
+    Use BWA-MEM instead of BWA-MEM2: false
+    Trim Hi-C Data?: true
+    Minimum Mapping Quality: 10
+    Database for Busco Lineage: v5
+    Lineage: vertebrata_odb10
+    Restriction enzymes: arima2
+  outputs:
+    Suffixed AGP:
+      asserts:
+      - has_text:
+          text: "scaffold_1.H1"
+    # Reads are 150 bp and both mates lose 5 bp, so ~33950 mapped reads give
+    # ~4.92 Mb mapped instead of the 5093400 bp seen without trimming.
+    Summary Numbers Contigs:
+      asserts:
+      - not_has_text:
+          text: "bases mapped:\t5093400"
+      - has_text_matching:
+          expression: "bases mapped:\t4[89]\\d{5}\\b"
+    Summary Numbers Scaffolds:
+      asserts:
+      - not_has_text:
+          text: "bases mapped:\t5093400"
+      - has_text_matching:
+          expression: "bases mapped:\t4[89]\\d{5}\\b"
