@@ -3,7 +3,6 @@
 ## [0.1.4] - 2026-10-19
 
 ### Automatic update
-- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.13.3+galaxy0`
 - `toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.46+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/graphicsmagick_image_montage/graphicsmagick_image_montage/1.3.49+galaxy0`
 
 ## [0.1.3] - 2026-09-07
