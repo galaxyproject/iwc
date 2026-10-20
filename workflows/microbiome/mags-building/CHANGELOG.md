@@ -20,12 +20,14 @@
 - All five binners (including COMEBin) are independently optional and enabled by default.
 - CONCOCT read length is derived automatically from both input mates using a read-count-weighted mean.
 - Stage tools and embedded workflows are enclosed in native frames with Markdown explanations.
+- Give each stage a distinct matching frame/Markdown color, put Binette first in the refiner selector, and clarify that original short reads drive grouping, assembly, coverage and abundance.
 - Refiner and coverage outputs are reconciled without retaining skipped-branch placeholders.
 - Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
 - Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
 
 ### Fixed
 
+- Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
 - The long-read baseline's paired-read identifier is aligned with its nanopore identifier and original expected outputs; all output assertions are retained unchanged.
 
 ### Tests
