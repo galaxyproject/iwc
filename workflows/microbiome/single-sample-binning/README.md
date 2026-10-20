@@ -16,7 +16,7 @@ This workflow is the binning section of the [MAGs generation workflow](../mags-b
 - **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
   - Every sample's reads are mapped against their corresponding assembly. The two collections are paired by position, not by element identifier, so they must have the same number of elements, in the same order (e.g. sorted the same way).
 - **Run COMEBin?** (default: yes): COMEBin is a deep-learning binner that often improves the results, but it is the most time- and resource-consuming step of the workflow.
-- **Bin refinement tool**: `DAS Tool`, `Binette` or `Both`.
+- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.
 - **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.
 - **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette; does not filter DAS Tool output.
 - **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.
