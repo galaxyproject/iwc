@@ -1,0 +1,8 @@
+(function(){try{var e=typeof window<`u`?window:typeof global<`u`?global:typeof globalThis<`u`?globalThis:typeof self<`u`?self:{};e.SENTRY_RELEASE={id:`7f5c8083329d3cc617ca2ce2c1be0683f8472c80`};var t=new e.Error().stack;t&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[t]=`8dd5590f-1a26-4bc0-9abe-f3a7a0669384`,e._sentryDebugIdIdentifier=`sentry-dbid-8dd5590f-1a26-4bc0-9abe-f3a7a0669384`)}catch{}})();import"./src.B1s1WM2y.js";import"./MarkdownRenderer.5qZxvY3c.js";import{n as e}from"./chunk-Y2CYZVJY.ByOuLZ3S.js";import"./chunk-I66GZJ75.Bzusl_QS.js";import"./chunk-NSK5VX7P.B35x3TgI.js";import"./chunk-W5SLKNZC.DWptdGaQ.js";import"./chunk-UBXNYLIW.CjlRUJku.js";import"./chunk-4I5QYGJK.D7mzNtPT.js";import"./chunk-WRU74C26.BdsxddFN.js";import"./chunk-QR6OTTB3.YEe8mut2.js";import"./chunk-7BUUIJ7U.iPuI3HBm.js";import"./chunk-7Z6QIM7H.CsnyZGyl.js";import"./chunk-2GRJ4B5K.BcX2OwRD.js";import"./chunk-XXDRQBXY.DcJZYPRw.js";import"./chunk-KBJHAD2P.BsBPjnJL.js";import{r as t,t as n}from"./chunk-JQJVKLGR.wtNc7R-H.js";var r=n({defaultLayout:`swimlane`,styles:e(e=>`${t(e)}
+  .swimlane.cluster rect {
+    stroke: ${e.clusterBorder} !important;
+  }
+  [data-look="neo"].cluster rect {
+    filter: none;
+  }
+`,`getStyles`)});export{r as diagram};
