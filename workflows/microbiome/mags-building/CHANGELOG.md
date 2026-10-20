@@ -1,20 +1,39 @@
 # Changelog
 
-## [Unreleased]
+## [1.0] - 2026-10-20
 
-- Derive CONCOCT read length from both input mates using a read-count-weighted mean.
-- Make all five binners independently optional and enabled by default.
-- Place grouping, coverage strategy and bin-refiner selection first in the input form; correct grouping-column help.
-- Enclose stage tools and embedded workflows in native frames with Markdown explanations.
-- Align the long-read baseline's paired-read identifier with its nanopore identifier and original expected outputs; retain all output assertions unchanged.
-- Preserve selected sample structure for absent optional long reads after grouping, including skipped assembler branches.
-- Replace pre-grouped read inputs with internal original/grouped/hybrid selection.
-- Embed separate grouping, assembly and binning workflows.
-- Add Single/Multi/Both coverage selection (default Single) and DAS Tool/Binette/Both refinement.
-- Reconcile refiner and coverage outputs without retaining skipped-branch placeholders.
-- Preserve downstream MAG quality assessment, dereplication, abundance and reports.
-- Add coverage checkpoints, a grouping/coverage test matrix and editor stage annotations.
-- Breaking input change: release selection remains pending review; current release field is unchanged.
+### Breaking changes
+
+- The workflow now takes original short reads and selects grouping, coverage strategy and bin-refiner internally. Existing invocations of the previous interface do not map directly onto the new inputs.
+
+### Added
+
+- Internal grouping selection: original samples, grouped samples, or a hybrid that uses grouped reads where available and original reads otherwise.
+- Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage binning and multi-coverage binning.
+- Single-coverage (own/merged reads) and multi-coverage (all samples) coverage strategies, default single.
+- Shared bin-refiner selection (DAS Tool, Binette or both), default Binette.
+- Coverage depth checkpoints and a grouping/coverage test matrix.
+
+### Changed
+
+- Grouping, coverage strategy and bin-refiner selection now lead the input form; the grouping-column help text is corrected.
+- All five binners (including COMEBin) are independently optional and enabled by default.
+- CONCOCT read length is derived automatically from both input mates using a read-count-weighted mean.
+- Stage tools and embedded workflows are enclosed in native frames with Markdown explanations.
+- Refiner and coverage outputs are reconciled without retaining skipped-branch placeholders.
+- Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
+- Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
+
+### Fixed
+
+- The long-read baseline's paired-read identifier is aligned with its nanopore identifier and original expected outputs; all output assertions are retained unchanged.
+
+### Tests
+
+- The short-read baseline's assembly-size, dereplicated-bin-size and merged-QUAST
+  expectations are re-baselined to the redesigned workflow's verified outputs.
+  The previous values described the pre-1.0 monolithic pipeline and could not hold
+  after the intentional interface and pipeline change.
 
 ## [0.7] - 2026-08-03
 

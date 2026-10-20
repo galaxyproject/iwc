@@ -104,8 +104,8 @@
                 74,
                 75,
                 76,
-                100,
-                101
+                102,
+                103
             ],
             "child_comments": [
                 2
@@ -143,7 +143,7 @@
                 "title": "Assembly"
             },
             "child_steps": [
-                99
+                101
             ],
             "child_comments": [
                 4
@@ -255,7 +255,7 @@
                 260
             ],
             "data": {
-                "text": "## 6. MAG quality and filtering\n\nOriginal CheckM2 quality assessment and dRep filtering/dereplication are retained."
+                "text": "## 6. MAG quality and filtering\n\nOriginal CheckM2 quality assessment and dRep filtering/dereplication are retained.\n\nDegenerate bins with no CheckM2 quality row are excluded before dRep, so the genome list and quality table always agree."
             }
         },
         {
@@ -268,7 +268,7 @@
             ],
             "size": [
                 430,
-                1200
+                1800
             ],
             "data": {
                 "title": "MAG quality and filtering"
@@ -276,7 +276,9 @@
             "child_steps": [
                 59,
                 60,
-                61
+                61,
+                99,
+                100
             ],
             "child_comments": [
                 10
@@ -364,7 +366,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "Metagenome-Assembled Genomes (MAGs) generation",
-    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles paired short reads and optional long reads, bins assemblies with multiple coverage strategies, refines the bins, and reports dereplicated MAGs and their quality and abundance.\n\n## Modular workflow logic\n\nThe parent contains separate embedded workflows for paired short-read grouping,\nnanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage\nbinning, and multi-coverage binning. Refiner reconciliation remains in the parent.\nThe original downstream quality assessment, dereplication, abundance estimation,\nand reporting are retained.\n\nThe input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.\n\n## Inputs and grouping\n\n- **Trimmed reads**: original samples as a `list:paired` collection.\n- **Trimmed nanopore reads** and **Trimmed PacBio reads**: independent optional\n  original-read `list` collections. Long reads are used only by metaSPAdes.\n- **Metadata**: optional TSV/CSV with sample identifiers in the first column and\n  a grouping column selected by **Sample grouping column** (default `group`).\n- **Use grouping?** selects **Use original samples** (default), **Use grouping**,\n  or **Use grouping and original samples**. The hybrid union is grouped-first;\n  duplicate identifiers keep the grouped entry. Use distinct sample/group names\n  to avoid unintended collisions. Group identifiers must not contain underscores\n  because of the pinned fastq_groupmerge output discovery pattern.\n- With grouping enabled, provide metadata when explicit groups are required.\n  The underlying groupmerge tool merges all samples if metadata is absent.\n- Group short and long reads consistently. Single-end metadata identifiers refer\n  to the input element/file identifiers; paired metadata identifiers refer to\n  the pair identifiers. `fastq_groupmerge` is pinned at `1.0.2+galaxy0`.\n- Custom assemblies must match the selected original/grouped/hybrid read\n  identifiers and order. Five per-sample FASTAs do not become a co-assembly when\n  their reads are grouped; assemble the group or supply its genuine assembly.\n\n## Coverage strategies\n\n**Binning strategy** selects:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped\n  against its corresponding original sample or group-merged reads. A co-assembly\n  therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all\n  original per-sample read sets, including when assembly uses groups. Individual\n  sample coverage profiles are retained rather than replaced by merged reads.\n- **Both**: run both branches and retain the union of their refined bins; append\n  `_#` suffixes for conflicting flattened identifiers before downstream processing.\n\nA member-restricted alternative would map only the individual samples belonging\nto each co-assembly. This differs from both pooled single coverage and all-sample\nmulti coverage and is **not implemented** here. There is no automatic fallback\nbetween the selected binning strategies.\n\n## Refinement controls and outputs\n\n**Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**\nfor both coverage branches. The parent merges selected refiner outputs per branch\nbefore merging coverage branches. Binette receives parent completeness and\ncontamination-weight controls. SemiBin's environment selector applies only to\nsingle mode: its co-mode wrapper does not expose that parameter.\n\n**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and\n**Run MaxBin2?** independently enable each binner; all default to **yes**.\nKeep at least one binner enabled. Disabled binners contribute empty candidate\ntables rather than blocking the selected refiner.\n\nCONCOCT read length is computed automatically from both input mates: total\nsequence length divided by total read count, rounded to the nearest integer.\nSingle uses selected/group-merged reads; Multi uses all original samples. No\nmanual read-length input is required.\n\nPublished checkpoints include coverage depth matrices and raw/refined bin outputs\nfor each coverage strategy, in addition to the original downstream results.\nCoverage tables have three leading JGI fields followed by coverage/variance pairs:\none pair for single coverage, one pair per original sample for multi coverage.\n\n## MAGs Annotation and Quality Control\n\nAfter binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:\n\n* **Quality Control** via QUAST and CheckM/CheckM2\n* **Abundance Estimation** per sample with CoverM\n\nIn previous versions, genome annotation and taxonomic annotation were also performed. This can now be done with dedicated and more comprehensive IWC workflows if needed:\n\n* [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n* [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n* [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n* [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\nAll results are consolidated into a single **MultiQC report**.\n\n## Input Requirements\n\nInput reads must be quality-filtered, with host reads removed.\nSee other MAG workflows in IWC for quality filtering and host removal.\n\n**Short reads:**\n\n* QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)\n* Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)\n\n**Long reads:**\n\n* QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)\n* Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)\n",
+    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles paired short reads and optional long reads, bins assemblies with multiple coverage strategies, refines the bins, and reports dereplicated MAGs and their quality and abundance.\n\n## Modular workflow logic\n\nThe parent contains separate embedded workflows for paired short-read grouping,\nnanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage\nbinning, and multi-coverage binning. Refiner reconciliation remains in the parent.\nThe original downstream quality assessment, dereplication, abundance estimation,\nand reporting are retained.\n\nThe input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.\n\n## Inputs and grouping\n\n- **Trimmed reads**: original samples as a `list:paired` collection.\n- **Trimmed nanopore reads** and **Trimmed PacBio reads**: independent optional\n  original-read `list` collections. Long reads are used only by metaSPAdes.\n- **Metadata**: optional TSV/CSV with sample identifiers in the first column and\n  a grouping column selected by **Sample grouping column** (default `group`).\n- **Use grouping?** selects **Use original samples** (default), **Use grouping**,\n  or **Use grouping and original samples**. The hybrid union is grouped-first;\n  duplicate identifiers keep the grouped entry. Use distinct sample/group names\n  to avoid unintended collisions. Group identifiers must not contain underscores\n  because of the pinned fastq_groupmerge output discovery pattern.\n- With grouping enabled, provide metadata when explicit groups are required.\n  The underlying groupmerge tool merges all samples if metadata is absent.\n- Group short and long reads consistently. Single-end metadata identifiers refer\n  to the input element/file identifiers; paired metadata identifiers refer to\n  the pair identifiers. `fastq_groupmerge` is pinned at `1.0.2+galaxy0`.\n- Custom assemblies must match the selected original/grouped/hybrid read\n  identifiers and order. Five per-sample FASTAs do not become a co-assembly when\n  their reads are grouped; assemble the group or supply its genuine assembly.\n\n## Coverage strategies\n\n**Binning strategy** selects:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped\n  against its corresponding original sample or group-merged reads. A co-assembly\n  therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all\n  original per-sample read sets, including when assembly uses groups. Individual\n  sample coverage profiles are retained rather than replaced by merged reads.\n- **Both**: run both branches and retain the union of their refined bins; append\n  `_#` suffixes for conflicting flattened identifiers before downstream processing.\n\nA member-restricted alternative would map only the individual samples belonging\nto each co-assembly. This differs from both pooled single coverage and all-sample\nmulti coverage and is **not implemented** here. There is no automatic fallback\nbetween the selected binning strategies.\n\n## Refinement controls and outputs\n\n**Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**\nfor both coverage branches. The parent merges selected refiner outputs per branch\nbefore merging coverage branches. Binette receives parent completeness and\ncontamination-weight controls. SemiBin's environment selector applies only to\nsingle mode: its co-mode wrapper does not expose that parameter.\n\n**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and\n**Run MaxBin2?** independently enable each binner; all default to **yes**.\nKeep at least one binner enabled. Disabled binners contribute empty candidate\ntables rather than blocking the selected refiner.\n\nCONCOCT read length is computed automatically from both input mates: total\nsequence length divided by total read count, rounded to the nearest integer.\nSingle uses selected/group-merged reads; Multi uses all original samples. No\nmanual read-length input is required.\n\nPublished checkpoints include coverage depth matrices and raw/refined bin outputs\nfor each coverage strategy, in addition to the original downstream results.\nCoverage tables have three leading JGI fields followed by coverage/variance pairs:\none pair for single coverage, one pair per original sample for multi coverage.\n\n## MAG quality and dereplication\n\nCheckM2 does not report quality for degenerate or extremely short bins. dRep is therefore restricted to bins that CheckM2 actually assessed: the quality table is reduced to its identifier column and the flattened bin collection is filtered to that list before dereplication. This keeps the genome list and the quality metadata consistent, so a single unassessed bin cannot abort dereplication and the downstream abundance and report steps.\n\n## MAGs Annotation and Quality Control\n\nAfter binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:\n\n* **Quality Control** via QUAST and CheckM/CheckM2\n* **Abundance Estimation** per sample with CoverM\n\nIn previous versions, genome annotation and taxonomic annotation were also performed. This can now be done with dedicated and more comprehensive IWC workflows if needed:\n\n* [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n* [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n* [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n* [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\nAll results are consolidated into a single **MultiQC report**.\n\n## Input Requirements\n\nInput reads must be quality-filtered, with host reads removed.\nSee other MAG workflows in IWC for quality filtering and host removal.\n\n**Short reads:**\n\n* QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)\n* Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)\n\n**Long reads:**\n\n* QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)\n* Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -1258,8 +1260,8 @@
                     "output_name": "output"
                 },
                 "genomes": {
-                    "id": 58,
-                    "output_name": "output"
+                    "id": 100,
+                    "output_name": "output_filtered"
                 },
                 "quality|genomeInfo": {
                     "id": 60,
@@ -1802,7 +1804,7 @@
             "tool_state": "{\"optional\": true, \"tag\": null}",
             "tool_version": null,
             "type": "data_input",
-            "uuid": "7a32604b-ea71-4b26-96cd-dbbe967edb03",
+            "uuid": "c877513a-8b45-4b9e-82dc-37bf99533240",
             "when": null,
             "workflow_outputs": []
         },
@@ -1824,7 +1826,7 @@
             "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"group\"}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "dd8799d8-9cf4-4996-85f8-3b789141873e",
+            "uuid": "46a83290-0886-48cb-9827-8faab61bc084",
             "when": null,
             "workflow_outputs": []
         },
@@ -1846,7 +1848,7 @@
             "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"Use original samples\", \"restrictions\": [\"Use original samples\", \"Use grouping\", \"Use grouping and original samples\"], \"multiple\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "7c70e00a-faf6-41d9-8272-a4aa5a110a98",
+            "uuid": "2def0126-94f6-408e-8f07-d89b20b58ccf",
             "when": null,
             "workflow_outputs": []
         },
@@ -1868,7 +1870,7 @@
             "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"Single-coverage binning (own/merged reads)\", \"restrictions\": [\"Single-coverage binning (own/merged reads)\", \"Multi-coverage binning (all samples)\", \"Both\"], \"multiple\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "9022be7c-ca17-48c4-a4fb-4123c3578ac9",
+            "uuid": "3cef68d0-55c1-4a43-a362-209087fac5ec",
             "when": null,
             "workflow_outputs": []
         },
@@ -1890,7 +1892,7 @@
             "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"Binette\", \"restrictions\": [\"DAS Tool\", \"Binette\", \"Both\"], \"multiple\": false}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "4ffe2d8b-ac43-49f7-aa05-52c153472f6b",
+            "uuid": "e8943954-7ba5-42aa-94ec-b30313fd8b57",
             "when": null,
             "workflow_outputs": []
         },
@@ -2472,7 +2474,7 @@
                         "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"group\"}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "0e08af7d-bd8a-49c3-aee4-97e9178a5fc4",
+                        "uuid": "dc203e1e-d44b-496b-9f6c-7f597e044d51",
                         "when": null,
                         "workflow_outputs": []
                     }
@@ -2511,7 +2513,7 @@
             "annotation": "",
             "when": null,
             "id": 74,
-            "uuid": "81027ddc-5a40-4fa9-96c1-bb50b451d2fd",
+            "uuid": "f44506da-7bd8-47e1-b6bd-a60446aab3d0",
             "position": {
                 "left": 760,
                 "top": 2520
@@ -3026,7 +3028,7 @@
                         "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"group\"}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "c7d2c385-2416-4d0a-85c2-357f28ba6986",
+                        "uuid": "872dd251-96f7-441f-925e-80cb1ccb9c97",
                         "when": null,
                         "workflow_outputs": []
                     }
@@ -3065,7 +3067,7 @@
             "annotation": "",
             "when": null,
             "id": 75,
-            "uuid": "bedd8b8e-01b2-431a-b34e-a4e22356a0ce",
+            "uuid": "d6808c2d-269b-454b-af0b-9ec27eb14c02",
             "position": {
                 "left": 760,
                 "top": 2820
@@ -3580,7 +3582,7 @@
                         "tool_state": "{\"parameter_type\": \"text\", \"optional\": false, \"validators\": [], \"default\": \"group\"}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "785c4e4d-82ad-491f-aaf6-db28c93524d9",
+                        "uuid": "e137a289-6a28-4039-abdc-04be68d872f2",
                         "when": null,
                         "workflow_outputs": []
                     }
@@ -3619,7 +3621,7 @@
             "annotation": "",
             "when": null,
             "id": 76,
-            "uuid": "f3dc2ea1-c058-41c2-b834-73a263bcdfa7",
+            "uuid": "8c1a03b9-f6ba-4a6c-a12e-d8e94ab1f2d7",
             "position": {
                 "left": 760,
                 "top": 3120
@@ -3644,7 +3646,7 @@
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"validators\": [], \"default\": true}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "f5fd6ca5-7928-4f73-a09e-c958c7f37ecc",
+            "uuid": "95ea741b-75be-4586-b2e7-5da3bac2db47",
             "when": null,
             "workflow_outputs": []
         },
@@ -3666,7 +3668,7 @@
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"validators\": [], \"default\": true}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "84aa4a9c-75ab-412e-9030-6c78c77c20f2",
+            "uuid": "78e3e073-5d6c-41c7-94eb-2c35b443ce5a",
             "when": null,
             "workflow_outputs": []
         },
@@ -3688,7 +3690,7 @@
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"validators\": [], \"default\": true}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "70db1ab5-7754-46c1-8f27-f28e3b3fe6f5",
+            "uuid": "de99f220-7cdb-46c6-ad01-383da00ccd8e",
             "when": null,
             "workflow_outputs": []
         },
@@ -3710,7 +3712,7 @@
             "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"validators\": [], \"default\": true}",
             "tool_version": null,
             "type": "parameter_input",
-            "uuid": "436a52e6-b112-45d7-9c3a-e04badf394f9",
+            "uuid": "447f3e34-e7f5-4909-83d9-07951980ad48",
             "when": null,
             "workflow_outputs": []
         },
@@ -3755,7 +3757,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "fbc12159-a9a0-4bff-a5be-898600238df1",
+            "uuid": "1da5110b-d90a-49e8-9189-2c6eaa8ac3cf",
             "when": null,
             "workflow_outputs": []
         },
@@ -4376,7 +4378,7 @@
                             {
                                 "label": "Coverage depth matrices",
                                 "output_name": "outputDepth",
-                                "uuid": "25ca8ee6-d83e-40ea-a995-91c55ed2c4b7"
+                                "uuid": "35474fd8-5d85-40b2-a42b-68906b17be10"
                             }
                         ]
                     },
@@ -5377,7 +5379,7 @@
                         "tool_uuid": null,
                         "tool_version": "1.0.0",
                         "type": "tool",
-                        "uuid": "40cb5051-83e1-44bc-901a-f96945c720c1",
+                        "uuid": "495dc9a4-62e8-4138-ba1d-3d839ed0dad2",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5402,7 +5404,7 @@
                             "top": 470
                         },
                         "id": 31,
-                        "uuid": "9ae442f7-6f1c-49c4-b7ac-b9a7d2c271ea",
+                        "uuid": "4fa63b48-67e5-43e5-98a2-3ffdd60531a2",
                         "label": "Read-length statistics — forward",
                         "workflow_outputs": []
                     },
@@ -5427,7 +5429,7 @@
                             "top": 770
                         },
                         "id": 32,
-                        "uuid": "968732e1-4d27-44e4-9dc2-602b06b1a389",
+                        "uuid": "a51d4a01-9cc2-4086-8b4f-c6c428bbf9b4",
                         "label": "Read-length statistics — reverse",
                         "workflow_outputs": []
                     },
@@ -5456,7 +5458,7 @@
                             "top": 1070
                         },
                         "id": 33,
-                        "uuid": "b1bb922e-eb43-4274-bdb6-95b713c5f7aa",
+                        "uuid": "7f23ffb9-7ec8-4af6-966d-6fde494a91f6",
                         "label": "Combine read-length statistics",
                         "workflow_outputs": []
                     },
@@ -5481,7 +5483,7 @@
                             "top": 770
                         },
                         "id": 34,
-                        "uuid": "91855d00-6247-4235-ab65-7769ebf438d4",
+                        "uuid": "13d1f5c3-b31b-4a28-95df-9d0df3d797e8",
                         "label": "Compute read-count-weighted mean length (both mates)",
                         "workflow_outputs": []
                     },
@@ -5506,7 +5508,7 @@
                             "top": 470
                         },
                         "id": 35,
-                        "uuid": "8b92119e-5d0c-4741-8a9a-787a1f30f711",
+                        "uuid": "ac2d06b3-8fd4-4836-9857-2f665e4a94eb",
                         "label": "Automatic read length (CONCOCT)",
                         "workflow_outputs": []
                     },
@@ -5533,7 +5535,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "22cba734-d072-4af6-a545-9b311573ad4d",
+                        "uuid": "78fab43f-942f-41fb-aaf4-41df99bc38e1",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5560,7 +5562,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "013e21ac-a279-4e5d-a2f8-486676b93647",
+                        "uuid": "1455fcc6-a4d1-4554-9924-918447f9bc29",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5587,7 +5589,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "fd4bf1e1-be76-4d97-b973-68b35c9fdd4d",
+                        "uuid": "383ce88b-256e-41d5-9855-fd604d0ce833",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5614,7 +5616,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "7d18599d-d3cf-490b-909f-27ccae0cc673",
+                        "uuid": "bc3af764-07bf-41e4-9599-fb881be89bde",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5654,7 +5656,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "aeb64e6c-fb80-4d53-9e21-277209b5e635",
+                        "uuid": "46358e3a-9b96-4af9-9cc2-3f380d1fdc48",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5694,7 +5696,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "362df410-430d-48e8-a51a-c510dec72750",
+                        "uuid": "d9a6ac14-88fe-4dae-9f46-4efc250c6ef9",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5734,7 +5736,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "2d55618a-37e0-4af4-9f6b-261a67265cca",
+                        "uuid": "7997db90-ca2d-46a8-9a84-ff0a427964ac",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5774,7 +5776,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "3ed71af0-859e-49dc-940e-8955bccbc7cf",
+                        "uuid": "da6ef3d0-55db-4e70-99f7-d89092dceb9d",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5814,7 +5816,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "605e68e7-33e6-4aee-97fa-31f3acaacb34",
+                        "uuid": "1506ea06-2e91-42b6-98d5-8b4560775c32",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5854,7 +5856,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "5b65d9a5-c5e9-4975-87e7-8d0358762d9d",
+                        "uuid": "62c89cc5-2fc5-43d9-8fd9-191801de264f",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5881,7 +5883,7 @@
                         "tool_state": "{\"default\": 75, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "db8a9b11-6eaf-4af2-99d0-55bbe5f2f384",
+                        "uuid": "b2f93c71-42cb-4a41-bee5-20835113768e",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5908,7 +5910,7 @@
                         "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "2688bd42-a03c-42e1-a1fe-9d73aac21e8d",
+                        "uuid": "3a3e705b-92bd-4f9f-8626-631bacc8d01d",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -5935,7 +5937,7 @@
                         "tool_state": "{\"default\": \"global\", \"multiple\": false, \"validators\": [], \"restrictions\": [\"global\", \"human_gut\", \"dog_gut\", \"ocean\", \"soil\", \"cat_gut\", \"human_oral\", \"mouse_gut\", \"pig_gut\", \"built_environment\", \"wastewater\", \"chicken_caecum\"], \"parameter_type\": \"text\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "fafb3176-f4ef-4414-8eff-a973bc5a5b45",
+                        "uuid": "879fa238-16e5-4167-8c6f-3bf680008347",
                         "when": null,
                         "workflow_outputs": []
                     }
@@ -5956,7 +5958,7 @@
                     "input_subworkflow_step_id": 1
                 },
                 "Assemblies": {
-                    "id": 99,
+                    "id": 101,
                     "output_name": "Selected assemblies",
                     "input_subworkflow_step_id": 2
                 },
@@ -6015,7 +6017,7 @@
             "annotation": "",
             "when": "$(inputs.when)",
             "id": 82,
-            "uuid": "20b1c870-be80-4ca1-967c-a7645daf4bde",
+            "uuid": "fdb898ee-47ad-4f07-88db-0ec6d897a573",
             "position": {
                 "left": 2450,
                 "top": 720
@@ -6024,17 +6026,17 @@
                 {
                     "label": "Single-coverage binning (own/merged reads) — DAS Tool bins",
                     "output_name": "DAS Tool bins",
-                    "uuid": "97713720-3705-48fe-88d4-b14c33b41bdf"
+                    "uuid": "ca6fc6e8-4f76-4abe-aeff-79bc787d7caa"
                 },
                 {
                     "label": "Single-coverage binning (own/merged reads) — Binette bins",
                     "output_name": "Binette bins",
-                    "uuid": "0896b0b4-6efb-42ff-bc28-23815c37e3eb"
+                    "uuid": "e62f2c48-59f7-4d0c-8c6e-4d18e6b18a8e"
                 },
                 {
                     "label": "Single-coverage binning (own/merged reads) — coverage depths",
                     "output_name": "Coverage depth matrices",
-                    "uuid": "3a04a2c7-1cb7-40f6-8143-bb652d30ad6f"
+                    "uuid": "f9fd05df-74e7-4ad0-a745-b2a1078b4bff"
                 }
             ]
         },
@@ -6074,7 +6076,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "2c5ec1d6-ad81-42e8-a2fd-29c984fd63f9",
+            "uuid": "7387f4d0-73f6-4757-8fa0-6e9817969780",
             "when": null,
             "workflow_outputs": []
         },
@@ -6114,7 +6116,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "9e69a20a-7e52-4a25-974b-b8b8afeb9c1f",
+            "uuid": "43c7819a-7fc5-40b9-9209-628c555b45a9",
             "when": null,
             "workflow_outputs": []
         },
@@ -6148,7 +6150,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "64928382-5590-4dbd-a5a6-c7109b4b6b0b",
+            "uuid": "801c760b-3a48-4217-8fdd-27b332d9ede4",
             "when": null,
             "workflow_outputs": []
         },
@@ -6182,7 +6184,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "7a833636-eafe-41a0-9310-a1cd56cbee72",
+            "uuid": "5551711f-204a-47b7-b946-4053eb6e0f70",
             "when": null,
             "workflow_outputs": []
         },
@@ -6220,7 +6222,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "26b11db0-ece9-49a2-940a-0d320e3ba95b",
+            "uuid": "e919abaa-c417-45ac-a352-0c969e99616e",
             "when": null,
             "workflow_outputs": []
         },
@@ -6254,13 +6256,13 @@
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
-            "uuid": "c624cfb6-85b0-4416-b998-b17810aabc6c",
+            "uuid": "f06c8534-dafb-4f31-b910-7486e443d024",
             "when": null,
             "workflow_outputs": [
                 {
                     "label": "Single-coverage binning (own/merged reads) — merged refined bins",
                     "output_name": "output",
-                    "uuid": "9e8a2b24-c6f1-4da2-b162-f871db1fb5b1"
+                    "uuid": "5486b7ca-c06b-4199-9fa9-dd56f1035527"
                 }
             ]
         },
@@ -6305,7 +6307,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "5bd0910b-5c4c-4587-9a0d-235aae90a2ad",
+            "uuid": "c8a720f1-f826-447f-9206-631bf2ddbef3",
             "when": null,
             "workflow_outputs": []
         },
@@ -7126,7 +7128,7 @@
                             {
                                 "label": "Coverage depth matrices",
                                 "output_name": "outputDepth",
-                                "uuid": "131fdbc7-1992-4fcc-bb81-4352a81ae0e8"
+                                "uuid": "ec2517e3-f427-4e90-b015-46ca090080f3"
                             }
                         ]
                     },
@@ -8057,7 +8059,7 @@
                         "tool_uuid": null,
                         "tool_version": "1.0.0",
                         "type": "tool",
-                        "uuid": "ec3c8493-c175-462d-a760-9d00c6ff6c69",
+                        "uuid": "6b185aac-404e-4977-bbfd-3748ec9642af",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8082,7 +8084,7 @@
                             "top": 470
                         },
                         "id": 34,
-                        "uuid": "7e279609-78fb-4228-bde2-64b430f05a4b",
+                        "uuid": "0c0f704c-1ad8-4c79-ba88-03c57bdaec07",
                         "label": "Read-length statistics — forward",
                         "workflow_outputs": []
                     },
@@ -8107,7 +8109,7 @@
                             "top": 770
                         },
                         "id": 35,
-                        "uuid": "f4127452-4189-431b-8a92-303f9669b0c5",
+                        "uuid": "dbac35ab-e005-4341-b13d-5027b3c5be0f",
                         "label": "Read-length statistics — reverse",
                         "workflow_outputs": []
                     },
@@ -8136,7 +8138,7 @@
                             "top": 470
                         },
                         "id": 36,
-                        "uuid": "93ee4832-f528-498c-8590-8c95c882bce7",
+                        "uuid": "b2e8779d-77be-4472-87b2-f26b1df41359",
                         "label": "Combine read-length statistics",
                         "workflow_outputs": []
                     },
@@ -8161,7 +8163,7 @@
                             "top": 470
                         },
                         "id": 37,
-                        "uuid": "a8cacc18-37f2-4367-84c6-82da65a2e262",
+                        "uuid": "3c2237c4-35ec-4032-832c-b8a2e9bfad64",
                         "label": "Compute read-count-weighted mean length (both mates)",
                         "workflow_outputs": []
                     },
@@ -8186,7 +8188,7 @@
                             "top": 470
                         },
                         "id": 38,
-                        "uuid": "15437693-6eaf-4b7f-a3d9-ee0c0916787b",
+                        "uuid": "13365609-4e4f-40f0-b3f1-cb7129f7330b",
                         "label": "Automatic read length (CONCOCT)",
                         "workflow_outputs": []
                     },
@@ -8213,7 +8215,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "74f1e9bd-4da6-4192-befd-7cbd7c631abd",
+                        "uuid": "d41d8c67-c242-47d7-a6aa-8e9fd1349698",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8240,7 +8242,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "d98d7796-08cb-4dba-82bc-dacdd65a602a",
+                        "uuid": "af9d7507-fdfc-4b62-8610-fba5c43f6849",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8267,7 +8269,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "1b0313d7-ff9d-4e33-9718-2b4033ee3ab7",
+                        "uuid": "b61d005d-78c1-48a6-af9d-d9133c863d25",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8294,7 +8296,7 @@
                         "tool_state": "{\"parameter_type\": \"boolean\", \"optional\": false, \"default\": true, \"validators\": []}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "b6e29622-ab1c-449e-8a0d-efa2090e3fe8",
+                        "uuid": "90c80ebb-cef8-456b-831c-d3bb13608a20",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8334,7 +8336,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "8ad60c12-2d20-48be-a5c7-ae099af557c4",
+                        "uuid": "bc124546-1202-4936-a090-7808639acd6c",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8374,7 +8376,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "d935dc9e-3f8d-4088-b1ca-8aab078965aa",
+                        "uuid": "0518596b-4dcf-4015-84bd-8ddf5971b64a",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8414,7 +8416,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "2536bd4f-59df-4e2b-b5e9-b8326cc3d9cf",
+                        "uuid": "9b90de9e-a208-4f4b-9f77-a178f6593459",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8454,7 +8456,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "50a7dd5c-0ca6-4fef-8e1e-0f7c1c5c2ec5",
+                        "uuid": "d203e850-ebe8-4b9f-a1a7-2c35a7ae3cb3",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8494,7 +8496,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "2aea1104-eac4-4024-92a2-121507a1eef8",
+                        "uuid": "abebb09e-6455-4682-a4b9-6b629a2a5437",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8534,7 +8536,7 @@
                         "tool_uuid": null,
                         "tool_version": "0.2.0",
                         "type": "tool",
-                        "uuid": "40356f8f-3bf9-4a93-a639-f9a8fa8e5cf2",
+                        "uuid": "66c1fd6f-23d9-49d8-92d1-a6301975244a",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8561,7 +8563,7 @@
                         "tool_state": "{\"default\": 75, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "bb6970c2-a90e-4e7c-9956-712bb57b8fd2",
+                        "uuid": "12e7dde6-0f26-40c6-9cb6-9e0658d399d4",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -8588,7 +8590,7 @@
                         "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "cc7e7b6a-c6c3-402a-bf36-362369856db9",
+                        "uuid": "d51b3afb-feac-4791-aeb1-d77a89470fdc",
                         "when": null,
                         "workflow_outputs": []
                     }
@@ -8604,7 +8606,7 @@
                     "input_subworkflow_step_id": 0
                 },
                 "Assemblies": {
-                    "id": 99,
+                    "id": 101,
                     "output_name": "Selected assemblies",
                     "input_subworkflow_step_id": 1
                 },
@@ -8663,7 +8665,7 @@
             "annotation": "",
             "when": "$(inputs.when)",
             "id": 90,
-            "uuid": "f277d880-2ef3-4841-a7de-7186ec489964",
+            "uuid": "64df806b-3e82-433b-9d6b-b91991ec4a88",
             "position": {
                 "left": 2450,
                 "top": 1320
@@ -8672,17 +8674,17 @@
                 {
                     "label": "Multi-coverage binning (all samples) — DAS Tool bins",
                     "output_name": "DAS Tool bins",
-                    "uuid": "db847582-fffb-45aa-94c2-6e511a4b2e6c"
+                    "uuid": "37a93238-0070-46c3-b204-91b197d785cd"
                 },
                 {
                     "label": "Multi-coverage binning (all samples) — Binette bins",
                     "output_name": "Binette bins",
-                    "uuid": "9f8b88d4-dde5-49d6-8532-f439f6264a18"
+                    "uuid": "d1771e24-5ba5-4cca-b7b0-28985afe49b0"
                 },
                 {
                     "label": "Multi-coverage binning (all samples) — coverage depths",
                     "output_name": "Coverage depth matrices",
-                    "uuid": "cf29d8ce-f45c-4669-ae54-07812e7fde85"
+                    "uuid": "2a5cbb1f-9e7b-4cd3-9a21-45af6b34fc02"
                 }
             ]
         },
@@ -8722,7 +8724,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "59aaef09-76bd-4845-ad45-382e24cd7643",
+            "uuid": "24157153-8cec-41e5-a231-2309194137b3",
             "when": null,
             "workflow_outputs": []
         },
@@ -8762,7 +8764,7 @@
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "e6508e2d-1b7f-47ae-bac7-42c778fa40c5",
+            "uuid": "3abc1ee8-5170-44c1-b284-064decc1c6e8",
             "when": null,
             "workflow_outputs": []
         },
@@ -8796,7 +8798,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "a0bf40eb-736b-4e16-a716-1bed64069347",
+            "uuid": "c21d4c7a-48eb-4d53-9352-9116e2ce02e4",
             "when": null,
             "workflow_outputs": []
         },
@@ -8830,7 +8832,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "3f5b38d6-eeab-44e3-a60f-749ec178cce4",
+            "uuid": "40d5dd29-7b44-44b3-af95-4787b266dfb4",
             "when": null,
             "workflow_outputs": []
         },
@@ -8868,7 +8870,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "fb9faf95-d88c-4d8e-9d4f-d20d5516e703",
+            "uuid": "5efe8ef0-6990-45ca-82aa-609f8b5e35dd",
             "when": null,
             "workflow_outputs": []
         },
@@ -8902,13 +8904,13 @@
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
-            "uuid": "c8e4fec7-d181-48e8-9fe7-752142479435",
+            "uuid": "4372bf92-e355-47db-b2fd-9b8cf8e60f1b",
             "when": null,
             "workflow_outputs": [
                 {
                     "label": "Multi-coverage binning (all samples) — merged refined bins",
                     "output_name": "output",
-                    "uuid": "e3b641d4-13b7-475d-aa7b-b6a32ab3adf8"
+                    "uuid": "654d64e1-b293-40ba-a231-6ce38a1989c3"
                 }
             ]
         },
@@ -8946,13 +8948,13 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "cbc52404-a046-4171-b969-a10d8752f36d",
+            "uuid": "a0a8c74c-85ad-488f-80e5-76b38b64ff8b",
             "when": null,
             "workflow_outputs": [
                 {
                     "label": "Merged refined bins (all branches)",
                     "output_name": "output",
-                    "uuid": "4b49cf51-2a0b-4c97-b82d-18a15f057c12"
+                    "uuid": "0a1762c3-a331-4161-b1b8-afc1dab1e976"
                 }
             ]
         },
@@ -8986,11 +8988,95 @@
             "tool_uuid": null,
             "tool_version": "1.1.0",
             "type": "tool",
-            "uuid": "017e188b-a445-4167-a1b2-9c828b38c894",
+            "uuid": "c5c1bb06-ffc5-4880-b1c9-8e0510d09221",
             "when": null,
             "workflow_outputs": []
         },
         "99": {
+            "annotation": "",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "errors": null,
+            "id": 99,
+            "input_connections": {
+                "infile": {
+                    "id": 59,
+                    "output_name": "quality"
+                }
+            },
+            "inputs": [],
+            "label": "Assessed genome identifiers",
+            "name": "Text reformatting",
+            "outputs": [
+                {
+                    "name": "outfile",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 4140,
+                "top": 1320
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3",
+            "tool_shed_repository": {
+                "changeset_revision": "ab83aa685821",
+                "name": "text_processing",
+                "owner": "bgruening",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"code\": \"NR > 1 {print $1}\", \"infile\": {\"__class__\": \"ConnectedValue\"}, \"variables\": [], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "9.5+galaxy3",
+            "type": "tool",
+            "uuid": "a9919bd8-ad50-4cb3-b7a2-f45b5ede696b",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "100": {
+            "annotation": "",
+            "content_id": "__FILTER_FROM_FILE__",
+            "errors": null,
+            "id": 100,
+            "input_connections": {
+                "input": {
+                    "id": 58,
+                    "output_name": "output"
+                },
+                "how|filter_source": {
+                    "id": 99,
+                    "output_name": "outfile"
+                }
+            },
+            "inputs": [],
+            "label": "Keep bins with CheckM2 quality information",
+            "name": "Filter collection",
+            "outputs": [],
+            "position": {
+                "left": 4140,
+                "top": 1620
+            },
+            "post_job_actions": {
+                "HideDatasetActionoutput_discarded": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_discarded"
+                },
+                "HideDatasetActionoutput_filtered": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "output_filtered"
+                }
+            },
+            "tool_id": "__FILTER_FROM_FILE__",
+            "tool_state": "{\"how\": {\"how_filter\": \"remove_if_absent\", \"__current_case__\": 0, \"filter_source\": {\"__class__\": \"ConnectedValue\"}}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "1c7130f9-76ed-464b-91b2-cf50f5e218b9",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "101": {
             "type": "subworkflow",
             "name": "Assembly and assembly selection",
             "label": "Assembly and assembly selection",
@@ -9098,7 +9184,7 @@
                 "tags": [
                     "name:FAIRyMAGs"
                 ],
-                "uuid": "bd5c3213-b512-48ba-bb07-4a2e8eb6b3be",
+                "uuid": "9c2c82bb-ddfa-4a13-957c-7158b1308a38",
                 "version": 1,
                 "release": "0.7",
                 "steps": {
@@ -9125,7 +9211,7 @@
                         "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
-                        "uuid": "5688ea7b-c7bc-4165-8e0e-a6255e2a802b",
+                        "uuid": "a652ce50-e689-47d4-8f8a-53480029108d",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9152,7 +9238,7 @@
                         "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictions\": [\"MEGAHIT\", \"metaSPAdes\", \"Custom Assembly\"], \"parameter_type\": \"text\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "ef768773-e20e-44ca-86a2-9129fca404cf",
+                        "uuid": "2ef97029-b460-49a9-90e4-4270b434843e",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9179,7 +9265,7 @@
                         "tool_state": "{\"default\": 200, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
                         "tool_version": null,
                         "type": "parameter_input",
-                        "uuid": "31e76949-c598-4023-914c-03c3f263feab",
+                        "uuid": "d0dc2e51-4d7c-44f7-9c30-a632ab9abdee",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9206,7 +9292,7 @@
                         "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
-                        "uuid": "17607584-4042-44b7-ba73-e19b390ca9e0",
+                        "uuid": "a3d52fba-7fe5-4e53-b62f-e3104473c7dd",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9233,7 +9319,7 @@
                         "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
-                        "uuid": "3d3a6654-6710-4fa9-8e90-7636f1845fa2",
+                        "uuid": "32749ac8-21e3-4591-a9ca-b11c3f7811a8",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9260,7 +9346,7 @@
                         "tool_state": "{\"optional\": true, \"tag\": null, \"collection_type\": \"list\", \"fields\": null, \"column_definitions\": null}",
                         "tool_version": null,
                         "type": "data_collection_input",
-                        "uuid": "5074e3b2-9744-46ee-85fd-124af1d3cc6f",
+                        "uuid": "002dbb3f-25d3-4985-be6e-cd46fe3f203b",
                         "when": null,
                         "workflow_outputs": []
                     },
@@ -9758,7 +9844,7 @@
                             {
                                 "label": "Selected assemblies",
                                 "output_name": "data_param",
-                                "uuid": "419ee5c7-c24d-4d92-b9a5-982c3eff6ad9"
+                                "uuid": "34088b4d-8c3e-40ce-b6e6-75fcdf3a0ed3"
                             }
                         ]
                     },
@@ -9863,12 +9949,12 @@
                     "input_subworkflow_step_id": 2
                 },
                 "Selected nanopore reads": {
-                    "id": 100,
+                    "id": 102,
                     "output_name": "output",
                     "input_subworkflow_step_id": 3
                 },
                 "Selected PacBio reads": {
-                    "id": 101,
+                    "id": 103,
                     "output_name": "output",
                     "input_subworkflow_step_id": 4
                 },
@@ -9882,8 +9968,8 @@
             "outputs": [],
             "annotation": "",
             "when": null,
-            "id": 99,
-            "uuid": "2e14a6e2-190c-485f-a4c7-3e5f7f3cae2f",
+            "id": 101,
+            "uuid": "97a20ba0-180a-4c43-9161-b6e7e3246eb7",
             "position": {
                 "left": 1830,
                 "top": 420
@@ -9892,25 +9978,25 @@
                 {
                     "label": "metaSPAdes Contigs",
                     "output_name": "metaSPAdes Contigs",
-                    "uuid": "76f977ed-2c3c-4e56-9bc7-cb0f61ff7f51"
+                    "uuid": "e69e97e3-eda4-4358-a2a5-e8f5f70de9b9"
                 },
                 {
                     "label": "Assembly Report",
                     "output_name": "Assembly Report",
-                    "uuid": "11831379-e7a3-4b25-8372-1fc1b2e24a64"
+                    "uuid": "e05fa2a7-d831-4ec2-92d8-cd7e52272c22"
                 },
                 {
                     "label": "Selected assemblies",
                     "output_name": "Selected assemblies",
-                    "uuid": "83766156-9c1c-4573-bd34-cfe0b16020e4"
+                    "uuid": "2b73ea01-fa09-41bc-bb8a-dbbd588bfd19"
                 }
             ]
         },
-        "100": {
+        "102": {
             "annotation": "Merges the flattened DAS Tool and Binette bin lists. With duplicate handling \"keep first\", the bins of whichever refiner actually ran win: the skipped refiner flattens to an empty list, so it contributes nothing. Output is a flat list of the selected bins.",
             "content_id": "__MERGE_COLLECTION__",
             "errors": null,
-            "id": 100,
+            "id": 102,
             "input_connections": {
                 "inputs_0|input": {
                     "id": 75,
@@ -9940,15 +10026,15 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "30f8cd21-6266-4109-b822-5f8fa16f4ffd",
+            "uuid": "26c0a62d-058d-4a0d-b066-dee800abe636",
             "when": null,
             "workflow_outputs": []
         },
-        "101": {
+        "103": {
             "annotation": "Merges the flattened DAS Tool and Binette bin lists. With duplicate handling \"keep first\", the bins of whichever refiner actually ran win: the skipped refiner flattens to an empty list, so it contributes nothing. Output is a flat list of the selected bins.",
             "content_id": "__MERGE_COLLECTION__",
             "errors": null,
-            "id": 101,
+            "id": 103,
             "input_connections": {
                 "inputs_0|input": {
                     "id": 76,
@@ -9978,7 +10064,7 @@
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
-            "uuid": "12f9f5a7-92a1-48cf-8af1-171e0e0bcc5c",
+            "uuid": "3d593310-b11e-4663-8ccd-8738e4abb8b2",
             "when": null,
             "workflow_outputs": []
         }
@@ -9986,10 +10072,9 @@
     "tags": [
         "name:FAIRyMAGs",
         "agentic-main-mag-workflow",
-        "agentic-foundry-mags",
-        "development"
+        "agentic-foundry-mags"
     ],
-    "uuid": "58566cc5-956f-4d00-8f7d-7708bf432457",
+    "uuid": "028ae0ef-5949-446b-a82c-3734bda87405",
     "version": 1,
-    "release": "0.7"
+    "release": "1.0"
 }

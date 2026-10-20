@@ -74,6 +74,10 @@ for each coverage strategy, in addition to the original downstream results.
 Coverage tables have three leading JGI fields followed by coverage/variance pairs:
 one pair for single coverage, one pair per original sample for multi coverage.
 
+## MAG quality and dereplication
+
+CheckM2 does not report quality for degenerate or extremely short bins. dRep is therefore restricted to bins that CheckM2 actually assessed: the quality table is reduced to its identifier column and the flattened bin collection is filtered to that list before dereplication. This keeps the genome list and the quality metadata consistent, so a single unassessed bin cannot abort dereplication and the downstream abundance and report steps.
+
 ## MAGs Annotation and Quality Control
 
 After binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:
