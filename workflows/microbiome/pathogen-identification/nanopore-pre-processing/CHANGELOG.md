@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.3.7+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/fastp/fastp/1.4.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/kraken2/kraken2/2.17.2+galaxy0`
+
 ## [0.2] - 2026-09-21
 
 ### Automatic update
