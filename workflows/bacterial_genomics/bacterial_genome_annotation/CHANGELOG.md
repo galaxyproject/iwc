@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy3`
+
 ## [1.2.1] - 2026-10-05
 
 ### Automatic update
