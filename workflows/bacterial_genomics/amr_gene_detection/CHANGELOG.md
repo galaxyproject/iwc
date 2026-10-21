@@ -12,6 +12,7 @@
 
 ### Fixed
 - Rename the ABRicate `#FILE` header for MultiQC with Replace Text (`tp_replace_in_line`) instead of Column Regex Find And Replace, which could not run on a header-only report (no virulence genes found).
+- Point the `multiqc_html_report` workflow output at MultiQC's `html_report` output. It named a non-existent output, so the report was never exposed.
 
 ## [1.1.8] 2026-03-15
 
