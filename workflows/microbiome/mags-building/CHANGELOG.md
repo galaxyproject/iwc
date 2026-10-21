@@ -26,6 +26,7 @@
 - Refiner and coverage outputs are reconciled without retaining skipped-branch placeholders.
 - Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
 - Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
+- Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and every test case runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column counts.
 
 ### Fixed
 
