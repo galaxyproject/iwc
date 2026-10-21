@@ -83,6 +83,15 @@ jobs:
         key: pip_cache_py_${{ matrix.python-version }}_gxy_${{ inputs.galaxy-head-sha }}
     - name: Free Disk Space (Ubuntu)
       uses: insightsengineering/disk-space-reclaimer@v1
+    # The runner has no swap. Tools like OMAmer load multi-GB databases into
+    # memory and get OOM-killed on the 16 GB runner without it.
+    - name: Add swap space
+      run: |
+        sudo fallocate -l 16G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        free -h
     - name: Planemo test workflows
       uses: galaxyproject/planemo-ci-action@v1
       id: test-workflows
