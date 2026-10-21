@@ -11,4 +11,5 @@
 - Publish coverage depth matrices for inspection and regression testing.
 - Document the absence of an environment selector in SemiBin co mode.
 - Disable COMEBin in the CI tests, because it runs the longest of all binners and keeps the test suite close to the CI time limit. The other binners and all refinement outputs remain covered, and the workflow still enables COMEBin by default.
+- Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and the test runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column count.
 - First release
