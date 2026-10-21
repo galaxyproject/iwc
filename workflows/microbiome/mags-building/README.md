@@ -54,6 +54,12 @@ to each co-assembly. This differs from both pooled single coverage and all-sampl
 multi coverage and is **not implemented** here. There is no automatic fallback
 between the selected binning strategies.
 
+The multi-coverage branch constructs its assembly × read-sample input matrix with
+native Flatten, Nested Cross Product and Apply Rules operations. These reuse the
+original read datasets instead of writing interlaced/de-interlaced FASTQ files.
+The number of alignment jobs and BAM files still grows as assemblies × samples;
+this change reduces intermediate read storage, not the mapping workload.
+
 ## Refinement controls and outputs
 
 **Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**

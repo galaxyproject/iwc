@@ -16,7 +16,8 @@
 
 ### Changed
 
-- Incorporate IWC PR #1435 in the embedded Multi workflow: COMEBin 1.1.0+galaxy1 and FASTQ de-interlacer 1.2+galaxy0; connect Bowtie2 directly to `pairs` and remove the obsolete zip step.
+- Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435 in the embedded Multi workflow.
+- Replace interlacing/de-interlacing in embedded Multi with native Flatten, Nested Cross Product and Apply Rules operations, preserving all-sample coverage without writing intermediate FASTQ files.
 - Carry forward the MAG-generation authorship, FAIRyMAGs learning-pathway, funding and publication documentation from PR #1370, while retaining the modular interface documentation.
 - Grouping, coverage strategy and bin-refiner selection now lead the input form; the grouping-column help text is corrected.
 - All five binners (including COMEBin) are independently optional and enabled by default.
