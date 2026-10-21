@@ -128,3 +128,38 @@
           location: https://zenodo.org/records/13951790/files/interProScan.tabular?download=1&preview=1
           compare: sim_size
           delta: 2000000
+- doc: Test outline for Functional_annotation_of_sequences.ga for protein with abundance tables
+  job:
+    Sequence collection:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: test-sequence
+        location: https://zenodo.org/record/8414802/files/protein_sequences.fasta
+        filetype: fasta
+        hashes:
+        - hash_function: SHA-1
+          hash_value: 0e1026d6917ac03bcd174a85b18e69c2a6470f98
+    Run eggNOG + completeness calculation: true
+    Run InterProScan: true
+    eggNOG mode select: proteins
+    InterProScan mode select: Protein
+    Generate eggNOG annotation abundance tables: true
+  outputs:
+    eggNOG-mapper annotation abundance table:
+      asserts:
+      - that: has_n_columns
+        n: 3
+      - that: has_line
+        line: "Annotation type	Annotation	test-sequence"
+    GO abundances (eggNOG-mapper):
+      asserts:
+      - that: has_n_columns
+        n: 2
+      - that: has_line
+        line: "#KEY	test-sequence"
+    kegg pathways table:
+      asserts:
+      - that: has_text
+        text: "module_accession	completeness	pathway_name	pathway_class	matching_ko	missing_ko"
