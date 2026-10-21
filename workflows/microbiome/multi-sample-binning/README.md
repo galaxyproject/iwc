@@ -6,7 +6,7 @@ In contrast to single-sample binning, the multi-sample approach uses information
 
 In this workflow, each sample's reads are mapped against each sample's assembly, and each assembly is subsequently binned separately using the cross-sample coverage information. This differs from multi-sample approaches that concatenate assemblies and perform a joint binning step before splitting the resulting bins by sample.
 
-The multi-sample approach is more computationally demanding than single-sample binning because it requires additional read mappings and processes a larger amount of data. When the reads of N samples are mapped against N assemblies, the number of mapping jobs, the number of BAM files and the number of intermediate read copies all scale as N², so storage requirements grow quickly with the number of samples. However, the resulting cross-sample coverage information can improve binning, particularly when organisms show different relative abundances across samples. For a large number of samples, or for samples from unrelated environments where cross-sample coverage adds little information, single-sample binning is the cheaper choice.
+The multi-sample approach is more computationally demanding than single-sample binning because it requires additional read mappings and processes a larger amount of data. When the reads of N samples are mapped against N assemblies, the number of mapping jobs and BAM files scales as N², so storage requirements still grow quickly with the number of samples. The all-vs-all input matrix uses native collection operations that reference the original reads, without writing intermediate interlaced or de-interlaced FASTQ files. However, the resulting cross-sample coverage information can improve binning, particularly when organisms show different relative abundances across samples. For a large number of samples, or for samples from unrelated environments where cross-sample coverage adds little information, single-sample binning is the cheaper choice.
 
 After binning is complete, the workflow uses one or both of the available refinement tools to combine and refine the results from the individual binners, with the goal of generating higher-quality bins.
 
@@ -58,6 +58,7 @@ It should also be noted that this workflow can restrict Upstream. For example, i
 - Preprocess reads and assemblies for binning.
 - Generate cross-sample coverage information:
   
+  - Flatten the read pairs, form a nested cross product with the assemblies, and use Apply Rules to reconstruct an assembly × sample matrix of paired reads and matching assembly references. These operations reuse the underlying datasets; they do not rewrite read files. Sample identifiers, including underscores and `_forward`/`_reverse` suffixes in sample names, are retained by removing only the final mate suffix introduced by flattening.
   - Map the reads from each sample against the assemblies from all samples.
 
 - Perform binning using multiple binners:

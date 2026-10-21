@@ -2,7 +2,8 @@
 
 ## [1.0] - 2026-10-20
 
-- Incorporate the tool upgrades from IWC PR #1435: COMEBin 1.1.0+galaxy1 and FASTQ de-interlacer 1.2+galaxy0. Connect Bowtie2 directly to the paired `pairs` output and remove the obsolete zip step.
+- Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435.
+- Replace read interlacing/de-interlacing with native Flatten, Nested Cross Product and Apply Rules operations. Preserve the assembly × read-sample BAM matrix while reusing the original read datasets instead of writing intermediate FASTQ files.
 - Replace manual CONCOCT read length with automatic estimation from both mates of all original samples.
 - Make all five binners independently optional and enabled by default, with editor-compatible optional-output bridges.
 - Enclose workflow tools in a native frame with Markdown documentation.
