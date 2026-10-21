@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6] - 2026-09-23
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
 ## [0.5] - 2026-07-13
 
 ### Automatic update
