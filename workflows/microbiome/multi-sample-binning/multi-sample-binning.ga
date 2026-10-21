@@ -15,7 +15,7 @@
                 260
             ],
             "data": {
-                "text": "## 1. Multi-sample binning\n\nEmbedded subworkflow. Inputs at left; dependencies flow left to right.\n\nNamed outputs connect to the parent without expanding individual steps."
+                "text": "## Multi-sample binning\n\n**Coverage:** flatten the original read pairs, form an assembly × read-sample cross product, then rebuild paired collections and matching references with Apply Rules. These operations reuse the original FASTQ datasets. Bowtie2 maps every sample to every assembly.\n\n**Binning:** summarize all sample alignments per assembly into coverage matrices. Enabled SemiBin, CONCOCT, MetaBAT2, MaxBin2 and COMEBin branches use cross-sample coverage. CONCOCT read length is estimated automatically from both mates.\n\n**Refinement:** prepare contig assignments for DAS Tool and candidate FASTAs for Binette. Return selected refined bins, quality reports and coverage matrices. Disabled branches are handled through optional bridges."
             }
         },
         {
@@ -250,7 +250,7 @@
             "workflow_outputs": []
         },
         "7": {
-            "annotation": "",
+            "annotation": "Split contigs into fragments for CONCOCT. Split long contigs into fragments so coverage and composition can be clustered together.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_cut_up_fasta/concoct_cut_up_fasta/1.1.0+galaxy3",
             "errors": null,
             "id": 7,
@@ -261,7 +261,7 @@
                 }
             },
             "inputs": [],
-            "label": "CONCOCT: Cut up contigs",
+            "label": "Split contigs into fragments for CONCOCT",
             "name": "CONCOCT: Cut up contigs",
             "outputs": [
                 {
@@ -294,7 +294,7 @@
             "workflow_outputs": []
         },
         "8": {
-            "annotation": "",
+            "annotation": "Run DAS Tool?. Convert the selected mode to a boolean that enables this branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
             "id": 8,
@@ -339,7 +339,7 @@
             "workflow_outputs": []
         },
         "9": {
-            "annotation": "",
+            "annotation": "Run Binette?. Convert the selected mode to a boolean that enables this branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
             "id": 9,
@@ -384,7 +384,7 @@
             "workflow_outputs": []
         },
         "11": {
-            "annotation": "Cross assemblies with individual read mates; rebuild pairs without rewriting FASTQ data.",
+            "annotation": "Cross product of assemblies and flattened reads. Pair each assembly with every original read sample without rewriting FASTQ data.",
             "content_id": "__CROSS_PRODUCT_NESTED__",
             "errors": null,
             "id": 11,
@@ -426,7 +426,7 @@
             "workflow_outputs": []
         },
         "14": {
-            "annotation": "",
+            "annotation": "Map every read sample to every assembly with Bowtie2. Align paired short reads to the selected reference assembly to measure contig coverage.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0",
             "errors": null,
             "id": 14,
@@ -450,7 +450,7 @@
                     "name": "reference_genome"
                 }
             ],
-            "label": "Bowtie2",
+            "label": "Map every read sample to every assembly with Bowtie2",
             "name": "Bowtie2",
             "outputs": [
                 {
@@ -479,7 +479,7 @@
             "workflow_outputs": []
         },
         "15": {
-            "annotation": "",
+            "annotation": "Calculate fragment coverage for CONCOCT. Summarize alignment coverage over the CONCOCT contig fragments.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_coverage_table/concoct_coverage_table/1.1.0+galaxy3",
             "errors": null,
             "id": 15,
@@ -499,7 +499,7 @@
                     "name": "mode"
                 }
             ],
-            "label": "CONCOCT: Generate the input coverage table",
+            "label": "Calculate fragment coverage for CONCOCT",
             "name": "CONCOCT: Generate the input coverage table",
             "outputs": [
                 {
@@ -528,7 +528,7 @@
             "workflow_outputs": []
         },
         "16": {
-            "annotation": "",
+            "annotation": "Bin contigs with COMEBin. Use sequence and coverage representations to infer candidate genome bins when enabled.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/comebin/comebin/1.1.0+galaxy1",
             "errors": null,
             "id": 16,
@@ -547,7 +547,7 @@
                 }
             },
             "inputs": [],
-            "label": "COMEBin",
+            "label": "Bin contigs with COMEBin",
             "name": "COMEBin",
             "outputs": [
                 {
@@ -590,7 +590,7 @@
             ]
         },
         "17": {
-            "annotation": "",
+            "annotation": "Calculate contig depths across all read samples per assembly. Summarize mapped-read depth and variance for each contig and read sample.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.18.23+galaxy0",
             "errors": null,
             "id": 17,
@@ -606,7 +606,7 @@
                     "name": "mode"
                 }
             ],
-            "label": "Calculate contig depths (together)",
+            "label": "Calculate contig depths across all read samples per assembly",
             "name": "Calculate contig depths",
             "outputs": [
                 {
@@ -618,7 +618,15 @@
                 "left": 3600,
                 "top": 1070
             },
-            "post_job_actions": {},
+            "post_job_actions": {
+                "TagDatasetActionoutputDepth": {
+                    "action_arguments": {
+                        "tags": "coverage-depth-matrices"
+                    },
+                    "action_type": "TagDatasetAction",
+                    "output_name": "outputDepth"
+                }
+            },
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.18.23+galaxy0",
             "tool_shed_repository": {
                 "changeset_revision": "45f6d77d37b7",
@@ -641,7 +649,7 @@
             ]
         },
         "18": {
-            "annotation": "",
+            "annotation": "Bin contigs with SemiBin. Use contig sequence features and coverage to infer candidate genome bins.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.1.0+galaxy1",
             "errors": null,
             "id": 18,
@@ -665,7 +673,7 @@
                     "name": "mode"
                 }
             ],
-            "label": "SemiBin",
+            "label": "Bin contigs with SemiBin",
             "name": "SemiBin",
             "outputs": [
                 {
@@ -708,7 +716,7 @@
             ]
         },
         "19": {
-            "annotation": "",
+            "annotation": "Cluster contig fragments with CONCOCT.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct/concoct/1.1.0+galaxy3",
             "errors": null,
             "id": 19,
@@ -736,7 +744,7 @@
                     "name": "advanced"
                 }
             ],
-            "label": "CONCOCT",
+            "label": "Cluster contig fragments with CONCOCT",
             "name": "CONCOCT",
             "outputs": [
                 {
@@ -773,7 +781,7 @@
             "workflow_outputs": []
         },
         "20": {
-            "annotation": "",
+            "annotation": "Bridge optional COMEBin bins for downstream conversion. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 20,
@@ -784,7 +792,7 @@
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Bridge optional COMEBin bins for downstream conversion",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -813,7 +821,7 @@
             "workflow_outputs": []
         },
         "21": {
-            "annotation": "",
+            "annotation": "Bin contigs with MetaBAT2. Combine contig composition and coverage to infer candidate genome bins.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.18.23+galaxy0",
             "errors": null,
             "id": 21,
@@ -832,7 +840,7 @@
                 }
             },
             "inputs": [],
-            "label": "MetaBAT2",
+            "label": "Bin contigs with MetaBAT2",
             "name": "MetaBAT2",
             "outputs": [
                 {
@@ -875,7 +883,7 @@
             ]
         },
         "22": {
-            "annotation": "",
+            "annotation": "Bin contigs with MaxBin2. Use contig composition, coverage and marker genes to infer candidate genome bins.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/mbernt/maxbin2/maxbin2/2.2.7+galaxy6",
             "errors": null,
             "id": 22,
@@ -894,7 +902,7 @@
                 }
             },
             "inputs": [],
-            "label": "MaxBin2",
+            "label": "Bin contigs with MaxBin2",
             "name": "MaxBin2",
             "outputs": [
                 {
@@ -949,7 +957,7 @@
             ]
         },
         "23": {
-            "annotation": "",
+            "annotation": "Create contig-to-bin assignments from SemiBin. Convert FASTA bin membership to a contig-to-bin table for DAS Tool.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
             "id": 23,
@@ -960,7 +968,7 @@
                 }
             },
             "inputs": [],
-            "label": "generate genome bins table from SemiBin",
+            "label": "Create contig-to-bin assignments from SemiBin",
             "name": "Converts genome bins in fasta format",
             "outputs": [
                 {
@@ -989,7 +997,7 @@
             "workflow_outputs": []
         },
         "24": {
-            "annotation": "",
+            "annotation": "Merge CONCOCT fragment clusters into contig assignments. Combine fragment assignments into assignments for the original contigs.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_merge_cut_up_clustering/concoct_merge_cut_up_clustering/1.1.0+galaxy3",
             "errors": null,
             "id": 24,
@@ -1004,7 +1012,7 @@
                 }
             },
             "inputs": [],
-            "label": "CONCOCT: Merge cut clusters",
+            "label": "Merge CONCOCT fragment clusters into contig assignments",
             "name": "CONCOCT: Merge cut clusters",
             "outputs": [
                 {
@@ -1033,7 +1041,7 @@
             "workflow_outputs": []
         },
         "25": {
-            "annotation": "",
+            "annotation": "Create contig-to-bin assignments from COMEBin. Convert FASTA bin membership to a contig-to-bin table for DAS Tool.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
             "id": 25,
@@ -1044,7 +1052,7 @@
                 }
             },
             "inputs": [],
-            "label": "generate genome bins table from COMEBin",
+            "label": "Create contig-to-bin assignments from COMEBin",
             "name": "Converts genome bins in fasta format",
             "outputs": [
                 {
@@ -1073,7 +1081,7 @@
             "workflow_outputs": []
         },
         "26": {
-            "annotation": "",
+            "annotation": "Create contig-to-bin assignments from MetaBAT2. Convert FASTA bin membership to a contig-to-bin table for DAS Tool.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
             "id": 26,
@@ -1084,7 +1092,7 @@
                 }
             },
             "inputs": [],
-            "label": "generate genome bins table from MetaBAT2",
+            "label": "Create contig-to-bin assignments from MetaBAT2",
             "name": "Converts genome bins in fasta format",
             "outputs": [
                 {
@@ -1113,7 +1121,7 @@
             "workflow_outputs": []
         },
         "27": {
-            "annotation": "",
+            "annotation": "Create contig-to-bin assignments from MaxBin2. Convert FASTA bin membership to a contig-to-bin table for DAS Tool.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
             "id": 27,
@@ -1124,7 +1132,7 @@
                 }
             },
             "inputs": [],
-            "label": "generate genome bins table from MaxBin2",
+            "label": "Create contig-to-bin assignments from MaxBin2",
             "name": "Converts genome bins in fasta format",
             "outputs": [
                 {
@@ -1153,7 +1161,7 @@
             "workflow_outputs": []
         },
         "28": {
-            "annotation": "",
+            "annotation": "Extract CONCOCT bins as FASTA collections. Recover original contig sequences for each CONCOCT cluster.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/concoct_extract_fasta_bins/concoct_extract_fasta_bins/1.1.0+galaxy3",
             "errors": null,
             "id": 28,
@@ -1172,7 +1180,7 @@
                 }
             },
             "inputs": [],
-            "label": "CONCOCT: Extract a fasta file",
+            "label": "Extract CONCOCT bins as FASTA collections",
             "name": "CONCOCT: Extract a fasta file",
             "outputs": [
                 {
@@ -1215,7 +1223,7 @@
             ]
         },
         "29": {
-            "annotation": "",
+            "annotation": "Create contig-to-bin assignments from CONCOCT. Convert FASTA bin membership to a contig-to-bin table for DAS Tool.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/fasta_to_contig2bin/Fasta_to_Contig2Bin/1.1.7+galaxy1",
             "errors": null,
             "id": 29,
@@ -1226,7 +1234,7 @@
                 }
             },
             "inputs": [],
-            "label": "generate genome bins table from CONCOCT",
+            "label": "Create contig-to-bin assignments from CONCOCT",
             "name": "Converts genome bins in fasta format",
             "outputs": [
                 {
@@ -1255,7 +1263,7 @@
             "workflow_outputs": []
         },
         "30": {
-            "annotation": "",
+            "annotation": "Refine candidate bins with DAS Tool. Score candidate contig assignments and select a non-redundant set of refined genome bins.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/das_tool/das_tool/1.1.7+galaxy1",
             "errors": null,
             "id": 30,
@@ -1290,7 +1298,7 @@
                 }
             },
             "inputs": [],
-            "label": "DAS Tool",
+            "label": "Refine candidate bins with DAS Tool",
             "name": "DAS Tool",
             "outputs": [
                 {
@@ -1369,7 +1377,7 @@
             ]
         },
         "31": {
-            "annotation": "",
+            "annotation": "Collect candidate bins from enabled binners for Binette. Assemble enabled binner results into one candidate list for refinement.",
             "content_id": "__BUILD_LIST__",
             "errors": null,
             "id": 31,
@@ -1400,7 +1408,7 @@
                 }
             },
             "inputs": [],
-            "label": "Build genome bins list for Binette",
+            "label": "Collect candidate bins from enabled binners for Binette",
             "name": "Build list",
             "outputs": [
                 {
@@ -1423,7 +1431,7 @@
             "workflow_outputs": []
         },
         "32": {
-            "annotation": "",
+            "annotation": "Refine candidate bins with Binette. Refine candidate FASTA bins using CheckM2 quality estimates and the selected completeness and contamination settings.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.2.1+galaxy0",
             "errors": null,
             "id": 32,
@@ -1459,7 +1467,7 @@
                     "name": "database_type"
                 }
             ],
-            "label": "Binette",
+            "label": "Refine candidate bins with Binette",
             "name": "Binette",
             "outputs": [
                 {
@@ -1534,7 +1542,7 @@
             ]
         },
         "33": {
-            "annotation": "",
+            "annotation": "Unzip reads for automatic read-length estimation. Separate forward and reverse mates while retaining sample identifiers.",
             "content_id": "__UNZIP_COLLECTION__",
             "errors": null,
             "id": 33,
@@ -1592,7 +1600,7 @@
             },
             "inputs": [],
             "outputs": [],
-            "annotation": "",
+            "annotation": "Read-length statistics — forward. Count sequences and bases for read-count-weighted read-length estimation.",
             "position": {
                 "left": 1100,
                 "top": 470
@@ -1623,7 +1631,7 @@
             },
             "inputs": [],
             "outputs": [],
-            "annotation": "",
+            "annotation": "Read-length statistics — reverse. Count sequences and bases for read-count-weighted read-length estimation.",
             "position": {
                 "left": 1100,
                 "top": 770
@@ -1658,7 +1666,7 @@
             },
             "inputs": [],
             "outputs": [],
-            "annotation": "",
+            "annotation": "Combine read-length statistics.",
             "position": {
                 "left": 1600,
                 "top": 470
@@ -1689,7 +1697,7 @@
             },
             "inputs": [],
             "outputs": [],
-            "annotation": "",
+            "annotation": "Compute read-count-weighted mean length (both mates).",
             "position": {
                 "left": 2100,
                 "top": 470
@@ -1714,7 +1722,7 @@
             },
             "inputs": [],
             "outputs": [],
-            "annotation": "Rounded read-count-weighted mean across both mates and all input samples; selected/group-merged reads for Single, original samples for Multi.",
+            "annotation": "Automatic read length (CONCOCT).",
             "position": {
                 "left": 2600,
                 "top": 470
@@ -1833,7 +1841,7 @@
             "workflow_outputs": []
         },
         "43": {
-            "annotation": "",
+            "annotation": "Bridge optional CONCOCT fragment clusters. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 43,
@@ -1844,7 +1852,7 @@
                 }
             },
             "inputs": [],
-            "label": "Optional CONCOCT intermediate bridge — cutup_clustering_result",
+            "label": "Bridge optional CONCOCT fragment clusters",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -1873,7 +1881,7 @@
             "workflow_outputs": []
         },
         "44": {
-            "annotation": "",
+            "annotation": "Bridge optional CONCOCT merged contig assignments. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 44,
@@ -1884,7 +1892,7 @@
                 }
             },
             "inputs": [],
-            "label": "Optional CONCOCT intermediate bridge — cluster_file",
+            "label": "Bridge optional CONCOCT merged contig assignments",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -1913,7 +1921,7 @@
             "workflow_outputs": []
         },
         "45": {
-            "annotation": "",
+            "annotation": "Optional bins bridge — SemiBin. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 45,
@@ -1953,7 +1961,7 @@
             "workflow_outputs": []
         },
         "46": {
-            "annotation": "",
+            "annotation": "Optional bins bridge — MetaBAT2. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 46,
@@ -1993,7 +2001,7 @@
             "workflow_outputs": []
         },
         "47": {
-            "annotation": "",
+            "annotation": "Optional bins bridge — MaxBin2. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 47,
@@ -2033,7 +2041,7 @@
             "workflow_outputs": []
         },
         "48": {
-            "annotation": "",
+            "annotation": "Bridge optional CONCOCT bins. Pass through the available result while allowing the upstream optional branch to be skipped.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
             "id": 48,
@@ -2044,7 +2052,7 @@
                 }
             },
             "inputs": [],
-            "label": "Optional bins bridge — CONCOCT: Extract a fasta file",
+            "label": "Bridge optional CONCOCT bins",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -2127,16 +2135,29 @@
             "workflow_outputs": []
         },
         "51": {
-            "annotation": "Flatten list:paired to a list using the final _forward/_reverse suffix; sample names, including underscores, are preserved.",
+            "annotation": "Flatten read pairs. Remove collection nesting so results can be pooled or combined; existing datasets are reused.",
             "content_id": "__FLATTEN__",
             "errors": null,
             "id": 51,
-            "input_connections": {"input": {"id": 0, "output_name": "output"}},
+            "input_connections": {
+                "input": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
             "inputs": [],
             "label": "Flatten read pairs",
             "name": "Flatten collection",
-            "outputs": [{"name": "output", "type": "input"}],
-            "position": {"left": 1100, "top": 1070},
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1100,
+                "top": 1070
+            },
             "tool_id": "__FLATTEN__",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"join_identifier\": \"_\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.0.0",
@@ -2146,16 +2167,29 @@
             "workflow_outputs": []
         },
         "52": {
-            "annotation": "Rebuild list:list:paired: assembly > read sample > forward/reverse. Dataset references reuse the original FASTQ files.",
+            "annotation": "Rebuild read pairs per assembly. Use collection identifiers to arrange datasets into the structure required by the next step; sequence files are not rewritten.",
             "content_id": "__APPLY_RULES__",
             "errors": null,
             "id": 52,
-            "input_connections": {"input": {"id": 11, "output_name": "output_b"}},
+            "input_connections": {
+                "input": {
+                    "id": 11,
+                    "output_name": "output_b"
+                }
+            },
             "inputs": [],
             "label": "Rebuild read pairs per assembly",
             "name": "Apply rules",
-            "outputs": [{"name": "output", "type": "input"}],
-            "position": {"left": 2100, "top": 770},
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2100,
+                "top": 770
+            },
             "tool_id": "__APPLY_RULES__",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"rules\": [{\"type\": \"add_column_metadata\", \"value\": \"identifier0\"}, {\"type\": \"add_column_metadata\", \"value\": \"identifier1\"}, {\"type\": \"add_column_regex\", \"target_column\": 1, \"expression\": \"^(.+)_(forward|reverse)$\", \"group_count\": 2}], \"mapping\": [{\"type\": \"list_identifiers\", \"columns\": [0, 2]}, {\"type\": \"paired_identifier\", \"columns\": [3]}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.1.0",
@@ -2165,16 +2199,29 @@
             "workflow_outputs": []
         },
         "53": {
-            "annotation": "Keep the forward row once per sample, producing list:list references aligned with the read-pair matrix.",
+            "annotation": "References per assembly and read sample. Use collection identifiers to arrange datasets into the structure required by the next step; sequence files are not rewritten.",
             "content_id": "__APPLY_RULES__",
             "errors": null,
             "id": 53,
-            "input_connections": {"input": {"id": 11, "output_name": "output_a"}},
+            "input_connections": {
+                "input": {
+                    "id": 11,
+                    "output_name": "output_a"
+                }
+            },
             "inputs": [],
             "label": "References per assembly and read sample",
             "name": "Apply rules",
-            "outputs": [{"name": "output", "type": "input"}],
-            "position": {"left": 2100, "top": 1070},
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2100,
+                "top": 1070
+            },
             "tool_id": "__APPLY_RULES__",
             "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"rules\": [{\"type\": \"add_column_metadata\", \"value\": \"identifier0\"}, {\"type\": \"add_column_metadata\", \"value\": \"identifier1\"}, {\"type\": \"add_filter_regex\", \"target_column\": 1, \"expression\": \"_forward$\", \"invert\": false}, {\"type\": \"add_column_regex\", \"target_column\": 1, \"expression\": \"^(.+)_(forward|reverse)$\", \"group_count\": 2}], \"mapping\": [{\"type\": \"list_identifiers\", \"columns\": [0, 2]}]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
             "tool_version": "1.1.0",
