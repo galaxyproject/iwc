@@ -9,4 +9,5 @@
 - Expose Binette minimum completeness and contamination weight while preserving the standalone defaults (40 and 2).
 - Expose the supported SemiBin single-mode environment selector.
 - Publish coverage depth matrices for inspection and regression testing.
+- Disable COMEBin in the CI tests, because it runs the longest of all binners and keeps the test suite close to the CI time limit. The other binners and all refinement outputs remain covered, and the workflow still enables COMEBin by default.
 - First release
