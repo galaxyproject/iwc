@@ -29,6 +29,9 @@
 - Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
 - Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and every test case runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column counts.
 - Reduce the workflow-level test matrix to four cases covering both assemblers (MEGAHIT, metaSPAdes), grouped, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
+- Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
+- Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
+- Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
 
 ### Fixed
 

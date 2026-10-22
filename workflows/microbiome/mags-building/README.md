@@ -1,130 +1,172 @@
 # Metagenome-Assembled Genomes (MAGs) Generation
 
-This workflow assembles paired short reads and optional long reads, bins assemblies with multiple coverage strategies, refines the bins, and reports dereplicated MAGs and their quality and abundance.
+This workflow assembles metagenomic short reads with optional long reads, bins the assemblies with five binners, refines the bins with DAS Tool and/or Binette, and reports dereplicated MAGs with their quality and abundance.
 
-This workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
-A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use this workflow.
+It is part of a **suite of workflows for end-to-end MAG generation** (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete suite and its capabilities). A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use it.
 
-## Modular workflow logic
+## What "parent" means here
 
-The parent contains separate embedded workflows for paired short-read grouping,
-nanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage
-binning, and multi-coverage binning. Refiner reconciliation remains in the parent.
-The original downstream quality assessment, dereplication, abundance estimation,
-and reporting are retained.
+This workflow is the **parent** of the suite: it embeds smaller workflows as sub-workflow steps and adds the shared inputs and the downstream analysis. The embedded workflows are:
 
-The input form begins with **Use grouping?**, **Binning strategy**, and **Bin refinement tool**. Native frames surround the tools/subworkflows for each stage, with Markdown explanations inside each frame.
+- paired short-read grouping,
+- nanopore read grouping,
+- PacBio read grouping,
+- assembly and assembly selection,
+- single-coverage binning,
+- multi-coverage binning.
 
-## Inputs and grouping
+Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting stay in the parent. The two binning workflows are also published on their own ([single-sample binning](../single-sample-binning/), [multi-sample binning](../multi-sample-binning/)), so the same binning logic can be reused outside MAG generation.
 
-- **Trimmed reads**: original samples as a `list:paired` collection.
-- **Trimmed nanopore reads** and **Trimmed PacBio reads**: independent optional
-  original-read `list` collections. Long reads are used only by metaSPAdes.
-- **Metadata**: optional TSV/CSV with sample identifiers in the first column and
-  a grouping column selected by **Sample grouping column** (default `group`).
-- **Use grouping?** selects **Use original samples** (default), **Use grouping**,
-  or **Use grouping and original samples**. The hybrid union is grouped-first;
-  duplicate identifiers keep the grouped entry. Use distinct sample/group names
-  to avoid unintended collisions. Group identifiers must not contain underscores
-  because of the pinned fastq_groupmerge output discovery pattern.
-- With grouping enabled, provide metadata when explicit groups are required.
-  The underlying groupmerge tool merges all samples if metadata is absent.
-- Group short and long reads consistently. Single-end metadata identifiers refer
-  to the input element/file identifiers; paired metadata identifiers refer to
-  the pair identifiers. `fastq_groupmerge` is pinned at `1.0.2+galaxy0`.
-- Custom assemblies must match the selected original/grouped/hybrid read
-  identifiers and order. Five per-sample FASTAs do not become a co-assembly when
-  their reads are grouped; assemble the group or supply its genuine assembly.
+Each stage of the workflow is enclosed in a frame in the workflow editor, with a short explanation of the stage inside the frame.
 
-## Coverage strategies
+## Inputs
 
-**Binning strategy** selects:
+The form starts with the reads, then the assembly options, the sample grouping, the binning and refinement settings, and finally the MAG selection thresholds.
 
-- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped
-  against its corresponding original sample or group-merged reads. A co-assembly
-  therefore has one pooled coverage profile in this branch.
-- **Multi-coverage binning (all samples)**: every assembly is mapped against all
-  original per-sample read sets, including when assembly uses groups. Individual
-  sample coverage profiles are retained rather than replaced by merged reads.
-- **Both**: run both branches and retain the union of their refined bins; append
-  `_#` suffixes for conflicting flattened identifiers before downstream processing.
+### Reads
 
-A member-restricted alternative would map only the individual samples belonging
-to each co-assembly. This differs from both pooled single coverage and all-sample
-multi coverage and is **not implemented** here. There is no automatic fallback
-between the selected binning strategies.
+- **Trimmed reads** (required): the original samples as a `list:paired` collection.
+- **Trimmed Nanopore reads** and **Trimmed PacBio reads** (optional): two independent original-read `list` collections. Long reads are used only by metaSPAdes.
 
-The multi-coverage branch constructs its assembly × read-sample input matrix with
-native Flatten, Nested Cross Product and Apply Rules operations. These reuse the
-original read datasets instead of writing interlaced/de-interlaced FASTQ files.
-The number of alignment jobs and BAM files still grows as assemblies × samples;
-this change reduces intermediate read storage, not the mapping workload.
+Reads must be quality-filtered with host reads removed (see [Input requirements](#input-requirements)).
 
-## Refinement controls and outputs
+### Assembly
 
-**Bin refinement tool** selects **DAS Tool**, **Binette** (default), or **Both**
-for both coverage branches. The parent merges selected refiner outputs per branch
-before merging coverage branches. Binette receives parent completeness and
-contamination-weight controls. SemiBin's environment selector applies only to
-single mode: its co-mode wrapper does not expose that parameter.
+- **Choose Assembler**: `MEGAHIT` (default), `metaSPAdes` or `Custom Assembly`.
+- **Custom Assemblies**: required only with `Custom Assembly`; a `list` of assemblies, one per selected sample or group.
+- **Minimum length of contigs to output** (default: 200).
 
-**Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?**, and
-**Run MaxBin2?** independently enable each binner; all default to **yes**.
-Keep at least one binner enabled. Disabled binners contribute empty candidate
-tables rather than blocking the selected refiner.
+### Sample grouping
 
-CONCOCT read length is computed automatically from both input mates: total
-sequence length divided by total read count, rounded to the nearest integer.
-Single uses selected/group-merged reads; Multi uses all original samples. No
-manual read-length input is required.
+- **Use grouping?**:
+  - `Use original samples` (default): bin each sample on its own reads.
+  - `Use grouping`: merge the reads of the samples that belong to the same group before assembly and binning.
+  - `Use grouping and original samples`: run both, using grouped reads where they exist and original reads otherwise.
+- **Metadata** and **Sample grouping column** (default: `group`): the table that defines the groups.
+  - Metadata is optional, but it is the only way to define explicit groups. Without it, the grouping tool merges all samples into one group.
+  - Use distinct sample and group names, and avoid underscores in group names, because of the pinned `fastq_groupmerge` (`1.0.2+galaxy0`) output discovery pattern.
 
-Published checkpoints include coverage depth matrices and raw/refined bin outputs
-for each coverage strategy, in addition to the original downstream results.
-Coverage tables have three leading JGI fields followed by coverage/variance pairs:
-one pair for single coverage, one pair per original sample for multi coverage.
+### Binning and refinement
 
-## MAG quality and dereplication
+- **Binning strategy**: `Single-coverage binning (own/merged reads)` (default), `Multi-coverage binning (all samples)` or `Both`.
+- **Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.
+- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model used by SemiBin in single-coverage mode.
+- **Bin refinement tool**: `Binette` (default), `DAS Tool` or `Both`.
+- **CheckM2 Database**: the reference database Binette uses to assess bin quality.
+- **Minimum MAG completeness percentage** (default: 75) and **Contamination weight (Binette)** (default: 2): the Binette settings used in both coverage branches.
 
-CheckM2 does not report quality for degenerate or extremely short bins. dRep is therefore restricted to bins that CheckM2 actually assessed: the quality table is reduced to its identifier column and the flattened bin collection is filtered to that list before dereplication. This keeps the genome list and the quality metadata consistent, so a single unassessed bin cannot abort dereplication and the downstream abundance and report steps.
+### MAG selection thresholds
 
-## MAGs Annotation and Quality Control
+- **Minimum MAG length** (default: 50000),
+- **Maximum MAG contamination percentage** (default: 25),
+- **ANI threshold for dereplication** (default: 0.95).
 
-After binning, the resulting MAGs are **dereplicated** across all input samples based on **CheckM2 quality metrics** using **dRep**. The following processing steps are then performed:
+These thresholds select the representative MAGs after CheckM2 assessment.
 
-* **Quality Control** via QUAST and CheckM/CheckM2
-* **Abundance Estimation** per sample with CoverM
+## Step 1: Read grouping
 
-In previous versions, genome annotation and taxonomic annotation were also performed. This can now be done with dedicated and more comprehensive IWC workflows if needed:
+Grouping merges the reads of samples that belong to the same experimental group, so that a group can be assembled and binned as one sample. It is done separately for short reads, nanopore reads and PacBio reads.
 
-* [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)
-* [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)
-* [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)
-* [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)
+- **Original mode** keeps every sample separate.
+- **Grouped mode** merges the reads of each metadata-defined group.
+- **Hybrid mode** keeps both: grouped reads where a group exists, original reads otherwise.
+- Empty, sample-matched files stand in for missing long reads, so that a run without long reads keeps the same sample structure.
 
-All results are consolidated into a single **MultiQC report**.
+**Group short and long reads consistently**: use the same metadata table and the same grouping column for all read types. The workflow groups each read type on its own and then matches the results by identifier, so the groups must have the same names; otherwise the grouped long reads cannot be paired with the grouped short reads of the same group.
 
-## Input Requirements
+## Step 2: Assembly and assembly selection
 
-Input reads must be quality-filtered, with host reads removed.
-See other MAG workflows in IWC for quality filtering and host removal.
+Each selected sample or group is assembled into one assembly.
 
-**Short reads:**
+- **MEGAHIT** assembles short reads only.
+- **metaSPAdes** can additionally use the grouped or per-sample nanopore and PacBio reads.
+- **Custom Assembly** takes your own assemblies instead of running an assembler.
 
-* QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)
-* Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)
+The selected assemblies are then checked with QUAST, and the assembly with the best statistics is kept as the assembly to bin.
 
-**Long reads:**
+**Custom assemblies must follow the selected samples.** Provide one FASTA per selected sample or group, in the same order, with identifiers matching the selected reads. Binning and coverage rely on this correspondence.
 
-* QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)
-* Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)
+**Per-sample assemblies do not become a co-assembly.** Grouping merges reads, not assemblies. If your reads are grouped, supply one assembly per group, or let the workflow assemble the group; it does not combine five per-sample FASTAs into one co-assembly. If you want bins from a co-assembly, provide that co-assembly as a single element.
 
-## Optional Modifications
+## Step 3: Binning
 
-Some modifications can be made via the workflow editor for specific use cases:
+Binning splits each assembly into candidate genome bins. Five binners are available: CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin. Each uses a different combination of contig composition, coverage and marker genes, and each is optional.
 
-* Compare binners/bin refinement: add CheckM/CheckM2 to each binner/refiner and compare completeness, contamination, and number of bins.
-* Downstream: compare differential abundance of MAGs in your samples based on metadata using Maaslin2.
-* Downstream: compare your MAGs to a catalogue of MAGs for similar samples. Download desired MAGs from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and query your MAGs via the [MGnify API](https://www.ebi.ac.uk/metagenomics/browse/genomes?browse-by=mag-search); download the genomes and compare in Galaxy, e.g., using dRep.
+The binning strategy decides which reads provide the coverage:
+
+- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped against its own original sample or group-merged reads. A co-assembly therefore has one pooled coverage profile in this branch.
+- **Multi-coverage binning (all samples)**: every assembly is mapped against all original per-sample read sets, even when the assembly was built from grouped reads. Each sample keeps its own coverage profile.
+- **Both**: run both branches and keep the union of their refined bins. Conflicting flattened identifiers receive `_#` suffixes.
+
+A member-restricted alternative, which would map only the samples belonging to each co-assembly, is **not implemented**; it is different from both pooled single coverage and all-sample multi coverage. There is no automatic fallback between strategies.
+
+The multi-coverage branch builds its assembly × read-sample matrix with native Flatten, Nested Cross Product and Apply Rules operations. These reuse the original read datasets instead of writing interlaced or de-interlaced FASTQ files, so intermediate read storage drops; the number of mapping jobs and BAM files still grows as assemblies × samples.
+
+A binner set to `No` is skipped, and its candidate results are replaced by empty collections, so the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.
+
+CONCOCT read length is computed automatically from both input mates: total sequence length divided by total read count, rounded to the nearest integer. Single-coverage uses the selected or group-merged reads, multi-coverage uses all original samples. No manual read length is needed.
+
+## Step 4: Bin refinement
+
+Refinement reconciles the candidate bins of the individual binners into a final, non-redundant set, separately in each coverage branch.
+
+- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.
+- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.
+- **Both** runs DAS Tool and Binette.
+
+The parent merges the selected refiner outputs within each coverage branch, then merges the branches.
+
+## Step 5: MAG quality and dereplication
+
+The refined bins of all samples and groups are pooled and assessed with CheckM2.
+
+- CheckM2 does not report quality for degenerate or very short bins. The workflow therefore keeps only assessed bins before dereplication: the quality table is reduced to its identifier column, and the bin collection is filtered to that list. A single unassessed bin can then not abort dereplication and the downstream steps.
+- **dRep** dereplicates the assessed MAGs with the selected minimum length, maximum contamination and ANI thresholds, and selects one representative per species-level cluster.
+
+## Step 6: Abundance and reports
+
+- **CoverM** estimates the abundance of each representative MAG in the original samples, and the per-sample tables are combined into one table.
+- **CheckM**, **CheckM2** and **QUAST** assess the quality of the representative MAGs, and the assembly-quality tables are combined into one table.
+- All results are collected in a single **MultiQC report**.
+
+Genome annotation and taxonomic annotation are not part of this workflow. Use the dedicated workflows instead:
+
+- [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)
+- [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)
+- [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)
+- [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)
+
+## Outputs
+
+The workflow returns the final MAG tables (quality, abundance, MultiQC report) together with intermediate outputs you can inspect:
+
+- **Coverage depth matrices**, one per assembly and coverage branch.
+- **Raw bins** of each enabled binner, per assembly.
+- **Refined bins** of each coverage branch, plus the selected and dereplicated MAGs.
+
+The coverage depth matrices come from `jgi_summarize_bam_contig_depths`. Their first three columns are the JGI fields `contigName`, `contigLen` and `totalAvgDepth`; they are followed by one depth/variance column pair per BAM file: one pair for single coverage, and one pair per original sample for multi coverage.
+
+## Input requirements
+
+Input reads must be quality-filtered and host-removed.
+
+**Short reads**
+
+- QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)
+- Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)
+
+**Long reads**
+
+- QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)
+- Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)
+
+## Optional modifications
+
+Some modifications can be made in the workflow editor for specific use cases:
+
+- **Compare binners and refiners**: add CheckM/CheckM2 after each binner or refiner and compare completeness, contamination and number of bins.
+- **Differential abundance**: compare MAG abundance between sample groups with MaAsLin2.
+- **Comparison with a catalogue**: download MAGs for similar samples from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and compare them with yours, e.g. with dRep.
 
 ## Funding
 
