@@ -13,4 +13,7 @@
 - Document the absence of an environment selector in SemiBin co mode.
 - Disable COMEBin in the CI tests, because it runs the longest of all binners and keeps the test suite close to the CI time limit. The other binners and all refinement outputs remain covered, and the workflow still enables COMEBin by default.
 - Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and the test runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column count.
+- Replace the binner toggles with explicit `Yes`/`No` selections (default: `Yes`), converted to the boolean that gates each binner branch.
+- Order the inputs as assemblies, reads, binners, refinement and Binette settings, and group the tools in frames for inputs, coverage, binning and refinement, each with its own explanation.
+- Describe what each step does in its annotation instead of repeating the step label, and document every step in its own README section.
 - First release
