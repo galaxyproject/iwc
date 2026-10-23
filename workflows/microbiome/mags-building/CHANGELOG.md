@@ -1,5 +1,50 @@
 # Changelog
 
+## [1.0] - 2026-10-20
+
+### Breaking changes
+
+- The workflow now takes original short reads and selects grouping, coverage strategy and bin-refiner internally. Existing invocations of the previous interface do not map directly onto the new inputs.
+
+### Added
+
+- Internal grouping selection: original samples, grouped samples, or a hybrid that uses grouped reads where available and original reads otherwise.
+- Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage binning and multi-coverage binning.
+- Single-coverage (own/merged reads) and multi-coverage (all samples) coverage strategies, default single.
+- Shared bin-refiner selection (DAS Tool, Binette or both), default Binette.
+- Coverage depth checkpoints and a grouping/coverage test matrix.
+
+### Changed
+
+- Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435 in the embedded Multi workflow.
+- Replace interlacing/de-interlacing in embedded Multi with native Flatten, Nested Cross Product and Apply Rules operations, preserving all-sample coverage without writing intermediate FASTQ files.
+- Carry forward the MAG-generation authorship, FAIRyMAGs learning-pathway, funding and publication documentation from PR #1370, while retaining the modular interface documentation.
+- Grouping, coverage strategy and bin-refiner selection now lead the input form; the grouping-column help text is corrected.
+- All five binners (including COMEBin) are independently optional and enabled by default.
+- CONCOCT read length is derived automatically from both input mates using a read-count-weighted mean.
+- Stage tools and embedded workflows are enclosed in native frames with Markdown explanations.
+- Give each stage a distinct matching frame/Markdown color, put Binette first in the refiner selector, and clarify that original short reads drive grouping, assembly, coverage and abundance.
+- Refiner and coverage outputs are reconciled without retaining skipped-branch placeholders.
+- Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
+- Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
+- Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and every test case runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column counts.
+- Reduce the workflow-level test matrix to four cases covering both assemblers (MEGAHIT, metaSPAdes), grouped, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
+- Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
+- Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
+- Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
+
+### Fixed
+
+- Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
+- The long-read baseline's paired-read identifier is aligned with its nanopore identifier and original expected outputs; all output assertions are retained unchanged.
+
+### Tests
+
+- The short-read baseline's assembly-size, dereplicated-bin-size and merged-QUAST
+  expectations are re-baselined to the redesigned workflow's verified outputs.
+  The previous values described the pre-1.0 monolithic pipeline and could not hold
+  after the intentional interface and pipeline change.
+
 ## [0.9] - 2026-10-01
 
 ### Automatic update

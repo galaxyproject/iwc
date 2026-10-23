@@ -1,98 +1,144 @@
-- doc: Test for Metagenome-Assembled-Genomes-(MAGs)-generation short read only
+- doc: "Parent default path: custom assembly, original samples, single-coverage binning, Binette"
   job:
     Trimmed reads:
       class: Collection
       collection_type: list:paired
       elements:
       - class: Collection
-        collection_type: paired
-        identifier: test_minigut
+        identifier: Mock1
         elements:
-          - class: File
-            identifier: forward
-            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
-          - class: File
-            identifier: reverse
-            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
-    Trimmed paired reads from grouped samples:
-      class: Collection
-      collection_type: list:paired
-      elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock1_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock1_R2.fastq.gz
+        collection_type: paired
       - class: Collection
-        collection_type: paired
-        identifier: test_minigut
+        identifier: Mock2
         elements:
-          - class: File
-            identifier: forward
-            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
-          - class: File
-            identifier: reverse
-            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
-    Trimmed nanopore reads from grouped samples: null
-    Trimmed PacBio reads from grouped samples: null
-    Choose Assembler: MEGAHIT
-    Custom Assemblies: null
-    Minimum length of contigs to output: '100'
-    Read length (CONCOCT): '100'
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock2_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock2_R2.fastq.gz
+        collection_type: paired
+    Choose Assembler: Custom Assembly
+    Custom Assemblies:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: Mock1
+        location: https://zenodo.org/records/22982485/files/Mock1.fasta
+      - class: File
+        identifier: Mock2
+        location: https://zenodo.org/records/22982485/files/Mock2.fasta
+    Minimum length of contigs to output: 100
     Environment for the built-in model (SemiBin): global
-    Contamination weight (Binette): '100'
+    Contamination weight (Binette): 100
     CheckM2 Database: 1.0.2
-    Minimum MAG completeness percentage: '1'
-    Maximum MAG contamination percentage: '1'
-    Minimum MAG length: '100'
-    ANI threshold for dereplication: '0.99'
+    Minimum MAG completeness percentage: 1
+    Maximum MAG contamination percentage: 1
+    Minimum MAG length: 100
+    ANI threshold for dereplication: 0.99
     Run COMEBin: false
+    Trimmed nanopore reads: null
+    Trimmed PacBio reads: null
+    Use grouping?: Use original samples
+    Sample grouping column: group
+    Binning strategy: Single-coverage binning (own/merged reads)
+    Bin refinement tool: Binette
+    Metadata: null
   outputs:
     Full MultiQC Report:
       asserts:
       - that: has_text
-        text: "QUAST"
+        text: QUAST
       - that: has_text
-        text: "CheckM"
-    Assembly Report:
+        text: CheckM
+    "Single-coverage binning (own/merged reads) \u2014 coverage depths":
       class: Collection
       element_tests:
-        test_minigut:
+        Mock1:
           asserts:
           - that: has_text
-            text: "All statistics are based on contigs of size"
-          - that: has_size
-            value: 373800
-            delta: 50000
-    Primary clustering dendrogram:
+            text: contigName
+          - that: has_n_columns
+            n: 5
+        Mock2:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 5
+
+- doc: Grouped samples with MEGAHIT assembly and multi-coverage binning, both refiners
+  job:
+    Trimmed reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        identifier: Mock1
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock1_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock1_R2.fastq.gz
+        collection_type: paired
+      - class: Collection
+        identifier: Mock2
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock2_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock2_R2.fastq.gz
+        collection_type: paired
+    Choose Assembler: MEGAHIT
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+    Environment for the built-in model (SemiBin): global
+    Contamination weight (Binette): 100
+    CheckM2 Database: 1.0.2
+    Minimum MAG completeness percentage: 1
+    Maximum MAG contamination percentage: 1
+    Minimum MAG length: 100
+    ANI threshold for dereplication: 0.99
+    Run COMEBin: false
+    Trimmed nanopore reads: null
+    Trimmed PacBio reads: null
+    Use grouping?: Use grouping
+    Sample grouping column: group
+    Binning strategy: Multi-coverage binning (all samples)
+    Bin refinement tool: Both
+    Metadata:
+      class: File
+      path: test-data/metadata_mock_community_mocks.tsv
+      filetype: tabular
+  outputs:
+    Full MultiQC Report:
       asserts:
-      - that: has_size
-        value: 14315
-        delta: 2000
-    Cluster Assignment:
-      asserts:
       - that: has_text
-        text: "genome"
+        text: QUAST
       - that: has_text
-        text: "primary_cluster"
-      - that: has_text
-        text: "test_minigut_binette_bin5"
-    Dereplicated Bins:
+        text: CheckM
+    "Multi-coverage binning (all samples) \u2014 coverage depths":
       class: Collection
       element_tests:
-        test_minigut_binette_bin1.fasta:
+        MockGroup:
           asserts:
-          - that: has_size
-            value: 803006
-            delta: 10000
-    Merged CoverM Output:
-      asserts:
-      - that: has_text
-        text: "Genome"
-      - that: has_text
-        text: "unmapped"
-    Merged Quast Output:
-      asserts:
-      - that: has_text
-        text: "Assembly"
-      - that: has_text
-        text: "158"
-- doc: Test for Metagenome-Assembled-Genomes-(MAGs)-generation long read test
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 7
+
+- doc: "Original samples with metaSPAdes assembly and nanopore long reads, single-coverage binning, Binette refiner"
   job:
     Trimmed reads:
       class: Collection
@@ -100,64 +146,54 @@
       elements:
       - class: Collection
         collection_type: paired
-        identifier: test_minigut
+        identifier: minigut_reads
         elements:
-          - class: File
-            identifier: forward
-            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
-          - class: File
-            identifier: reverse
-            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
-    Trimmed paired reads from grouped samples:
-      class: Collection
-      collection_type: list:paired
-      elements:
-      - class: Collection
-        collection_type: paired
-        identifier: test_minigut
-        elements:
-          - class: File
-            identifier: forward
-            location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
-          - class: File
-            identifier: reverse
-            location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
-    Trimmed nanopore reads from grouped samples:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/19235149/files/test_minigut_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
+    Choose Assembler: metaSPAdes
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+    Environment for the built-in model (SemiBin): global
+    Contamination weight (Binette): 100
+    CheckM2 Database: 1.0.2
+    Minimum MAG completeness percentage: 1
+    Maximum MAG contamination percentage: 1
+    Minimum MAG length: 100
+    ANI threshold for dereplication: 0.99
+    Run COMEBin: false
+    Trimmed nanopore reads:
       class: Collection
       collection_type: list
       elements:
       - class: File
         identifier: minigut_reads
         location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz
-    Trimmed PacBio reads from grouped samples: null
-    Choose Assembler: metaSPAdes
-    Custom Assemblies: null
-    Minimum length of contigs to output: '100'
-    Read length (CONCOCT): '100'
-    Environment for the built-in model (SemiBin): global
-    Contamination weight (Binette): '100'
-    CheckM2 Database: 1.0.2
-    Minimum MAG completeness percentage: '1'
-    Maximum MAG contamination percentage: '1'
-    Minimum MAG length: '100'
-    ANI threshold for dereplication: '0.99'
-    Run COMEBin: false
+    Trimmed PacBio reads: null
+    Use grouping?: Use original samples
+    Sample grouping column: group
+    Binning strategy: Single-coverage binning (own/merged reads)
+    Bin refinement tool: Binette
+    Metadata: null
   outputs:
     Full MultiQC Report:
       asserts:
       - that: has_text
-        text: "minigut_reads_binette_bin1_fasta"
+        text: minigut_reads_binette_bin1_fasta
       - that: has_text
-        text: "QUAST"
+        text: QUAST
       - that: has_text
-        text: "CheckM"
+        text: CheckM
     Assembly Report:
       class: Collection
       element_tests:
         minigut_reads:
           asserts:
           - that: has_text
-            text: "All statistics are based on contigs of size"
+            text: All statistics are based on contigs of size
           - that: has_size
             value: 361400
             delta: 50000
@@ -177,11 +213,11 @@
     Cluster Assignment:
       asserts:
       - that: has_text
-        text: "genome"
+        text: genome
       - that: has_text
-        text: "primary_cluster"
+        text: primary_cluster
       - that: has_text
-        text: "minigut_reads_binette_bin2.fasta"
+        text: minigut_reads_binette_bin2.fasta
     Dereplicated Bins:
       class: Collection
       element_tests:
@@ -193,16 +229,113 @@
     Merged CoverM Output:
       asserts:
       - that: has_text
-        text: "Genome"
+        text: Genome
       - that: has_text
-        text: "unmapped"
+        text: unmapped
       - that: has_text
-        text: "minigut_reads_binette_bin2"
+        text: minigut_reads_binette_bin2
     Merged Quast Output:
       asserts:
       - that: has_text
-        text: "Assembly"
+        text: Assembly
       - that: has_text
-        text: "4"
+        text: '4'
       - that: has_text
-        text: "minigut_reads_binette_bin2.fasta"
+        text: minigut_reads_binette_bin2.fasta
+
+- doc: Hybrid grouped and original samples with MEGAHIT assembly and both coverage strategies, both refiners
+  job:
+    Trimmed reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        identifier: Mock1
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock1_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock1_R2.fastq.gz
+        collection_type: paired
+      - class: Collection
+        identifier: Mock2
+        elements:
+        - class: File
+          identifier: forward
+          location: https://zenodo.org/records/22982485/files/Mock2_R1.fastq.gz
+        - class: File
+          identifier: reverse
+          location: https://zenodo.org/records/22982485/files/Mock2_R2.fastq.gz
+        collection_type: paired
+    Choose Assembler: MEGAHIT
+    Custom Assemblies: null
+    Minimum length of contigs to output: 100
+    Environment for the built-in model (SemiBin): global
+    Contamination weight (Binette): 100
+    CheckM2 Database: 1.0.2
+    Minimum MAG completeness percentage: 1
+    Maximum MAG contamination percentage: 1
+    Minimum MAG length: 100
+    ANI threshold for dereplication: 0.99
+    Run COMEBin: false
+    Trimmed nanopore reads: null
+    Trimmed PacBio reads: null
+    Use grouping?: Use grouping and original samples
+    Sample grouping column: group
+    Binning strategy: Both
+    Bin refinement tool: Both
+    Metadata:
+      class: File
+      path: test-data/metadata_mock_community_mocks.tsv
+      filetype: tabular
+  outputs:
+    Full MultiQC Report:
+      asserts:
+      - that: has_text
+        text: QUAST
+      - that: has_text
+        text: CheckM
+    "Single-coverage binning (own/merged reads) \u2014 coverage depths":
+      class: Collection
+      element_tests:
+        MockGroup:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 5
+        Mock1:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 5
+        Mock2:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 5
+    "Multi-coverage binning (all samples) \u2014 coverage depths":
+      class: Collection
+      element_tests:
+        MockGroup:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 7
+        Mock1:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 7
+        Mock2:
+          asserts:
+          - that: has_text
+            text: contigName
+          - that: has_n_columns
+            n: 7
