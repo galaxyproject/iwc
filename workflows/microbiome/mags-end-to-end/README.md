@@ -43,7 +43,7 @@ Long reads are optional. Upload them as a `list` collection (one dataset per sam
 
 The long-read host genome is given as a built-in genome index, and `Long-read mapping profile` selects the minimap2 preset (`map-ont` for nanopore reads).
 
-When `Long reads provided?` is `No`, the long-read branch is skipped. The workflow then creates one empty FASTA per sample, named after the sample identifiers of the short reads, and passes these to the assembly step. This keeps the sample structure of the long-read collection consistent, so the same workflow runs with and without long reads.
+When `Long reads provided?` is `No`, the long-read branch is skipped. The workflow creates one empty FASTA per sample, named after the sample identifiers of the short reads. These empty files also give the skipped preprocessing branch a collection structure. Null placeholders from that branch are removed before selecting the empty files for assembly. This keeps the sample structure of the long-read collection consistent, so the same workflow runs with and without long reads.
 
 ## 2. Assembly, binning and MAG selection
 
