@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10] - 2026-10-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/4.3.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/4.3.0+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/drep_dereplicate/drep_dereplicate/3.7.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/drep_dereplicate/drep_dereplicate/4.0.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [0.9] - 2026-10-01
 
 ### Automatic update
