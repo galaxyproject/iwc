@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7] - 2026-10-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
+## [0.6] - 2026-10-20
+
+### Fixed
+- Correct the changeset revision of `map_param_value` to an installable revision
+
+### Changed
+- Update authors and add the FAIRyMAGs consortium as author
+- Add a README to the workflow
+
+## [0.5] - 2026-09-07
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.4+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4`
+
 ## [0.4] - 2026-03-17
 - Added an optional step allowing users to select either a built-in reference genome or provide a custom reference genome from their history.
 
