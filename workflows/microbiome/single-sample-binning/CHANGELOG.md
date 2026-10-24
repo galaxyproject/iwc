@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0] - 2026-10-20
+## [1.1] - 2026-10-24
 
 - Replace manual CONCOCT read length with automatic estimation from both input mates.
 - Make all five binners independently optional and enabled by default, with editor-compatible optional-output bridges.
@@ -13,4 +13,7 @@
 - Replace the binner toggles with explicit `Yes`/`No` selections (default: `Yes`), converted to the boolean that gates each binner branch.
 - Order the inputs as assemblies, reads, binners, SemiBin environment, refinement and Binette settings, and group the tools in frames for inputs, coverage, binning and refinement, each with its own explanation.
 - Describe what each step does in its annotation instead of repeating the step label, and document every step in its own README section.
+
+## [1.0] - 2026-09-23
+
 - First release
