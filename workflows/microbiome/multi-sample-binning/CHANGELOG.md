@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0] - 2026-10-20
+## [1.1] - 2026-10-24
 
 - Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435.
 - Replace read interlacing/de-interlacing with native Flatten, Nested Cross Product and Apply Rules operations. Preserve the assembly × read-sample BAM matrix while reusing the original read datasets instead of writing intermediate FASTQ files.
@@ -16,4 +16,7 @@
 - Replace the binner toggles with explicit `Yes`/`No` selections (default: `Yes`), converted to the boolean that gates each binner branch.
 - Order the inputs as assemblies, reads, binners, refinement and Binette settings, and group the tools in frames for inputs, coverage, binning and refinement, each with its own explanation.
 - Describe what each step does in its annotation instead of repeating the step label, and document every step in its own README section.
+
+## [1.0] - 2026-09-23
+
 - First release
