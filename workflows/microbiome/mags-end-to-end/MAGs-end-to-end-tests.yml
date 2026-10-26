@@ -1,4 +1,4 @@
-- doc: "Short-read MAGs end-to-end run with optional long-read, genome and functional branches skipped"
+- doc: "Short-read MAG generation: assembly, single-coverage binning, refinement and dereplication. The optional long-read and annotation branches stay disabled here; the annotation subworkflows are tested in their own published workflows."
   job:
     Paired-end short reads:
       class: Collection
@@ -27,7 +27,6 @@
     Long reads provided?: 'No'
     Choose Reference Genome: Use a built-in genome index
     Host or contaminant genome (short reads): apiMel3
-    Host or contaminant genome (long reads): apiMel3
     Choose Assembler: MEGAHIT
     Minimum length of contigs to output: 100
     Environment for the built-in model (SemiBin): global
@@ -41,18 +40,17 @@
     Binning strategy: Single-coverage binning (own/merged reads)
     Bin refinement tool: Binette
     Use grouping?: Use original samples
-    Run taxonomy annotation?: 'Yes'
+    # The database names and the long-read host genome only fill required text
+    # inputs of optional branches; those branches stay disabled in this test.
+    Host or contaminant genome (long reads): apiMel3
     GTDB-Tk Database: full_database_release_220_downloaded_2024-10-19
-    MAGs taxonomic classification with kMetaShot: false
     kMetaShot Database: '2025-05-22'
-    Run genome annotation?: 'No'
     Plasmid detection database: plasmidfinder_1307168_2019_08_28
     Bacterial genome annotation database: V5.0_2023-02-20
     AMRFinderPlus database: amrfinderplus_V3.12_2024-05-02.2
-    Run functional annotation?: 'Yes'
-    eggNOG mode select: metagenome
-    Run InterProScan: false
-    InterProScan mode select: DNA/RNA
+    Run taxonomy annotation?: 'No'
+    Run genome annotation?: 'No'
+    Run functional annotation?: 'No'
   outputs:
     Short-read QC report:
       asserts:
@@ -78,22 +76,3 @@
       asserts:
       - that: has_text
         text: "CheckM2"
-    GTDB-Tk taxonomy summary:
-      class: Collection
-      element_tests:
-        gtdbtk.bac120.summary:
-          asserts:
-          - that: has_text
-            text: "gtdb_taxonomy"
-    KEGG orthologue table:
-      asserts:
-      - that: has_text
-        text: "module_accession"
-    KEGG pathway table:
-      asserts:
-      - that: has_text
-        text: "module_accession"
-    eggNOG annotation abundance table:
-      asserts:
-      - that: has_text
-        text: "Annotation type"

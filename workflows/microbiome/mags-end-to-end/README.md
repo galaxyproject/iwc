@@ -31,7 +31,7 @@ The run form groups the controls in this order:
 
 - **Quality control and host removal:** reads, adapters, trimming thresholds, host genomes and long-read mapping profile.
 - **MAG generation:** grouping, assembly, binners, refinement, quality filtering and dereplication.
-- **Optional annotation:** separate taxonomy, genome and functional annotation switches and their databases.
+- **Optional annotation:** separate taxonomy, genome and functional annotation switches and their databases. All three are disabled by default; set a switch to `Yes` to run that annotation workflow.
 
 ## 1. Quality control and host removal
 
@@ -82,7 +82,7 @@ Outputs:
 
 ## 3. [Optional] Taxonomic, genomic, and functional annotation of the MAGs
 
-Three annotation workflows run on the dereplicated MAGs. Each can be skipped by setting its switch (`Run taxonomy annotation?`, `Run genome annotation?` or `Run functional annotation?`) to `No`. The database names must match databases installed on the Galaxy server.
+Three annotation workflows run on the dereplicated MAGs. They are **optional and disabled by default**: set `Run taxonomy annotation?`, `Run genome annotation?` or `Run functional annotation?` to `Yes` to run one. Each annotation workflow is an embedded copy of a published workflow and is tested in its own workflow test, so a MAG generation run does not need to enable them. The database names must match databases installed on the Galaxy server.
 
 - **Taxonomy annotation** uses GTDB-Tk and optionally kMetaShot.
   - Inputs: `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database`.
