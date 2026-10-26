@@ -2,22 +2,16 @@
 
 This workflow assembles metagenomic short reads with optional long reads, bins the assemblies with five binners, refines the bins with DAS Tool and/or Binette, and reports dereplicated MAGs with their quality and abundance.
 
-It is part of a **suite of workflows for end-to-end MAG generation** (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete suite and its capabilities). A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use it.
+This workflow can be used on its own or integrated into other workflows. It is part of a **suite of workflows for end-to-end MAG generation and annotation** (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete suite and its capabilities). A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use it.
 
-## What "parent" means here
+This workflow:
 
-This workflow is the **parent** of the suite: it embeds smaller workflows as sub-workflow steps and adds the shared inputs and the downstream analysis. The embedded workflows are:
-
-- paired short-read grouping,
-- nanopore read grouping,
-- PacBio read grouping,
-- assembly and assembly selection,
-- single-coverage binning,
-- multi-coverage binning.
-
-Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting stay in the parent. The two binning workflows are also published on their own ([single-sample binning](../single-sample-binning/), [multi-sample binning](../multi-sample-binning/)), so the same binning logic can be reused outside MAG generation.
-
-Each stage of the workflow is enclosed in a frame in the workflow editor, with a short explanation of the stage inside the frame.
+1. [Groups reads using different possible strategies](#step-1-read-grouping),
+2. [Assembles metagenomic short reads with optional long reads](#step-2-assembly-and-assembly-selection),
+3. [Bins the assemblies with five binners](#step-3-binning),
+4. [Refines the bins with DAS Tool and/or Binette](#step-4-bin-refinement),
+5. [Filters MAGs by quality and dereplicates them](#step-5-mag-quality-filtering-and-dereplication),
+6. [Generates abundance estimates and reports](#step-6-abundance-and-reports).
 
 ## Inputs
 
@@ -28,7 +22,7 @@ The form starts with the reads, then the assembly options, the sample grouping, 
 - **Trimmed reads** (required): the original samples as a `list:paired` collection.
 - **Trimmed Nanopore reads** and **Trimmed PacBio reads** (optional): two independent original-read `list` collections. Long reads are used only by metaSPAdes.
 
-Reads must be quality-filtered with host reads removed (see [Input requirements](#input-requirements)).
+Reads must be quality-filtered with host reads removed. Prepare short reads with [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main) and [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main). Prepare long reads with [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main) and [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main).
 
 ### Assembly
 
@@ -116,7 +110,7 @@ Refinement reconciles the candidate bins of the individual binners into a final,
 
 The parent merges the selected refiner outputs within each coverage branch, then merges the branches.
 
-## Step 5: MAG quality and dereplication
+## Step 5: MAG quality filtering and dereplication
 
 The refined bins of all samples and groups are pooled and assessed with CheckM2.
 
@@ -144,21 +138,7 @@ The workflow returns the final MAG tables (quality, abundance, MultiQC report) t
 - **Raw bins** of each enabled binner, per assembly.
 - **Refined bins** of each coverage branch, plus the selected and dereplicated MAGs.
 
-The coverage depth matrices come from `jgi_summarize_bam_contig_depths`. Their first three columns are the JGI fields `contigName`, `contigLen` and `totalAvgDepth`; they are followed by one depth/variance column pair per BAM file: one pair for single coverage, and one pair per original sample for multi coverage.
-
-## Input requirements
-
-Input reads must be quality-filtered and host-removed.
-
-**Short reads**
-
-- QC: [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main)
-- Host removal: [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main)
-
-**Long reads**
-
-- QC: [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main)
-- Host removal: [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main)
+The coverage depth matrices come from `jgi_summarize_bam_contig_depths`. Their first three columns are `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). They are followed by one depth/variance column pair per BAM file: one pair for single coverage, and one pair per original sample for multi coverage.
 
 ## Optional modifications
 
@@ -167,6 +147,23 @@ Some modifications can be made in the workflow editor for specific use cases:
 - **Compare binners and refiners**: add CheckM/CheckM2 after each binner or refiner and compare completeness, contamination and number of bins.
 - **Differential abundance**: compare MAG abundance between sample groups with MaAsLin2.
 - **Comparison with a catalogue**: download MAGs for similar samples from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and compare them with yours, e.g. with dRep.
+
+## Workflow structure
+
+This workflow embeds smaller workflows as sub-workflow steps and adds shared inputs and downstream analysis. The embedded workflows perform:
+
+- paired short-read grouping,
+- Nanopore grouping,
+- PacBio grouping,
+- assembly and assembly selection,
+- single-coverage binning,
+- multi-coverage binning.
+
+Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. The two binning workflows are also available independently ([single-sample binning](../single-sample-binning/), [multi-sample binning](../multi-sample-binning/)). Each stage is enclosed in a workflow-editor frame with a short explanation.
+
+## Citation
+
+When publishing results, cite the FAIRyMAGs workflow suite ([preprint, doi:10.64898/2026.07.31.741430](https://doi.org/10.64898/2026.07.31.741430)) and the tools used in your analysis. Record the workflow version and Galaxy server so the analysis can be reproduced.
 
 ## Funding
 
