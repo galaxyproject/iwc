@@ -2,9 +2,10 @@
 
 This workflow generates and annotates Metagenome-Assembled Genomes (MAGs) from raw metagenomic short (and optionally long) reads:
 
-1. Quality control and host/contaminant removal of short reads and optionally long reads,
-2. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs,
-3. [Optional] Taxonomic, genomic, and functional annotation of the MAGs.
+1. Quality control and host/contaminant removal of the short reads [and optionally of long reads],
+2. Optional quality control and host/contaminant removal of the long reads,
+3. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs,
+4. [Optional] Taxonomic, genomic, and functional annotation of the MAGs.
 
 Each analysis is an embedded workflow, so the steps, tools and parameters are visible at every stage.
 
@@ -97,6 +98,8 @@ Three annotation workflows run on the dereplicated MAGs. They are **optional and
 
 ## Input summary
 
+### 1. Quality control and host removal
+
 | Input | Description |
 | --- | --- |
 | `Paired-end short reads` | `list:paired` collection, one paired collection per sample (required) |
@@ -106,11 +109,21 @@ Three annotation workflows run on the dereplicated MAGs. They are **optional and
 | `Qualified quality score`, `Minimal read length` | fastp trimming thresholds |
 | `Choose Reference Genome`, `Host or contaminant genome (short reads)`, `Host or contaminant genome file (short reads)` | host/contaminant genome for the short reads |
 | `Host or contaminant genome (long reads)`, `Long-read mapping profile` | host genome and minimap2 preset for the long reads |
+
+### 2. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs
+
+| Input | Description |
+| --- | --- |
 | `Sample metadata`, `Use grouping?`, `Sample grouping column` | sample grouping before assembly and binning |
 | `Choose Assembler`, `Minimum length of contigs to output`, `Custom assemblies` | assembly |
 | `Binning strategy`, `Run COMEBin?`, `Run SemiBin?`, `Run CONCOCT?`, `Run MetaBAT2?`, `Run MaxBin2?`, `Environment for the built-in model (SemiBin)` | binning |
 | `Bin refinement tool`, `CheckM2 Database`, `Minimum MAG completeness percentage`, `Contamination weight (Binette)` | bin refinement |
 | `Minimum MAG length`, `Maximum MAG contamination percentage`, `ANI threshold for dereplication` | MAG selection |
+
+### 3. [Optional] Taxonomic, genomic, and functional annotation of the MAGs
+
+| Input | Description |
+| --- | --- |
 | `Run taxonomy annotation?`, `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database` | taxonomy annotation |
 | `Run genome annotation?`, `Plasmid detection database`, `Bacterial genome annotation database`, `AMRFinderPlus database`, `Run Bakta` | genome annotation |
 | `Run functional annotation?`, `Run eggNOG + completeness calculation`, `eggNOG mode select`, `Run InterProScan`, `InterProScan mode select` | functional annotation |
