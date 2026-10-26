@@ -1,30 +1,39 @@
-# Metagenome-Assembled Genomes (MAGs) end-to-end analysis
+# Metagenome-Assembled Genomes (MAGs) generation and annotation from raw reads
 
-This workflow runs a complete short- and long-read metagenome analysis, from raw reads to annotated MAGs:
+This workflow generates and annotates Metagenome-Assembled Genomes (MAGs) from raw metagenomic short (and optionally long) reads:
 
-1. quality control and host/contaminant removal of the short reads,
-2. optional quality control and host/contaminant removal of long reads,
-3. assembly, binning, bin refinement and dereplication of the MAGs,
-4. optional taxonomic, genome and functional annotation of the MAGs.
+1. Quality control and host/contaminant removal of short reads and optionally long reads,
+2. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs,
+3. [Optional] Taxonomic, genomic, and functional annotation of the MAGs.
 
 Each analysis is an embedded workflow, so the steps, tools and parameters are visible at every stage.
 
 ## Embedded workflows
 
-| Stage | Workflow |
-| --- | --- |
-| Short-read quality control and trimming | [`short-read-quality-control-and-trimming`](../../read-preprocessing/short-read-qc-trimming/) |
-| Short-read host or contamination removal | [`host-or-contamination-removal-on-short-reads`](../host-contamination-removal/host-contamination-removal-short-reads/) |
-| Long-read quality control and contaminant filtering | [`Nanopore Pre-processing`](../pathogen-identification/nanopore-pre-processing/) |
-| Long-read host or contamination removal | [`host-or-contamination-removal-on-long-reads`](../host-contamination-removal/host-contamination-removal-long-reads/) |
-| MAG generation | [`MAGs generation`](../mags-building/) |
-| MAG taxonomy annotation | [`MAGs taxonomy annotation`](../mags-taxonomy-annotation/) |
-| MAG genome annotation | [`MAG Genome Annotation Parallel`](../mag-genome-annotation-parallel/) |
-| MAG functional annotation | [`Functional annotation of sequences`](../../genome_annotation/functional-annotation/functional-annotation-of-sequences/) |
+- Quality control and host/contaminant removal
+  - [Short-read quality control and trimming](../../read-preprocessing/short-read-qc-trimming/)
+  - [Short-read host or contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/)
+  - [Long-read quality control and contaminant filtering](../pathogen-identification/nanopore-pre-processing/)
+  - [Long-read host or contamination removal](../host-contamination-removal/host-contamination-removal-long-reads/)
+- [Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs](../mags-building/)
+- Taxonomic, genomic, and functional annotation of the MAGs
+  - [MAGs taxonomy annotation](../mags-taxonomy-annotation/)
+  - [MAG Genome Annotation Parallel](../mag-genome-annotation-parallel/)
+  - [Functional annotation of sequences](../../genome_annotation/functional-annotation/functional-annotation-of-sequences/)
 
 The embedded copies are kept in sync with the standalone workflows; the standalone versions are the right choice when only one part of the analysis is needed.
 
-## 1. Reads, quality control and host removal
+## Inputs
+
+Provide raw `Paired-end short reads` as a `list:paired` collection, with one paired collection per sample. Optional `Long reads (Nanopore)` must be a `list` collection with matching sample identifiers; set `Long reads provided?` to `Yes` to use them. `Sample metadata` defines optional sample groups. Reference genomes and annotation databases must be available on the Galaxy server, or supplied through the corresponding history input where supported.
+
+The run form groups the controls in this order:
+
+- **Quality control and host removal:** reads, adapters, trimming thresholds, host genomes and long-read mapping profile.
+- **MAG generation:** grouping, assembly, binners, refinement, quality filtering and dereplication.
+- **Optional annotation:** separate taxonomy, genome and functional annotation switches and their databases.
+
+## 1. Quality control and host removal
 
 ### Short reads
 
@@ -45,9 +54,18 @@ The long-read host genome is given as a built-in genome index, and `Long-read ma
 
 When `Long reads provided?` is `No`, the long-read branch is skipped. The workflow creates one empty FASTA per sample, named after the sample identifiers of the short reads. These empty files also give the skipped preprocessing branch a collection structure. Null placeholders from that branch are removed before selecting the empty files for assembly. This keeps the sample structure of the long-read collection consistent, so the same workflow runs with and without long reads.
 
-## 2. Assembly, binning and MAG selection
+## 2. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs
 
-The *Metagenome-Assembled Genomes (MAGs) generation* workflow runs the main analysis:
+The *Metagenome-Assembled Genomes (MAGs) generation* workflow:
+
+1. Groups reads using the selected strategy,
+2. Assembles metagenomic short reads with optional long reads,
+3. Bins the assemblies with the enabled binners,
+4. Refines the candidate bins,
+5. Filters MAGs by quality and dereplicates them,
+6. Generates abundance estimates and reports.
+
+Its input controls are:
 
 - `Choose Assembler`: MEGAHIT assembles the short reads, metaSPAdes assembles them with the long reads, and `Custom Assembly` uses the assemblies in `Custom assemblies` (one per sample, identifiers matching the reads).
 - `Sample metadata`, `Use grouping?` and `Sample grouping column` control whether samples are analysed separately, merged into metadata-defined groups, or both.
@@ -55,15 +73,27 @@ The *Metagenome-Assembled Genomes (MAGs) generation* workflow runs the main anal
 - `CheckM2 Database`, `Minimum MAG completeness percentage` and `Contamination weight (Binette)` set the bin quality thresholds used before refinement.
 - `Minimum MAG length`, `Maximum MAG contamination percentage` and `ANI threshold for dereplication` select the final representative MAGs.
 
-The workflow reports the selected assemblies (`Selected assemblies`, `Assembly quality report`), the refined bins of every coverage strategy, the dereplicated MAGs (`Dereplicated MAGs`), their abundance (`MAG abundance table`), their assembly quality (`MAG assembly quality table`) and a combined report (`MAG quality and abundance report`).
+Outputs:
 
-## 3. MAG annotation (optional)
+- `Selected assemblies`: the assembly FASTA files chosen for binning.
+- `Assembly quality report`: quality statistics for those assemblies.
+- Refined bins for each selected coverage strategy and the final `Dereplicated MAGs`.
+- `MAG abundance table`, `MAG assembly quality table` and `MAG quality and abundance report`.
 
-Three annotation workflows run on the dereplicated MAGs. Each can be skipped by setting its switch to `No`; the database names must match databases installed on the Galaxy server.
+## 3. [Optional] Taxonomic, genomic, and functional annotation of the MAGs
 
-- *Taxonomy* (`Run taxonomy annotation?`): classified with GTDB-Tk (`GTDB-Tk Database`) and optionally with kMetaShot (`MAGs taxonomic classification with kMetaShot`, `kMetaShot Database`). Outputs: `GTDB-Tk taxonomy summary`, `GTDB to NCBI taxonomy mapping`, `Taxonomy annotation report`.
-- *Genome annotation* (`Run genome annotation?`): PlasmidFinder (`Plasmid detection database`), Bakta (`Bacterial genome annotation database`, `Run Bakta`), AMRFinderPlus (`AMRFinderPlus database`), Integron Finder and ISEScan. Outputs: `Bakta gene annotation summary`, `Plasmid detection summary`, `Integron detection summary`, `Insertion sequence summary`, `Genome annotation report`.
-- *Functional annotation* (`Run functional annotation?`): eggNOG-mapper (`Run eggNOG + completeness calculation`, `eggNOG mode select`), InterProScan (`Run InterProScan`, `InterProScan mode select`) and KEGG pathway tables. MAGs are nucleotide sequences, so `InterProScan mode select` defaults to `DNA/RNA` and `eggNOG mode select` defaults to `metagenome`. Outputs: `KEGG orthologue table`, `KEGG pathway table`, `eggNOG annotation abundance table`, `InterProScan annotation table`.
+Three annotation workflows run on the dereplicated MAGs. Each can be skipped by setting its switch (`Run taxonomy annotation?`, `Run genome annotation?` or `Run functional annotation?`) to `No`. The database names must match databases installed on the Galaxy server.
+
+- **Taxonomy annotation** uses GTDB-Tk and optionally kMetaShot.
+  - Inputs: `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database`.
+  - Outputs: `GTDB-Tk taxonomy summary`, `GTDB to NCBI taxonomy mapping`, `Taxonomy annotation report`.
+- **Genome annotation** uses PlasmidFinder, Bakta, AMRFinderPlus, Integron Finder and ISEScan.
+  - Inputs: `Plasmid detection database`, `Bacterial genome annotation database`, `Run Bakta`, `AMRFinderPlus database`.
+  - Outputs: `Bakta gene annotation summary`, `Plasmid detection summary`, `Integron detection summary`, `Insertion sequence summary`, `Genome annotation report`.
+- **Functional annotation** uses eggNOG-mapper and InterProScan.
+  - Inputs: `Run eggNOG + completeness calculation`, `eggNOG mode select`, `Run InterProScan`, `InterProScan mode select`.
+  - Outputs: `KEGG orthologue table`, `KEGG pathway table`, `eggNOG annotation abundance table`, `InterProScan annotation table`.
+  - MAGs are nucleotide sequences, so `InterProScan mode select` defaults to `DNA/RNA` and `eggNOG mode select` defaults to `metagenome`.
 
 ## Input summary
 
@@ -84,3 +114,13 @@ Three annotation workflows run on the dereplicated MAGs. Each can be skipped by 
 | `Run taxonomy annotation?`, `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database` | taxonomy annotation |
 | `Run genome annotation?`, `Plasmid detection database`, `Bacterial genome annotation database`, `AMRFinderPlus database`, `Run Bakta` | genome annotation |
 | `Run functional annotation?`, `Run eggNOG + completeness calculation`, `eggNOG mode select`, `Run InterProScan`, `InterProScan mode select` | functional annotation |
+
+## Citation
+
+When publishing results, cite the FAIRyMAGs workflow suite ([preprint, doi:10.64898/2026.07.31.741430](https://doi.org/10.64898/2026.07.31.741430)) and the tools used in your analysis. Record the workflow version and Galaxy server so the analysis can be reproduced.
+
+## Funding
+
+This workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).
+
+The project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.
