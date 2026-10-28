@@ -6,7 +6,7 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 ## Inputs dataset
 
 - A list of dataset pairs of fastqsanger.
-- A GTF file with gene annotations (this is used for the TSS enrichment).
+- A GTF file with gene annotations (this is used for the TSS enrichment). This GTF file must have the same chromosome naming convention as the reference genome (chr1 vs 1).
 
 ## Inputs values
 
@@ -14,6 +14,8 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 - Reference genome: this field will be adapted to the genomes available for bowtie2 and the genomes available for bedtools slopbed (`bowtie2_indexes` and `fasta_indexes` table)
 - Effective genome size: this is used by macs2 and may be entered manually (indications are provided for heavily used genomes)
 - Bin size: this is used when normalization of coverage is performed. Large values will allow to have smaller output files but with less resolution while small values will increase computation time and size of output files to produce more resolutive bigwigs.
+- Compute TSS enrichment Genome-wide: whether you want to compute TSS enrichment Genome-wide or only on a chromosome. Computing genome-wide takes longer so we recommend to leave it to false and specify a chromosome in the next input.
+- Compute TSS enrichment on a specific chromosome: If the above parameter is set to false, you need to specify here a chromosome name that must be part of your GTF and part of your Reference Genome.
 
 ## Processing
 
@@ -36,4 +38,4 @@ You can have more information about ATAC-seq analysis in the [slides](https://tr
 
 ### Warning
 
-- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available ask your administrator to make sure that each bowtie2 reference has a corresponding fasta index to use in bedtools slopbed.
+- The `reference_genome` parameter value is used to select references in bowtie2 and bedtools slopbed. Only references that are present in bowtie2 **and** bedtools slopbed are selectable. If your favorite reference genome is not available, ask your administrator to make sure that each bowtie2 reference has a corresponding fasta index to use in bedtools slopbed.
