@@ -1,0 +1,93 @@
+- doc: Test 1 - Baseline, no filters applied, minimum assembly level set to Contig, sequences not downloaded
+  job:
+    Assembly:
+      class: File
+      location: https://zenodo.org/records/20074725/files/Haplotype_1.fasta
+      filetype: fasta
+      hashes:
+      - hash_function: SHA-1
+        hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
+    Search assemblies among the n closest related species *: 30
+    Download n related species: 1
+    "Download sequences? ": false
+    Minimum Level Assembly: Contig
+    Assembly Type: All
+    Assembly BioSample Sex: Any
+    Assembly Sequencing Technology: ""
+    Assembly Taxonomic Class: ""
+    Minimum Number Of Chromosomes: 0
+    Maximum Number Of Chromosomes: 0
+    Keep empty values when filtering on number of chromosomes: true
+  outputs:
+    All Refseq Matches:
+      asserts:
+        has_n_lines:
+          n: 1
+          delta: 1000
+    Result Species:
+      asserts:
+        has_n_lines:
+          n: 1
+          delta: 100
+
+- doc: Test 2 - Taxonomic class and sequencing technology filters
+  job:
+    Assembly:
+      class: File
+      location: https://zenodo.org/records/20074725/files/Haplotype_1.fasta
+      filetype: fasta
+      hashes:
+      - hash_function: SHA-1
+        hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
+    Search assemblies among the n closest related species *: 30
+    Download n related species: 1
+    "Download sequences? ": true
+    Minimum Level Assembly: Contig
+    Assembly Type: All
+    Assembly BioSample Sex: Any
+    Assembly Sequencing Technology: "Illumina"
+    Assembly Taxonomic Class: "Bacilli,Bacteroidia,Gammaproteobacteria"
+    Minimum Number Of Chromosomes: 0
+    Maximum Number Of Chromosomes: 0
+    Keep empty values when filtering on number of chromosomes: true
+  outputs:
+    All Refseq Matches:
+      asserts:
+        has_n_lines:
+          n: 1
+          delta: 1000
+    Filtered Related Species Genome Report:
+      asserts:
+        has_text:
+          text: "Illumina"
+    Related Species Genomes:
+      element_tests: {}
+
+- doc: Test 3 - Chromosome count filter (strict, drops rows with empty chromosome count)
+  job:
+    Assembly:
+      class: File
+      location: https://zenodo.org/records/20074725/files/Haplotype_1.fasta
+      filetype: fasta
+      hashes:
+      - hash_function: SHA-1
+        hash_value: a0ee25fd9f7cf223ca40ff530e1201589fade212
+    Search assemblies among the n closest related species *: 30
+    Download n related species: 1
+    "Download sequences? ": true
+    Minimum Level Assembly: Contig
+    Assembly Type: All
+    Assembly BioSample Sex: Any
+    Assembly Sequencing Technology: ""
+    Assembly Taxonomic Class: ""
+    Minimum Number Of Chromosomes: 1
+    Maximum Number Of Chromosomes: 5
+    Keep empty values when filtering on number of chromosomes: false
+  outputs:
+    All Refseq Matches:
+      asserts:
+        has_n_lines:
+          n: 1
+          delta: 1000
+    Related Species Genomes:
+      element_tests: {}
