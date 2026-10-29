@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import IWCHeader from "../components/IWCHeader.astro";
+import WorkflowGlyph from "../components/WorkflowGlyph.vue";
+import { loadManifest, getAllWorkflows } from "../utils/manifest";
+import { IWC_SITE_URL } from "../utils";
+import { glyphDomain, glyphUrl, GLYPH_DOMAINS } from "../utils/workflowGlyph";
+import type { Workflow } from "../models/workflow";
+
+const workflows: Workflow[] = getAllWorkflows(await loadManifest());
+const groups = GLYPH_DOMAINS.map((d) => ({
+    domain: d,
+    workflows: workflows
+        .filter((w) => glyphDomain(w.collections).key === d.key)
+        .sort((a, b) => a.definition.name.localeCompare(b.definition.name)),
+})).filter((g) => g.workflows.length);
+
+// Picked to run from a straight chain to a wide, deep graph.
+const showcaseNames = [
+    "BigWig Replicates Averaging Workflow",
+    "BREW3R",
+    "Gene-based Pathogen Identification",
+    "K-mer profiling and reads statistics VGP1",
+    "MGnify's amplicon pipeline v5.0 - rRNA prediction",
+    "Single-Cell RNA-seq Analysis: Scanpy Preprocessing",
+];
+const showcase = showcaseNames
+    .map((n) => workflows.find((w) => w.definition.name.startsWith(n)))
+    .filter((w): w is Workflow => Boolean(w));
+
+const swatch = GLYPH_DOMAINS.find((d) => d.key === "general")!;
+const GOLD = "#FFD700";
+const workflowHref = (w: Workflow) => `/workflow/${encodeURIComponent(w.iwcID)}/`;
+const description = "Every workflow in the library has a small glyph drawn from its own steps. Here's how to read one.";
+---
+
+<BaseLayout
+    title="Reading workflow glyphs | IWC"
+    description={description}
+    ogTitle="Reading workflow glyphs"
+    ogDescription={description}
+    ogImage={`${IWC_SITE_URL}/iwc_logo.png`}
+    ogType="website"
+    twitterCard="summary"
+    twitterTitle="Reading workflow glyphs"
+    twitterDescription={description}
+    twitterImage={`${IWC_SITE_URL}/iwc_logo.png`}>
+    <IWCHeader slot="header" />
+
+    <div slot="content" class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold text-ebony-clay-900 border-l-4 border-hokey-pokey-500 pl-3 -ml-3 mb-4">
+            Reading workflow glyphs
+        </h1>
+        <p class="text-chicago-700 max-w-3xl mb-3">
+            Every workflow in the library has a small glyph next to its name. It isn't a logo: it's drawn from the
+            workflow's own steps, the same graph you'd see in the Galaxy workflow editor, shrunk down to a tile.
+        </p>
+        <p class="text-chicago-700 max-w-3xl mb-10">
+            Data comes in on the left and flows right, one column per stage of the pipeline. A slender glyph is a
+            straight chain of steps; a wide one does many things in parallel. Workflows with the same structure get the
+            same glyph, so related workflows look related.
+        </p>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">The marks</h2>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-chicago-700">
+                {
+                    [
+                        { label: "Dataset input", mark: "data" },
+                        { label: "Collection input (many datasets)", mark: "collection" },
+                        { label: "Tool step", mark: "tool" },
+                        { label: "Subworkflow", mark: "subworkflow" },
+                        { label: "Step that produces a final output", mark: "final" },
+                    ].map(({ label, mark }) => (
+                        <li class="flex items-center gap-3">
+                            <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="shrink-0">
+                                <rect width="32" height="32" rx="7" fill={swatch.from} />
+                                {mark === "data" && <circle cx="16" cy="16" r="5" fill={swatch.line} />}
+                                {mark === "collection" && (
+                                    <>
+                                        <circle cx="13.5" cy="18.5" r="5" fill={swatch.line} fill-opacity="0.35" />
+                                        <circle cx="16" cy="16" r="5" fill={swatch.line} />
+                                    </>
+                                )}
+                                {mark === "tool" && <circle cx="16" cy="16" r="3.2" fill={swatch.line} />}
+                                {mark === "subworkflow" && (
+                                    <>
+                                        <circle
+                                            cx="16"
+                                            cy="16"
+                                            r="6"
+                                            fill={swatch.from}
+                                            stroke={swatch.line}
+                                            stroke-width="2"
+                                        />
+                                        <circle cx="16" cy="16" r="2.2" fill={swatch.line} />
+                                    </>
+                                )}
+                                {mark === "final" && (
+                                    <>
+                                        <circle cx="16" cy="16" r="9" fill={GOLD} fill-opacity="0.22" />
+                                        <circle cx="16" cy="16" r="4.5" fill={GOLD} />
+                                    </>
+                                )}
+                            </svg>
+                            {label}
+                        </li>
+                    ))
+                }
+            </ul>
+            <p class="text-sm text-chicago-600 max-w-3xl mt-4">
+                Parameter inputs aren't drawn, since they configure a workflow rather than carry data through it. On
+                very large workflows, tool steps fade into the connecting lines so the inputs and outputs carry the
+                shape.
+            </p>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">Simple to complex</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {
+                    showcase.map((w) => (
+                        <a href={workflowHref(w)} class="group flex flex-col items-center gap-2">
+                            <WorkflowGlyph
+                                steps={w.definition.steps}
+                                uid={w.iwcID}
+                                collections={w.collections}
+                                size={112}
+                                title={w.definition.name}
+                            />
+                            <span class="text-xs text-center text-chicago-700 leading-tight group-hover:text-hokey-pokey-600">
+                                {w.definition.name}
+                            </span>
+                        </a>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="font-bold text-xl text-ebony-clay-900 mb-2">Colour</h2>
+            <p class="text-chicago-700 max-w-3xl mb-4">
+                The tile's tint groups related collections by field, so a page of glyphs reads by domain at a glance.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                {
+                    GLYPH_DOMAINS.filter((d) => d.key !== "general").map((d) => (
+                        <span
+                            class="text-xs px-2 py-1 rounded text-white"
+                            style={`background: linear-gradient(135deg, ${d.from}, ${d.to})`}>
+                            {d.label}
+                        </span>
+                    ))
+                }
+            </div>
+        </section>
+
+        <h2 class="font-bold text-xl text-ebony-clay-900 mb-4">Every workflow</h2>
+        {
+            groups.map((g) => (
+                <section class="mb-10">
+                    <h3 class="font-bold text-lg text-ebony-clay-900 mb-3">{g.domain.label}</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {g.workflows.map((w) => (
+                            <a
+                                href={workflowHref(w)}
+                                class="flex items-center gap-3 bg-white border border-ebony-clay-100 rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow">
+                                <img
+                                    src={glyphUrl(w.iwcID)}
+                                    width="48"
+                                    height="48"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="shrink-0"
+                                />
+                                <span class="text-sm text-ebony-clay-800 leading-snug">{w.definition.name}</span>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+            ))
+        }
+    </div>
+</BaseLayout>
