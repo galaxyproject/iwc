@@ -10,4 +10,5 @@
 ### Fixed
 - Preserve collection structure inside skipped long-read preprocessing and remove null placeholders before selecting sample-matched empty files
 - Correct the case-sensitive output label for the short-read host-removal report
+- Report the CheckM and CheckM2 bin quality tables under the matching section titles in the aggregated MultiQC report
 - Pin the embedded Porechop and MEGAHIT copies to installable Tool Shed revisions
