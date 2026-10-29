@@ -68,7 +68,8 @@ def get_dockstore_details(trsID):
             print("No 'id' field found in the top-level data.")
     elif response.status_code == 404:
         # Newly merged workflows 404 until Dockstore picks them up
-        print(f"Not yet published on Dockstore, skipping: {trsID}")
+        # ::warning:: shows up on the run summary, so a trsID that never resolves gets noticed
+        print(f"::warning::Not yet published on Dockstore, skipping: {trsID}")
     else:
         # Anything else (e.g. a Dockstore outage) should fail loudly rather
         # than deploy a site with workflows silently missing
