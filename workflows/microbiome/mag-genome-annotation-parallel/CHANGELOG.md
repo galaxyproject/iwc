@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7] - 2026-10-29
+
+### Added
+- `Run ToolDistillator` (default: `Yes`) to make ToolDistillator optional: set it to `No` to skip the collection of standardized annotation metadata. Its bakta section runs only when Bakta runs.
+
 ## [0.6] - 2026-09-23
 
 ### Changed
