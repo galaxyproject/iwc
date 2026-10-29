@@ -108,7 +108,7 @@ Refinement reconciles the candidate bins of the individual binners into a final,
 - **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.
 - **Both** runs DAS Tool and Binette.
 
-The parent merges the selected refiner outputs within each coverage branch, then merges the branches.
+This workflow merges the selected refiner outputs within each coverage branch, then merges the branches.
 
 ## Step 5: MAG quality filtering and dereplication
 
@@ -150,7 +150,7 @@ Some modifications can be made in the workflow editor for specific use cases:
 
 ## Workflow structure
 
-This workflow embeds smaller workflows as sub-workflow steps and adds shared inputs and downstream analysis. The embedded workflows perform:
+This workflow is the parent of six embedded sub-workflows: it adds the shared inputs and the downstream analysis. The embedded workflows perform:
 
 - paired short-read grouping,
 - Nanopore grouping,
