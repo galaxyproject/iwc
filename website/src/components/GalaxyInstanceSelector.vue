@@ -15,7 +15,7 @@ import ComboboxTrigger from "./ui/ComboboxTrigger.vue";
 import ComboboxContent from "./ui/ComboboxContent.vue";
 import ComboboxItem from "./ui/ComboboxItem.vue";
 import ComboboxEmpty from "./ui/ComboboxEmpty.vue";
-import { ChevronDown } from "lucide-vue-next";
+import { ChevronDown } from "@lucide/vue";
 
 // Default instance list - never modified
 const defaultInstances = [

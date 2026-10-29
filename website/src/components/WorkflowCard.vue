@@ -6,7 +6,7 @@ import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
 import CardContent from "./ui/CardContent.vue";
 import Badge from "./ui/Badge.vue";
-import { Tag, Clock } from "lucide-vue-next";
+import { Tag, Clock } from "@lucide/vue";
 
 const props = defineProps<{
     workflow: SearchIndexEntry | Workflow;

@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogClose,
 } from "radix-vue";
-import { Filter, X } from "lucide-vue-next";
+import { Filter, X } from "@lucide/vue";
 import { useFilterState } from "../composables/useFilterState";
 import type { SearchIndexEntry } from "../models/workflow";
 
