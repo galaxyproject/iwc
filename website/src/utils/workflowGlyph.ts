@@ -221,6 +221,11 @@ export function buildGlyphGraph(steps: Record<string, RawStep>): GlyphGraph {
     return { nodes, edges, maxDepth, maxWidth };
 }
 
+// Prerendered by src/pages/workflow/[id]/glyph.svg.ts.
+export function glyphUrl(iwcID: string): string {
+    return `/workflow/${encodeURIComponent(iwcID)}/glyph.svg`;
+}
+
 // Domain tints group related collections so a grid of glyphs reads by field
 // at a glance; the structure on top of the tint is what tells siblings apart.
 const DOMAINS: Record<string, GlyphDomain> = {
