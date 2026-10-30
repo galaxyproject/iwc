@@ -79,8 +79,6 @@ const edgeOpacity = computed(() => (dense.value ? 0.38 : 0.5));
 // so the gold doesn't merge into a single blob.
 const manyOutputs = computed(() => outputs.value.length > 8);
 const haloScale = computed(() => (outputs.value.length > 6 ? 1.45 : outputs.value.length > 2 ? 1.75 : 2.1));
-// At thumbnail sizes a dense graph's tool dots are noise; keep only its threads.
-const hideTools = computed(() => dense.value && props.size <= 40);
 const haloOpacity = computed(() => (outputs.value.length > 6 ? 0.16 : 0.22));
 const inputRadius = computed(() => rd(nodeRadius.value * 1.05));
 const toolRadius = computed(() => rd(nodeRadius.value * (dense.value ? 0.42 : 0.7)));
@@ -142,7 +140,7 @@ const label = computed(() => {
 
         <!-- One loop per mark so each step renders as a single element and shared
              attributes sit on the group: this markup repeats for every card. -->
-        <g v-if="!hideTools" :fill="domain.line" :fill-opacity="dense ? 0.7 : 0.9">
+        <g :fill="domain.line" :fill-opacity="dense ? 0.7 : 0.9">
             <circle v-for="n in tools" :key="n.node.id" :cx="n.at.x" :cy="n.at.y" :r="toolRadius" />
         </g>
         <g :fill="domain.line">
