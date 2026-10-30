@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/2.1.6+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/3.0.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.12.2+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [0.6] - 2026-09-23
 
 ### Changed
