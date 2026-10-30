@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy1`
+
 ## [0.12] - 2026-10-26
 
 ### Automatic update
