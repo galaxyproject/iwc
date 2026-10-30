@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/crs4/taxonomy_krona_chart/taxonomy_krona_chart/2.7.1+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [1.6] - 2026-10-28
 
 ### Fixed
