@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { buildGlyphGraph, glyphDomain, type GlyphNode, type Point } from "../utils/workflowGlyph";
+import {
+    buildGlyphGraph,
+    glyphDomain,
+    GLYPH_GOLD as GOLD,
+    GLYPH_MARKS as MARKS,
+    type GlyphNode,
+    type Point,
+} from "../utils/workflowGlyph";
 
 const props = withDefaults(
     defineProps<{
@@ -18,7 +25,6 @@ const props = withDefaults(
 
 const VIEW = 100;
 const PAD = 17;
-const GOLD = "#FFD700";
 
 const graph = computed(() => buildGlyphGraph(props.steps));
 const domain = computed(() => glyphDomain(props.collections));
@@ -78,11 +84,11 @@ const edgeOpacity = computed(() => (dense.value ? 0.38 : 0.5));
 // A lone final product gets a generous glow; many of them share a quieter one
 // so the gold doesn't merge into a single blob.
 const manyOutputs = computed(() => outputs.value.length > 8);
-const haloScale = computed(() => (outputs.value.length > 6 ? 1.45 : outputs.value.length > 2 ? 1.75 : 2.1));
-const haloOpacity = computed(() => (outputs.value.length > 6 ? 0.16 : 0.22));
-const inputRadius = computed(() => rd(nodeRadius.value * 1.05));
-const toolRadius = computed(() => rd(nodeRadius.value * (dense.value ? 0.42 : 0.7)));
-const finalRadius = computed(() => rd(nodeRadius.value * (manyOutputs.value ? 0.7 : 0.95)));
+const haloScale = computed(() => (outputs.value.length > 6 ? 1.45 : outputs.value.length > 2 ? 1.75 : MARKS.halo));
+const haloOpacity = computed(() => (outputs.value.length > 6 ? 0.16 : MARKS.haloOpacity));
+const inputRadius = computed(() => rd(nodeRadius.value * MARKS.input));
+const toolRadius = computed(() => rd(nodeRadius.value * (dense.value ? 0.42 : MARKS.tool)));
+const finalRadius = computed(() => rd(nodeRadius.value * (manyOutputs.value ? 0.7 : MARKS.final)));
 
 const label = computed(() => {
     const g = graph.value;
@@ -148,10 +154,10 @@ const label = computed(() => {
             <!-- A collection is many datasets: draw it as a small stack. -->
             <g v-for="n in collectionInputs" :key="n.node.id">
                 <circle
-                    :cx="rd(n.at.x - nodeRadius * 0.55)"
-                    :cy="rd(n.at.y + nodeRadius * 0.55)"
+                    :cx="rd(n.at.x - nodeRadius * MARKS.stackOffset)"
+                    :cy="rd(n.at.y + nodeRadius * MARKS.stackOffset)"
                     :r="inputRadius"
-                    fill-opacity="0.35" />
+                    :fill-opacity="MARKS.stackOpacity" />
                 <circle :cx="n.at.x" :cy="n.at.y" :r="inputRadius" />
             </g>
         </g>
@@ -159,14 +165,14 @@ const label = computed(() => {
             <circle
                 :cx="n.at.x"
                 :cy="n.at.y"
-                :r="rd(nodeRadius * 1.25)"
+                :r="rd(nodeRadius * MARKS.ring)"
                 :fill="n.node.isFinal ? GOLD : domain.from"
                 :stroke="n.node.isFinal ? GOLD : domain.line"
                 :stroke-width="strokeWidth" />
             <circle
                 :cx="n.at.x"
                 :cy="n.at.y"
-                :r="rd(nodeRadius * 0.45)"
+                :r="rd(nodeRadius * MARKS.ringCore)"
                 :fill="n.node.isFinal ? domain.from : domain.line" />
         </g>
         <g :fill="GOLD">
