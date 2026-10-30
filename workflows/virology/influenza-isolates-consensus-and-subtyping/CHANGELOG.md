@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.19+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/0.7.19+galaxy2`
+
 ## [0.5] - 2026-10-19
 
 ### Automatic update
