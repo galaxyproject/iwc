@@ -15,12 +15,12 @@ const props = withDefaults(
         steps: Record<string, GlyphStep>;
         // Stable per-workflow key for SVG ids, so builds are deterministic and
         // inline glyphs of different workflows don't share a gradient id.
-        uid?: string;
+        uid: string;
         collections?: string[];
         size?: number;
         title?: string;
     }>(),
-    { uid: undefined, size: 64, collections: () => [], title: undefined },
+    { size: 64, collections: () => [], title: undefined },
 );
 
 const VIEW = 100;
@@ -30,7 +30,7 @@ const graph = computed(() => buildGlyphGraph(props.steps));
 const domain = computed(() => glyphDomain(props.collections));
 // The gradient only depends on the domain, so repeated ids for the same
 // workflow on one page resolve to identical definitions.
-const gradientId = computed(() => `glyph-${(props.uid ?? domain.value.key).replace(/[^A-Za-z0-9_-]/g, "")}`);
+const gradientId = computed(() => `glyph-${props.uid.replace(/[^A-Za-z0-9_-]/g, "")}`);
 
 // A tenth of a viewBox unit is well under a pixel at any size we draw, and
 // every extra digit is repeated across every glyph on the page.
