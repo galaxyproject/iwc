@@ -28,3 +28,14 @@ test.describe("Workflow glyphs", () => {
         await expect(page.locator(`a[href="/workflow/${WORKFLOW_ID}/"] img`)).toHaveCount(1);
     });
 });
+
+test("list view keeps room for the title on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.waitForSelector('[id^="workflow-"]', { timeout: 15000 });
+    await page.locator('button[aria-label="List view"], button:has-text("List")').first().click();
+    const main = page.locator('#workflows [id^="workflow-"] .flex-1.min-w-0').first();
+    await expect(main).toBeVisible();
+    const box = await main.boundingBox();
+    expect(box.width).toBeGreaterThanOrEqual(140);
+});

@@ -60,7 +60,7 @@ const workflowRelease = computed(() => {
                 alt=""
                 loading="lazy"
                 decoding="async"
-                class="shrink-0 mt-0.5" />
+                class="hidden sm:block shrink-0 mt-0.5" />
             <!-- Main content -->
             <div class="flex-1 min-w-0">
                 <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
