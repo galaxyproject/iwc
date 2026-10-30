@@ -8,7 +8,8 @@ import type { Workflow } from "../../../models/workflow";
 // Cards show the glyph as an <img> of this file rather than inline SVG: the
 // homepage lists every workflow, and inline markup plus the geometry needed to
 // hydrate it nearly doubled the page. Files are cached and loaded lazily.
-// The glyph is size-aware, so it's drawn for the card size it's shown at.
+// The glyph is size-aware, so it's drawn at the size cards show it at (compact
+// cards scale it down slightly).
 const CARD_SIZE = 48;
 
 export const getStaticPaths: GetStaticPaths = async () => {
