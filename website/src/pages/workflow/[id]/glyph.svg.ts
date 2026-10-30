@@ -28,6 +28,12 @@ export const GET: APIRoute = async ({ props }) => {
     // Vue's hydration markers mean nothing in a standalone file, and Vue's SSR
     // lowercases attributes on a component's root element. HTML parsers fix
     // viewBox inline, but a standalone SVG is XML and would ignore it.
-    const svg = (await renderToString(app)).replace(/<!--[^>]*-->/g, "").replace(" viewbox=", " viewBox=");
+    const svg = (await renderToString(app))
+        .replace(/<!--[^>]*-->/g, "")
+        .replace(/^(<svg\b[^>]*?) viewbox=/i, "$1 viewBox=");
+    // Fail the build rather than ship tiles that render uncropped.
+    if (!/^<svg\b[^>]* viewBox="/.test(svg)) {
+        throw new Error(`glyph.svg for ${workflow.iwcID} has no viewBox on its root element`);
+    }
     return new Response(svg, { headers: { "Content-Type": "image/svg+xml" } });
 };
