@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy3`
+
 ## [0.11] - 2026-10-26
 
 ### Automatic update
