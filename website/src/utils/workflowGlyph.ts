@@ -8,7 +8,9 @@ interface RawConnection {
     id: number;
 }
 
-interface RawStep {
+// Only the fields the glyph reads. Unlike Step in models/workflow.ts, this
+// allows list-valued input_connections, which Galaxy does emit.
+export interface GlyphStep {
     id: number;
     type: string;
     input_connections?: Record<string, RawConnection | RawConnection[]> | null;
@@ -90,7 +92,7 @@ function stepKind(type: string): StepKind | null {
     }
 }
 
-function parentIds(step: RawStep): string[] {
+function parentIds(step: GlyphStep): string[] {
     const ids: string[] = [];
     for (const conn of Object.values(step.input_connections ?? {})) {
         for (const c of Array.isArray(conn) ? conn : [conn]) {
@@ -102,7 +104,7 @@ function parentIds(step: RawStep): string[] {
     return ids;
 }
 
-export function buildGlyphGraph(steps: Record<string, RawStep>): GlyphGraph {
+export function buildGlyphGraph(steps: Record<string, GlyphStep>): GlyphGraph {
     const kinds = new Map<string, StepKind>();
     for (const [key, step] of Object.entries(steps)) {
         const kind = stepKind(step.type);
@@ -110,7 +112,7 @@ export function buildGlyphGraph(steps: Record<string, RawStep>): GlyphGraph {
             kinds.set(String(step.id ?? key), kind);
         }
     }
-    const byId = new Map<string, RawStep>();
+    const byId = new Map<string, GlyphStep>();
     for (const [key, step] of Object.entries(steps)) {
         byId.set(String(step.id ?? key), step);
     }

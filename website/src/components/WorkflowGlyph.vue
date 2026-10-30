@@ -6,13 +6,13 @@ import {
     GLYPH_GOLD as GOLD,
     GLYPH_MARKS as MARKS,
     type GlyphNode,
+    type GlyphStep,
     type Point,
 } from "../utils/workflowGlyph";
 
 const props = withDefaults(
     defineProps<{
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        steps: Record<string, any>;
+        steps: Record<string, GlyphStep>;
         // Stable per-workflow key for SVG ids, so builds are deterministic and
         // inline glyphs of different workflows don't share a gradient id.
         uid?: string;
