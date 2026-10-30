@@ -12,7 +12,7 @@
 
 ### Manual changes
 - New input required: a GTF file with the chromosome names matching the targeted genome.
-- New QC with ATACseqQC: TSS enrichment plot is added to MultiQC and TSS enrichment score computed on the first chromosome of the BAM from a GTF provided by the user.
+- New QC with ATACseqQC: TSS enrichment plot is added to MultiQC and TSS enrichment score is computed from a GTF provided by the user, either genome-wide or on a chromosome chosen with the new `Compute TSS enrichment Genome-wide` and `Compute TSS enrichment on a specific chromosome` inputs (default: `chr1`).
 - The fragment size distribution is now normalized to more easily compare between samples with different sequencing depth.
 
 ### Other info
