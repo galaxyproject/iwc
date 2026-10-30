@@ -4,7 +4,7 @@ import IWCHeader from "../components/IWCHeader.astro";
 import WorkflowGlyph from "../components/WorkflowGlyph.vue";
 import { loadManifest, getAllWorkflows } from "../utils/manifest";
 import { IWC_SITE_URL } from "../utils";
-import { glyphDomain, glyphUrl, GLYPH_DOMAINS } from "../utils/workflowGlyph";
+import { glyphDomain, glyphUrl, GLYPH_DOMAINS, GLYPH_GOLD, GLYPH_MARKS as M } from "../utils/workflowGlyph";
 import type { Workflow } from "../models/workflow";
 
 const workflows: Workflow[] = getAllWorkflows(await loadManifest());
@@ -29,7 +29,9 @@ const showcase = showcaseNames
     .filter((w): w is Workflow => Boolean(w));
 
 const swatch = GLYPH_DOMAINS.find((d) => d.key === "general")!;
-const GOLD = "#FFD700";
+// Legend marks are drawn at one node radius and stroke from the shared ratios.
+const R = 5;
+const STROKE = 2;
 const workflowHref = (w: Workflow) => `/workflow/${encodeURIComponent(w.iwcID)}/`;
 const description = "Every workflow in the library has a small glyph drawn from its own steps. Here's how to read one.";
 ---
@@ -75,31 +77,43 @@ const description = "Every workflow in the library has a small glyph drawn from 
                         <li class="flex items-center gap-3">
                             <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="shrink-0">
                                 <rect width="32" height="32" rx="7" fill={swatch.from} />
-                                {mark === "data" && <circle cx="16" cy="16" r="5" fill={swatch.line} />}
+                                {mark === "data" && <circle cx="16" cy="16" r={R * M.input} fill={swatch.line} />}
                                 {mark === "collection" && (
                                     <>
-                                        <circle cx="13.5" cy="18.5" r="5" fill={swatch.line} fill-opacity="0.35" />
-                                        <circle cx="16" cy="16" r="5" fill={swatch.line} />
+                                        <circle
+                                            cx={16 - R * M.stackOffset}
+                                            cy={16 + R * M.stackOffset}
+                                            r={R * M.input}
+                                            fill={swatch.line}
+                                            fill-opacity={M.stackOpacity}
+                                        />
+                                        <circle cx="16" cy="16" r={R * M.input} fill={swatch.line} />
                                     </>
                                 )}
-                                {mark === "tool" && <circle cx="16" cy="16" r="3.2" fill={swatch.line} />}
+                                {mark === "tool" && <circle cx="16" cy="16" r={R * M.tool} fill={swatch.line} />}
                                 {mark === "subworkflow" && (
                                     <>
                                         <circle
                                             cx="16"
                                             cy="16"
-                                            r="6"
+                                            r={R * M.ring}
                                             fill={swatch.from}
                                             stroke={swatch.line}
-                                            stroke-width="2"
+                                            stroke-width={STROKE}
                                         />
-                                        <circle cx="16" cy="16" r="2.2" fill={swatch.line} />
+                                        <circle cx="16" cy="16" r={R * M.ringCore} fill={swatch.line} />
                                     </>
                                 )}
                                 {mark === "final" && (
                                     <>
-                                        <circle cx="16" cy="16" r="9" fill={GOLD} fill-opacity="0.22" />
-                                        <circle cx="16" cy="16" r="4.5" fill={GOLD} />
+                                        <circle
+                                            cx="16"
+                                            cy="16"
+                                            r={R * M.halo}
+                                            fill={GLYPH_GOLD}
+                                            fill-opacity={M.haloOpacity}
+                                        />
+                                        <circle cx="16" cy="16" r={R * M.final} fill={GLYPH_GOLD} />
                                     </>
                                 )}
                             </svg>

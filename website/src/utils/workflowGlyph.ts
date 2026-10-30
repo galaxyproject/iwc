@@ -54,6 +54,24 @@ export interface GlyphDomain {
 
 const MIN_GAP = 1;
 
+// --color-galaxy-gold, as a literal because standalone glyph files can't see
+// the site's CSS.
+export const GLYPH_GOLD = "#FFD700";
+
+// Mark sizes as multiples of the node radius. The /glyphs legend draws from
+// these too, so it can't drift from what the glyphs actually show.
+export const GLYPH_MARKS = {
+    input: 1.05,
+    tool: 0.7,
+    final: 0.95,
+    halo: 2.1,
+    haloOpacity: 0.22,
+    ring: 1.25,
+    ringCore: 0.45,
+    stackOffset: 0.55,
+    stackOpacity: 0.35,
+};
+
 function stepKind(type: string): StepKind | null {
     switch (type) {
         case "data_input":
