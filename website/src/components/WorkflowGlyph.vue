@@ -90,10 +90,16 @@ const inputRadius = computed(() => rd(nodeRadius.value * MARKS.input));
 const toolRadius = computed(() => rd(nodeRadius.value * (dense.value ? 0.42 : MARKS.tool)));
 const finalRadius = computed(() => rd(nodeRadius.value * (manyOutputs.value ? 0.7 : MARKS.final)));
 
+const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 const label = computed(() => {
     const g = graph.value;
-    const out = outputs.value.length;
-    return `${props.title ? props.title + ": " : ""}${g.nodes.length} steps, ${g.maxDepth + 1} stages deep, up to ${g.maxWidth} in parallel, ${out} output${out === 1 ? "" : "s"}`;
+    const summary = [
+        count(g.nodes.length, "step"),
+        `${count(g.maxDepth + 1, "stage")} deep`,
+        `up to ${g.maxWidth} in parallel`,
+        count(outputs.value.length, "output"),
+    ].join(", ");
+    return props.title ? `${props.title}: ${summary}` : summary;
 });
 </script>
 
