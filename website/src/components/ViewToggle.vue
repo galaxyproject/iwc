@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from "@nanostores/vue";
 import { viewMode } from "../stores/workflowStore";
-import { List, LayoutGrid } from "lucide-vue-next";
+import { List, LayoutGrid } from "@lucide/vue";
 import { computed } from "vue";
 
 const mode = useStore(viewMode);

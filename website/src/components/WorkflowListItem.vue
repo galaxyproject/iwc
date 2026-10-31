@@ -3,7 +3,7 @@ import { computed } from "vue";
 import type { SearchIndexEntry, Workflow } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Badge from "./ui/Badge.vue";
-import { Tag, Clock } from "lucide-vue-next";
+import { Tag, Clock } from "@lucide/vue";
 
 const props = defineProps<{
     workflow: SearchIndexEntry | Workflow;

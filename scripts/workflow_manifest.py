@@ -66,8 +66,14 @@ def get_dockstore_details(trsID):
                 )
         else:
             print("No 'id' field found in the top-level data.")
+    elif response.status_code == 404:
+        # Newly merged workflows 404 until Dockstore picks them up
+        # ::warning:: shows up on the run summary, so a trsID that never resolves gets noticed
+        print(f"::warning::Not yet published on Dockstore, skipping: {trsID}")
     else:
-        print(f"Failed to retrieve details for {trsID} from {url_details}. Status code: {response.status_code}")
+        # Anything else (e.g. a Dockstore outage) should fail loudly rather
+        # than deploy a site with workflows silently missing
+        raise Exception(f"Failed to retrieve details for {trsID} from {url_details}. Status code: {response.status_code}")
     return details, categories, collections
 
 
@@ -139,6 +145,7 @@ def find_and_load_compliant_workflows(directory):
             #   - name: Lucille Delisle
             #     orcid: 0000-0002-1964-4960
 
+            published = []
             for workflow in workflow_details["workflows"]:
                 # For each listed workflow, load the primaryDescriptorPath
                 # file, which is the actual galaxy workflow.
@@ -189,6 +196,8 @@ def find_and_load_compliant_workflows(directory):
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
                 )
+                if dockstore_details is None:
+                    continue
 
                 workflow["dockstore_id"] = dockstore_details["id"]
                 workflow["categories"] = categories
@@ -222,6 +231,8 @@ def find_and_load_compliant_workflows(directory):
                         else:
                             raise Exception(f"Listed test file doesn't exist: {test}")
                     workflow["tests"] = tests
+                published.append(workflow)
+            workflow_details["workflows"] = published
     return workflow_data
 
 
