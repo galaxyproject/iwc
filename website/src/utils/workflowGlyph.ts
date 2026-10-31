@@ -20,8 +20,9 @@ export interface GlyphStep {
 export interface GlyphNode {
     id: string;
     kind: StepKind;
-    // A labelled output that nothing downstream consumes: one of the things
-    // the workflow actually hands back to the user.
+    // A step with labelled outputs that nothing downstream builds on. Judged
+    // per step, not per output, so gold marks where the pipeline ends rather
+    // than every mid-pipeline step that also hands back a report.
     isFinal: boolean;
     // Layout space: x in [0, 1] runs from inputs to final steps, y is centred on 0.
     x: number;
