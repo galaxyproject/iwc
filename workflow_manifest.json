@@ -35626,7 +35626,2082 @@
     },
     {
         "version": 1.2,
-        "workflows": [],
+        "workflows": [
+            {
+                "name": "main",
+                "subclass": "Galaxy",
+                "publish": true,
+                "primaryDescriptorPath": "/samestr-shared-strain-detection.ga",
+                "testParameterFiles": [
+                    "/samestr-shared-strain-detection-tests.yml"
+                ],
+                "authors": [
+                    {
+                        "name": "Xenia Morera Mart\u00ednez",
+                        "orcid": "0009-0000-2380-8385"
+                    }
+                ],
+                "definition": {
+                    "a_galaxy_workflow": "true",
+                    "annotation": "This workflow performs strain-level metagenomic analysis of shotgun sequencing data, enabling taxonomic profiling, strain identification, and shared strain detection across samples.",
+                    "comments": [
+                        {
+                            "child_steps": [
+                                39
+                            ],
+                            "color": "green",
+                            "data": {
+                                "title": "Strain sharing summary"
+                            },
+                            "id": 4,
+                            "position": [
+                                3606.2,
+                                365.1689085188362
+                            ],
+                            "size": [
+                                322.8,
+                                487.8
+                            ],
+                            "type": "frame"
+                        },
+                        {
+                            "child_steps": [
+                                37
+                            ],
+                            "color": "green",
+                            "data": {
+                                "title": "SameStr Output"
+                            },
+                            "id": 3,
+                            "position": [
+                                3059.4,
+                                718.9689085188362
+                            ],
+                            "size": [
+                                279.6,
+                                246.8
+                            ],
+                            "type": "frame"
+                        },
+                        {
+                            "child_steps": [
+                                26,
+                                27
+                            ],
+                            "color": "orange",
+                            "data": {
+                                "title": "Taxonomic profiling with MetaPhlAn or mOTUs"
+                            },
+                            "id": 2,
+                            "position": [
+                                985.4,
+                                460.4
+                            ],
+                            "size": [
+                                271,
+                                724
+                            ],
+                            "type": "frame"
+                        },
+                        {
+                            "child_steps": [
+                                21,
+                                24
+                            ],
+                            "color": "yellow",
+                            "data": {
+                                "title": "Preprocessing: trimming and host removal"
+                            },
+                            "id": 1,
+                            "position": [
+                                315.7,
+                                351.69545528728906
+                            ],
+                            "size": [
+                                528,
+                                468
+                            ],
+                            "type": "frame"
+                        },
+                        {
+                            "child_steps": [
+                                0
+                            ],
+                            "color": "red",
+                            "data": {
+                                "title": "Input Samples"
+                            },
+                            "id": 0,
+                            "position": [
+                                0,
+                                230.6
+                            ],
+                            "size": [
+                                240,
+                                121.2
+                            ],
+                            "type": "frame"
+                        }
+                    ],
+                    "creator": [
+                        {
+                            "class": "Person",
+                            "familyName": "Morera Mart\u00ednez",
+                            "identifier": "https://orcid.org/0009-0000-2380-8385",
+                            "name": "Xenia Morera Mart\u00ednez"
+                        }
+                    ],
+                    "format-version": "0.1",
+                    "release": "0.1",
+                    "license": "MIT",
+                    "name": "SameStr-based shared strain detection from paired-end metagenomic data",
+                    "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic reads from several samples and finds\nstrains they share, for example strains transmitted from a donor to a recipient after a faecal\nmicrobiota transplant, or strains persisting in one person over time. It uses\n[SameStr](https://github.com/danielpodlesny/samestr)\n([Podlesny et al. 2022, *Microbiome*](https://doi.org/10.1186/s40168-022-01251-w)), which compares\nsingle-nucleotide variant (SNV) profiles of species-specific marker genes between samples.\n\nIt performs the following steps:\n\n- **Preprocessing**: quality trimming (Trimmomatic) and host read removal (Bowtie2) with KneadData.\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn 4 or mOTUs, depending on the\n  selected database, profiles each sample and aligns its reads to the profiler's marker genes.\n- **Strain detection**:\n  - SameStr Convert turns each sample's marker alignments into per-clade SNV profiles.\n  - SameStr Merge and SameStr Filter combine them across samples and keep high-confidence variants.\n  - SameStr Stats, Compare and Summarize compute pairwise Maximum Variant Profile Similarity (MVS)\n    scores and call shared strains.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection of FASTQ files (`fastqsanger` or\n  `fastqsanger.gz`), one element per sample. Strains are compared between samples, so provide at\n  least two.\n- **Preprocessing: Trimmomatic adapter set**: the adapter sequences Trimmomatic clips (default `NexteraPE`).\n- **Preprocessing: Host reference genome**: the Bowtie2 index of the host genome whose reads are\n  removed (default `hg38`, human).\n- **MetaPhlAn database** and **mOTUs database**: both are optional, and the database you select\n  decides which profiler runs. Select exactly one:\n  - with neither selected, the workflow fails;\n  - with both selected, both profilers run, but SameStr uses only the MetaPhlAn results.\n- **SameStr database**: the SameStr marker database. It must be built from the same profiler\n  database as the one selected above (the same MetaPhlAn or mOTUs database version).\n- **SameStr Convert / Filter / Summarize parameters**: the alignment, variant, position, sample\n  and similarity thresholds of the SameStr steps. The defaults are SameStr's own defaults, and\n  each input's help text describes it.\n\n## Outputs\n\n- **Taxonomic profile**: the taxonomic profile of each sample, from MetaPhlAn (or mOTUs if no\n  MetaPhlAn database was selected).\n- **SameStr SNV profile statistics**: one table per clade with the marker coverage and variant\n  statistics of each sample.\n- **Strain events**: one row per sample pair and clade. It gives the MVS similarity, the number of\n  overlapping positions, and the call: `shared_strain` if the pair shares the strain,\n  `other_strain` if it carries different strains.\n- **Taxon counts**: for each sample, the number of taxa detected at each rank from kingdom to clade.\n- **Strain co-occurrence table**: for each sample pair, the number of taxa shared at each rank,\n  the number of shared strains, and the number of clades analyzed at strain level.\n",
+                    "report": {
+                        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+                    },
+                    "steps": {
+                        "0": {
+                            "annotation": "Paired-end shotgun metagenomic reads (FASTQ) as a list:paired collection, one element per sample. At least two samples are needed to compare strains.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 0,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Paired-end shotgun metagenomic reads (FASTQ) as a list:paired collection, one element per sample. At least two samples are needed to compare strains.",
+                                    "name": "Paired-end reads"
+                                }
+                            ],
+                            "label": "Paired-end reads",
+                            "name": "Input dataset collection",
+                            "outputs": [],
+                            "position": {
+                                "left": 19.978197146864574,
+                                "top": 270.57573502753723
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
+                            "tool_version": null,
+                            "type": "data_collection_input",
+                            "uuid": "39fd6bba-6675-47c1-9b8b-05291914aae4",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "1": {
+                            "annotation": "Adapter sequences that Trimmomatic clips from the reads, e.g. NexteraPE, TruSeq2 or TruSeq3.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 1,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Adapter sequences that Trimmomatic clips from the reads, e.g. NexteraPE, TruSeq2 or TruSeq3.",
+                                    "name": "Preprocessing: Trimmomatic adapter set"
+                                }
+                            ],
+                            "label": "Preprocessing: Trimmomatic adapter set",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 19.2666015625,
+                                "top": 377.0333251953125
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": \"NexteraPE\", \"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "4b1ef384-d46b-4427-ab13-ab6a1628f55c",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "2": {
+                            "annotation": "Bowtie2 index of the host genome whose reads KneadData removes, e.g. hg38 for human samples.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 2,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Bowtie2 index of the host genome whose reads KneadData removes, e.g. hg38 for human samples.",
+                                    "name": "Preprocessing: Host reference genome"
+                                }
+                            ],
+                            "label": "Preprocessing: Host reference genome",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 19.0999755859375,
+                                "top": 485
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": \"hg38\", \"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "e710b4b9-599b-4078-a281-4de4893899b7",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "3": {
+                            "annotation": "mOTUs database. Select it to use mOTUs as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 3,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "mOTUs database. Select it to use mOTUs as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                                    "name": "mOTUs database"
+                                }
+                            ],
+                            "label": "mOTUs database",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 556.7136622328641,
+                                "top": 190.2787304199276
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": true}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "8a83d3ba-6eb2-495e-8a67-580b3effd76b",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "4": {
+                            "annotation": "MetaPhlAn database. Select it to use MetaPhlAn as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 4,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "MetaPhlAn database. Select it to use MetaPhlAn as the taxonomic profiler and marker aligner. Select either a MetaPhlAn or a mOTUs database; if both are selected, both run but SameStr uses the MetaPhlAn results.",
+                                    "name": "MetaPhlAn database"
+                                }
+                            ],
+                            "label": "MetaPhlAn database",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 641.838028196017,
+                                "top": 36.77125862363563
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": true}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "e8fce92c-f6d3-4efe-9352-7b0f3634c3e2",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "5": {
+                            "annotation": "SameStr marker database. It must be built from the same profiler database as the one selected above (same MetaPhlAn or mOTUs database version).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 5,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "SameStr marker database. It must be built from the same profiler database as the one selected above (same MetaPhlAn or mOTUs database version).",
+                                    "name": "SameStr database"
+                                }
+                            ],
+                            "label": "SameStr database",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1155.102350586718,
+                                "top": 0
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "07a38490-ae59-4c68-b5fd-0317d6b9d5df",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "6": {
+                            "annotation": "Alignment Filtering: Minimum percent identity required to retain an alignment (default: 0.9)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 6,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Alignment Filtering: Minimum percent identity required to retain an alignment (default: 0.9)",
+                                    "name": "SameStr Convert: Percent identity"
+                                }
+                            ],
+                            "label": "SameStr Convert: Percent identity",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1410.9526594119561,
+                                "top": 106.80560438229855
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 0.9, \"validators\": [{\"min\": 0.0, \"max\": 1.0, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "174a9e55-eb2e-4335-af8b-10f146d2c4dd",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "7": {
+                            "annotation": "Alignment Filtering: Minimum alignment length, in base pairs, required to retain an alignment (default: 40)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 7,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Alignment Filtering: Minimum alignment length, in base pairs, required to retain an alignment (default: 40)",
+                                    "name": "SameStr Convert: Minimum alignment length"
+                                }
+                            ],
+                            "label": "SameStr Convert: Minimum alignment length",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1411.3523128783154,
+                                "top": 199.8708753214608
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 40, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "d7d482ff-f15a-4b8a-9095-930905ccbe7d",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "8": {
+                            "annotation": "Alignment Filtering: Minimum quality score required for a base call to be retained (default: 20)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 8,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Alignment Filtering: Minimum quality score required for a base call to be retained (default: 20)",
+                                    "name": "SameStr Convert: Minimum base quality"
+                                }
+                            ],
+                            "label": "SameStr Convert: Minimum base quality",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1415.1388429839783,
+                                "top": 288.01004747237084
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 20, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "6716c22b-cac9-4602-9f6f-c2b8416b93fd",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "9": {
+                            "annotation": "Alignment Filtering: Minimum mapping quality required to retain an alignment. Increasing this threshold can drastically reduce the number of considered variants (default: 0)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 9,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Alignment Filtering: Minimum mapping quality required to retain an alignment. Increasing this threshold can drastically reduce the number of considered variants (default: 0)",
+                                    "name": "SameStr Convert: Minimum alignment quality"
+                                }
+                            ],
+                            "label": "SameStr Convert: Minimum alignment quality",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1418.251740166907,
+                                "top": 374.7308038290005
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 0, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "b1c5f55e-340c-4f92-b78d-abc4cfb0d8fa",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "10": {
+                            "annotation": "Alignment Filtering: Minimum coverage depth required at a position for it to be considered covered (default: 3)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 10,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Alignment Filtering: Minimum coverage depth required at a position for it to be considered covered (default: 3)",
+                                    "name": "SameStr Convert: Minimum vertical coverage"
+                                }
+                            ],
+                            "label": "SameStr Convert: Minimum vertical coverage",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 1419.8468771356904,
+                                "top": 464.57820691441964
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 3, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "2c75e52f-5630-488b-b056-307cceeb5d0d",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "11": {
+                            "annotation": "Clade and marker settings: Skip clades with fewer than this number of samples (default: 2)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 11,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Clade and marker settings: Skip clades with fewer than this number of samples (default: 2)",
+                                    "name": "SameStr Filter: Minimum samples per clade"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum samples per clade",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2099.7240312991016,
+                                "top": 934.7096615706103
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 2, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "34742a46-d45e-465f-af6e-4bed5a6ec64b",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "12": {
+                            "annotation": "Clade and marker settings: Number of nucleotides to trim from each end of a marker sequence. (default: 50)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 12,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Clade and marker settings: Number of nucleotides to trim from each end of a marker sequence. (default: 50)",
+                                    "name": "SameStr Filter: Marker truncation length"
+                                }
+                            ],
+                            "label": "SameStr Filter: Marker truncation length",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2099.136203363549,
+                                "top": 1034.2339577054222
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 50, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "6e11fc4b-cc98-480d-b8a9-a5a183aa57c7",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "13": {
+                            "annotation": "Sample Variant Filtering: Remove variants supported by fewer than this number of reads (default: 2)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 13,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Sample Variant Filtering: Remove variants supported by fewer than this number of reads (default: 2)",
+                                    "name": "SameStr Filter: Minimum variant coverage (reads)"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum variant coverage (reads)",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2099.5766761438904,
+                                "top": 1141.550259482889
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 2, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "9e0c17c5-8fa6-4c16-9c37-0f4e5ae102e7",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "14": {
+                            "annotation": "Sample Variant Filtering: Remove variants with coverage below this fraction (default: 0.05)",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 14,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Sample Variant Filtering: Remove variants with coverage below this fraction (default: 0.05)",
+                                    "name": "SameStr Filter: Minimum variant coverage fraction"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum variant coverage fraction",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2099.536212482662,
+                                "top": 1250.7503814460079
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 0.05, \"validators\": [{\"min\": 0.0, \"max\": 1.0, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "20af25a7-c6e1-49f4-bf75-c5931a2da51b",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "15": {
+                            "annotation": "Sample Position Filtering: Remove positions with nucleotide coverage below this threshold (default: 1).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 15,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Sample Position Filtering: Remove positions with nucleotide coverage below this threshold (default: 1).",
+                                    "name": "SameStr Filter: Minimum position coverage"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum position coverage",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2098.568205480666,
+                                "top": 1354.9615276886677
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 1, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "c0e15a95-179c-4d3a-a0da-c13f02615157",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "16": {
+                            "annotation": "Sample Position Filtering: Remove positions with coverage outside mean \u00b1 this standard deviation (default: 3.0).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 16,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Sample Position Filtering: Remove positions with coverage outside mean \u00b1 this standard deviation (default: 3.0).",
+                                    "name": "SameStr Filter: Position coverage standard deviation cutoff"
+                                }
+                            ],
+                            "label": "SameStr Filter: Position coverage standard deviation cutoff",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2095.1611867284496,
+                                "top": 1460.6660090245125
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 3.0, \"validators\": [{\"min\": 0.0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "d489c726-08d9-4753-b29b-5489eed441d6",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "17": {
+                            "annotation": "Sample Filtering: Remove samples with horizontal coverage below this nucleotide count (default: 5000).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 17,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Sample Filtering: Remove samples with horizontal coverage below this nucleotide count (default: 5000).",
+                                    "name": "SameStr Filter: Minimum horizontal coverage"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum horizontal coverage",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2092.8689633663025,
+                                "top": 1558.1500715879326
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 5000, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "7f455dfc-af40-41bd-add9-fe66feeaf418",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "18": {
+                            "annotation": "Global Position Filtering: Remove positions covered by fewer than this number of samples (default: 2). Overrides fraction-based filtering.",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 18,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Global Position Filtering: Remove positions covered by fewer than this number of samples (default: 2). Overrides fraction-based filtering.",
+                                    "name": "SameStr Filter: Minimum sample coverage per position"
+                                }
+                            ],
+                            "label": "SameStr Filter: Minimum sample coverage per position",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 2094.533892363287,
+                                "top": 1669.6248754855912
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "20db6106-98d7-451b-b745-6b2f3aebccd5",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "19": {
+                            "annotation": "Minimum number of positions that must be covered in both samples to consider their similarity reliable. Higher values are more stringent. (default: 5000).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 19,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Minimum number of positions that must be covered in both samples to consider their similarity reliable. Higher values are more stringent. (default: 5000).",
+                                    "name": "SameStr Summarize: Minimum overlap for comparison"
+                                }
+                            ],
+                            "label": "SameStr Summarize: Minimum overlap for comparison",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 3398.857412481063,
+                                "top": 742.4188097862362
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 5000, \"validators\": [{\"min\": 0, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "58401164-42fa-4c98-8d43-5afe7b99b1a2",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "20": {
+                            "annotation": "Samples with similarity scores above this threshold are considered the same strain. Higher values are more strict. (default: 0.999).",
+                            "content_id": null,
+                            "errors": null,
+                            "id": 20,
+                            "input_connections": {},
+                            "inputs": [
+                                {
+                                    "description": "Samples with similarity scores above this threshold are considered the same strain. Higher values are more strict. (default: 0.999).",
+                                    "name": "SameStr Summarize: Minimum similarity for shared strains"
+                                }
+                            ],
+                            "label": "SameStr Summarize: Minimum similarity for shared strains",
+                            "name": "Input parameter",
+                            "outputs": [],
+                            "position": {
+                                "left": 3398.971047985045,
+                                "top": 849.8269782059348
+                            },
+                            "tool_id": null,
+                            "tool_state": "{\"default\": 0.999, \"validators\": [{\"min\": 0.0, \"max\": 1.0, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"float\", \"optional\": false}",
+                            "tool_version": null,
+                            "type": "parameter_input",
+                            "uuid": "9a35e4b6-e0d9-4da2-9a08-f8aa4ef15278",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "21": {
+                            "annotation": "Quality trimming and host read removal. Boolean parameter 'Save all unmatched reads' must remain set to True. \n",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/kneaddata/kneaddata/0.12.1+galaxy1",
+                            "errors": null,
+                            "id": 21,
+                            "input_connections": {
+                                "alignment|alignment_tool|bowtie2_db": {
+                                    "id": 2,
+                                    "output_name": "output"
+                                },
+                                "read_type|paired_collection": {
+                                    "id": 0,
+                                    "output_name": "output"
+                                },
+                                "trimmomatic|trimmomatic_step|sequencer": {
+                                    "id": 1,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool KneadData",
+                                    "name": "read_type"
+                                }
+                            ],
+                            "label": "Trimming and Host Removal",
+                            "name": "KneadData",
+                            "outputs": [
+                                {
+                                    "name": "paired_output",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "unmatched_paired",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "trimmed_paired",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "unmatched_trimmed_paired",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "log_file",
+                                    "type": "txt"
+                                }
+                            ],
+                            "position": {
+                                "left": 346.40905086852905,
+                                "top": 387.02701114934655
+                            },
+                            "post_job_actions": {
+                                "HideDatasetActiontrimmed_paired": {
+                                    "action_arguments": {},
+                                    "action_type": "HideDatasetAction",
+                                    "output_name": "trimmed_paired"
+                                },
+                                "HideDatasetActionunmatched_trimmed_paired": {
+                                    "action_arguments": {},
+                                    "action_type": "HideDatasetAction",
+                                    "output_name": "unmatched_trimmed_paired"
+                                }
+                            },
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/kneaddata/kneaddata/0.12.1+galaxy1",
+                            "tool_shed_repository": {
+                                "changeset_revision": "10f8abc1fbdf",
+                                "name": "kneaddata",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"alignment\": {\"alignment_tool\": {\"tool_choice\": \"bowtie2\", \"__current_case__\": 0, \"bowtie2_db\": {\"__class__\": \"ConnectedValue\"}}, \"save_contaminants\": false}, \"fastqc\": {\"fastqc_report\": {\"select_fastqc\": \"no_fastqc\", \"__current_case__\": 1}, \"run_trim_repetitive\": false}, \"log_level\": \"INFO\", \"read_type\": {\"select_read_type\": \"paired\", \"__current_case__\": 1, \"save_unmatched\": true, \"paired_collection\": {\"__class__\": \"ConnectedValue\"}}, \"tandem\": {\"trf_step\": {\"trf_bool\": \"skip\", \"__current_case__\": 1}}, \"trimmomatic\": {\"trimmomatic_step\": {\"decide_trimmomatic\": \"run_trimmomatic\", \"__current_case__\": 0, \"sequencer\": {\"__class__\": \"ConnectedValue\"}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "0.12.1+galaxy1",
+                            "type": "tool",
+                            "uuid": "e9a20fa2-cfa5-44a5-9815-cdb640163c52",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "22": {
+                            "annotation": "Converts mOTUs database selection into a boolean to control whether mOTUs runs",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+                            "errors": null,
+                            "id": 22,
+                            "input_connections": {
+                                "input_param_type|input_param": {
+                                    "id": 3,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool Map parameter value",
+                                    "name": "input_param_type"
+                                }
+                            ],
+                            "label": "Run mOTUs",
+                            "name": "Map parameter value",
+                            "outputs": [
+                                {
+                                    "name": "output_param_boolean",
+                                    "type": "expression.json"
+                                }
+                            ],
+                            "position": {
+                                "left": 864.1763488000282,
+                                "top": 227.5921632557485
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "022a635f2283",
+                                "name": "map_param_value",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": []}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "0.2.0",
+                            "type": "tool",
+                            "uuid": "058f5e37-1801-4c4b-a91b-cbc113874035",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "23": {
+                            "annotation": "Converts MetaPhlAn database selection into a boolean to control whether MetaPhlAn runs",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+                            "errors": null,
+                            "id": 23,
+                            "input_connections": {
+                                "input_param_type|input_param": {
+                                    "id": 4,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool Map parameter value",
+                                    "name": "input_param_type"
+                                }
+                            ],
+                            "label": "Run MetaPhlAn",
+                            "name": "Map parameter value",
+                            "outputs": [
+                                {
+                                    "name": "output_param_boolean",
+                                    "type": "expression.json"
+                                }
+                            ],
+                            "position": {
+                                "left": 923.8778413373417,
+                                "top": 57.44290952440522
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "022a635f2283",
+                                "name": "map_param_value",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": []}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"input\", \"__current_case__\": 0}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "0.2.0",
+                            "type": "tool",
+                            "uuid": "9e7d973c-1ab1-4ae3-8b38-e11afaae3577",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "24": {
+                            "annotation": "Concatenate the trimmed, host-filtered paired reads and orphaned reads of each sample for profiling",
+                            "content_id": "cat1",
+                            "errors": null,
+                            "id": 24,
+                            "input_connections": {
+                                "input1": {
+                                    "id": 21,
+                                    "output_name": "paired_output"
+                                },
+                                "queries_0|input2": {
+                                    "id": 21,
+                                    "output_name": "unmatched_paired"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool Concatenate multiple datasets or collections",
+                                    "name": "input1"
+                                }
+                            ],
+                            "label": "Concatenate paired and orphaned reads",
+                            "name": "Concatenate multiple datasets or collections",
+                            "outputs": [
+                                {
+                                    "name": "out_file1",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 610.3918103661382,
+                                "top": 421.3927361466051
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "cat1",
+                            "tool_state": "{\"input1\": {\"__class__\": \"RuntimeValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"RuntimeValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.0.0",
+                            "type": "tool",
+                            "uuid": "7388896e-63f9-41c0-a51c-1e5cacc14e45",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "25": {
+                            "annotation": "Unzip collection",
+                            "content_id": "__UNZIP_COLLECTION__",
+                            "errors": null,
+                            "id": 25,
+                            "input_connections": {
+                                "input": {
+                                    "id": 24,
+                                    "output_name": "out_file1"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Unzip collection",
+                            "name": "Unzip collection",
+                            "outputs": [
+                                {
+                                    "name": "forward",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "reverse",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 668.6539607403265,
+                                "top": 902.2190289273902
+                            },
+                            "post_job_actions": {
+                                "HideDatasetActionforward": {
+                                    "action_arguments": {},
+                                    "action_type": "HideDatasetAction",
+                                    "output_name": "forward"
+                                },
+                                "HideDatasetActionreverse": {
+                                    "action_arguments": {},
+                                    "action_type": "HideDatasetAction",
+                                    "output_name": "reverse"
+                                }
+                            },
+                            "tool_id": "__UNZIP_COLLECTION__",
+                            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.0.0",
+                            "type": "tool",
+                            "uuid": "964db59a-3a07-409c-a015-fe33804e3d58",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "26": {
+                            "annotation": "Generate taxonomic profiles and marker gene alignments for SameStr",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+                            "errors": null,
+                            "id": 26,
+                            "input_connections": {
+                                "inputs|db|cached_db": {
+                                    "id": 4,
+                                    "output_name": "output"
+                                },
+                                "inputs|in|raw_in|in": {
+                                    "id": 24,
+                                    "output_name": "out_file1"
+                                },
+                                "when": {
+                                    "id": 23,
+                                    "output_name": "output_param_boolean"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "MetaPhlAn",
+                            "name": "MetaPhlAn",
+                            "outputs": [
+                                {
+                                    "name": "output_file",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "mapout",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "sam_output_file",
+                                    "type": "sam"
+                                }
+                            ],
+                            "position": {
+                                "left": 1018.8281386787592,
+                                "top": 536.2986005516906
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "56ff60ec416d",
+                                "name": "metaphlan",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.2\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": null, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": false}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "4.2.4+galaxy0",
+                            "type": "tool",
+                            "uuid": "9772827a-152b-4943-bc51-dd5def2ce127",
+                            "when": "$(inputs.when)",
+                            "workflow_outputs": []
+                        },
+                        "27": {
+                            "annotation": "Generate taxonomic profiles and marker gene alignments with mOTUs for SameStr",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/motus/motus_profiler/3.1.0+galaxy1",
+                            "errors": null,
+                            "id": 27,
+                            "input_connections": {
+                                "inputs|db|db_cached": {
+                                    "id": 3,
+                                    "output_name": "output"
+                                },
+                                "inputs|input_type|reads_type|forward_reads": {
+                                    "id": 25,
+                                    "output_name": "forward"
+                                },
+                                "inputs|input_type|reads_type|reverse_reads": {
+                                    "id": 25,
+                                    "output_name": "reverse"
+                                },
+                                "when": {
+                                    "id": 22,
+                                    "output_name": "output_param_boolean"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "mOTUs",
+                            "name": "mOTUs_profiler",
+                            "outputs": [
+                                {
+                                    "name": "output_motus",
+                                    "type": "txt"
+                                },
+                                {
+                                    "name": "output_bam",
+                                    "type": "bam"
+                                }
+                            ],
+                            "position": {
+                                "left": 1021.887821951847,
+                                "top": 894.3334689343865
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/bgruening/motus/motus_profiler/3.1.0+galaxy1",
+                            "tool_shed_repository": {
+                                "changeset_revision": "b2b7a3897ef6",
+                                "name": "motus",
+                                "owner": "bgruening",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"algorithm_advanced_options\": {\"advanced_options\": {\"customize_algorithm_options\": \"default_options\", \"__current_case__\": 1}}, \"all_taxonomic_level\": false, \"biom_format\": false, \"cami_format_option\": {\"cami_options\": \"no\", \"__current_case__\": 1}, \"full_rank_taxonomy\": false, \"full_species_name\": false, \"inputs\": {\"input_type\": {\"selector\": \"reads\", \"__current_case__\": 0, \"reads_type\": {\"selector\": \"paired\", \"__current_case__\": 0, \"forward_reads\": {\"__class__\": \"ConnectedValue\"}, \"reverse_reads\": {\"__class__\": \"ConnectedValue\"}}}, \"sample_name\": null, \"db\": {\"db_source\": \"cached\", \"__current_case__\": 0, \"db_cached\": {\"__class__\": \"ConnectedValue\"}}}, \"ncbi_taxonomy_ids\": false, \"ref_motus\": false, \"result_as_counts\": false, \"save_bam\": true, \"save_mgc\": false, \"taxonomic_level_option\": {\"taxonomic_option\": \"no\", \"__current_case__\": 1}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "3.1.0+galaxy1",
+                            "type": "tool",
+                            "uuid": "dd16db38-e79d-4c66-bdf7-3c5ad65616ff",
+                            "when": "$(inputs.when)",
+                            "workflow_outputs": []
+                        },
+                        "28": {
+                            "annotation": "Selects the MetaPhlAn taxonomic profile if available, otherwise uses the mOTUs profile.",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                            "errors": null,
+                            "id": 28,
+                            "input_connections": {
+                                "style_cond|type_cond|pick_from_0|value": {
+                                    "id": 26,
+                                    "output_name": "output_file"
+                                },
+                                "style_cond|type_cond|pick_from_1|value": {
+                                    "id": 27,
+                                    "output_name": "output_motus"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Select taxonomic profile",
+                            "name": "Pick parameter value",
+                            "outputs": [
+                                {
+                                    "name": "data_param",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 1367.9823007298319,
+                                "top": 583.0150002426888
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "b19e21af9c52",
+                                "name": "pick_value",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "0.2.0",
+                            "type": "tool",
+                            "uuid": "d472fd45-e7d9-4508-82ae-ccbf0ec98c5f",
+                            "when": null,
+                            "workflow_outputs": [
+                                {
+                                    "label": "Taxonomic profile",
+                                    "output_name": "data_param",
+                                    "uuid": "6c0f3b43-2b0e-4a3c-9a35-5f1a8f4c2e71"
+                                }
+                            ]
+                        },
+                        "29": {
+                            "annotation": "Selects the MetaPhlAn alignment file if available, otherwise uses the mOTUs alignment file",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                            "errors": null,
+                            "id": 29,
+                            "input_connections": {
+                                "style_cond|type_cond|pick_from_0|value": {
+                                    "id": 26,
+                                    "output_name": "sam_output_file"
+                                },
+                                "style_cond|type_cond|pick_from_1|value": {
+                                    "id": 27,
+                                    "output_name": "output_bam"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Select marker alignment",
+                            "name": "Pick parameter value",
+                            "outputs": [
+                                {
+                                    "name": "data_param",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 1374.7759745774144,
+                                "top": 797.8706817417145
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "b19e21af9c52",
+                                "name": "pick_value",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "0.2.0",
+                            "type": "tool",
+                            "uuid": "383ca3cf-13fb-4736-82e7-1f283fd20aa9",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "30": {
+                            "annotation": "Convert SAM to BAM format",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+                            "errors": null,
+                            "id": 30,
+                            "input_connections": {
+                                "input": {
+                                    "id": 29,
+                                    "output_name": "data_param"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Samtools view",
+                            "name": "Samtools view",
+                            "outputs": [
+                                {
+                                    "name": "outputsam",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 1658.5467458734454,
+                                "top": 910.4293983209503
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samtools_view/samtools_view/1.22+galaxy2",
+                            "tool_shed_repository": {
+                                "changeset_revision": "5cf9fcc93508",
+                                "name": "samtools_view",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"addref_cond\": {\"addref_select\": \"no\", \"__current_case__\": 0}, \"input\": {\"__class__\": \"ConnectedValue\"}, \"mode\": {\"outtype\": \"all_reads\", \"__current_case__\": 0, \"output_options\": {\"reads_report_type\": \"retained\", \"__current_case__\": 0, \"adv_output\": {\"readtags\": [], \"collapsecigar\": false}, \"output_format\": {\"oformat\": \"bam\", \"__current_case__\": 2}}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.22+galaxy2",
+                            "type": "tool",
+                            "uuid": "303fc26e-6b68-486c-a300-05dd67db194a",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "31": {
+                            "annotation": "Convert BAM to SNV profiles for SameStr analysis",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 31,
+                            "input_connections": {
+                                "alignment": {
+                                    "id": 30,
+                                    "output_name": "outputsam"
+                                },
+                                "alignment_param|min_aln_identity": {
+                                    "id": 6,
+                                    "output_name": "output"
+                                },
+                                "alignment_param|min_aln_len": {
+                                    "id": 7,
+                                    "output_name": "output"
+                                },
+                                "alignment_param|min_aln_qual": {
+                                    "id": 9,
+                                    "output_name": "output"
+                                },
+                                "alignment_param|min_base_qual": {
+                                    "id": 8,
+                                    "output_name": "output"
+                                },
+                                "alignment_param|min_vcov": {
+                                    "id": 10,
+                                    "output_name": "output"
+                                },
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "profile": {
+                                    "id": 28,
+                                    "output_name": "data_param"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool SameStr Convert",
+                                    "name": "alignment_param"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Convert",
+                                    "name": "alignment_param"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Convert",
+                                    "name": "alignment_param"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Convert",
+                                    "name": "alignment_param"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Convert",
+                                    "name": "alignment_param"
+                                }
+                            ],
+                            "label": "SameStr Convert",
+                            "name": "SameStr Convert",
+                            "outputs": [
+                                {
+                                    "name": "npz_files",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "stats_file",
+                                    "type": "tabular"
+                                }
+                            ],
+                            "position": {
+                                "left": 1698.0545954341565,
+                                "top": 361.5827321424908
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"alignment_param\": {\"min_aln_identity\": {\"__class__\": \"ConnectedValue\"}, \"min_aln_len\": {\"__class__\": \"ConnectedValue\"}, \"min_base_qual\": {\"__class__\": \"ConnectedValue\"}, \"min_aln_qual\": {\"__class__\": \"ConnectedValue\"}, \"min_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"profile\": {\"__class__\": \"ConnectedValue\"}, \"sample_name\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "24dd3bef-7939-4476-8585-2bab0006541a",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "32": {
+                            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (<clade>.<sample>) are kept, so they stay unique and sample names may contain underscores.",
+                            "content_id": "__APPLY_RULES__",
+                            "errors": null,
+                            "id": 32,
+                            "input_connections": {
+                                "input": {
+                                    "id": 31,
+                                    "output_name": "npz_files"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Collect SNV profiles across samples",
+                            "name": "Apply rules",
+                            "outputs": [
+                                {
+                                    "name": "output",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 2115.6438540968743,
+                                "top": 758.0833639842949
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "__APPLY_RULES__",
+                            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [1], \"type\": \"list_identifiers\"}], \"rules\": [{\"type\": \"add_column_metadata\", \"value\": \"identifier0\"}, {\"type\": \"add_column_metadata\", \"value\": \"identifier1\"}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.1.0",
+                            "type": "tool",
+                            "uuid": "cb7cb755-d6cb-431f-a327-0825b21a6c60",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "33": {
+                            "annotation": "Merge SNV profiles from multiple samples for cross-sample strain comparison",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 33,
+                            "input_connections": {
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "input_files": {
+                                    "id": 32,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "SameStr Merge",
+                            "name": "SameStr Merge",
+                            "outputs": [
+                                {
+                                    "name": "npz_files",
+                                    "type": "input"
+                                },
+                                {
+                                    "name": "sample_name",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 2025.5045374912547,
+                                "top": 388.7737881729979
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"clade\": null, \"database\": {\"__class__\": \"ConnectedValue\"}, \"input_files\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "68e48efa-bab3-4adf-af44-3f786dda7730",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "34": {
+                            "annotation": "Filter SNV profiles to retain high confidence variants for strain analysis",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 34,
+                            "input_connections": {
+                                "clade_settings|clade_min_samples": {
+                                    "id": 11,
+                                    "output_name": "output"
+                                },
+                                "clade_settings|marker_trunc_len": {
+                                    "id": 12,
+                                    "output_name": "output"
+                                },
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "global_position_filtering|global_pos_min_n_vcov": {
+                                    "id": 18,
+                                    "output_name": "output"
+                                },
+                                "input_names": {
+                                    "id": 33,
+                                    "output_name": "sample_name"
+                                },
+                                "input_snvs": {
+                                    "id": 33,
+                                    "output_name": "npz_files"
+                                },
+                                "sample_filtering|samples_min_n_hcov": {
+                                    "id": 17,
+                                    "output_name": "output"
+                                },
+                                "sample_position_filtering|sample_pos_min_n_vcov": {
+                                    "id": 15,
+                                    "output_name": "output"
+                                },
+                                "sample_position_filtering|sample_pos_min_sd_vcov": {
+                                    "id": 16,
+                                    "output_name": "output"
+                                },
+                                "sample_variant_filtering|sample_var_min_f_vcov": {
+                                    "id": 14,
+                                    "output_name": "output"
+                                },
+                                "sample_variant_filtering|sample_var_min_n_vcov": {
+                                    "id": 13,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "clade_settings"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "clade_settings"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "global_position_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_position_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_position_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_variant_filtering"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Filter",
+                                    "name": "sample_variant_filtering"
+                                }
+                            ],
+                            "label": "SameStr Filter",
+                            "name": "SameStr Filter",
+                            "outputs": [
+                                {
+                                    "name": "filtered_profile",
+                                    "type": "npz"
+                                },
+                                {
+                                    "name": "sample_names",
+                                    "type": "tabular"
+                                }
+                            ],
+                            "position": {
+                                "left": 2429.63047499224,
+                                "top": 363.3577918435363
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"clade_settings\": {\"clade_min_samples\": {\"__class__\": \"ConnectedValue\"}, \"marker_selection\": {\"retain_or_drop\": \"\", \"__current_case__\": 0}, \"marker_trunc_len\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"global_position_filtering\": {\"global_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"global_pos_min_f_vcov\": \"0.0\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"output_settings\": {\"keep_poly\": false, \"keep_mono\": false, \"delete_pos\": false}, \"sample_filtering\": {\"samples_select\": null, \"samples_min_n_hcov\": {\"__class__\": \"ConnectedValue\"}, \"samples_min_f_hcov\": \"0.0\", \"samples_min_m_vcov\": \"0.0\"}, \"sample_position_filtering\": {\"sample_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_pos_min_sd_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"sample_variant_filtering\": {\"sample_var_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_var_min_f_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "6a37c733-4666-48be-a483-ebaa31e379ce",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "35": {
+                            "annotation": "Remove empty filtered SNV profiles (clades with insufficient coverage or no SNVs) before statistics and comparison",
+                            "content_id": "__FILTER_EMPTY_DATASETS__",
+                            "errors": null,
+                            "id": 35,
+                            "input_connections": {
+                                "input": {
+                                    "id": 34,
+                                    "output_name": "filtered_profile"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Drop empty SNV profiles",
+                            "name": "Filter empty datasets",
+                            "outputs": [
+                                {
+                                    "name": "output",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 2777.2610016371927,
+                                "top": 378.54180130525464
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "__FILTER_EMPTY_DATASETS__",
+                            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.1.0",
+                            "type": "tool",
+                            "uuid": "5a07c120-3e4e-448e-bcb9-c5792d5595ad",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "36": {
+                            "annotation": "Remove the sample name lists of clades whose filtered SNV profiles are empty",
+                            "content_id": "__FILTER_EMPTY_DATASETS__",
+                            "errors": null,
+                            "id": 36,
+                            "input_connections": {
+                                "input": {
+                                    "id": 34,
+                                    "output_name": "sample_names"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "Drop empty sample name lists",
+                            "name": "Filter empty datasets",
+                            "outputs": [
+                                {
+                                    "name": "output",
+                                    "type": "input"
+                                }
+                            ],
+                            "position": {
+                                "left": 2779.4707907181896,
+                                "top": 578.5154965849554
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "__FILTER_EMPTY_DATASETS__",
+                            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.1.0",
+                            "type": "tool",
+                            "uuid": "a96368c5-8e46-4e93-84d2-628e499a98f7",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "37": {
+                            "annotation": "Generate summary statistics of SNV profiles per sample",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 37,
+                            "input_connections": {
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "input_names": {
+                                    "id": 36,
+                                    "output_name": "output"
+                                },
+                                "input_snvs": {
+                                    "id": 35,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "SameStr Stats",
+                            "name": "SameStr Stats",
+                            "outputs": [
+                                {
+                                    "name": "stats_file",
+                                    "type": "tabular"
+                                }
+                            ],
+                            "position": {
+                                "left": 3091.5459375849655,
+                                "top": 771.7928415136683
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"dominant_variants\": false, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "b7295639-0e0a-477f-be6d-5432caffbda4",
+                            "when": null,
+                            "workflow_outputs": [
+                                {
+                                    "label": "SameStr SNV profile statistics",
+                                    "output_name": "stats_file",
+                                    "uuid": "74b1fda3-6323-4d86-8f51-3c89cbdffec8"
+                                }
+                            ]
+                        },
+                        "38": {
+                            "annotation": "Compare SNV profiles across samples to identify shared strains",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 38,
+                            "input_connections": {
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "input_names": {
+                                    "id": 36,
+                                    "output_name": "output"
+                                },
+                                "input_snvs": {
+                                    "id": 35,
+                                    "output_name": "output"
+                                }
+                            },
+                            "inputs": [],
+                            "label": "SameStr Compare",
+                            "name": "SameStr Compare",
+                            "outputs": [
+                                {
+                                    "name": "overlap_file",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "close_file",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "fraction_file",
+                                    "type": "tabular"
+                                }
+                            ],
+                            "position": {
+                                "left": 3181.9285837002303,
+                                "top": 355.3042161418655
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"variant_comparison_settings\": {\"minority_dominant\": \"\", \"dominant_variants_msa\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "4244ea02-c531-4075-bd0d-330654870a60",
+                            "when": null,
+                            "workflow_outputs": []
+                        },
+                        "39": {
+                            "annotation": "Summarize strain sharing results across all sample pairs",
+                            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy0",
+                            "errors": null,
+                            "id": 39,
+                            "input_connections": {
+                                "arguments|aln_pair_min_overlap": {
+                                    "id": 19,
+                                    "output_name": "output"
+                                },
+                                "arguments|aln_pair_min_similarity": {
+                                    "id": 20,
+                                    "output_name": "output"
+                                },
+                                "database": {
+                                    "id": 5,
+                                    "output_name": "output"
+                                },
+                                "overlaps": {
+                                    "id": 38,
+                                    "output_name": "overlap_file"
+                                },
+                                "similarities": {
+                                    "id": 38,
+                                    "output_name": "fraction_file"
+                                },
+                                "tax_profiles": {
+                                    "id": 28,
+                                    "output_name": "data_param"
+                                }
+                            },
+                            "inputs": [
+                                {
+                                    "description": "runtime parameter for tool SameStr Summarize",
+                                    "name": "arguments"
+                                },
+                                {
+                                    "description": "runtime parameter for tool SameStr Summarize",
+                                    "name": "arguments"
+                                }
+                            ],
+                            "label": "SameStr Summarize",
+                            "name": "SameStr Summarize",
+                            "outputs": [
+                                {
+                                    "name": "cooccurrences",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "strain_events",
+                                    "type": "tabular"
+                                },
+                                {
+                                    "name": "taxon_counts",
+                                    "type": "tabular"
+                                }
+                            ],
+                            "position": {
+                                "left": 3657.090890352673,
+                                "top": 399.3186070278562
+                            },
+                            "post_job_actions": {},
+                            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy0",
+                            "tool_shed_repository": {
+                                "changeset_revision": "66378faa1313",
+                                "name": "samestr",
+                                "owner": "iuc",
+                                "tool_shed": "toolshed.g2.bx.psu.edu"
+                            },
+                            "tool_state": "{\"arguments\": {\"aln_pair_min_overlap\": {\"__class__\": \"ConnectedValue\"}, \"aln_pair_min_similarity\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"overlaps\": {\"__class__\": \"ConnectedValue\"}, \"similarities\": {\"__class__\": \"ConnectedValue\"}, \"tax_profiles\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                            "tool_uuid": null,
+                            "tool_version": "1.2025.111+galaxy0",
+                            "type": "tool",
+                            "uuid": "905dd7e6-db74-4975-91f0-100e4077ab0d",
+                            "when": null,
+                            "workflow_outputs": [
+                                {
+                                    "label": "Strain co-occurrence table",
+                                    "output_name": "cooccurrences",
+                                    "uuid": "d6ff3e38-553f-477d-abe4-c2fea58de5b8"
+                                },
+                                {
+                                    "label": "Strain events",
+                                    "output_name": "strain_events",
+                                    "uuid": "55e3b5b7-c520-4abd-8842-630b04ca0c77"
+                                },
+                                {
+                                    "label": "Taxon counts",
+                                    "output_name": "taxon_counts",
+                                    "uuid": "2d00d764-3651-4f77-bf9e-a54b1e155e59"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": [
+                        "Metagenomics",
+                        "microbiome",
+                        "shared-strains"
+                    ],
+                    "uuid": "4f48d55a-f17c-40ca-9e67-e95c0d8886e7",
+                    "version": 6
+                },
+                "workflow_job_input": {
+                    "Paired-end reads": {
+                        "class": "Collection",
+                        "collection_type": "list",
+                        "elements": [
+                            {
+                                "class": "File",
+                                "identifier": "todo_element_name",
+                                "path": "todo_test_data_path.ext"
+                            }
+                        ]
+                    },
+                    "SameStr database": "todo_param_value"
+                },
+                "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic reads from several samples and finds\nstrains they share, for example strains transmitted from a donor to a recipient after a faecal\nmicrobiota transplant, or strains persisting in one person over time. It uses\n[SameStr](https://github.com/danielpodlesny/samestr)\n([Podlesny et al. 2022, *Microbiome*](https://doi.org/10.1186/s40168-022-01251-w)), which compares\nsingle-nucleotide variant (SNV) profiles of species-specific marker genes between samples.\n\nIt performs the following steps:\n\n- **Preprocessing**: quality trimming (Trimmomatic) and host read removal (Bowtie2) with KneadData.\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn 4 or mOTUs, depending on the\n  selected database, profiles each sample and aligns its reads to the profiler's marker genes.\n- **Strain detection**:\n  - SameStr Convert turns each sample's marker alignments into per-clade SNV profiles.\n  - SameStr Merge and SameStr Filter combine them across samples and keep high-confidence variants.\n  - SameStr Stats, Compare and Summarize compute pairwise Maximum Variant Profile Similarity (MVS)\n    scores and call shared strains.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection of FASTQ files (`fastqsanger` or\n  `fastqsanger.gz`), one element per sample. Strains are compared between samples, so provide at\n  least two.\n- **Preprocessing: Trimmomatic adapter set**: the adapter sequences Trimmomatic clips (default `NexteraPE`).\n- **Preprocessing: Host reference genome**: the Bowtie2 index of the host genome whose reads are\n  removed (default `hg38`, human).\n- **MetaPhlAn database** and **mOTUs database**: both are optional, and the database you select\n  decides which profiler runs. Select exactly one:\n  - with neither selected, the workflow fails;\n  - with both selected, both profilers run, but SameStr uses only the MetaPhlAn results.\n- **SameStr database**: the SameStr marker database. It must be built from the same profiler\n  database as the one selected above (the same MetaPhlAn or mOTUs database version).\n- **SameStr Convert / Filter / Summarize parameters**: the alignment, variant, position, sample\n  and similarity thresholds of the SameStr steps. The defaults are SameStr's own defaults, and\n  each input's help text describes it.\n\n## Outputs\n\n- **Taxonomic profile**: the taxonomic profile of each sample, from MetaPhlAn (or mOTUs if no\n  MetaPhlAn database was selected).\n- **SameStr SNV profile statistics**: one table per clade with the marker coverage and variant\n  statistics of each sample.\n- **Strain events**: one row per sample pair and clade. It gives the MVS similarity, the number of\n  overlapping positions, and the call: `shared_strain` if the pair shares the strain,\n  `other_strain` if it carries different strains.\n- **Taxon counts**: for each sample, the number of taxa detected at each rank from kingdom to clade.\n- **Strain co-occurrence table**: for each sample pair, the number of taxa shared at each rank,\n  the number of shared strains, and the number of clades analyzed at strain level.\n",
+                "changelog": "# Changelog\n\n## [0.1] - 2026-06-18\n\n- First release\n",
+                "diagrams": "# Workflow diagrams\n\n## SameStr-based shared strain detection from paired-end metagenomic data\n\n```mermaid\ngraph LR\n0[\"\u2139\ufe0f Paired-end reads\"]@{ shape: docs }\n1[\"\u2139\ufe0f Preprocessing: Trimmomatic adapter set\"]@{ shape: lean-l }\n2[\"\u2139\ufe0f Preprocessing: Host reference genome\"]@{ shape: lean-l }\n3[\"\u2139\ufe0f mOTUs database\"]@{ shape: lean-l }\n4[\"\u2139\ufe0f MetaPhlAn database\"]@{ shape: lean-l }\n5[\"\u2139\ufe0f SameStr database\"]@{ shape: lean-l }\n6[\"\u2139\ufe0f SameStr Convert: Percent identity\"]@{ shape: lean-l }\n7[\"\u2139\ufe0f SameStr Convert: Minimum alignment length\"]@{ shape: lean-l }\n8[\"\u2139\ufe0f SameStr Convert: Minimum base quality\"]@{ shape: lean-l }\n9[\"\u2139\ufe0f SameStr Convert: Minimum alignment quality\"]@{ shape: lean-l }\n10[\"\u2139\ufe0f SameStr Convert: Minimum vertical coverage\"]@{ shape: lean-l }\n11[\"\u2139\ufe0f SameStr Filter: Minimum samples per clade\"]@{ shape: lean-l }\n12[\"\u2139\ufe0f SameStr Filter: Marker truncation length\"]@{ shape: lean-l }\n13[\"\u2139\ufe0f SameStr Filter: Minimum variant coverage (reads)\"]@{ shape: lean-l }\n14[\"\u2139\ufe0f SameStr Filter: Minimum variant coverage fraction\"]@{ shape: lean-l }\n15[\"\u2139\ufe0f SameStr Filter: Minimum position coverage\"]@{ shape: lean-l }\n16[\"\u2139\ufe0f SameStr Filter: Position coverage standard deviation cutoff\"]@{ shape: lean-l }\n17[\"\u2139\ufe0f SameStr Filter: Minimum horizontal coverage\"]@{ shape: lean-l }\n18[\"\u2139\ufe0f SameStr Filter: Minimum sample coverage per position\"]@{ shape: lean-l }\n19[\"\u2139\ufe0f SameStr Summarize: Minimum overlap for comparison\"]@{ shape: lean-l }\n20[\"\u2139\ufe0f SameStr Summarize: Minimum similarity for shared strains\"]@{ shape: lean-l }\n21[\"Trimming and Host Removal\"]@{ shape: process }\n2 --> 21\n0 --> 21\n1 --> 21\n22[\"Run mOTUs\"]@{ shape: process }\n3 --> 22\n23[\"Run MetaPhlAn\"]@{ shape: process }\n4 --> 23\n24[\"Concatenate paired and orphaned reads\"]@{ shape: process }\n21 --> 24\n21 --> 24\n25[\"Unzip collection\"]@{ shape: process }\n24 --> 25\n26[\"MetaPhlAn\"]@{ shape: process }\n4 --> 26\n24 --> 26\n23 --> 26\n27[\"mOTUs\"]@{ shape: process }\n3 --> 27\n25 --> 27\n25 --> 27\n22 --> 27\n28[\"Select taxonomic profile\"]@{ shape: process }\n26 --> 28\n27 --> 28\n29[\"Select marker alignment\"]@{ shape: process }\n26 --> 29\n27 --> 29\n30[\"Samtools view\"]@{ shape: process }\n29 --> 30\n31[\"SameStr Convert\"]@{ shape: process }\n30 --> 31\n6 --> 31\n7 --> 31\n9 --> 31\n8 --> 31\n10 --> 31\n5 --> 31\n28 --> 31\n32[\"Collect SNV profiles across samples\"]@{ shape: process }\n31 --> 32\n33[\"SameStr Merge\"]@{ shape: process }\n5 --> 33\n32 --> 33\n34[\"SameStr Filter\"]@{ shape: process }\n11 --> 34\n12 --> 34\n5 --> 34\n18 --> 34\n33 --> 34\n33 --> 34\n17 --> 34\n15 --> 34\n16 --> 34\n14 --> 34\n13 --> 34\n35[\"Drop empty SNV profiles\"]@{ shape: process }\n34 --> 35\n36[\"Drop empty sample name lists\"]@{ shape: process }\n34 --> 36\n37[\"SameStr Stats\"]@{ shape: process }\n5 --> 37\n36 --> 37\n35 --> 37\n38[\"SameStr Compare\"]@{ shape: process }\n5 --> 38\n36 --> 38\n35 --> 38\n39[\"SameStr Summarize\"]@{ shape: process }\n19 --> 39\n20 --> 39\n5 --> 39\n38 --> 39\n38 --> 39\n28 --> 39\n```\n",
+                "diagram_svg": null,
+                "updated": "2026-06-18T00:00:00",
+                "trsID": "#workflow/github.com/iwc-workflows/samestr-shared-strain-detection/main",
+                "iwcID": "samestr-shared-strain-detection-main",
+                "repoPath": "./workflows/microbiome/samestr-shared-strain-detection",
+                "dockstore_id": 39350,
+                "categories": [],
+                "collections": [],
+                "doi": "10.5281/zenodo.23841287",
+                "tests": [
+                    {
+                        "doc": "Synthetic FMT case (simulate_reads.py, https://doi.org/10.5281/zenodo.23236298) against the MetaPhlAn TOY database: the donor's Eubacterium rectale strain (t__SGB4933_group) is transferred to the patient and replaces the pre-FMT strain, and the patient's Parabacteroides distasonis strain (t__SGB1934) persists from pre- to post-FMT. The Post_FMT sample identifier contains an underscore to check that sample names survive into the SameStr clade identifiers.",
+                        "job": {
+                            "Paired-end reads": {
+                                "class": "Collection",
+                                "collection_type": "list:paired",
+                                "elements": [
+                                    {
+                                        "class": "Collection",
+                                        "collection_type": "paired",
+                                        "identifier": "PreFMT",
+                                        "elements": [
+                                            {
+                                                "class": "File",
+                                                "identifier": "forward",
+                                                "location": "https://zenodo.org/records/23236298/files/PreFMT_R1.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "c248cee7e25b3ef2f01c63a453c92a75f7f69a41"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "class": "File",
+                                                "identifier": "reverse",
+                                                "location": "https://zenodo.org/records/23236298/files/PreFMT_R2.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "1871383e5d7a081b78b11f7787f6b6db442acd7c"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "class": "Collection",
+                                        "collection_type": "paired",
+                                        "identifier": "Donor",
+                                        "elements": [
+                                            {
+                                                "class": "File",
+                                                "identifier": "forward",
+                                                "location": "https://zenodo.org/records/23236298/files/Donor_R1.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "a499e863bb7e9dee8fec7ea7d7d2c7e351103677"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "class": "File",
+                                                "identifier": "reverse",
+                                                "location": "https://zenodo.org/records/23236298/files/Donor_R2.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "5ff5f6db7bc4877e4bad6fd80efc81d6bc399ac7"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "class": "Collection",
+                                        "collection_type": "paired",
+                                        "identifier": "Post_FMT",
+                                        "elements": [
+                                            {
+                                                "class": "File",
+                                                "identifier": "forward",
+                                                "location": "https://zenodo.org/records/23236298/files/PostFMT_R1.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "25393820f83870d1473148250dc82664825a0ec3"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "class": "File",
+                                                "identifier": "reverse",
+                                                "location": "https://zenodo.org/records/23236298/files/PostFMT_R2.fastq.gz",
+                                                "filetype": "fastqsanger.gz",
+                                                "hashes": [
+                                                    {
+                                                        "hash_function": "SHA-1",
+                                                        "hash_value": "0ad868ee2959d9922928d01ccd7390cad93b08c8"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "Preprocessing: Host reference genome": "sacCer3",
+                            "Preprocessing: Trimmomatic adapter set": "NexteraPE",
+                            "MetaPhlAn database": "mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026",
+                            "SameStr database": "mpa_vJan21_TOY_CHOCOPhlAnSGB_202103-23012026",
+                            "SameStr Convert: Percent identity": 0.9,
+                            "SameStr Convert: Minimum alignment length": 40,
+                            "SameStr Convert: Minimum base quality": 20,
+                            "SameStr Convert: Minimum alignment quality": 0,
+                            "SameStr Convert: Minimum vertical coverage": 3,
+                            "SameStr Filter: Minimum samples per clade": 2,
+                            "SameStr Filter: Marker truncation length": 50,
+                            "SameStr Filter: Minimum variant coverage (reads)": 2,
+                            "SameStr Filter: Minimum variant coverage fraction": 0.05,
+                            "SameStr Filter: Minimum position coverage": 1,
+                            "SameStr Filter: Position coverage standard deviation cutoff": 3.0,
+                            "SameStr Filter: Minimum horizontal coverage": 5000,
+                            "SameStr Filter: Minimum sample coverage per position": 2,
+                            "SameStr Summarize: Minimum overlap for comparison": 5000,
+                            "SameStr Summarize: Minimum similarity for shared strains": 0.999
+                        },
+                        "outputs": {
+                            "Taxonomic profile": {
+                                "element_tests": {
+                                    "Donor": {
+                                        "asserts": [
+                                            {
+                                                "that": "has_text",
+                                                "text": "s__Eubacterium_rectale|t__SGB4933_group"
+                                            },
+                                            {
+                                                "that": "not_has_text",
+                                                "text": "t__SGB1934"
+                                            }
+                                        ]
+                                    },
+                                    "PreFMT": {
+                                        "asserts": [
+                                            {
+                                                "that": "has_text",
+                                                "text": "s__Eubacterium_rectale|t__SGB4933_group"
+                                            },
+                                            {
+                                                "that": "has_text",
+                                                "text": "t__SGB1934"
+                                            }
+                                        ]
+                                    },
+                                    "Post_FMT": {
+                                        "asserts": [
+                                            {
+                                                "that": "has_text",
+                                                "text": "s__Eubacterium_rectale|t__SGB4933_group"
+                                            },
+                                            {
+                                                "that": "has_text",
+                                                "text": "t__SGB1934"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "SameStr SNV profile statistics": {
+                                "element_tests": {
+                                    "t__SGB4933_group": {
+                                        "asserts": [
+                                            {
+                                                "that": "has_n_lines",
+                                                "n": 4
+                                            },
+                                            {
+                                                "that": "has_line_matching",
+                                                "expression": "^Donor\t.*"
+                                            },
+                                            {
+                                                "that": "has_line_matching",
+                                                "expression": "^PreFMT\t.*"
+                                            },
+                                            {
+                                                "that": "has_line_matching",
+                                                "expression": "^Post_FMT\t.*"
+                                            }
+                                        ]
+                                    },
+                                    "t__SGB1934": {
+                                        "asserts": [
+                                            {
+                                                "that": "has_n_lines",
+                                                "n": 3
+                                            },
+                                            {
+                                                "that": "has_line_matching",
+                                                "expression": "^PreFMT\t.*"
+                                            },
+                                            {
+                                                "that": "has_line_matching",
+                                                "expression": "^Post_FMT\t.*"
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            "Taxon counts": {
+                                "asserts": [
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Donor\t1\t1\t1\t1\t1\t1\t1\t1$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^PreFMT\t1\t2\t2\t2\t2\t2\t2\t2$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Post_FMT\t1\t2\t2\t2\t2\t2\t2\t2$"
+                                    }
+                                ]
+                            },
+                            "Strain events": {
+                                "asserts": [
+                                    {
+                                        "that": "has_n_lines",
+                                        "n": 5
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Donor\tPost_FMT\tt__SGB4933_group\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Donor\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Post_FMT\tPreFMT\tt__SGB4933_group\t0\\.9[89]\\d*\t\\d+\tstrain-level\tTrue\tFalse\tother_strain$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Post_FMT\tPreFMT\tt__SGB1934\t1\\.0\t\\d+\tstrain-level\tTrue\tTrue\tshared_strain$"
+                                    }
+                                ]
+                            },
+                            "Strain co-occurrence table": {
+                                "asserts": [
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Donor\tPost_FMT(\t1){10}$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Donor\tPreFMT(\t1){8}\t0\t1$"
+                                    },
+                                    {
+                                        "that": "has_line_matching",
+                                        "expression": "^Post_FMT\tPreFMT\t1(\t2){7}\t1\t2$"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
         "path": "./workflows/microbiome/samestr-shared-strain-detection"
     },
     {
