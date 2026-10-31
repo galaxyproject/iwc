@@ -45,7 +45,7 @@ The core logic includes:
     - Predicted transposase genes
     - Summary tables of IS element distribution
     - Visualizations showing IS density or genomic context relative to coding sequences
-- Standardization of annotation formats
+- Standardization of annotation formats with ToolDistillator, optional and enabled by default
 - Merging and collapsing results across samples/genomes
 
 ## Annotation and Reporting
@@ -61,6 +61,8 @@ All outputs are consolidated into a single MultiQC report providing a global ove
 
 ## Input Requirements
 MAG assemblies (FASTA format) provided as a collection in Galaxy.
+
+ToolDistillator is enabled by default. Set `Run ToolDistillator` to `No` to skip it; its bakta section then requires `Run Bakta` to be enabled as well.
 
 ## Expected Outputs
 
