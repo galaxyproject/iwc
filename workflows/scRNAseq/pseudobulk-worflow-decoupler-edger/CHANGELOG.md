@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.3] - 2026-10-19
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/ebi-gxa/decoupler_pseudobulk/decoupler_pseudobulk/1.4.0+galaxy8` was updated to `toolshed.g2.bx.psu.edu/repos/ebi-gxa/decoupler_pseudobulk/decoupler_pseudobulk/1.4.0+galaxy9`
+
 ## [0.1.2] - 2026-08-24
 
 ### Automatic update
