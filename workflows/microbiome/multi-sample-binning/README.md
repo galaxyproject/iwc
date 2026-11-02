@@ -14,7 +14,7 @@ Two details are worth knowing before starting:
 - Each sample's reads are mapped against each sample's assembly, and every assembly is binned on its own. The workflow does not concatenate all assemblies into one co-assembly and split the resulting bins afterwards.
 - The mapping workload grows as N² for N samples: N read sets × N assemblies. Storage grows quickly too, even though the workflow reuses the original FASTQ datasets instead of writing intermediate read files.
 
-For many samples, or for samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is the cheaper choice.
+**Note on sample count:** Multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage (N² mappings and substantial storage requirements). For many samples or samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.
 
 ## Inputs
 
@@ -24,6 +24,7 @@ For many samples, or for samples from unrelated environments where cross-sample 
 - **Paired-end reads**: a `list:paired` collection with one element per sample.
   - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.
   - The sample names become the coverage columns of the binners.
+  - **Use with caution for large datasets:** multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage, as the mapping workload grows as N² (N read sets × N assemblies) and storage requirements increase substantially. For many samples or unrelated environments, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.
 - **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.
   - Keep at least one binner enabled.
   - COMEBin is the most time- and resource-consuming binner.
