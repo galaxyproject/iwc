@@ -2,7 +2,7 @@
 
 This workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using cross-sample read coverage, and refines the bins with DAS Tool and/or Binette.
 
-It is the binning part of the [MAGs generation workflow](../mags-building/), with the multi-sample logic added. It is extracted as its own workflow so that MAG generation and other workflows can reuse it instead of maintaining their own copy (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+It performs cross-sample coverage estimation, binning and bin refinement for the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).
 A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.
 
 ## How multi-sample binning works
@@ -14,7 +14,7 @@ Two details are worth knowing before starting:
 - Each sample's reads are mapped against each sample's assembly, and every assembly is binned on its own. The workflow does not concatenate all assemblies into one co-assembly and split the resulting bins afterwards.
 - The mapping workload grows as N² for N samples: N read sets × N assemblies. Storage grows quickly too, even though the workflow reuses the original FASTQ datasets instead of writing intermediate read files.
 
-For many samples, or for samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](../single-sample-binning/) is the cheaper choice.
+For many samples, or for samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is the cheaper choice.
 
 ## Inputs
 
@@ -22,7 +22,7 @@ For many samples, or for samples from unrelated environments where cross-sample 
   - Every sample's reads are mapped against every assembly, so the element identifiers of the reads and assemblies do not need to match.
   - The number of assemblies does not need to equal the number of read samples: a single co-assembly binned with the coverage of all samples is a valid input.
 - **Paired-end reads**: a `list:paired` collection with one element per sample.
-  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.
+  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.
   - The sample names become the coverage columns of the binners.
 - **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.
   - Keep at least one binner enabled.
@@ -42,6 +42,8 @@ This step produces the coverage information every binner needs.
 4. Bowtie2 maps every sample against every assembly.
 5. Contig depths are summarised per assembly with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly with the coverage and variance of every sample.
 6. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.
+
+The depth table produced by `jgi_summarize_bam_contig_depths` starts with `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). Each read sample then contributes a depth column and a variance column. This gives each assembly's contigs a coverage profile across all read samples; “JGI depth table” refers to this format, not to an additional input database.
 
 ## Step 2: Binning
 
@@ -63,6 +65,8 @@ The candidate bins are refined with one or both refinement tools:
 
 - **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.
 - **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.
+
+Selecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.
 
 ## Outputs
 
