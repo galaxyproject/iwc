@@ -28,7 +28,7 @@
 - Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
 - Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
 - Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and every test case runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column counts.
-- Reduce the workflow-level test matrix to four cases covering both assemblers (MEGAHIT, metaSPAdes), grouped, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
+- Reduce the workflow-level test matrix to three cases covering custom assemblies, MEGAHIT and metaSPAdes, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. Grouped-only mode is not covered by this matrix. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
 - Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
 - Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
 - Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
@@ -40,10 +40,7 @@
 
 ### Tests
 
-- The short-read baseline's assembly-size, dereplicated-bin-size and merged-QUAST
-  expectations are re-baselined to the redesigned workflow's verified outputs.
-  The previous values described the pre-1.0 monolithic pipeline and could not hold
-  after the intentional interface and pipeline change.
+- The custom-assembly and hybrid cases check coverage-table structure. The nanopore case additionally checks assembly sizes, a dereplicated MAG and row-level identifiers in the downstream tables.
 
 ## [0.9] - 2026-10-01
 

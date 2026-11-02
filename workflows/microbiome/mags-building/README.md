@@ -38,7 +38,9 @@ Reads must be quality-filtered with host reads removed. Prepare short reads with
   - `Use grouping and original samples`: run both, using grouped reads where they exist and original reads otherwise.
 - **Metadata** and **Sample grouping column** (default: `group`): the table that defines the groups.
   - Metadata is optional, but it is the only way to define explicit groups. Without it, the grouping tool merges all samples into one group.
-  - Use distinct sample and group names, and avoid underscores in group names, because of the pinned `fastq_groupmerge` (`1.0.2+galaxy0`) output discovery pattern.
+   - Use distinct sample and group names, and avoid underscores in group names, because of the pinned `fastq_groupmerge` (`1.0.2+galaxy0`) output discovery pattern.
+   - Use only letters, digits, underscores, hyphens and periods in sample and group identifiers. CheckM2 replaces other characters with underscores; the quality-based collection filter compares those names with the original identifiers and would otherwise discard mismatched bins.
+   - In grouped-only mode, samples missing from the metadata are omitted by `fastq_groupmerge`. Include every sample you intend to analyse.
 
 ### Binning and refinement
 
@@ -46,11 +48,12 @@ Reads must be quality-filtered with host reads removed. Prepare short reads with
 - **Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.
 - **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model used by SemiBin in single-coverage mode.
 - **Bin refinement tool**: `Binette` (default), `DAS Tool` or `Both`.
-- **CheckM2 Database**: the reference database Binette uses to assess bin quality.
+- **CheckM2 Database**: the reference database used by Binette and by the pooled and final MAG quality assessments.
 - **Minimum MAG completeness percentage** (default: 75) and **Contamination weight (Binette)** (default: 2): the Binette settings used in both coverage branches.
 
 ### MAG selection thresholds
 
+- **Minimum MAG completeness percentage** (default: 75): also controls dRep's completeness filter, in addition to the Binette refinement threshold.
 - **Minimum MAG length** (default: 50000),
 - **Maximum MAG contamination percentage** (default: 25),
 - **ANI threshold for dereplication** (default: 0.95).
@@ -76,7 +79,7 @@ Each selected sample or group is assembled into one assembly.
 - **metaSPAdes** can additionally use the grouped or per-sample nanopore and PacBio reads.
 - **Custom Assembly** takes your own assemblies instead of running an assembler.
 
-The selected assemblies are then checked with QUAST, and the assembly with the best statistics is kept as the assembly to bin.
+The assembly selector passes through the output of the chosen assembler or the custom assemblies. QUAST assesses those assemblies and produces the assembly report; it does not rank alternative assemblies or choose which one to bin.
 
 **Custom assemblies must follow the selected samples.** Provide one FASTA per selected sample or group, in the same order, with identifiers matching the selected reads. Binning and coverage rely on this correspondence.
 
@@ -96,7 +99,7 @@ A member-restricted alternative, which would map only the samples belonging to e
 
 The multi-coverage branch builds its assembly × read-sample matrix with native Flatten, Nested Cross Product and Apply Rules operations. These reuse the original read datasets instead of writing interlaced or de-interlaced FASTQ files, so intermediate read storage drops; the number of mapping jobs and BAM files still grows as assemblies × samples.
 
-A binner set to `No` is skipped, and its candidate results are replaced by empty collections, so the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.
+A disabled binner is skipped, and its candidate results are replaced by empty collections, so the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.
 
 CONCOCT read length is computed automatically from both input mates: total sequence length divided by total read count, rounded to the nearest integer. Single-coverage uses the selected or group-merged reads, multi-coverage uses all original samples. No manual read length is needed.
 
@@ -159,7 +162,7 @@ This workflow is the parent of six embedded sub-workflows: it adds the shared in
 - single-coverage binning,
 - multi-coverage binning.
 
-Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. The two binning workflows are also available independently ([single-sample binning](../single-sample-binning/), [multi-sample binning](../multi-sample-binning/)). Each stage is enclosed in a workflow-editor frame with a short explanation.
+Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded copies currently retain boolean binner controls and a completeness default of 75; the pending standalone 1.1 workflows use `Yes`/`No` controls and a default of 40. Synchronizing those interfaces is a prerequisite to publishing this parent as embedding the standalone releases. Each stage is enclosed in a workflow-editor frame with a short explanation.
 
 ## Citation
 
