@@ -2,12 +2,12 @@
 
 This workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using the coverage of each sample's own reads, and refines the bins with DAS Tool and/or Binette.
 
-It is the binning part of the [MAGs generation workflow](../mags-building/), extracted as its own workflow so that MAG generation and other workflows can reuse it instead of maintaining their own copy (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
+It performs the coverage estimation, binning and bin refinement stages of the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).
 A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.
 
 ## How single-sample binning works
 
-Each assembly is binned with the coverage of its own reads. Compared with [multi-sample binning](../multi-sample-binning/), which maps the reads of every sample against the assemblies of all samples, this workflow needs far fewer mapping jobs and much less storage, but the binners cannot use abundance patterns across samples, so the bins are usually somewhat worse.
+Each assembly is binned with the coverage of its own reads. Compared with [multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/), which maps the reads of every sample against the assemblies of all samples, this workflow needs far fewer mapping jobs and much less storage, but the binners cannot use abundance patterns across samples, so the bins are usually somewhat worse.
 
 Use single-sample binning when:
 
@@ -21,7 +21,7 @@ Prefer multi-sample binning when resources allow and the samples come from relat
 
 - **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).
 - **Paired-end reads**: a `list:paired` collection with one element per sample.
-  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](../../read-preprocessing/short-read-qc-trimming/) and [host contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/) workflows.
+  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.
   - Reads and assemblies are paired by position, not by element identifier: both collections must have the same number of elements, in the same order (e.g. sorted the same way).
   - The sample names become the coverage columns of the binners.
 - **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.
@@ -62,6 +62,8 @@ The candidate bins are refined with one or both refinement tools:
 
 - **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.
 - **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.
+
+Selecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.
 
 ## Outputs
 
