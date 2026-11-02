@@ -2,7 +2,7 @@
 
 This workflow generates and annotates Metagenome-Assembled Genomes (MAGs) from raw metagenomic short (and optionally long) reads:
 
-1. Quality control and host/contaminant removal of the short reads [and optionally of long reads],
+1. Quality control and host/contaminant removal of the short reads,
 2. Optional quality control and host/contaminant removal of the long reads,
 3. Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs,
 4. [Optional] Taxonomic, genomic, and functional annotation of the MAGs.
@@ -22,11 +22,15 @@ Each analysis is an embedded workflow, so the steps, tools and parameters are vi
   - [MAG Genome Annotation Parallel](../mag-genome-annotation-parallel/)
   - [Functional annotation of sequences](../../genome_annotation/functional-annotation/functional-annotation-of-sequences/)
 
-The embedded copies are kept in sync with the standalone workflows; the standalone versions are the right choice when only one part of the analysis is needed.
+The standalone workflows are the right choice when only one part of the analysis is needed. This draft embeds the pending MAG-generation redesign from IWC PR #1454 rather than the currently published interface; it must be synchronized with that PR and the upstream preprocessing workflows before release.
 
 ## Inputs
 
 Provide raw `Paired-end short reads` as a `list:paired` collection, with one paired collection per sample. Optional `Long reads (Nanopore)` must be a `list` collection with matching sample identifiers; set `Long reads provided?` to `Yes` to use them. `Sample metadata` defines optional sample groups. Reference genomes and annotation databases must be available on the Galaxy server, or supplied through the corresponding history input where supported.
+
+When supplying Nanopore reads, provide exactly one dataset per short-read sample, with the same identifiers in the same order. Partial long-read collections are not supported by the current positional fallback mapping. For PacBio inputs, use the standalone MAG-generation workflow instead; this end-to-end interface exposes Nanopore only.
+
+**Current database limitation:** the run form still requires installed entries for `Host or contaminant genome (long reads)`, `GTDB-Tk Database`, `kMetaShot Database`, `Plasmid detection database`, `Bacterial genome annotation database` and `AMRFinderPlus database`, even when their branches are disabled. Disabling a branch does not currently remove these run-form requirements.
 
 The run form groups the controls in this order:
 
