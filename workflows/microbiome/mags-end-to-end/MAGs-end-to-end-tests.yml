@@ -1,5 +1,5 @@
 - doc: "Short-read MAG generation: assembly, single-coverage binning, refinement and dereplication. The optional long-read and annotation branches stay disabled here; the annotation subworkflows are tested in their own published workflows."
-  job:
+  job: &short_read_job
     Paired-end short reads:
       class: Collection
       collection_type: list:paired
@@ -56,6 +56,17 @@
     Run genome annotation?: 'No'
     Run functional annotation?: 'No'
   outputs:
+    Dereplicated MAGs:
+      class: Collection
+      element_tests:
+        Mock1_binette_bin3.fasta:
+          asserts:
+          - that: has_text
+            text: ">"
+        Mock2_binette_bin1.fasta:
+          asserts:
+          - that: has_text
+            text: ">"
     Short-read QC report:
       asserts:
       - that: has_text
@@ -79,11 +90,37 @@
       asserts:
       - that: has_text
         text: "Assembly"
+      - that: has_text
+        text: "Mock1_binette_bin3.fasta"
     MAG abundance table:
       asserts:
       - that: has_text
         text: "Genome"
+      - that: has_text
+        text: "Mock2_binette_bin1"
     MAG quality and abundance report:
       asserts:
       - that: has_text
         text: "CheckM2"
+
+- doc: "Genome annotation integration: pass dereplicated MAGs to genome annotation, with Bakta and ToolDistillator disabled."
+  job:
+    <<: *short_read_job
+    Run genome annotation?: 'Yes'
+    Run Bakta: false
+  outputs:
+    Dereplicated MAGs:
+      class: Collection
+      element_tests:
+        Mock2_binette_bin1.fasta:
+          asserts:
+          - that: has_text
+            text: ">"
+    Genome annotation report:
+      asserts:
+      - that: has_text
+        text: "MultiQC"
+    Plasmid detection summary:
+      asserts:
+      - that: has_text
+        text: "Sample\tDatabase\tPlasmid\tIdentity"

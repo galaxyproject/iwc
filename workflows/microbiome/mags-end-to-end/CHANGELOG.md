@@ -3,6 +3,8 @@
 ## [0.1] - 2026-10-22
 
 ### Added
+- Synchronize short-read QC, short-read host removal and Nanopore preprocessing with their merged releases, and reconnect the redesigned MAG-generation dependency by input label.
+- Assert representative MAG FASTA identifiers and matching table rows, and add a genome-annotation integration case with Bakta disabled.
 - Update the embedded MAG Genome Annotation Parallel workflow to merged release 0.7, with ToolDistillator disabled internally and no exposed control.
 - Document the subworkflow dependencies and upstream-first update order.
 - End-to-end workflow covering short-read quality control and host removal, optional long-read preprocessing and host removal, MAG generation with assembly, binning and dereplication, and optional taxonomy, genome and functional annotation of the MAGs
