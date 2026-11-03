@@ -7,6 +7,9 @@
 - `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
 - `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_extractFields/5.4.0c+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_extractFields/5.4.0c+galaxy1`
 
+### Fixed
+- Restore automatic read group ID, SM and LB naming in BWA-MEM, which the bwa_mem 0.7.19+galaxy2 update had switched off.
+
 ## [0.5] - 2026-10-19
 
 ### Automatic update
