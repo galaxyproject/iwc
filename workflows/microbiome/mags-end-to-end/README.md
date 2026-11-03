@@ -93,7 +93,8 @@ Three annotation workflows run on the dereplicated MAGs. They are **optional and
   - Inputs: `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database`.
   - Outputs: `GTDB-Tk taxonomy summary`, `GTDB to NCBI taxonomy mapping`, `Taxonomy annotation report`.
 - **Genome annotation** uses PlasmidFinder, Bakta, AMRFinderPlus, Integron Finder and ISEScan.
-  - Inputs: `Plasmid detection database`, `Bacterial genome annotation database`, `Run Bakta`, `AMRFinderPlus database`.
+   - Inputs: `Plasmid detection database`, `Bacterial genome annotation database`, `Run Bakta`, `AMRFinderPlus database`, `Run ToolDistillator`.
+   - `Run ToolDistillator` defaults to `Yes`. Set it to `No` to skip all four ToolDistillator summaries without disabling the underlying genome annotation tools. The Bakta-based summaries require both `Run Bakta` and `Run ToolDistillator`. This control only takes effect when `Run genome annotation?` is enabled.
   - Outputs: `Bakta gene annotation summary`, `Plasmid detection summary`, `Integron detection summary`, `Insertion sequence summary`, `Genome annotation report`.
 - **Functional annotation** uses eggNOG-mapper and InterProScan.
   - Inputs: `Run eggNOG + completeness calculation`, `eggNOG mode select`, `Run InterProScan`, `InterProScan mode select`.
