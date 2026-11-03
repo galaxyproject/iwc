@@ -13,7 +13,22 @@ This workflow:
 5. [Filters MAGs by quality and dereplicates them](#step-5-mag-quality-filtering-and-dereplication),
 6. [Generates abundance estimates and reports](#step-6-abundance-and-reports).
 
+## Subworkflow dependencies and update order
+
+This workflow embeds the following dependencies:
+
+- **Conditional sample grouping** for paired short reads (step 43), an internal helper maintained with this workflow.
+- **Conditional sample grouping for single-end long reads** for Nanopore and PacBio reads (steps 44 and 45), internal helpers maintained with this workflow.
+- [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step 47).
+- [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step 55).
+- [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step 66).
+
+Embedded workflows are snapshots, not live references. Update and validate the affected standalone assembly or binning subworkflow first, and merge that change into IWC before synchronizing its embedded copy here. Check the parent input/output connections and defaults, update the documentation, and rerun the affected integration tests. Grouping helpers have no separate standalone dependency and should be updated and tested here.
+
+The end-to-end MAG workflow depends on this workflow: propagate changes there only after updating and validating MAG generation. The maintenance order is **standalone assembly/binning → MAG generation → end-to-end MAG workflow**, rather than editing independent copies of the same subworkflow.
+
 ## Inputs
+
 
 The form starts with the reads, then the assembly options, the sample grouping, the binning and refinement settings, and finally the MAG selection thresholds.
 
