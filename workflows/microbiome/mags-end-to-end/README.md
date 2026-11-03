@@ -30,8 +30,6 @@ This workflow depends on all eight standalone workflows listed above. MAG genera
 
 Update and validate the affected standalone subworkflow first, and merge that change into IWC before updating its embedded copy here. For assembly or binning changes, update the standalone assembly/binning workflow first, then MAG generation, and finally this end-to-end workflow. Preserve the intended integration settings, check input/output connections and defaults, and rerun the affected integration tests after synchronization. Changes to the internal grouping helpers belong in MAG generation before they are propagated here.
 
-**End-to-end integration setting:** ToolDistillator is disabled inside the genome annotation subworkflow and is not exposed as a run-form control. Preserve this setting when synchronizing the standalone genome annotation workflow, where ToolDistillator is enabled by default.
-
 ## Inputs
 
 Provide raw `Paired-end short reads` as a `list:paired` collection, with one paired collection per sample. Optional `Long reads (Nanopore)` must be a `list` collection with matching sample identifiers; set `Long reads provided?` to `Yes` to use them. `Sample metadata` defines optional sample groups. Reference genomes and annotation databases must be available on the Galaxy server, or supplied through the corresponding history input where supported.
