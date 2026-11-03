@@ -12,15 +12,15 @@ Each analysis is an embedded workflow, so the steps, tools and parameters are vi
 ## Embedded workflows
 
 - Quality control and host/contaminant removal
-  - [Short-read quality control and trimming](../../read-preprocessing/short-read-qc-trimming/)
-  - [Short-read host or contamination removal](../host-contamination-removal/host-contamination-removal-short-reads/)
-  - [Long-read quality control and contaminant filtering](../pathogen-identification/nanopore-pre-processing/)
-  - [Long-read host or contamination removal](../host-contamination-removal/host-contamination-removal-long-reads/)
-- [Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs](../mags-building/)
+  - [Short-read quality control and trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/)
+  - [Short-read host or contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/)
+  - [Long-read quality control and contaminant filtering](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main/)
+  - [Long-read host or contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main/)
+- [Assembly, binning, bin refinement, quality filtering, and dereplication of the MAGs](https://iwc.galaxyproject.org/workflow/mags-building-main/)
 - Taxonomic, genomic, and functional annotation of the MAGs
-  - [MAGs taxonomy annotation](../mags-taxonomy-annotation/)
-  - [MAG Genome Annotation Parallel](../mag-genome-annotation-parallel/)
-  - [Functional annotation of sequences](../../genome_annotation/functional-annotation/functional-annotation-of-sequences/)
+  - [MAGs taxonomy annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main/)
+  - [MAG Genome Annotation Parallel](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main/)
+  - [Functional annotation of sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main/)
 
 The standalone workflows are the right choice when only one part of the analysis is needed. This draft embeds the pending MAG-generation redesign from IWC PR #1454 rather than the currently published interface; it must be synchronized with that PR and the upstream preprocessing workflows before release.
 
