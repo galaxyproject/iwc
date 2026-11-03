@@ -24,6 +24,14 @@ Each analysis is an embedded workflow, so the steps, tools and parameters are vi
 
 The standalone workflows are the right choice when only one part of the analysis is needed. This draft embeds the pending MAG-generation redesign from IWC PR #1454 rather than the currently published interface; it must be synchronized with that PR and the upstream preprocessing workflows before release.
 
+### Dependency maintenance: update upstream first
+
+This workflow depends on all eight standalone workflows listed above. MAG generation also depends on its own assembly and binning subworkflows, described in its README. Embedded workflows are snapshots, not live references: merging an upstream change does not automatically update this workflow.
+
+Update and validate the affected standalone subworkflow first, and merge that change into IWC before updating its embedded copy here. For assembly or binning changes, update the standalone assembly/binning workflow first, then MAG generation, and finally this end-to-end workflow. Preserve the intended integration settings, check input/output connections and defaults, and rerun the affected integration tests after synchronization. Changes to the internal grouping helpers belong in MAG generation before they are propagated here.
+
+**End-to-end integration setting:** ToolDistillator is disabled inside the genome annotation subworkflow and is not exposed as a run-form control. Preserve this setting when synchronizing the standalone genome annotation workflow, where ToolDistillator is enabled by default.
+
 ## Inputs
 
 Provide raw `Paired-end short reads` as a `list:paired` collection, with one paired collection per sample. Optional `Long reads (Nanopore)` must be a `list` collection with matching sample identifiers; set `Long reads provided?` to `Yes` to use them. `Sample metadata` defines optional sample groups. Reference genomes and annotation databases must be available on the Galaxy server, or supplied through the corresponding history input where supported.
@@ -93,8 +101,8 @@ Three annotation workflows run on the dereplicated MAGs. They are **optional and
   - Inputs: `GTDB-Tk Database`, `MAGs taxonomic classification with kMetaShot`, `kMetaShot Database`.
   - Outputs: `GTDB-Tk taxonomy summary`, `GTDB to NCBI taxonomy mapping`, `Taxonomy annotation report`.
 - **Genome annotation** uses PlasmidFinder, Bakta, AMRFinderPlus, Integron Finder and ISEScan.
-   - Inputs: `Plasmid detection database`, `Bacterial genome annotation database`, `Run Bakta`, `AMRFinderPlus database`, `Run ToolDistillator`.
-   - `Run ToolDistillator` defaults to `Yes`. Set it to `No` to skip all four ToolDistillator summaries without disabling the underlying genome annotation tools. The Bakta-based summaries require both `Run Bakta` and `Run ToolDistillator`. This control only takes effect when `Run genome annotation?` is enabled.
+   - Inputs: `Plasmid detection database`, `Bacterial genome annotation database`, `Run Bakta`, `AMRFinderPlus database`.
+   - ToolDistillator summaries are disabled in this end-to-end workflow; the underlying genome annotation tools still run when genome annotation is enabled.
   - Outputs: `Bakta gene annotation summary`, `Plasmid detection summary`, `Integron detection summary`, `Insertion sequence summary`, `Genome annotation report`.
 - **Functional annotation** uses eggNOG-mapper and InterProScan.
   - Inputs: `Run eggNOG + completeness calculation`, `eggNOG mode select`, `Run InterProScan`, `InterProScan mode select`.
