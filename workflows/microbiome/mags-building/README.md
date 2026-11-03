@@ -17,8 +17,6 @@ This workflow:
 
 This workflow embeds the following dependencies:
 
-- **Conditional sample grouping** for paired short reads (step 43), an internal helper maintained with this workflow.
-- **Conditional sample grouping for single-end long reads** for Nanopore and PacBio reads (steps 44 and 45), internal helpers maintained with this workflow.
 - [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step 47).
 - [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step 55).
 - [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step 66).
