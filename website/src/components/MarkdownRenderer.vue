@@ -15,9 +15,14 @@ const props = defineProps({
 const renderedHtml = ref<string>("");
 
 // Initialize Mermaid
+// Mermaid 12 switched the defaults to ELK layout, the "neo" look and a narrower label
+// wrap; pin the v11 ones so existing step diagrams don't re-lay out.
 mermaid.initialize({
     startOnLoad: false,
     theme: "neutral",
+    layout: "dagre",
+    look: "classic",
+    flowchart: { wrappingWidth: 200 },
 });
 
 // Watch Markdown Content for Changes

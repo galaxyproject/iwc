@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5] - 2026-10-20
+
+### Added
+- Embed the eggNOG-mapper annotation abundance-table workflow from IWC PR #1390 and expose its 14 per-annotation tables and combined table.
+- Enable abundance-table generation by default, with a boolean control to disable it and automatic skipping when eggNOG annotation is disabled.
+- Use nested single-boolean execution gates so both conditions are configurable in the Galaxy workflow editor.
+- Test enabled, explicitly disabled and InterProScan-only configurations while retaining the existing annotation and pathway-completeness checks.
+
 ## [0.4] - 2026-09-23
 
 ### Fixed

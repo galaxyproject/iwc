@@ -2,7 +2,7 @@
 
 This workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs). This workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).
 Annotation is performed using Bakta, Integron Finder, PlasmidFinder, and ISEScan, with Bakta being optional. Bakta provides general annotation of bacterial genomes by predicting genes, coding sequences, and RNAs. Integron Finder detects integrons and their structural components, including integrases, attC recombination sites, and gene cassettes. PlasmidFinder identifies plasmid replicon sequences to determine whether contigs originate from plasmids and to classify plasmid types. ISEScan detects insertion sequences (IS elements), which are small transposable elements that can mediate genome rearrangements and facilitate horizontal gene transfer. 
-The workflow is targeted torwards prokarytoic genomes, annotations for archaea will likely miss genomic features.
+The workflow is targeted towards prokaryotic genomes, annotations for archaea will likely miss genomic features.
 It processes multiple genome assemblies simultaneously and produces standardized annotation outputs, summary tables, and integrated quality reports.
 
 ## Workflow Logic
@@ -45,7 +45,7 @@ The core logic includes:
     - Predicted transposase genes
     - Summary tables of IS element distribution
     - Visualizations showing IS density or genomic context relative to coding sequences
-- Standardization of annotation formats
+- Standardization of annotation formats with ToolDistillator, optional and enabled by default
 - Merging and collapsing results across samples/genomes
 
 ## Annotation and Reporting
@@ -61,6 +61,8 @@ All outputs are consolidated into a single MultiQC report providing a global ove
 
 ## Input Requirements
 MAG assemblies (FASTA format) provided as a collection in Galaxy.
+
+ToolDistillator is enabled by default; set `Run ToolDistillator` to `No` to skip it. Its bakta section runs only when `Run Bakta` is also enabled.
 
 ## Expected Outputs
 

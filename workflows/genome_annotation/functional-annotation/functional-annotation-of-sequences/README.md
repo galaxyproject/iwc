@@ -16,6 +16,28 @@ This workflow requires a galaxy collection of type list with at least one file i
 ## Outputs for eggNOG Mapper
 The output of this tool is a tabular file, where each line represents a gene from our annotation, with the functional annotation that was found by EggNOG-mapper. It includes a predicted protein name, GO terms, EC numbers, KEGG identifiers, etc.
 
+## Optional eggNOG annotation abundance tables
+
+**Generate eggNOG annotation abundance tables** is enabled by default. It runs the
+embedded [eggNOG-mapper Annotation Abundance Tables](../eggnog-mapper-abundance-tables)
+workflow from IWC PR #1390 after eggNOG annotation. Disable this option to keep
+the annotation and pathway-completeness outputs without generating count tables.
+If **Run eggNOG + completeness calculation** is disabled, abundance extraction
+is skipped automatically, including when this new option remains enabled.
+
+The branch publishes 14 per-annotation count tables (eggNOG OGs, COG categories,
+GO, EC, KEGG KOs, pathways, modules, reactions, reaction classes, BRITE, KEGG TC,
+CAZy, BiGG reactions and PFAMs), plus **eggNOG-mapper annotation abundance table**
+combining all annotation types. Columns use the input collection identifiers;
+rows identify annotation terms. Missing annotations contribute to an
+`unannotated` row. Comma-separated terms and multi-letter COG categories are split
+before counting, as in the standalone summarization workflow.
+
+These are annotation occurrence counts across the input files, not normalized
+abundances, read-mapping estimates or expression measurements. Skipped extraction
+does not produce usable abundance tables. Existing annotation and KEGG pathway
+completeness outputs are unchanged.
+
 ## Outputs for Interproscan
 The output of this tool is both a tabular file and an XML file. Both contain the same information, but the tabular one is more readable for a Human: each line represents a gene from our annotation, with the different domains and motifs that were found by InterProScan.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2] - 2026-10-28
+
+### Fixed
+- Fix the MEGAHIT tool pin so the workflow installs from the Tool Shed.
+
 ## [1.1] - 2026-10-19
 
 ### Automatic update

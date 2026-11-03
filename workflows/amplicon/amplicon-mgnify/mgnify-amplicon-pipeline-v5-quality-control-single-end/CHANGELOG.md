@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.11] - 2026-11-02
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/fastq_filter/fastq_filter/1.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/fastq_filter/fastq_filter/1.2+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/devteam/fastqtofasta/fastq_to_fasta_python/1.2+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/fastqtofasta/fastq_to_fasta_python/1.2+galaxy1`
+
+## [0.10] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/prinseq/prinseq/0.20.4+galaxy3`
+
+## [0.9] - 2026-10-26
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy4`
+
+## [0.8] - 2026-10-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [0.7] - 2026-09-07
 
 ### Automatic update

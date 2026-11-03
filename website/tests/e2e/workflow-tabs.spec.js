@@ -20,6 +20,10 @@ test.describe("Workflow detail page tabs", () => {
 
         // URL should update with hash
         await expect(page).toHaveURL(/#diagram/);
+
+        // Render failures are caught and shown as an error div, so check the SVG actually showed up
+        await expect(page.locator(".mermaid-zoom-content svg").first()).toBeVisible({ timeout: 15000 });
+        await expect(page.locator(".mermaid-error")).toHaveCount(0);
     });
 
     test("Can switch to Version History tab", async ({ page }) => {
