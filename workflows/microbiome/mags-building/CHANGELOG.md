@@ -9,7 +9,7 @@
 ### Added
 
 - Internal grouping selection: original samples, grouped samples, or a hybrid that uses grouped reads where available and original reads otherwise.
-- Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly and assembly selection, single-coverage binning and multi-coverage binning.
+- Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly (Metagenomic Assembly), single-coverage binning and multi-coverage binning.
 - Single-coverage (own/merged reads) and multi-coverage (all samples) coverage strategies, default single.
 - Shared bin-refiner selection (DAS Tool, Binette or both), default Binette.
 - Coverage depth checkpoints and a grouping/coverage test matrix.
@@ -31,16 +31,23 @@
 - Reduce the workflow-level test matrix to three cases covering custom assemblies, MEGAHIT and metaSPAdes, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. Grouped-only mode is not covered by this matrix. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
 - Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
 - Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
+- Embed the released standalone workflows Single-sample binning 1.1, Multi-sample binning 1.1 and Metagenomic Assembly 1.2, step for step. The parent keeps its boolean binner toggles and maps them to the standalone `Yes`/`No` inputs with `map_param_value` adapters, and passes its own completeness default (75) to the binning subworkflows.
 - Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
 
 ### Fixed
 
 - Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
+- The MultiQC CheckM and CheckM2 section titles are wired to the matching inputs; they were swapped in 0.9. The CoverM section name no longer starts with a space.
+- Rename the `Run COMEBin` input to `Run COMEBin?`, like the other binner toggles.
+- Correct the annotation of the refiner-combining steps: an identifier present in both refiner collections keeps its first copy; no suffix is added.
 - The long-read baseline's paired-read identifier is aligned with its nanopore identifier and original expected outputs; all output assertions are retained unchanged.
 
 ### Tests
 
 - The custom-assembly and hybrid cases check coverage-table structure. The nanopore case additionally checks assembly sizes, a dereplicated MAG and row-level identifiers in the downstream tables.
+- The custom-assembly case checks that a Binette bin reaches the merged refined bins, the dereplicated MAGs and the dRep cluster assignment.
+- The hybrid case checks that the merged refined bins contain the same Binette bin from both coverage strategies with `_1` and `_2` suffixes, an unsuffixed bin present in only one strategy, and a suffixed bin that is selected as a dereplicated MAG and appears in the dRep cluster assignment.
+- Remove the unused `metadata_mock_community.tsv` test file.
 
 ## [0.9] - 2026-10-01
 

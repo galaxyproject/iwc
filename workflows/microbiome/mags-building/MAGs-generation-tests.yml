@@ -1,6 +1,7 @@
 # The binner implementations and the optional annotation workflows are covered by the
-# tests of the embedded subworkflows. These tests cover the parent wiring: the default
-# path, the optional long-read path and the merge of both coverage strategies.
+# tests of the embedded subworkflows. These tests cover the parent wiring: custom
+# assemblies, the optional long-read path, and the hybrid grouping with both coverage
+# strategies and both refiners merged into one bin set.
 - doc: "Custom assembly path: original samples, single-coverage binning, Binette"
   job:
     Trimmed reads:
@@ -46,7 +47,7 @@
     Maximum MAG contamination percentage: 1
     Minimum MAG length: 100
     ANI threshold for dereplication: 0.99
-    Run COMEBin: false
+    Run COMEBin?: false
     Trimmed nanopore reads: null
     Trimmed PacBio reads: null
     Use grouping?: Use original samples
@@ -76,6 +77,26 @@
             text: contigName
           - that: has_n_columns
             n: 5
+    Merged refined bins (all branches):
+      class: Collection
+      element_tests:
+        "Mock1:binette_bin1":
+          asserts:
+          - that: has_text
+            text: ">"
+    Dereplicated Bins:
+      class: Collection
+      element_tests:
+        Mock1_binette_bin1.fasta:
+          asserts:
+          - that: has_text
+            text: ">"
+    Cluster Assignment:
+      asserts:
+      - that: has_text
+        text: primary_cluster
+      - that: has_text
+        text: Mock1_binette_bin1.fasta
 
 - doc: "Original samples with metaSPAdes assembly and nanopore long reads, single-coverage binning, Binette refiner"
   job:
@@ -103,7 +124,7 @@
     Maximum MAG contamination percentage: 1
     Minimum MAG length: 100
     ANI threshold for dereplication: 0.99
-    Run COMEBin: false
+    Run COMEBin?: false
     Trimmed nanopore reads:
       class: Collection
       collection_type: list
@@ -218,7 +239,7 @@
     Maximum MAG contamination percentage: 1
     Minimum MAG length: 100
     ANI threshold for dereplication: 0.99
-    Run COMEBin: false
+    Run COMEBin?: false
     Run SemiBin?: false
     Run CONCOCT?: false
     Run MetaBAT2?: true
@@ -282,3 +303,35 @@
             text: contigName
           - that: has_n_columns
             n: 7
+    Merged refined bins (all branches):
+      class: Collection
+      element_tests:
+        "MockGroup:binette_bin1_1":
+          asserts:
+          - that: has_text
+            text: ">"
+        "MockGroup:binette_bin1_2":
+          asserts:
+          - that: has_text
+            text: ">"
+        "MockGroup:001_sub":
+          asserts:
+          - that: has_text
+            text: ">"
+        "Mock1:binette_bin2_1":
+          asserts:
+          - that: has_text
+            text: ">"
+    Dereplicated Bins:
+      class: Collection
+      element_tests:
+        Mock1_binette_bin2_1.fasta:
+          asserts:
+          - that: has_text
+            text: ">"
+    Cluster Assignment:
+      asserts:
+      - that: has_text
+        text: primary_cluster
+      - that: has_text
+        text: Mock1_binette_bin2_1.fasta

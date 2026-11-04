@@ -58,11 +58,11 @@ Reads must be quality-filtered with host reads removed. Prepare short reads with
 ### Binning and refinement
 
 - **Binning strategy**: `Single-coverage binning (own/merged reads)` (default), `Multi-coverage binning (all samples)` or `Both`.
-- **Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.
+- **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.
 - **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model used by SemiBin in single-coverage mode.
 - **Bin refinement tool**: `Binette` (default), `DAS Tool` or `Both`.
 - **CheckM2 Database**: the reference database used by Binette and by the pooled and final MAG quality assessments.
-- **Minimum MAG completeness percentage** (default: 75) and **Contamination weight (Binette)** (default: 2): the Binette settings used in both coverage branches.
+- **Contamination weight (Binette)** (default: 2) and **Minimum MAG completeness percentage** (see [MAG selection thresholds](#mag-selection-thresholds)): the Binette settings used in both coverage branches.
 
 ### MAG selection thresholds
 
@@ -171,11 +171,11 @@ This workflow is the parent of six embedded sub-workflows: it adds the shared in
 - paired short-read grouping,
 - Nanopore grouping,
 - PacBio grouping,
-- assembly and assembly selection,
+- Metagenomic Assembly (assembly and assembly selection),
 - single-coverage binning,
 - multi-coverage binning.
 
-Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded copies currently retain boolean binner controls and a completeness default of 75; the pending standalone 1.1 workflows use `Yes`/`No` controls and a default of 40. Synchronizing those interfaces is a prerequisite to publishing this parent as embedding the standalone releases. Each stage is enclosed in a workflow-editor frame with a short explanation.
+Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded Single-sample binning 1.1, Multi-sample binning 1.1 and Metagenomic Assembly 1.2 are the released standalone workflows. The parent keeps boolean binner toggles in its input form and maps them to the standalone `Yes`/`No` inputs, and it passes its own completeness default (75) to the binning subworkflows instead of their default of 40. Each stage is enclosed in a workflow-editor frame with a short explanation.
 
 ## Citation
 
