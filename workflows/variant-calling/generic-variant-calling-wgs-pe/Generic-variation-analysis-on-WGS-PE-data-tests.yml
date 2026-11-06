@@ -8,6 +8,7 @@
       - hash_function: SHA-1
         hash_value: 586d54741cb8b8f7d2e473827d3b25e5a235f9f7
     Name for genome database: mpxv
+    Strip version from reference sequence ids: true
     Paired Collection:
       class: Collection
       collection_type: list:paired
@@ -32,25 +33,108 @@
     Fasta sequences for genbank file:
       path: test-data/Fasta sequences for genbank file.fasta
       compare: contains
+    Fasta sequences for genbank file without version:
+      asserts:
+        - has_line:
+            line: ">KP849471"
+        - not_has_text:
+            text: "KP849471.1"
+        - has_n_lines:
+            min: 2
     SnpEff variants:
       element_tests:
         ERR3485802:
-          path: test-data/SnpEff variants.vcf
-          compare: diff
-          lines_diff: 6
+          asserts:
+            - has_line:
+                line: "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
+            - has_text:
+                text: '##SnpEffVersion='
+            # SnpEff must find the chromosome in the database built from the GenBank file
+            - not_has_text:
+                text: ERROR_CHROMOSOME_NOT_FOUND
+            # 92 variant records (90 PASS, 2 sb_fdr), 54 of them annotated, with the reference tool versions
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t.*'
+                n: 92
+                delta: 5
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t([^\t]+\t){5}PASS\t.*'
+                n: 90
+                delta: 5
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t([^\t]+\t){5}sb_fdr\t.*'
+                n: 2
+                delta: 2
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t.*;EFF=[A-Z_+]+\((HIGH|MODERATE|LOW|MODIFIER)\|.*'
+                n: 54
+                delta: 6
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t14383\t\.\tT\tC\t[0-9.]+\tPASS\t.*EFF=NON_SYNONYMOUS_CODING\(MODERATE\|MISSENSE\|Aaa/Gaa\|K393E\|.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t30663\t\.\tC\tT\t[0-9.]+\tPASS\t.*EFF=SYNONYMOUS_CODING\(LOW\|SILENT\|acC/acT\|T101\|.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t177387\t\.\tG\tT\t[0-9.]+\tPASS\t.*EFF=NON_SYNONYMOUS_CODING\(MODERATE\|MISSENSE\|Gac/Tac\|D627Y\|.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t190964\t\.\tC\tT\t[0-9.]+\tPASS\t.*EFF=NON_SYNONYMOUS_CODING\(MODERATE\|MISSENSE\|gCa/gTa\|A4V\|.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t190951\t\.\tG\tA\t[0-9.]+\tsb_fdr\t.*'
     called_variants:
       element_tests:
         ERR3485802:
-          path: test-data/called_variants.vcf
-          compare: diff
-          lines_diff: 6
+          asserts:
+            - has_line:
+                line: "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
+            # 92 variant records (17 indels), all PASS before soft filtering
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t.*'
+                n: 92
+                delta: 5
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t.*;INDEL;.*'
+                n: 17
+                delta: 3
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t8226\t\.\tG\tA\t[0-9.]+\tPASS\tDP=5;AF=1(\.0+)?;SB=0;DP4=0,0,4,1'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t93756\t\.\tTAAATGG\tT\t[0-9.]+\tPASS\t.*INDEL;.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t190951\t\.\tG\tA\t[0-9.]+\tPASS\t.*'
     mapped_reads_stats:
       element_tests:
         ERR3485802:
-          path: test-data/mapped_reads_stats.tabular
+          asserts:
+            - has_text:
+                text: This file was produced by samtools stats
+            - has_line_matching:
+                expression: 'SN\traw total sequences:\t4626(\t.*)?'
+            - has_line:
+                line: "SN\treads mapped:\t4626"
+            - has_line_matching:
+                expression: 'SN\treads properly paired:\t4626(\t.*)?'
+            - has_line_matching:
+                expression: 'SN\treads duplicated:\t0(\t.*)?'
+            # 150 with fastp 0.23.4, 151 with fastp 1.3.7
+            - has_line_matching:
+                expression: 'SN\taverage length:\t15[01]'
     soft_filtered_variants:
       element_tests:
         ERR3485802:
-          path: test-data/soft_filtered_variants.vcf
-          compare: diff
-          lines_diff: 6
+          asserts:
+            - has_line:
+                line: "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO"
+            # 92 variant records (90 PASS, 2 sb_fdr)
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t.*'
+                n: 92
+                delta: 5
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t([^\t]+\t){5}sb_fdr\t.*'
+                n: 2
+                delta: 2
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t8226\t\.\tG\tA\t[0-9.]+\tPASS\tDP=5;AF=1(\.0+)?;SB=0;DP4=0,0,4,1'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t153631\t\.\tG\tT\t[0-9.]+\tsb_fdr\t.*'
+            - has_line_matching:
+                expression: 'KP849471(\.1)?\t190951\t\.\tG\tA\t[0-9.]+\tsb_fdr\t.*'
