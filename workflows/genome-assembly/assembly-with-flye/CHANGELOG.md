@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6] - 2026-11-02
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/2.9.6+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/2.9.6+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy3`
+
 ## [0.5] - 2026-10-19
 
 ### Automatic update
