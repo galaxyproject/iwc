@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/502`
+
 ## [0.3] - 2026-08-24
 
 ### Automatic update
