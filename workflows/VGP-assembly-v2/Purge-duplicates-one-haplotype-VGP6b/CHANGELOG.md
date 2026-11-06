@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8.8] - 2026-10-30
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.5.1+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ggplot2_point/ggplot2_point/3.5.1+galaxy4`
+
 ## [0.8.7] - 2026-10-19
 
 ### Automatic update
