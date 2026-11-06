@@ -109,7 +109,6 @@
         }
     ],
     "format-version": "0.1",
-    "release": "0.1",
     "license": "MIT",
     "name": "SameStr-based shared strain detection from paired-end metagenomic data",
     "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic reads from several samples and finds\nstrains they share, for example strains transmitted from a donor to a recipient after a faecal\nmicrobiota transplant, or strains persisting in one person over time. It uses\n[SameStr](https://github.com/danielpodlesny/samestr)\n([Podlesny et al. 2022, *Microbiome*](https://doi.org/10.1186/s40168-022-01251-w)), which compares\nsingle-nucleotide variant (SNV) profiles of species-specific marker genes between samples.\n\nIt performs the following steps:\n\n- **Preprocessing**: quality trimming (Trimmomatic) and host read removal (Bowtie2) with KneadData.\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn 4 or mOTUs, depending on the\n  selected database, profiles each sample and aligns its reads to the profiler's marker genes.\n- **Strain detection**:\n  - SameStr Convert turns each sample's marker alignments into per-clade SNV profiles.\n  - SameStr Merge and SameStr Filter combine them across samples and keep high-confidence variants.\n  - SameStr Stats, Compare and Summarize compute pairwise Maximum Variant Profile Similarity (MVS)\n    scores and call shared strains.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection of FASTQ files (`fastqsanger` or\n  `fastqsanger.gz`), one element per sample. Strains are compared between samples, so provide at\n  least two.\n- **Preprocessing: Trimmomatic adapter set**: the adapter sequences Trimmomatic clips (default `NexteraPE`).\n- **Preprocessing: Host reference genome**: the Bowtie2 index of the host genome whose reads are\n  removed (default `hg38`, human).\n- **MetaPhlAn database** and **mOTUs database**: both are optional, and the database you select\n  decides which profiler runs. Select exactly one:\n  - with neither selected, the workflow fails;\n  - with both selected, both profilers run, but SameStr uses only the MetaPhlAn results.\n- **SameStr database**: the SameStr marker database. It must be built from the same profiler\n  database as the one selected above (the same MetaPhlAn or mOTUs database version).\n- **SameStr Convert / Filter / Summarize parameters**: the alignment, variant, position, sample\n  and similarity thresholds of the SameStr steps. The defaults are SameStr's own defaults, and\n  each input's help text describes it.\n\n## Outputs\n\n- **Taxonomic profile**: the taxonomic profile of each sample, from MetaPhlAn (or mOTUs if no\n  MetaPhlAn database was selected).\n- **SameStr SNV profile statistics**: one table per clade with the marker coverage and variant\n  statistics of each sample.\n- **Strain events**: one row per sample pair and clade. It gives the MVS similarity, the number of\n  overlapping positions, and the call: `shared_strain` if the pair shares the strain,\n  `other_strain` if it carries different strains.\n- **Taxon counts**: for each sample, the number of taxa detected at each rank from kingdom to clade.\n- **Strain co-occurrence table**: for each sample pair, the number of taxa shared at each rank,\n  the number of shared strains, and the number of clades analyzed at strain level.\n",
@@ -869,12 +868,7 @@
                     "output_name": "unmatched_paired"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Concatenate multiple datasets or collections",
-                    "name": "input1"
-                }
-            ],
+            "inputs": [],
             "label": "Concatenate paired and orphaned reads",
             "name": "Concatenate multiple datasets or collections",
             "outputs": [
@@ -889,7 +883,7 @@
             },
             "post_job_actions": {},
             "tool_id": "cat1",
-            "tool_state": "{\"input1\": {\"__class__\": \"RuntimeValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"RuntimeValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
@@ -948,7 +942,7 @@
         },
         "26": {
             "annotation": "Generate taxonomic profiles and marker gene alignments for SameStr",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.6+galaxy0",
             "errors": null,
             "id": 26,
             "input_connections": {
@@ -987,16 +981,16 @@
                 "top": 536.2986005516906
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.6+galaxy0",
             "tool_shed_repository": {
-                "changeset_revision": "56ff60ec416d",
+                "changeset_revision": "1f688befbcdf",
                 "name": "metaphlan",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.2\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": null, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": false}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "4.2.4+galaxy0",
+            "tool_version": "4.2.6+galaxy0",
             "type": "tool",
             "uuid": "9772827a-152b-4943-bc51-dd5def2ce127",
             "when": "$(inputs.when)",
@@ -1286,7 +1280,7 @@
             "workflow_outputs": []
         },
         "32": {
-            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (<clade>.<sample>) are kept, so they stay unique and sample names may contain underscores.",
+            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (.) are kept, so they stay unique and sample names may contain underscores.",
             "content_id": "__APPLY_RULES__",
             "errors": null,
             "id": 32,
@@ -1430,10 +1424,6 @@
                 {
                     "description": "runtime parameter for tool SameStr Filter",
                     "name": "global_position_filtering"
-                },
-                {
-                    "description": "runtime parameter for tool SameStr Filter",
-                    "name": "sample_filtering"
                 },
                 {
                     "description": "runtime parameter for tool SameStr Filter",
@@ -1765,6 +1755,7 @@
         "microbiome",
         "shared-strains"
     ],
-    "uuid": "4f48d55a-f17c-40ca-9e67-e95c0d8886e7",
-    "version": 6
+    "uuid": "c767fb11-c7f7-400c-be4d-277040c04582",
+    "version": 1,
+    "release": "0.2"
 }
