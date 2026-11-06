@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.8] - 2026-11-06
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11b+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/2.7.11b+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [0.6.7] - 2026-09-07
 
 ### Automatic update
