@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5] - 2026-10-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.13.3+galaxy0`
+
 ## [0.1.4] - 2026-10-19
 
 ### Automatic update
