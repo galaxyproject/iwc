@@ -22,6 +22,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "MAG Genome Annotation Parallel",
+    "readme": "# MAG Genome Annotation Parallel\n\nThis workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs). This workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).\nAnnotation is performed using Bakta, Integron Finder, PlasmidFinder, and ISEScan, with Bakta being optional. Bakta provides general annotation of bacterial genomes by predicting genes, coding sequences, and RNAs. Integron Finder detects integrons and their structural components, including integrases, attC recombination sites, and gene cassettes. PlasmidFinder identifies plasmid replicon sequences to determine whether contigs originate from plasmids and to classify plasmid types. ISEScan detects insertion sequences (IS elements), which are small transposable elements that can mediate genome rearrangements and facilitate horizontal gene transfer. \nThe workflow is targeted towards prokaryotic genomes, annotations for archaea will likely miss genomic features.\nIt processes multiple genome assemblies simultaneously and produces standardized annotation outputs, summary tables, and integrated quality reports.\n\n## Workflow Logic\nThe workflow takes a collection of MAG genome assemblies as input and runs genome annotation in parallel for each genome.\nAnnotation outputs are then reformatted, normalized, and merged across all genomes to produce unified result files.\n\nThe core logic includes:\n\n- Parallel processing of all input MAGs\n- Automated annotation per genome\n  - **Bakta:**\n    - Annotated genome files (e.g., GFF3, GenBank)\n    - Predicted coding sequences (CDS)\n    - tRNA annotations\n    - rRNA annotations\n    - tmRNA annotations\n    - Other ncRNA annotations and regions\n    - Pseudogene annotations\n    - sORF annotations\n    - CRISPR array annotations\n    - Genome gap detection\n    - Origin of replication (oriC/oriT) annotation\n\n  - **Integron Finder:**\n    - Detected integrons and integrase genes\n    - attC recombination sites\n    - Gene cassette annotations\n    - Tables detailing positions, sequences, and potential antibiotic resistance genes\n    - Visualizations of integron structure and gene cassette organization\n\n  - **PlasmidFinder:**\n    - Identified plasmid replicon sequences\n    - Plasmid type classification for contigs\n    - Tabular files with detected plasmids, replicon families, sequence coverage, and confidence scores\n    - Summary statistics of plasmid content per genome or assembly\n\n  - **ISEScan:**\n    - Detected insertion sequences (IS elements)\n    - Locations, family and subgroup annotations\n    - Predicted transposase genes\n    - Summary tables of IS element distribution\n    - Visualizations showing IS density or genomic context relative to coding sequences\n- Standardization of annotation formats with ToolDistillator, optional and enabled by default\n- Merging and collapsing results across samples/genomes\n\n## Annotation and Reporting\nAfter annotation, the workflow performs structured post-processing and reporting:\n\n- Genome annotation (per-MAG, in parallel)\n- Output normalization and reformatting\n- Merging of annotation results into consolidated tables\n- Summary statistics generation\n- Integrated reporting using MultiQC\n\nAll outputs are consolidated into a single MultiQC report providing a global overview of annotation completeness, gene content, and processing metrics across all genomes.\n\n## Input Requirements\nMAG assemblies (FASTA format) provided as a collection in Galaxy.\n\nToolDistillator is enabled by default; set `Run ToolDistillator` to `No` to skip it. Its bakta section runs only when `Run Bakta` is also enabled.\n\n## Expected Outputs\n\n- Per-MAG annotation files\n- Standardized annotation tables\n- Merged genome annotation matrices\n- Summary statistics files\n- A unified MultiQC report for all genomes\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -162,8 +163,35 @@
             "workflow_outputs": []
         },
         "5": {
-            "annotation": "",
+            "annotation": "Run ToolDistillator to collect standardized metadata of the annotation tools. It is enabled by default; set it to No to skip it.",
+            "content_id": null,
+            "errors": null,
             "id": 5,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Run ToolDistillator to collect standardized metadata of the annotation tools. It is enabled by default; set it to No to skip it.",
+                    "name": "Run ToolDistillator"
+                }
+            ],
+            "label": "Run ToolDistillator",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 1100
+            },
+            "tool_id": null,
+            "tool_state": "{\"default\": true, \"validators\": [], \"parameter_type\": \"boolean\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "134f9a6c-cea9-4689-8eb9-10502f11fe03",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "",
+            "id": 6,
             "input_connections": {
                 "AMRFinderPlus database": {
                     "id": 3,
@@ -187,13 +215,13 @@
                 },
                 "Run Bakta": {
                     "id": 4,
-                    "input_subworkflow_step_id": 4,
+                    "input_subworkflow_step_id": 5,
                     "output_name": "output"
                 },
                 "Run ToolDistillator": {
-                    "id": 16,
-                    "output_name": "output",
-                    "input_subworkflow_step_id": 14
+                    "id": 5,
+                    "input_subworkflow_step_id": 4,
+                    "output_name": "output"
                 }
             },
             "inputs": [],
@@ -353,10 +381,37 @@
                         "workflow_outputs": []
                     },
                     "4": {
-                        "annotation": "",
+                        "annotation": "Run ToolDistillator to collect standardized metadata of the annotation tools. The bakta section only runs when Bakta runs as well. It is enabled by default; set it to No to skip it.",
                         "content_id": null,
                         "errors": null,
                         "id": 4,
+                        "input_connections": {},
+                        "inputs": [
+                            {
+                                "description": "Run ToolDistillator to collect standardized metadata of the annotation tools. The bakta section only runs when Bakta runs as well. It is enabled by default; set it to No to skip it.",
+                                "name": "Run ToolDistillator"
+                            }
+                        ],
+                        "label": "Run ToolDistillator",
+                        "name": "Input parameter",
+                        "outputs": [],
+                        "position": {
+                            "left": 0,
+                            "top": 1130
+                        },
+                        "tool_id": null,
+                        "tool_state": "{\"default\": true, \"validators\": [], \"parameter_type\": \"boolean\", \"optional\": false}",
+                        "tool_version": null,
+                        "type": "parameter_input",
+                        "uuid": "8b33ec24-55e7-4051-bb3f-890066315f0e",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "5": {
+                        "annotation": "",
+                        "content_id": null,
+                        "errors": null,
+                        "id": 5,
                         "input_connections": {},
                         "inputs": [
                             {
@@ -379,11 +434,11 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "5": {
+                    "6": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/isescan/isescan/1.7.3+galaxy0",
                         "errors": null,
-                        "id": 5,
+                        "id": 6,
                         "input_connections": {
                             "input_file": {
                                 "id": 0,
@@ -578,11 +633,11 @@
                             }
                         ]
                     },
-                    "6": {
+                    "7": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/integron_finder/integron_finder/2.0.5+galaxy1",
                         "errors": null,
-                        "id": 6,
+                        "id": 7,
                         "input_connections": {
                             "sequence": {
                                 "id": 0,
@@ -690,26 +745,18 @@
                             }
                         ]
                     },
-                    "7": {
+                    "8": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/2.1.6+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/3.0.3+galaxy0",
                         "errors": null,
-                        "id": 7,
+                        "id": 8,
                         "input_connections": {
                             "input|database_name": {
                                 "id": 1,
                                 "output_name": "output"
-                            },
-                            "input|input_file": {
-                                "id": 0,
-                                "output_name": "output"
                             }
                         },
                         "inputs": [
-                            {
-                                "description": "runtime parameter for tool PlasmidFinder",
-                                "name": "input"
-                            },
                             {
                                 "description": "runtime parameter for tool PlasmidFinder",
                                 "name": "input"
@@ -815,16 +862,16 @@
                                 "output_name": "result_file"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/2.1.6+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/plasmidfinder/plasmidfinder/3.0.3+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "507d59b036c5",
+                            "changeset_revision": "8621b220c13e",
                             "name": "plasmidfinder",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"input\": {\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"database_name\": {\"__class__\": \"ConnectedValue\"}}, \"options\": {\"min_cov\": \"0.6\", \"threshold\": \"0.95\"}, \"output_files\": {\"output_selection\": [\"hit_fasta\", \"plasmid_fasta\", \"result_tsv\", \"result_txt\", \"data_json\"]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"input\": {\"reads\": {\"type\": \"single\", \"__current_case__\": 0, \"input_file\": {\"__class__\": \"RuntimeValue\"}}, \"database_name\": {\"__class__\": \"ConnectedValue\"}}, \"options\": {\"min_cov\": \"0.6\", \"threshold\": \"0.95\"}, \"output_files\": {\"output_format\": \"old\", \"output_selection\": [\"hit_fasta\", \"plasmid_fasta\", \"result_tsv\", \"result_txt\", \"data_json\"]}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "2.1.6+galaxy2",
+                        "tool_version": "3.0.3+galaxy0",
                         "type": "tool",
                         "uuid": "0cbd7d74-9525-4fc4-9518-836c99f6d397",
                         "when": null,
@@ -856,11 +903,11 @@
                             }
                         ]
                     },
-                    "8": {
+                    "9": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.12.2+galaxy0",
                         "errors": null,
-                        "id": 8,
+                        "id": 9,
                         "input_connections": {
                             "input_option|amrfinder_db_select": {
                                 "id": 3,
@@ -875,11 +922,15 @@
                                 "output_name": "output"
                             },
                             "when": {
-                                "id": 4,
+                                "id": 5,
                                 "output_name": "output"
                             }
                         },
                         "inputs": [
+                            {
+                                "description": "runtime parameter for tool Bakta",
+                                "name": "annotation"
+                            },
                             {
                                 "description": "runtime parameter for tool Bakta",
                                 "name": "annotation"
@@ -926,7 +977,7 @@
                             },
                             {
                                 "name": "annotation_embl",
-                                "type": "txt"
+                                "type": "embl"
                             },
                             {
                                 "name": "annotation_fna",
@@ -1121,16 +1172,16 @@
                                 "output_name": "summary_txt"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.9.4+galaxy2",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/bakta/bakta/1.12.2+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "292eea8defa7",
+                            "changeset_revision": "c03be23045b7",
                             "name": "bakta",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"annotation\": {\"complete\": false, \"prodigal\": {\"__class__\": \"RuntimeValue\"}, \"translation_table\": \"11\", \"keep_contig_headers\": false, \"replicons\": {\"__class__\": \"RuntimeValue\"}, \"compliant\": false, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"meta\": false, \"regions\": {\"__class__\": \"RuntimeValue\"}}, \"input_option\": {\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"min_contig_length\": null, \"bakta_db_select\": {\"__class__\": \"ConnectedValue\"}, \"amrfinder_db_select\": {\"__class__\": \"ConnectedValue\"}}, \"organism\": {\"genus\": null, \"species\": null, \"strain\": null, \"plasmid\": null}, \"output_files\": {\"output_selection\": [\"file_tsv\", \"file_gff3\", \"file_ffn\", \"file_plot\", \"file_gbff\", \"file_embl\", \"file_fna\", \"file_faa\", \"hypo_tsv\", \"hypo_fa\", \"file_json\", \"sum_txt\"]}, \"workflow\": {\"skip_analysis\": null}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"annotation\": {\"complete\": false, \"prodigal\": {\"__class__\": \"RuntimeValue\"}, \"translation_table\": \"11\", \"keep_contig_headers\": false, \"replicons\": {\"__class__\": \"RuntimeValue\"}, \"compliant\": false, \"proteins\": {\"__class__\": \"RuntimeValue\"}, \"gram\": null, \"hmms\": {\"__class__\": \"RuntimeValue\"}, \"locus_tag\": null, \"locus\": null, \"locus_tag_increment\": \"1\", \"meta\": false, \"partial\": false, \"regions\": {\"__class__\": \"RuntimeValue\"}}, \"input_option\": {\"input_file\": {\"__class__\": \"ConnectedValue\"}, \"min_contig_length\": null, \"bakta_db_select\": {\"__class__\": \"ConnectedValue\"}, \"amrfinder_db_select\": {\"__class__\": \"ConnectedValue\"}}, \"organism\": {\"genus\": null, \"species\": null, \"strain\": null, \"plasmid\": null}, \"output_files\": {\"output_selection\": [\"file_tsv\", \"file_gff3\", \"file_ffn\", \"file_plot\", \"file_gbff\", \"file_embl\", \"file_fna\", \"file_faa\", \"hypo_tsv\", \"hypo_fa\", \"file_json\", \"sum_txt\"]}, \"workflow\": {\"skip_analysis\": null}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.9.4+galaxy2",
+                        "tool_version": "1.12.2+galaxy0",
                         "type": "tool",
                         "uuid": "0a32dcad-f456-460e-9e6f-9e306a8fd515",
                         "when": "$(inputs.when)",
@@ -1192,26 +1243,30 @@
                             }
                         ]
                     },
-                    "9": {
+                    "10": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.6+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0",
                         "errors": null,
-                        "id": 9,
+                        "id": 10,
                         "input_connections": {
+                            "run_tooldistillator": {
+                                "id": 4,
+                                "output_name": "output"
+                            },
                             "tool_section|tools_0|select_tool|genome_hit_path": {
-                                "id": 7,
+                                "id": 8,
                                 "output_name": "hit_file"
                             },
                             "tool_section|tools_0|select_tool|input": {
-                                "id": 7,
+                                "id": 8,
                                 "output_name": "json_file"
                             },
                             "tool_section|tools_0|select_tool|plasmid_hit_path": {
-                                "id": 7,
+                                "id": 8,
                                 "output_name": "plasmid_file"
                             },
                             "tool_section|tools_0|select_tool|plasmid_result_tabular_path": {
-                                "id": 7,
+                                "id": 8,
                                 "output_name": "result_file"
                             },
                             "tool_section|tools_0|select_tool|reference_database_version": {
@@ -1219,16 +1274,12 @@
                                 "output_name": "output"
                             },
                             "tool_section|tools_1|select_tool|input": {
-                                "id": 5,
+                                "id": 6,
                                 "output_name": "all_results"
                             },
                             "tool_section|tools_2|select_tool|input": {
-                                "id": 6,
+                                "id": 7,
                                 "output_name": "integrons_table"
-                            },
-                            "run_tooldistillator": {
-                                "id": 14,
-                                "output_name": "output"
                             }
                         },
                         "inputs": [],
@@ -1260,16 +1311,16 @@
                                 "output_name": "output_json"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.6+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "6c56786c9d1a",
+                            "changeset_revision": "4ac5179f245c",
                             "name": "tooldistillator",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"log\": false, \"tool_section\": {\"tools\": [{\"__index__\": 0, \"select_tool\": {\"tool_list\": \"plasmidfinder\", \"__current_case__\": 30, \"input\": {\"__class__\": \"ConnectedValue\"}, \"plasmid_result_tabular_path\": {\"__class__\": \"ConnectedValue\"}, \"genome_hit_path\": {\"__class__\": \"ConnectedValue\"}, \"plasmid_hit_path\": {\"__class__\": \"ConnectedValue\"}, \"origin\": {\"origin\": \"false\", \"__current_case__\": 1}, \"reference_database_version\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"select_tool\": {\"tool_list\": \"isescan\", \"__current_case__\": 22, \"input\": {\"__class__\": \"ConnectedValue\"}, \"summary_path\": {\"__class__\": \"RuntimeValue\"}, \"annotation_path\": {\"__class__\": \"RuntimeValue\"}, \"orf_fna_path\": {\"__class__\": \"RuntimeValue\"}, \"orf_faa_path\": {\"__class__\": \"RuntimeValue\"}, \"is_fna_path\": {\"__class__\": \"RuntimeValue\"}, \"origin\": {\"origin\": \"false\", \"__current_case__\": 1}, \"reference_database_version\": null}}, {\"__index__\": 2, \"select_tool\": {\"tool_list\": \"integronfinder2\", \"__current_case__\": 21, \"input\": {\"__class__\": \"ConnectedValue\"}, \"summary_file_path\": {\"__class__\": \"RuntimeValue\"}, \"origin\": {\"origin\": \"false\", \"__current_case__\": 1}, \"reference_database_version\": null}}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.0.6+galaxy0",
+                        "tool_version": "1.0.7+galaxy0",
                         "type": "tool",
                         "uuid": "c93161b2-c33f-4107-9cbd-9261cd14032d",
                         "when": "$(inputs.run_tooldistillator)",
@@ -1281,14 +1332,14 @@
                             }
                         ]
                     },
-                    "10": {
+                    "11": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
                         "errors": null,
-                        "id": 10,
+                        "id": 11,
                         "input_connections": {
                             "style_cond|type_cond|pick_from_0|value": {
-                                "id": 8,
+                                "id": 9,
                                 "output_name": "annotation_json"
                             }
                         },
@@ -1342,19 +1393,19 @@
                             }
                         ]
                     },
-                    "11": {
+                    "12": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.6+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0",
                         "errors": null,
-                        "id": 11,
+                        "id": 12,
                         "input_connections": {
-                            "summarize_data": {
-                                "id": 9,
-                                "output_name": "output_json"
-                            },
                             "run_tooldistillator": {
-                                "id": 14,
+                                "id": 4,
                                 "output_name": "output"
+                            },
+                            "summarize_data": {
+                                "id": 10,
+                                "output_name": "output_json"
                             }
                         },
                         "inputs": [],
@@ -1386,16 +1437,16 @@
                                 "output_name": "summary_json"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.6+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "95a71120949f",
+                            "changeset_revision": "3a66889baf43",
                             "name": "tooldistillator_summarize",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"summarize_data\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.0.6+galaxy0",
+                        "tool_version": "1.0.7+galaxy0",
                         "type": "tool",
                         "uuid": "26ac168e-b283-494c-b335-fdacc8ae787e",
                         "when": "$(inputs.run_tooldistillator)",
@@ -1407,22 +1458,30 @@
                             }
                         ]
                     },
-                    "12": {
+                    "13": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.6+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0",
                         "errors": null,
-                        "id": 12,
+                        "id": 13,
                         "input_connections": {
+                            "run_bakta": {
+                                "id": 5,
+                                "output_name": "output"
+                            },
+                            "run_tooldistillator": {
+                                "id": 4,
+                                "output_name": "output"
+                            },
                             "tool_section|tools_0|select_tool|annotation_genbank_path": {
-                                "id": 8,
+                                "id": 9,
                                 "output_name": "annotation_gbff"
                             },
                             "tool_section|tools_0|select_tool|annotation_tabular_path": {
-                                "id": 8,
+                                "id": 9,
                                 "output_name": "annotation_tsv"
                             },
                             "tool_section|tools_0|select_tool|input": {
-                                "id": 10,
+                                "id": 11,
                                 "output_name": "data_param"
                             },
                             "tool_section|tools_0|select_tool|reference_database_version": {
@@ -1430,16 +1489,8 @@
                                 "output_name": "output"
                             },
                             "tool_section|tools_0|select_tool|summary_result_path": {
-                                "id": 8,
+                                "id": 9,
                                 "output_name": "summary_txt"
-                            },
-                            "run_bakta": {
-                                "id": 4,
-                                "output_name": "output"
-                            },
-                            "run_tooldistillator": {
-                                "id": 14,
-                                "output_name": "output"
                             }
                         },
                         "inputs": [],
@@ -1471,16 +1522,16 @@
                                 "output_name": "output_json"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.6+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator/tooldistillator/1.0.7+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "6c56786c9d1a",
+                            "changeset_revision": "4ac5179f245c",
                             "name": "tooldistillator",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"log\": false, \"tool_section\": {\"tools\": [{\"__index__\": 0, \"select_tool\": {\"tool_list\": \"bakta\", \"__current_case__\": 3, \"input\": {\"__class__\": \"ConnectedValue\"}, \"annotation_tabular_path\": {\"__class__\": \"ConnectedValue\"}, \"annotation_genbank_path\": {\"__class__\": \"ConnectedValue\"}, \"annotation_embl_path\": {\"__class__\": \"RuntimeValue\"}, \"contig_sequences_path\": {\"__class__\": \"RuntimeValue\"}, \"hypothetical_protein_path\": {\"__class__\": \"RuntimeValue\"}, \"hypothetical_tabular_path\": {\"__class__\": \"RuntimeValue\"}, \"plot_file_path\": {\"__class__\": \"RuntimeValue\"}, \"summary_result_path\": {\"__class__\": \"ConnectedValue\"}, \"nucleotide_annotation_path\": {\"__class__\": \"RuntimeValue\"}, \"amino_acid_annotation_path\": {\"__class__\": \"RuntimeValue\"}, \"gff_file_path\": {\"__class__\": \"RuntimeValue\"}, \"origin\": {\"origin\": \"true\", \"__current_case__\": 0, \"analysis_software_version\": \"1.9.4\"}, \"reference_database_version\": {\"__class__\": \"ConnectedValue\"}}}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.0.6+galaxy0",
+                        "tool_version": "1.0.7+galaxy0",
                         "type": "tool",
                         "uuid": "678bdbfe-7a3a-4a91-8ea7-1cb17f53daa6",
                         "when": "$(inputs.run_bakta && inputs.run_tooldistillator)",
@@ -1492,23 +1543,23 @@
                             }
                         ]
                     },
-                    "13": {
+                    "14": {
                         "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.6+galaxy0",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0",
                         "errors": null,
-                        "id": 13,
+                        "id": 14,
                         "input_connections": {
-                            "summarize_data": {
-                                "id": 12,
-                                "output_name": "output_json"
-                            },
                             "run_bakta": {
-                                "id": 4,
+                                "id": 5,
                                 "output_name": "output"
                             },
                             "run_tooldistillator": {
-                                "id": 14,
+                                "id": 4,
                                 "output_name": "output"
+                            },
+                            "summarize_data": {
+                                "id": 13,
+                                "output_name": "output_json"
                             }
                         },
                         "inputs": [],
@@ -1540,16 +1591,16 @@
                                 "output_name": "summary_json"
                             }
                         },
-                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.6+galaxy0",
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/tooldistillator_summarize/tooldistillator_summarize/1.0.7+galaxy0",
                         "tool_shed_repository": {
-                            "changeset_revision": "95a71120949f",
+                            "changeset_revision": "3a66889baf43",
                             "name": "tooldistillator_summarize",
                             "owner": "iuc",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
                         "tool_state": "{\"summarize_data\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
-                        "tool_version": "1.0.6+galaxy0",
+                        "tool_version": "1.0.7+galaxy0",
                         "type": "tool",
                         "uuid": "3427b1f1-79ce-4ade-a350-baf15ac250c2",
                         "when": "$(inputs.run_bakta && inputs.run_tooldistillator)",
@@ -1560,37 +1611,10 @@
                                 "uuid": "3546c7b4-5010-4ac8-aedc-45cbd22a995d"
                             }
                         ]
-                    },
-                    "14": {
-                        "annotation": "Run ToolDistillator to collect standardized metadata of the annotation tools. The bakta section only runs when Bakta runs as well. It is enabled by default; set it to No to skip it.",
-                        "content_id": null,
-                        "errors": null,
-                        "id": 14,
-                        "input_connections": {},
-                        "inputs": [
-                            {
-                                "description": "Run ToolDistillator to collect standardized metadata of the annotation tools. The bakta section only runs when Bakta runs as well. It is enabled by default; set it to No to skip it.",
-                                "name": "Run ToolDistillator"
-                            }
-                        ],
-                        "label": "Run ToolDistillator",
-                        "name": "Input parameter",
-                        "outputs": [],
-                        "position": {
-                            "left": 0,
-                            "top": 1130
-                        },
-                        "tool_id": null,
-                        "tool_state": "{\"validators\": [], \"parameter_type\": \"boolean\", \"optional\": false, \"default\": true}",
-                        "tool_version": null,
-                        "type": "parameter_input",
-                        "uuid": "8b33ec24-55e7-4051-bb3f-890066315f0e",
-                        "when": null,
-                        "workflow_outputs": []
                     }
                 },
                 "tags": [],
-                "uuid": "e6f01987-3c4d-4f16-813f-f2717ba333d4"
+                "uuid": "ed8c5f77-7d05-46d8-898e-ec96901f15d8"
             },
             "tool_id": null,
             "type": "subworkflow",
@@ -1598,14 +1622,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "6": {
+        "7": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
-            "id": 6,
+            "id": 7,
             "input_connections": {
                 "infile": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "integronfinder2 results tabular"
                 }
             },
@@ -1638,14 +1662,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "7": {
+        "8": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
-            "id": 7,
+            "id": 8,
             "input_connections": {
                 "infile": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "bakta summary text"
                 }
             },
@@ -1678,14 +1702,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "8": {
+        "9": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
             "errors": null,
-            "id": 8,
+            "id": 9,
             "input_connections": {
                 "input_list": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "plasmidfinder results tabular"
                 }
             },
@@ -1739,14 +1763,14 @@
                 }
             ]
         },
-        "9": {
+        "10": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0",
             "errors": null,
-            "id": 9,
+            "id": 10,
             "input_connections": {
                 "infile": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "isescan results tabular"
                 }
             },
@@ -1779,14 +1803,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "10": {
+        "11": {
             "annotation": "",
             "content_id": "Convert characters1",
             "errors": null,
-            "id": 10,
+            "id": 11,
             "input_connections": {
                 "input": {
-                    "id": 6,
+                    "id": 7,
                     "output_name": "outfile"
                 }
             },
@@ -1813,14 +1837,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "11": {
+        "12": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3",
             "errors": null,
-            "id": 11,
+            "id": 12,
             "input_connections": {
                 "input_tabular": {
-                    "id": 7,
+                    "id": 8,
                     "output_name": "outfile"
                 }
             },
@@ -1874,14 +1898,14 @@
                 }
             ]
         },
-        "12": {
+        "13": {
             "annotation": "",
             "content_id": "Convert characters1",
             "errors": null,
-            "id": 12,
+            "id": 13,
             "input_connections": {
                 "input": {
-                    "id": 9,
+                    "id": 10,
                     "output_name": "outfile"
                 }
             },
@@ -1908,14 +1932,14 @@
             "when": null,
             "workflow_outputs": []
         },
-        "13": {
+        "14": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
             "errors": null,
-            "id": 13,
+            "id": 14,
             "input_connections": {
                 "input_list": {
-                    "id": 10,
+                    "id": 11,
                     "output_name": "out_file1"
                 }
             },
@@ -1969,14 +1993,14 @@
                 }
             ]
         },
-        "14": {
+        "15": {
             "annotation": "",
             "content_id": "toolshed.g2.bx.psu.edu/repos/nml/collapse_collections/collapse_dataset/5.1.0",
             "errors": null,
-            "id": 14,
+            "id": 15,
             "input_connections": {
                 "input_list": {
-                    "id": 12,
+                    "id": 13,
                     "output_name": "out_file1"
                 }
             },
@@ -2030,26 +2054,26 @@
                 }
             ]
         },
-        "15": {
+        "16": {
             "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5",
             "errors": null,
-            "id": 15,
+            "id": 16,
             "input_connections": {
                 "results_0|software_cond|input": {
-                    "id": 5,
+                    "id": 6,
                     "output_name": "bakta summary text"
                 },
                 "results_1|software_cond|input": {
-                    "id": 13,
-                    "output_name": "output"
-                },
-                "results_2|software_cond|input": {
                     "id": 14,
                     "output_name": "output"
                 },
+                "results_2|software_cond|input": {
+                    "id": 15,
+                    "output_name": "output"
+                },
                 "results_3|software_cond|input": {
-                    "id": 8,
+                    "id": 9,
                     "output_name": "output"
                 }
             },
@@ -2084,16 +2108,16 @@
                     "output_name": "html_report"
                 }
             },
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5",
             "tool_shed_repository": {
-                "changeset_revision": "97255f6fdf7e",
+                "changeset_revision": "94b6bea727ae",
                 "name": "multiqc",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"comment\": \"\", \"export\": false, \"flat\": false, \"image_content_input\": {\"__class__\": \"RuntimeValue\"}, \"png_plots\": false, \"results\": [{\"__index__\": 0, \"software_cond\": {\"software\": \"bakta\", \"__current_case__\": 36, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"software_cond\": {\"software\": \"custom_content\", \"__current_case__\": 56, \"plot_type\": \"table\", \"section_name\": \"Integron Finder\", \"title\": \"\", \"description\": null, \"xlab\": null, \"ylab\": null, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 2, \"software_cond\": {\"software\": \"custom_content\", \"__current_case__\": 56, \"plot_type\": \"table\", \"section_name\": \"ISEScan\", \"title\": null, \"description\": null, \"xlab\": null, \"ylab\": null, \"input\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 3, \"software_cond\": {\"software\": \"custom_content\", \"__current_case__\": 56, \"plot_type\": \"table\", \"section_name\": \"PlasmidFinder\", \"title\": null, \"description\": null, \"xlab\": null, \"ylab\": null, \"input\": {\"__class__\": \"ConnectedValue\"}}}], \"title\": \"\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.35+galaxy4",
+            "tool_version": "1.35+galaxy5",
             "type": "tool",
             "uuid": "fde33ee1-4334-4008-b2f9-6e3b23d07ba1",
             "when": null,
@@ -2104,38 +2128,10 @@
                     "uuid": "72b7225a-815b-4b85-aa32-d471ae9e2634"
                 }
             ]
-        },
-        "16": {
-            "annotation": "Run ToolDistillator to collect standardized metadata of the annotation tools. It is enabled by default; set it to No to skip it.",
-            "content_id": null,
-            "errors": null,
-            "id": 16,
-            "input_connections": {},
-            "inputs": [
-                {
-                    "description": "Run ToolDistillator to collect standardized metadata of the annotation tools. It is enabled by default; set it to No to skip it.",
-                    "name": "Run ToolDistillator"
-                }
-            ],
-            "label": "Run ToolDistillator",
-            "name": "Input parameter",
-            "outputs": [],
-            "position": {
-                "left": 0,
-                "top": 1100
-            },
-            "tool_id": null,
-            "tool_state": "{\"validators\": [], \"parameter_type\": \"boolean\", \"optional\": false, \"default\": true}",
-            "tool_version": null,
-            "type": "parameter_input",
-            "uuid": "134f9a6c-cea9-4689-8eb9-10502f11fe03",
-            "when": null,
-            "workflow_outputs": []
         }
     },
     "tags": [],
-    "uuid": "dff4d756-a776-422f-bb5a-7d75a1afa7a3",
+    "uuid": "07e7c5fb-1ada-492e-8b3d-db71b84dd847",
     "version": 1,
-    "release": "0.7",
-    "readme": "# MAG Genome Annotation Parallel\n\nThis workflow performs parallel annotation of Metagenome-Assembled Genomes (MAGs). This workflow can be used on its own or integrated into other workflows. For example, it is part of a **suite of workflows for end-to-end metagenome-assembled genome (MAG) generation** (check [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete workflow suite and its capabilities).\nAnnotation is performed using Bakta, Integron Finder, PlasmidFinder, and ISEScan, with Bakta being optional. Bakta provides general annotation of bacterial genomes by predicting genes, coding sequences, and RNAs. Integron Finder detects integrons and their structural components, including integrases, attC recombination sites, and gene cassettes. PlasmidFinder identifies plasmid replicon sequences to determine whether contigs originate from plasmids and to classify plasmid types. ISEScan detects insertion sequences (IS elements), which are small transposable elements that can mediate genome rearrangements and facilitate horizontal gene transfer. \nThe workflow is targeted towards prokaryotic genomes, annotations for archaea will likely miss genomic features.\nIt processes multiple genome assemblies simultaneously and produces standardized annotation outputs, summary tables, and integrated quality reports.\n\n## Workflow Logic\nThe workflow takes a collection of MAG genome assemblies as input and runs genome annotation in parallel for each genome.\nAnnotation outputs are then reformatted, normalized, and merged across all genomes to produce unified result files.\n\nThe core logic includes:\n\n- Parallel processing of all input MAGs\n- Automated annotation per genome\n  - **Bakta:**\n    - Annotated genome files (e.g., GFF3, GenBank)\n    - Predicted coding sequences (CDS)\n    - tRNA annotations\n    - rRNA annotations\n    - tmRNA annotations\n    - Other ncRNA annotations and regions\n    - Pseudogene annotations\n    - sORF annotations\n    - CRISPR array annotations\n    - Genome gap detection\n    - Origin of replication (oriC/oriT) annotation\n\n  - **Integron Finder:**\n    - Detected integrons and integrase genes\n    - attC recombination sites\n    - Gene cassette annotations\n    - Tables detailing positions, sequences, and potential antibiotic resistance genes\n    - Visualizations of integron structure and gene cassette organization\n\n  - **PlasmidFinder:**\n    - Identified plasmid replicon sequences\n    - Plasmid type classification for contigs\n    - Tabular files with detected plasmids, replicon families, sequence coverage, and confidence scores\n    - Summary statistics of plasmid content per genome or assembly\n\n  - **ISEScan:**\n    - Detected insertion sequences (IS elements)\n    - Locations, family and subgroup annotations\n    - Predicted transposase genes\n    - Summary tables of IS element distribution\n    - Visualizations showing IS density or genomic context relative to coding sequences\n- Standardization of annotation formats with ToolDistillator, optional and enabled by default\n- Merging and collapsing results across samples/genomes\n\n## Annotation and Reporting\nAfter annotation, the workflow performs structured post-processing and reporting:\n\n- Genome annotation (per-MAG, in parallel)\n- Output normalization and reformatting\n- Merging of annotation results into consolidated tables\n- Summary statistics generation\n- Integrated reporting using MultiQC\n\nAll outputs are consolidated into a single MultiQC report providing a global overview of annotation completeness, gene content, and processing metrics across all genomes.\n\n## Input Requirements\nMAG assemblies (FASTA format) provided as a collection in Galaxy.\n\nToolDistillator is enabled by default; set `Run ToolDistillator` to `No` to skip it. Its bakta section runs only when `Run Bakta` is also enabled.\n\n## Expected Outputs\n\n- Per-MAG annotation files\n- Standardized annotation tables\n- Merged genome annotation matrices\n- Summary statistics files\n- A unified MultiQC report for all genomes\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**."
+    "release": "0.8"
 }
