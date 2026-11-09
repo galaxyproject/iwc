@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.14] - 2026-11-09
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/biom_convert/biom_convert/2.1.17+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/biom_convert/biom_convert/2.1.18+galaxy0`
+
 ## [0.13] - 2026-11-02
 
 ### Automatic update
