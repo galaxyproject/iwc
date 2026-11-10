@@ -5,6 +5,9 @@
 ### Fixed
 - Convert the coverage depth table to the two-column abundance format MaxBin2 expects (contig name and total average depth, no header). MaxBin2 reads the first number after the contig name as the abundance, so the full `jgi_summarize_bam_contig_depths` table made it bin on contig length instead of coverage.
 
+### Tests
+- Update the short-read test expectations for the changed Binette bins (dereplicated bin names, bin size and QUAST summary).
+
 ## [0.9] - 2026-10-01
 
 ### Automatic update
