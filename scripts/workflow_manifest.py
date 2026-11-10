@@ -5,7 +5,7 @@ import requests
 import re
 import shutil
 from urllib.parse import quote_plus, quote
-from create_mermaid import walk_directory
+from create_mermaid import load_native_workflow, walk_directory
 from planemo.galaxy.workflows import job_template
 
 OUTPUT_DIR = "website/public/data"
@@ -154,8 +154,8 @@ def find_and_load_compliant_workflows(directory):
                     root, workflow["primaryDescriptorPath"].lstrip("/")
                 )
                 try:
-                    with open(workflow_path) as f:
-                        workflow["definition"] = json.load(f)
+                    # Format-2 is converted so the website sees one definition shape
+                    workflow["definition"] = load_native_workflow(workflow_path)
                     workflow['workflow_job_input'] = job_template(workflow_path)
                 except Exception as e:
                     print(
@@ -214,9 +214,12 @@ def find_and_load_compliant_workflows(directory):
 
                 if not "testParameterFiles" in workflow:
                     print(f"{root}/.dockstore does not contain testParameterFiles. Looking for file...")
-                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    # Planemo's convention: drop only the last extension, so
+                    # foo.gxwf.yml pairs with foo.gxwf-tests.yml
+                    workflow_stem = os.path.splitext(workflow_path)[0]
+                    workflow_test_path = f"{workflow_stem}-tests.yml"
                     if not os.path.exists(workflow_test_path):
-                        workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-test.yml"
+                        workflow_test_path = f"{workflow_stem}-test.yml"
                     if os.path.exists(workflow_test_path):
                         print(f"file found at {workflow_test_path}")
                         workflow["tests"] = process_test_file(workflow_test_path, root)
@@ -326,26 +329,37 @@ def create_safe_identifier(trs_id):
     return safe_name.lower()
 
 
-def stage_workflow_file(source_path, iwc_id):
+def stage_workflow_file(source_path, definition, iwc_id):
     """
-    Copy a workflow .ga file to the output directory, filed by the iwcID
+    Stage a workflow in the output directory as {iwc_id}.ga, filed by the iwcID.
+
+    The website's download and planemo instructions all point at the .ga, so a
+    Format-2 workflow is staged as its converted native definition, with the
+    original alongside as {iwc_id}.gxwf.yml.
 
     Args:
-        source_path: Path to the source .ga file
+        source_path: Path to the source .ga or .gxwf.yml file
+        definition: The workflow's native definition, as loaded for the manifest
         iwc_id: iwc id to use as the safe filename
     """
     if not os.path.exists(source_path):
         print(f"Workflow file not found: {source_path}")
         return
 
-    safe_filename = f"{iwc_id}.ga"
-    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+    dest_path = os.path.join(OUTPUT_DIR, f"{iwc_id}.ga")
 
     try:
-        shutil.copy2(source_path, dest_path)
-        print(f"Copied workflow file to {dest_path}")
+        if source_path.endswith(".ga"):
+            shutil.copy2(source_path, dest_path)
+        elif definition is None:
+            print(f"No native definition to stage for {source_path}")
+            return
+        else:
+            write_to_json(definition, dest_path)
+            shutil.copy2(source_path, os.path.join(OUTPUT_DIR, f"{iwc_id}.gxwf.yml"))
+        print(f"Staged workflow file at {dest_path}")
     except Exception as e:
-        print(f"Error copying workflow file {source_path} to {dest_path}: {e}")
+        print(f"Error staging workflow file {source_path} to {dest_path}: {e}")
 
 
 def stage_workflow_test_file(test_data, iwc_id):
@@ -405,7 +419,9 @@ if __name__ == "__main__":
             workflow_path = os.path.join(
                 item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
-            stage_workflow_file(workflow_path, workflow["iwcID"])
+            stage_workflow_file(
+                workflow_path, workflow.get("definition"), workflow["iwcID"]
+            )
             stage_workflow_test_file(workflow.get('tests', None), workflow["iwcID"])
 
     # Keep original manifest

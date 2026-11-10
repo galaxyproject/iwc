@@ -78,22 +78,30 @@ def workflow_to_mermaid_diagrams(workflow, workflows=None):
     return workflows
 
 
+def load_native_workflow(file_path):
+    """
+    Load a .ga or Format-2 .gxwf.yml workflow as a native (.ga-shaped) dict.
+    """
+    with open(file_path, "r") as f:
+        workflow_data = ordered_load(f)
+    if workflow_data.get("class") == "GalaxyWorkflow":
+        workflow_data = python_to_workflow(
+            workflow_data,
+            galaxy_interface=None,
+            workflow_directory=os.path.dirname(file_path),
+        )
+    return workflow_data
+
+
 def walk_directory(directory):
     """
-    Walk directory and call workflow_to_mermaid on each discovered .ga file.
+    Walk directory and call workflow_to_mermaid on each discovered workflow file.
     """
     for root, _, paths in os.walk(directory):
         for path in paths:
             if path.endswith((".ga", ".gxwf.yml")):
                 file_path = os.path.join(root, path)
-                with open(file_path, "r") as f:
-                    workflow_data = ordered_load(f)
-                if workflow_data.get("class") == "GalaxyWorkflow":
-                    workflow_data = python_to_workflow(
-                        workflow_data,
-                        galaxy_interface=None,
-                        workflow_directory=os.path.dirname(file_path),
-                    )
+                workflow_data = load_native_workflow(file_path)
                 mermaid_diagrams = workflow_to_mermaid_diagrams(workflow_data)
 
                 markdown_items = ["# Workflow diagrams\n"]
