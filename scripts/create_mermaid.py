@@ -3,8 +3,12 @@ import json
 import os
 from typing import Literal
 
+from gxformat2 import ConversionOptions
 from gxformat2.converter import python_to_workflow
+from gxformat2.normalized import expanded_format2
 from gxformat2.yaml import ordered_load
+
+WORKFLOW_SUFFIXES = (".ga", ".gxwf.yml", ".gxwf.yaml")
 
 STEP_TYPE_TO_SHAPE = {
     "data_input": "@{ shape: doc }",
@@ -79,18 +83,22 @@ def workflow_to_mermaid_diagrams(workflow, workflows=None):
 
 
 def load_native_workflow(file_path):
-    """
-    Load a .ga or Format-2 .gxwf.yml workflow as a native (.ga-shaped) dict.
-    """
+    """Load a .ga or Format-2 workflow as a native (.ga-shaped) dict."""
     with open(file_path, "r") as f:
+        if file_path.endswith(".ga"):
+            # Not YAML: PyYAML reads JSON floats like 1e-05 as strings
+            return json.load(f)
         workflow_data = ordered_load(f)
-    if workflow_data.get("class") == "GalaxyWorkflow":
-        workflow_data = python_to_workflow(
-            workflow_data,
-            galaxy_interface=None,
-            workflow_directory=os.path.dirname(file_path),
-        )
-    return workflow_data
+    if workflow_data.get("class") != "GalaxyWorkflow" and "$graph" not in workflow_data:
+        return workflow_data
+    workflow_directory = os.path.dirname(os.path.abspath(file_path))
+    # python_to_workflow alone leaves @import subworkflows as empty steps
+    expanded = expanded_format2(
+        workflow_data, ConversionOptions(workflow_directory=workflow_directory)
+    ).to_dict()
+    return python_to_workflow(
+        expanded, galaxy_interface=None, workflow_directory=workflow_directory
+    )
 
 
 def walk_directory(directory):
@@ -99,7 +107,7 @@ def walk_directory(directory):
     """
     for root, _, paths in os.walk(directory):
         for path in paths:
-            if path.endswith((".ga", ".gxwf.yml")):
+            if path.endswith(WORKFLOW_SUFFIXES):
                 file_path = os.path.join(root, path)
                 workflow_data = load_native_workflow(file_path)
                 mermaid_diagrams = workflow_to_mermaid_diagrams(workflow_data)

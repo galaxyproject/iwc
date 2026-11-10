@@ -5,7 +5,7 @@ import requests
 import re
 import shutil
 from urllib.parse import quote_plus, quote
-from create_mermaid import load_native_workflow, walk_directory
+from create_mermaid import WORKFLOW_SUFFIXES, load_native_workflow, walk_directory
 from planemo.galaxy.workflows import job_template
 
 OUTPUT_DIR = "website/public/data"
@@ -331,16 +331,10 @@ def create_safe_identifier(trs_id):
 
 def stage_workflow_file(source_path, definition, iwc_id):
     """
-    Stage a workflow in the output directory as {iwc_id}.ga, filed by the iwcID.
+    Stage a workflow in the output directory as {iwc_id}.ga.
 
-    The website's download and planemo instructions all point at the .ga, so a
-    Format-2 workflow is staged as its converted native definition, with the
-    original alongside as {iwc_id}.gxwf.yml.
-
-    Args:
-        source_path: Path to the source .ga or .gxwf.yml file
-        definition: The workflow's native definition, as loaded for the manifest
-        iwc_id: iwc id to use as the safe filename
+    The website's download and planemo snippets point at the .ga, so Format-2
+    is staged as its converted definition, with the original kept alongside.
     """
     if not os.path.exists(source_path):
         print(f"Workflow file not found: {source_path}")
@@ -355,8 +349,14 @@ def stage_workflow_file(source_path, definition, iwc_id):
             print(f"No native definition to stage for {source_path}")
             return
         else:
-            write_to_json(definition, dest_path)
-            shutil.copy2(source_path, os.path.join(OUTPUT_DIR, f"{iwc_id}.gxwf.yml"))
+            # Not write_to_json, which swallows errors and would leave a partial .ga
+            with open(dest_path, "w") as f:
+                json.dump(definition, f, indent=4)
+            suffix = next(
+                (s for s in WORKFLOW_SUFFIXES if source_path.endswith(s)),
+                os.path.splitext(source_path)[1],
+            )
+            shutil.copy2(source_path, os.path.join(OUTPUT_DIR, f"{iwc_id}{suffix}"))
         print(f"Staged workflow file at {dest_path}")
     except Exception as e:
         print(f"Error staging workflow file {source_path} to {dest_path}: {e}")
