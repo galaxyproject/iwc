@@ -36,6 +36,7 @@
 
 ### Fixed
 
+- MaxBin2 now gets the abundance format it expects in both embedded binning workflows: contig name and total average depth (single coverage), or one such file per read sample (multi coverage), without the header line. MaxBin2 reads the first number after the contig name as the abundance, so the full `jgi_summarize_bam_contig_depths` table made it bin on contig length instead of coverage (see also #1538, #1539, #1540).
 - Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
 - The MultiQC CheckM and CheckM2 section titles are wired to the matching inputs; they were swapped in 0.9. The CoverM section name no longer starts with a space.
 - Rename the `Run COMEBin` input to `Run COMEBin?`, like the other binner toggles.
