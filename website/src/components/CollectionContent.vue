@@ -121,7 +121,7 @@ onUnmounted(() => {
             class="flex flex-col border border-ebony-clay-100 rounded-xl overflow-hidden shadow-sm">
             <WorkflowListItem
                 v-for="workflow in filteredWorkflows"
-                :key="workflow.definition.uuid"
+                :key="workflow.iwcID"
                 :workflow="workflow" />
         </div>
 
@@ -129,7 +129,7 @@ onUnmounted(() => {
         <div v-else id="workflows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <WorkflowCard
                 v-for="workflow in filteredWorkflows"
-                :key="workflow.definition.uuid"
+                :key="workflow.iwcID"
                 :workflow="workflow"
                 compact />
         </div>
