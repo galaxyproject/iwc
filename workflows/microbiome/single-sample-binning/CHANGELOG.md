@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2] - 2026-11-10
+
+- Convert the coverage depth matrix to the two-column abundance format MaxBin2 expects (contig name and total average depth, no header). MaxBin2 reads the first number after the contig name as the abundance, so the full `jgi_summarize_bam_contig_depths` matrix made it bin on contig length instead of coverage.
+
 ## [1.1] - 2026-10-24
 
 - Replace manual CONCOCT read length with automatic estimation from both input mates.
