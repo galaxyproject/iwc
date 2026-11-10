@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2] - 2026-11-10
+
+- Give MaxBin2 one abundance file per read sample (contig name and that sample's depth, no header) instead of the full `jgi_summarize_bam_contig_depths` table. MaxBin2 reads the first number after the contig name as the abundance, so it binned on contig length and ignored the cross-sample coverage.
+
 ## [1.1] - 2026-10-24
 
 - Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435.
