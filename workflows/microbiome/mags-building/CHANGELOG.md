@@ -45,6 +45,7 @@
 
 ### Tests
 
+- Run only MetaBAT2 in the parent workflow tests, so the full test suite stays within the CI time limit. The tests still cover every parent-level choice (assembler, long reads, grouping, coverage strategy and refiner); the individual binners are tested by the standalone single- and multi-sample binning workflows.
 - The custom-assembly and hybrid cases check coverage-table structure. The nanopore case additionally checks assembly sizes, a dereplicated MAG and row-level identifiers in the downstream tables.
 - The custom-assembly case checks that a Binette bin reaches the merged refined bins, the dereplicated MAGs and the dRep cluster assignment.
 - The hybrid case checks that the merged refined bins contain the same Binette bin from both coverage strategies with `_1` and `_2` suffixes, an unsuffixed bin present in only one strategy, and a suffixed bin that is selected as a dereplicated MAG and appears in the dRep cluster assignment.
