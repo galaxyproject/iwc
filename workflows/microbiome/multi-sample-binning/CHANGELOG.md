@@ -1,7 +1,9 @@
 # Changelog
 
-## [1.2] - 2026-11-10
+## [1.2] - 2026-11-11
 
+- Update MaxBin2 to 2.2.7+galaxy7. A sample with too few marker genes now gives an empty bin collection instead of failing the job.
+- Update SemiBin to 2.5.0+galaxy0 (short-read binning). A sample without bins that pass the size threshold now gives an empty bin collection instead of failing the job.
 - Give MaxBin2 one abundance file per read sample (contig name and that sample's depth, no header) instead of the full `jgi_summarize_bam_contig_depths` table. MaxBin2 reads the first number after the contig name as the abundance, so it binned on contig length and ignored the cross-sample coverage.
 
 ## [1.1] - 2026-10-24
