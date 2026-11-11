@@ -10,7 +10,9 @@ const siteConfig = loadSiteConfig();
 export default defineConfig({
     integrations: [
         vue({ template: { compilerOptions: { nodeTransforms: [siteTextTransform(siteConfig)] } } }),
-        sentry(),
+        // @sentry/astro injects sentry.client.config.js itself, so a site without
+        // Sentry has to leave the integration out rather than blank the DSN
+        ...(siteConfig.sentry ? [sentry()] : []),
     ],
     vite: {
         plugins: [tailwindcss()],

@@ -97,5 +97,16 @@ export function defineName(key) {
 // Vite swaps each of these identifiers for its literal before bundling, in the
 // pages and in the hydrated components alike. src/site-config.d.ts declares them.
 export function siteDefines(config) {
-    return Object.fromEntries(Object.entries(config).map(([key, value]) => [defineName(key), JSON.stringify(value)]));
+    const defines = {};
+    for (const [key, value] of Object.entries(config)) {
+        const name = defineName(key);
+        defines[name] = JSON.stringify(value);
+        if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+            // So __SITE_SENTRY__.dsn becomes the string itself, not a lookup on an object literal
+            for (const [property, propertyValue] of Object.entries(value)) {
+                defines[`${name}.${property}`] = JSON.stringify(propertyValue);
+            }
+        }
+    }
+    return defines;
 }

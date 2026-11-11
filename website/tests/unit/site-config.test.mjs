@@ -79,6 +79,9 @@ test("defines are one JSON literal per key", () => {
     const defines = siteDefines(DEFAULTS);
     assert.equal(defines.__SITE_SITE_URL__, '"https://iwc.galaxyproject.org"');
     assert.equal(defines.__SITE_HEADER_BADGE__, "null");
+    assert.equal(defines.__SITE_SENTRY__, JSON.stringify(DEFAULTS.sentry));
+    assert.equal(defines["__SITE_SENTRY__.dsn"], JSON.stringify(DEFAULTS.sentry.dsn));
+    assert.equal(siteDefines({ sentry: null })["__SITE_SENTRY__.dsn"], undefined);
 });
 
 test("every constant declared for the site is a config key", () => {
