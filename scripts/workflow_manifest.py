@@ -383,7 +383,7 @@ def staged_file_names(source_path, iwc_id):
     return f"{iwc_id}.gxwf.yml", f"{iwc_id}.gxwf-tests.yml"
 
 
-def stage_workflow_file(source_path, workflow_file):
+def stage_workflow_file(source_path, workflow_file, output_dir):
     """
     Stage a workflow in the output directory as workflow_file.
 
@@ -394,7 +394,7 @@ def stage_workflow_file(source_path, workflow_file):
         print(f"Workflow file not found: {source_path}")
         return
 
-    dest_path = os.path.join(OUTPUT_DIR, workflow_file)
+    dest_path = os.path.join(output_dir, workflow_file)
 
     try:
         if source_path.endswith(".ga"):
@@ -411,7 +411,7 @@ def stage_workflow_file(source_path, workflow_file):
         print(f"Error staging workflow file {source_path} to {dest_path}: {e}")
 
 
-def stage_workflow_test_file(test_data, test_file):
+def stage_workflow_test_file(test_data, test_file, output_dir):
     """
     Write a workflow's tests to the output directory as test_file
 
@@ -420,7 +420,7 @@ def stage_workflow_test_file(test_data, test_file):
         test_file: file name to publish the tests under
     """
 
-    dest_path = os.path.join(OUTPUT_DIR, test_file)
+    dest_path = os.path.join(output_dir, test_file)
 
     if test_data is None or len(test_data) == 0:
         print(f"No test data found for {test_file}")
@@ -430,7 +430,7 @@ def stage_workflow_test_file(test_data, test_file):
         yaml.dump(test_data, test_yaml, default_flow_style=False)
 
 
-def parse_args():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         description="Build the website's workflow data from a directory of workflow repositories.",
         epilog="Site values (Dockstore org, repository) come from site-config.json, or the file named by $SITE_CONFIG.",
@@ -455,15 +455,14 @@ def parse_args():
         default=".",
         help="Root of the repository the workflows live in. Workflow paths are recorded relative to it.",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main():
-    global OUTPUT_DIR
-    args = parse_args()
+def main(argv=None):
+    args = parse_args(argv)
     site_config = load_site_config()
-    OUTPUT_DIR = args.output_dir
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    output_dir = args.output_dir
+    os.makedirs(output_dir, exist_ok=True)
     walk_directory(args.workflows)
     workflow_data = find_and_load_compliant_workflows(args.workflows, args.repo_root, site_config)
 
@@ -486,12 +485,12 @@ def main():
             safe_filename = f"{workflow['iwcID']}.json"
 
             # Write individual workflow file
-            filepath = os.path.join(OUTPUT_DIR, safe_filename)
+            filepath = os.path.join(output_dir, safe_filename)
             print(f"Writing workflow to {filepath}")
             write_to_json(workflow, filepath)
 
     # Write index file
-    write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
+    write_to_json(index_data, os.path.join(output_dir, "index.json"))
 
     # Stage workflow and test files for the website
     for item in workflow_data:
@@ -499,8 +498,10 @@ def main():
             workflow_path = os.path.join(
                 args.repo_root, item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
-            stage_workflow_file(workflow_path, workflow["workflowFile"])
-            stage_workflow_test_file(workflow.get('tests', None), workflow["testFile"])
+            stage_workflow_file(workflow_path, workflow["workflowFile"], output_dir)
+            stage_workflow_test_file(
+                workflow.get('tests', None), workflow["testFile"], output_dir
+            )
 
     # The home page drops a featured workflow it can't find, so say so here
     written_trs_ids = {workflow["trsID"] for item in workflow_data for workflow in item["workflows"]}
@@ -531,7 +532,7 @@ def main():
             }
             search_index.append(search_entry)
 
-    search_index_path = os.path.join(OUTPUT_DIR, "search-index.json")
+    search_index_path = os.path.join(output_dir, "search-index.json")
     write_to_json(search_index, search_index_path)
     print(f"Search index written to {search_index_path} ({len(search_index)} entries)")
 

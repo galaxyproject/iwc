@@ -58,8 +58,7 @@ def main():
             write_repository(root / "workflows" / relative_path, workflow_file)
         # On Dockstore, but in no collection: what a second site's workflows look like
         workflow_manifest.get_dockstore_details = lambda trs_id: ({"id": 1}, [], [])
-        sys.argv = [sys.argv[0], "--workflows", str(root / "workflows"), "--repo-root", str(root)]
-        workflow_manifest.main()
+        workflow_manifest.main(["--workflows", str(root / "workflows"), "--repo-root", str(root)])
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import json
 import re
 import shutil
 from pathlib import Path
@@ -46,15 +47,14 @@ def test_subworkflows_are_inlined(name):
 
 
 @pytest.fixture
-def output_dir(tmp_path, monkeypatch):
+def output_dir(tmp_path):
     out = tmp_path / "out"
     out.mkdir()
-    monkeypatch.setattr(workflow_manifest, "OUTPUT_DIR", str(out))
     return out
 
 
 def test_native_workflow_is_staged_verbatim(output_dir):
-    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), "cat-main.ga")
+    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), "cat-main.ga", str(output_dir))
     assert [p.name for p in output_dir.iterdir()] == ["cat-main.ga"]
     assert (output_dir / "cat-main.ga").read_bytes() == (DATA / "cat.ga").read_bytes()
 
@@ -63,7 +63,7 @@ def test_native_workflow_is_staged_verbatim(output_dir):
     "name", ["cat.gxwf.yml", "import-parent.gxwf.yml", "packed.gxwf.yml"]
 )
 def test_format2_is_staged_as_one_self_contained_file(output_dir, name):
-    workflow_manifest.stage_workflow_file(str(DATA / name), "cat-main.gxwf.yml")
+    workflow_manifest.stage_workflow_file(str(DATA / name), "cat-main.gxwf.yml", str(output_dir))
     staged = output_dir / "cat-main.gxwf.yml"
     assert [p.name for p in output_dir.iterdir()] == [staged.name]
     # output_dir has no import-child.gxwf.yml, so this only loads if nothing is
@@ -254,3 +254,30 @@ def test_workflows_outside_the_repo_root_are_refused(tmp_path):
         workflow_manifest.find_and_load_compliant_workflows(
             str(tmp_path / "lab" / "workflows"), repo_root=str(tmp_path / "iwc"), site_config=load_site_config({})
         )
+
+
+def test_main_writes_everything_where_it_is_told(tmp_path, monkeypatch, capsys):
+    repo_root = tmp_path / "lab"
+    write_repo(repo_root / "workflows", "variant-calling/cat")
+    monkeypatch.setattr(workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], []))
+    monkeypatch.delenv("SITE_CONFIG", raising=False)
+    # Somewhere neither the defaults nor the repo is, so nothing leans on the cwd
+    monkeypatch.chdir(tmp_path)
+    out = tmp_path / "out"
+    manifest = tmp_path / "manifest.json"
+
+    workflow_manifest.main(
+        [
+            "--workflows", str(repo_root / "workflows"),
+            "--repo-root", str(repo_root),
+            "--output-dir", str(out),
+            "--manifest", str(manifest),
+        ]
+    )
+
+    assert sorted(p.name for p in out.iterdir()) == ["cat-main.ga", "cat-main.json", "index.json", "search-index.json"]
+    assert json.loads(manifest.read_text())[0]["path"] == "./workflows/variant-calling/cat"
+    # IWC's featured workflows aren't in this repository
+    featured = load_site_config({})["featuredTrsIds"]
+    warnings = [line for line in capsys.readouterr().out.splitlines() if line.startswith("::warning::")]
+    assert warnings == [f"::warning::Featured workflow isn't in the site: {trs_id}" for trs_id in featured]
