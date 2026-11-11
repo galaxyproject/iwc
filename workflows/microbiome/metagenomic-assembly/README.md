@@ -4,7 +4,7 @@ This workflow provides a standardized and modular approach for metagenomic assem
 
 The workflow is intentionally kept simple so that it can be used as a standalone assembly workflow or integrated as a building block into larger metagenomic analysis workflows.
 
-Long-read input is currently only supported when using **metaSPAdes**. If long reads are provided together with MEGAHIT or Custom Assembly, they are ignored.
+Long-read input is currently only supported when using **metaSPAdes**. If long reads are provided together with MEGAHIT or Custom Assembly, they are not used, but they must still match the short-read groups as described below.
 
 ## Why use this workflow?
 
@@ -26,7 +26,7 @@ The workflow supports two commonly used metagenomic assemblers:
 
 The user can select the assembler depending on the requirements of the analysis. The workflow processes the provided sequencing reads and returns the resulting assembled contigs in a standardized format that can be directly used by downstream workflows.
 
-When metaSPAdes is selected, optional long reads can be provided in addition to the paired-end short reads. This allows long-read information to support the assembly while maintaining short reads as the primary input. The long reads are matched to the short reads by element identifier, independently of collection order. Long reads can be supplied for a subset of groups; groups without matching long reads use short reads alone. Long-read elements whose identifiers do not occur in the paired-read collection are ignored.
+When metaSPAdes is selected, optional long reads can be provided in addition to the paired-end short reads. This allows long-read information to support the assembly while maintaining short reads as the primary input. metaSPAdes assembles each short-read group separately and pairs each group with the long reads at the same position in the long-read collection. A long-read collection is therefore all or nothing: either leave it empty, or provide exactly one FASTQ file for every short-read group, with the same element identifiers in the same order as the paired reads. A collection with a different number of elements stops the workflow with an error; a collection with the same number of elements but a different order would silently pair the wrong reads. Nanopore and PacBio reads are handled independently, so one of them can be left empty.
 
 It is also possible to skip the assembly part by selecting **Custom Assembly** and providing your own assemblies, for example from an assembler that is not part of this workflow. The custom assemblies must include one FASTA file for every short-read group, with the same element identifiers. They are reordered by identifier before being evaluated with **Quast** and returned as the final assemblies; their input collection order does not matter. Additional assemblies for other groups are ignored. The workflow fails with an error if Custom Assembly is selected but no custom assemblies are provided.
 
@@ -40,8 +40,8 @@ The required inputs for this workflow are:
 
 The optional inputs are:
 
-  - Trimmed nanopore reads in FASTQ format (as a list, matching element identifiers for any groups with long reads; metaSPAdes only)
-  - Trimmed PacBio reads in FASTQ format (as a list, matching element identifiers for any groups with long reads; metaSPAdes only)
+  - Trimmed nanopore reads in FASTQ format (optional; as a list with one file per short-read group, same identifiers and order; metaSPAdes only)
+  - Trimmed PacBio reads in FASTQ format (optional; as a list with one file per short-read group, same identifiers and order; metaSPAdes only)
   - Custom assemblies in FASTA format (as a list, one assembly per short-read group with matching element identifiers), required when Custom Assembly is selected
 
 QUAST evaluates contigs of at least 500 bases. This fixed evaluation threshold is independent of the minimum contig length used by MEGAHIT.
