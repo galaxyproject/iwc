@@ -71,6 +71,9 @@ test("nothing of IWC's leaks into the build", () => {
         /iwc-workflows/,
         /Intergalactic Workflow Commission/,
         /peer-reviewed/,
+        // IWC's header title and the page title suffix
+        /Galaxy IWC/,
+        /\| IWC</,
         // The layout keeps its "Plausible Analytics" comment, so look for the script itself
         /data-domain=/,
         /plausible\./i,
