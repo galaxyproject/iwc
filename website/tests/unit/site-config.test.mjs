@@ -80,3 +80,14 @@ test("defines are one JSON literal per key", () => {
     assert.equal(defines.__SITE_SITE_URL__, '"https://iwc.galaxyproject.org"');
     assert.equal(defines.__SITE_HEADER_BADGE__, "null");
 });
+
+test("every constant declared for the site is a config key", () => {
+    const declarations = readFileSync(new URL("../../src/site-config.d.ts", import.meta.url), "utf8");
+    const declared = [...declarations.matchAll(/^declare const (\w+):/gm)].map((match) => match[1]);
+    const defined = Object.keys(DEFAULTS).map(defineName);
+    assert.ok(declared.length > 0);
+    assert.deepEqual(
+        declared.filter((name) => !defined.includes(name)),
+        [],
+    );
+});

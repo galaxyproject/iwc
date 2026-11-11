@@ -47,7 +47,7 @@ const dockstoreWorkflowPageUrl = computed(() => {
 
 const githubWorkflowUrl = computed(() => {
     const repoPath = props.workflow?.repoPath?.replace(/^\.\//, "");
-    return `https://github.com/galaxyproject/iwc/tree/main/${repoPath}`;
+    return `${__SITE_REPO_URL__}/tree/${__SITE_REPO_BRANCH__}/${repoPath}`;
 });
 
 const doiResolverUrl = computed(() => {

@@ -73,7 +73,7 @@ export function defineName(key) {
 }
 
 // Vite swaps each of these identifiers for its literal before bundling, in the
-// pages and in the hydrated components alike. src/site-config.ts names them.
+// pages and in the hydrated components alike. src/site-config.d.ts declares them.
 export function siteDefines(config) {
     return Object.fromEntries(Object.entries(config).map(([key, value]) => [defineName(key), JSON.stringify(value)]));
 }

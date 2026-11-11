@@ -1,4 +1,4 @@
-export const IWC_SITE_URL = "https://iwc.galaxyproject.org";
+export const IWC_SITE_URL = __SITE_SITE_URL__;
 
 /**
  * Formats an ISO timestamp into a readable date string.
