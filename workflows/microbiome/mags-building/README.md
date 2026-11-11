@@ -80,16 +80,16 @@ Grouping merges the reads of samples that belong to the same experimental group,
 - **Original mode** keeps every sample separate.
 - **Grouped mode** merges the reads of each metadata-defined group.
 - **Hybrid mode** keeps both: grouped reads where a group exists, original reads otherwise.
-- Empty, sample-matched files stand in for missing long reads, so that a run without long reads keeps the same sample structure.
+- Without long reads, empty sample-matched files are grouped in their place, so the grouping steps always run. The workflow then checks whether long reads were supplied and passes no long reads to the assembly when they were not.
 
-**Group short and long reads consistently**: use the same metadata table and the same grouping column for all read types. The workflow groups each read type on its own and then matches the results by identifier, so the groups must have the same names; otherwise the grouped long reads cannot be paired with the grouped short reads of the same group.
+**Group short and long reads consistently**: use the same metadata table and the same grouping column for all read types. The workflow groups each read type on its own, and metaSPAdes then pairs each short-read group with the long reads at the same position. Long reads are all or nothing per read type: either supply none, or supply them for every sample, with the same identifiers and in the same order as the short reads. Long reads for only some samples stop the workflow with an error, whichever assembler is selected.
 
 ## Step 2: Assembly and assembly selection
 
 Each selected sample or group is assembled into one assembly.
 
 - **MEGAHIT** assembles short reads only.
-- **metaSPAdes** can additionally use the grouped or per-sample nanopore and PacBio reads.
+- **metaSPAdes** assembles each sample or group in its own job and can additionally use the grouped or per-sample nanopore and PacBio reads.
 - **Custom Assembly** takes your own assemblies instead of running an assembler.
 
 The assembly selector passes through the output of the chosen assembler or the custom assemblies. QUAST assesses those assemblies and produces the assembly report; it does not rank alternative assemblies or choose which one to bin.
