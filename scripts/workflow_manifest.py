@@ -127,7 +127,7 @@ def directory_collection(root, directory):
     return " ".join(words).title() or None
 
 
-def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None):
+def find_and_load_compliant_workflows(directory, repo_root, site_config):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
     Read the contents of these files and add the path of the file to the content.
@@ -137,8 +137,6 @@ def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None
     the workflows live in, because the website builds GitHub and raw-file links
     from them.
     """
-    if site_config is None:
-        site_config = load_site_config()
     trs_org = site_config["trsOrg"]
     raw_data_base = site_config["rawDataBase"]
     collection_fallback = site_config["collectionFallback"]
