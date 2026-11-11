@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -113,6 +113,17 @@ test("every constant declared for the site is a config key", () => {
         declared.filter((name) => !defined.includes(name)),
         [],
     );
+});
+
+test("every constant the site uses is declared", () => {
+    const declarations = readFileSync(new URL("../../src/site-config.d.ts", import.meta.url), "utf8");
+    const declared = new Set([...declarations.matchAll(/^declare const (\w+):/gm)].map((match) => match[1]));
+    const src = new URL("../../src/", import.meta.url);
+    const used = readdirSync(src, { recursive: true })
+        .filter((path) => /\.(astro|vue|ts|js|mjs)$/.test(path) && !path.endsWith("site-config.d.ts"))
+        .flatMap((path) => [...readFileSync(new URL(path, src), "utf8").matchAll(/__SITE_\w+?__/g)].map((m) => m[0]));
+    assert.ok(used.length > 0);
+    assert.deepEqual([...new Set(used.filter((name) => !declared.has(name)))], []);
 });
 
 test("an inherited aboutMarkdown resolves against the defaults", () => {
