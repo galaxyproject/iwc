@@ -1,0 +1,82 @@
+import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { test } from "node:test";
+import { defineName, loadSiteConfig, siteDefines } from "../../site-config.mjs";
+
+const DEFAULTS = JSON.parse(readFileSync(new URL("../../../site-config.json", import.meta.url), "utf8"));
+const OPTIONAL = ["repoBranch", "collectionFallback", "aboutMarkdown", "headerBadge"];
+
+function labOverride(changes = {}) {
+    const override = Object.fromEntries(Object.entries(DEFAULTS).filter(([key]) => !OPTIONAL.includes(key)));
+    return {
+        ...override,
+        name: "IWC Lab",
+        repoUrl: "https://github.com/galaxyproject/iwc-lab",
+        analytics: null,
+        sentry: null,
+        ...changes,
+    };
+}
+
+function writeOverride(override) {
+    const dir = mkdtempSync(join(tmpdir(), "site-config-"));
+    const path = join(dir, "lab-site-config.json");
+    writeFileSync(path, JSON.stringify(override));
+    return { dir, env: { SITE_CONFIG: path } };
+}
+
+test("defaults are IWC's", () => {
+    assert.deepEqual(loadSiteConfig({}), DEFAULTS);
+});
+
+test("an override replaces top-level keys and keeps optional defaults", () => {
+    const config = loadSiteConfig(writeOverride(labOverride()).env);
+    assert.equal(config.name, "IWC Lab");
+    assert.equal(config.analytics, null);
+    assert.equal(config.collectionFallback, "none");
+});
+
+test("an override must set every required key", () => {
+    for (const key of Object.keys(DEFAULTS).filter((k) => !OPTIONAL.includes(k))) {
+        const override = labOverride();
+        delete override[key];
+        assert.throws(() => loadSiteConfig(writeOverride(override).env), new RegExp(`must set: ${key}`), key);
+    }
+});
+
+test("an override may leave out every optional key", () => {
+    // labOverride sets none of them, so a key missing from OPTIONAL here would throw
+    assert.doesNotThrow(() => loadSiteConfig(writeOverride(labOverride()).env));
+});
+
+test("unknown keys are rejected", () => {
+    assert.throws(() => loadSiteConfig(writeOverride(labOverride({ trsOrganisation: "x" })).env), /unknown keys/);
+});
+
+test("repoUrl must be a GitHub repo", () => {
+    for (const repoUrl of ["https://gitlab.com/a/b", "https://github.com/galaxyproject", "galaxyproject/iwc"]) {
+        assert.throws(() => loadSiteConfig(writeOverride(labOverride({ repoUrl })).env), /repoUrl/, repoUrl);
+    }
+});
+
+test("collectionFallback is checked", () => {
+    assert.throws(
+        () => loadSiteConfig(writeOverride(labOverride({ collectionFallback: "dir" })).env),
+        /collectionFallback/,
+    );
+});
+
+test("aboutMarkdown resolves against the config file", () => {
+    const { dir, env } = writeOverride(labOverride({ aboutMarkdown: "about.md" }));
+    assert.equal(loadSiteConfig(env).aboutMarkdown, join(dir, "about.md"));
+});
+
+test("defines are one JSON literal per key", () => {
+    assert.equal(defineName("siteUrl"), "__SITE_SITE_URL__");
+    assert.equal(defineName("featuredTrsIds"), "__SITE_FEATURED_TRS_IDS__");
+    const defines = siteDefines(DEFAULTS);
+    assert.equal(defines.__SITE_SITE_URL__, '"https://iwc.galaxyproject.org"');
+    assert.equal(defines.__SITE_HEADER_BADGE__, "null");
+});
