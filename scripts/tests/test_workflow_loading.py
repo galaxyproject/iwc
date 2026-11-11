@@ -102,6 +102,7 @@ def write_repo(workflows_dir, relative_path):
             }
         )
     )
+    return repo
 
 
 def load_collections(tmp_path, monkeypatch, fallback, dockstore_collections):
@@ -281,3 +282,26 @@ def test_main_writes_everything_where_it_is_told(tmp_path, monkeypatch, capsys):
     featured = load_site_config({})["featuredTrsIds"]
     warnings = [line for line in capsys.readouterr().out.splitlines() if line.startswith("::warning::")]
     assert warnings == [f"::warning::Featured workflow isn't in the site: {trs_id}" for trs_id in featured]
+
+
+def test_iwc_default_run_keeps_iwc_paths_and_urls(tmp_path, monkeypatch):
+    # How IWC's own build calls the script: from the repo root, no flags for
+    # the workflows or the repo root, and no SITE_CONFIG
+    repo = write_repo(tmp_path / "workflows", "variant-calling/cat")
+    (repo / "cat-tests.yml").write_text(
+        yaml.safe_dump([{"doc": "t", "job": {"in": {"class": "File", "path": "test-data/in.txt"}}, "outputs": {}}])
+    )
+    monkeypatch.setattr(workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], []))
+    monkeypatch.delenv("SITE_CONFIG", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    workflow_manifest.main(["--output-dir", "out", "--manifest", "manifest.json"])
+
+    (repo_details,) = json.loads((tmp_path / "manifest.json").read_text())
+    (workflow,) = repo_details["workflows"]
+    assert repo_details["path"] == workflow["repoPath"] == "./workflows/variant-calling/cat"
+    assert workflow["trsID"] == "#workflow/github.com/iwc-workflows/cat/main"
+    assert workflow["iwcID"] == "cat-main"
+    assert workflow["tests"][0]["job"]["in"]["location"] == (
+        "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/cat/test-data/in.txt"
+    )
