@@ -5,6 +5,7 @@ import pytest
 import yaml
 
 import workflow_manifest
+from site_config import load_site_config
 from create_mermaid import (
     load_expanded_format2,
     load_native_workflow,
@@ -117,7 +118,8 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
                             "class": "File",
                             "location": "https://example.org/input.txt",
                             "filetype": "txt",
-                        }
+                        },
+                        "local dataset": {"class": "File", "path": "test-data/in put.txt"},
                     },
                     "outputs": {},
                 }
@@ -127,13 +129,23 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
     monkeypatch.setattr(
         workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], [])
     )
+    lab_config = {
+        **load_site_config({}),
+        "trsOrg": "iwc-lab-workflows",
+        "rawDataBase": "https://raw.githubusercontent.com/galaxyproject/iwc-lab/main/",
+    }
 
     # An absolute --workflows outside the cwd, as a second site's build passes
     (repo_details,) = workflow_manifest.find_and_load_compliant_workflows(
-        str(tmp_path / "workflows"), repo_root=str(tmp_path)
+        str(tmp_path / "workflows"), repo_root=str(tmp_path), site_config=lab_config
     )
     (workflow,) = repo_details["workflows"]
     assert repo_details["path"] == workflow["repoPath"] == "./workflows/lab/cat"
+    assert workflow["trsID"] == "#workflow/github.com/iwc-lab-workflows/cat/main"
+    assert workflow["iwcID"] == "cat-main"
+    assert workflow["tests"][0]["job"]["local dataset"]["location"] == (
+        "https://raw.githubusercontent.com/galaxyproject/iwc-lab/main/workflows/lab/cat/test-data/in%20put.txt"
+    )
     assert workflow["definition"]["name"] == "Concatenate fixture"
     assert workflow["workflowFile"] == "cat-main.gxwf.yml"
     assert workflow["testFile"] == "cat-main.gxwf-tests.yml"

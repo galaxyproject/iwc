@@ -8,6 +8,7 @@ import shutil
 from urllib.parse import quote_plus, quote
 from create_mermaid import load_expanded_format2, load_native_workflow, walk_directory
 from planemo.galaxy.workflows import job_template
+from site_config import load_site_config
 
 OUTPUT_DIR = "website/public/data"
 
@@ -97,18 +98,18 @@ def extract_date_from_changelog(changelog_content):
     return None
 
 
-def process_test_file(workflow_test_path, repo_path):
+def process_test_file(workflow_test_path, repo_path, raw_data_base):
     with open(workflow_test_path) as f:
         tests = yaml.safe_load(f)
     # Process test dictionary to replace path keys with location keys
     if tests:
         for test in tests:
             for input_item in test["job"].values():
-                path_to_location(input_item, repo_path)
+                path_to_location(input_item, repo_path, raw_data_base)
     return tests
 
 
-def find_and_load_compliant_workflows(directory, repo_root="."):
+def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
     Read the contents of these files and add the path of the file to the content.
@@ -118,6 +119,10 @@ def find_and_load_compliant_workflows(directory, repo_root="."):
     the workflows live in, because the website builds GitHub and raw-file links
     from them.
     """
+    if site_config is None:
+        site_config = load_site_config()
+    trs_org = site_config["trsOrg"]
+    raw_data_base = site_config["rawDataBase"]
     workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:
@@ -193,9 +198,9 @@ def find_and_load_compliant_workflows(directory, repo_root="."):
                 workflow["updated"] = updated_isoformat
 
                 dirname = os.path.dirname(workflow_path).split("/")[-1]
-                trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
+                trsID = f"#workflow/github.com/{trs_org}/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
-                workflow["iwcID"] = create_safe_identifier(trsID)
+                workflow["iwcID"] = create_safe_identifier(trsID, trs_org)
                 workflow["workflowFile"], workflow["testFile"] = staged_file_names(
                     workflow_path, workflow["iwcID"]
                 )
@@ -230,7 +235,7 @@ def find_and_load_compliant_workflows(directory, repo_root="."):
                         workflow_test_path = f"{workflow_stem}-test.yml"
                     if os.path.exists(workflow_test_path):
                         print(f"file found at {workflow_test_path}")
-                        workflow["tests"] = process_test_file(workflow_test_path, repo_path)
+                        workflow["tests"] = process_test_file(workflow_test_path, repo_path, raw_data_base)
                     else:
                         print(f"Test Missing: {workflow_test_path}")
                 else:
@@ -238,7 +243,7 @@ def find_and_load_compliant_workflows(directory, repo_root="."):
                     for test in workflow["testParameterFiles"]:
                         workflow_test_path = os.path.join(root, test.lstrip("/"))
                         if os.path.exists(workflow_test_path):
-                            tests += process_test_file(workflow_test_path, repo_path)
+                            tests += process_test_file(workflow_test_path, repo_path, raw_data_base)
                         else:
                             raise Exception(f"Listed test file doesn't exist: {test}")
                     workflow["tests"] = tests
@@ -247,7 +252,7 @@ def find_and_load_compliant_workflows(directory, repo_root="."):
     return workflow_data
 
 
-def path_to_location(input_item, repo_path):
+def path_to_location(input_item, repo_path, raw_data_base):
     if isinstance(input_item, dict):
         if input_item.get("class") == "File":
             if "path" in input_item:
@@ -260,7 +265,7 @@ def path_to_location(input_item, repo_path):
                     # URL-encode the path to handle spaces and special characters
                     # Use safe='/' to keep forward slashes unencoded as path separators
                     encoded_path = quote(relative_path, safe='/')
-                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{encoded_path}"
+                    input_item["location"] = f"{raw_data_base}{encoded_path}"
                     del input_item["path"]
             if "filetype" not in input_item:
                 # Add filetype if not present
@@ -308,7 +313,7 @@ def path_to_location(input_item, repo_path):
             if input_item.get("class") == "Collection":
                 # If it's a directory, we can recursively call this function
                 for element in input_item["elements"]:
-                    path_to_location(element, repo_path)
+                    path_to_location(element, repo_path, raw_data_base)
 
 
 def write_to_json(data, filename):
@@ -322,14 +327,14 @@ def write_to_json(data, filename):
         print(f"Error writing to file {filename}: {e}")
 
 
-def create_safe_identifier(trs_id):
+def create_safe_identifier(trs_id, trs_org):
     """
-    Generate a safe and pretty filename from the TRS ID, keeping only the IWC-local portion.
+    Generate a safe and pretty filename from the TRS ID, keeping only the portion after the org.
     For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes amplicon-dada2
 
     We will also lowercase the slug.
     """
-    parts = trs_id.split("iwc-workflows/")
+    parts = trs_id.split(f"{trs_org}/")
     if len(parts) > 1:
         safe_name = parts[1].replace("/", "-")
     else:
@@ -398,7 +403,8 @@ def stage_workflow_test_file(test_data, test_file):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Build the website's workflow data from a directory of workflow repositories."
+        description="Build the website's workflow data from a directory of workflow repositories.",
+        epilog="Site values (Dockstore org, repository) come from site-config.json, or the file named by $SITE_CONFIG.",
     )
     parser.add_argument(
         "--workflows",
@@ -426,10 +432,11 @@ def parse_args():
 def main():
     global OUTPUT_DIR
     args = parse_args()
+    site_config = load_site_config()
     OUTPUT_DIR = args.output_dir
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     walk_directory(args.workflows)
-    workflow_data = find_and_load_compliant_workflows(args.workflows, args.repo_root)
+    workflow_data = find_and_load_compliant_workflows(args.workflows, args.repo_root, site_config)
 
     index_data = []
     for item in workflow_data:
