@@ -25,9 +25,9 @@ const COLLECTION_FALLBACKS = ["none", "directory"];
 // GitHub is the only host the site links to
 const GITHUB_REPO_URL = /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9._-]+(?<!\.git)$/;
 
-export function loadSiteConfig(env = process.env) {
-    const config = JSON.parse(readFileSync(DEFAULTS_PATH, "utf8"));
-    let configDir = dirname(DEFAULTS_PATH);
+export function loadSiteConfig(env = process.env, defaultsPath = DEFAULTS_PATH) {
+    const config = JSON.parse(readFileSync(defaultsPath, "utf8"));
+    resolveAboutMarkdown(config, dirname(defaultsPath));
 
     if (env.SITE_CONFIG) {
         const overridePath = resolve(env.SITE_CONFIG);
@@ -47,8 +47,8 @@ export function loadSiteConfig(env = process.env) {
         if (missing.length) {
             throw new Error(`${overridePath} must set: ${missing.join(", ")}`);
         }
+        resolveAboutMarkdown(override, dirname(overridePath));
         Object.assign(config, override);
-        configDir = dirname(overridePath);
     }
 
     if (!COLLECTION_FALLBACKS.includes(config.collectionFallback)) {
@@ -61,10 +61,14 @@ export function loadSiteConfig(env = process.env) {
             `repoUrl must look like https://github.com/<owner>/<repo>, not ${JSON.stringify(config.repoUrl)}`,
         );
     }
+    return config;
+}
+
+// Against the file that set it, so an inherited path keeps pointing at the defaults' copy
+function resolveAboutMarkdown(config, configDir) {
     if (config.aboutMarkdown) {
         config.aboutMarkdown = resolve(configDir, config.aboutMarkdown);
     }
-    return config;
 }
 
 // Vite's define only reaches script. This does the same job for Vue templates:

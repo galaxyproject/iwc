@@ -109,3 +109,11 @@ test("every constant declared for the site is a config key", () => {
         [],
     );
 });
+
+test("an inherited aboutMarkdown resolves against the defaults", () => {
+    const defaultsDir = mkdtempSync(join(tmpdir(), "site-config-defaults-"));
+    const defaultsPath = join(defaultsDir, "site-config.json");
+    writeFileSync(defaultsPath, JSON.stringify({ ...DEFAULTS, aboutMarkdown: "about.md" }));
+    const { env } = writeOverride(labOverride());
+    assert.equal(loadSiteConfig(env, defaultsPath).aboutMarkdown, join(defaultsDir, "about.md"));
+});

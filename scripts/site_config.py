@@ -37,7 +37,7 @@ def load_site_config(environ=None):
     environ = os.environ if environ is None else environ
     with open(DEFAULTS_PATH) as f:
         config = json.load(f)
-    config_dir = DEFAULTS_PATH.parent
+    resolve_about_markdown(config, DEFAULTS_PATH.parent)
 
     override_path = environ.get("SITE_CONFIG")
     if override_path:
@@ -52,8 +52,8 @@ def load_site_config(environ=None):
         missing = sorted(set(config) - OPTIONAL_KEYS - set(override))
         if missing:
             raise SiteConfigError(f"{override_path} must set: {', '.join(missing)}")
+        resolve_about_markdown(override, override_path.parent)
         config.update(override)
-        config_dir = override_path.parent
 
     if config["collectionFallback"] not in COLLECTION_FALLBACKS:
         raise SiteConfigError(
@@ -64,7 +64,10 @@ def load_site_config(environ=None):
         raise SiteConfigError(f"repoUrl must look like https://github.com/<owner>/<repo>, not {config['repoUrl']!r}")
     owner, repo = match.groups()
     config["rawDataBase"] = f"https://raw.githubusercontent.com/{owner}/{repo}/{config['repoBranch']}/"
-
-    if config["aboutMarkdown"]:
-        config["aboutMarkdown"] = str((config_dir / config["aboutMarkdown"]).resolve())
     return config
+
+
+def resolve_about_markdown(config, config_dir):
+    # Against the file that set it, so an inherited path keeps pointing at the defaults' copy
+    if config.get("aboutMarkdown"):
+        config["aboutMarkdown"] = str((config_dir / config["aboutMarkdown"]).resolve())

@@ -100,3 +100,13 @@ def test_relative_site_config_resolves_against_cwd(tmp_path, monkeypatch):
     write_override(tmp_path, lab_override())
     monkeypatch.chdir(tmp_path)
     assert load_site_config({"SITE_CONFIG": "lab-site-config.json"})["name"] == "IWC Lab"
+
+
+def test_inherited_about_markdown_resolves_against_the_defaults(tmp_path, monkeypatch):
+    defaults_dir = tmp_path / "iwc"
+    defaults_dir.mkdir()
+    defaults = defaults_dir / "site-config.json"
+    defaults.write_text(json.dumps({**DEFAULTS, "aboutMarkdown": "about.md"}))
+    monkeypatch.setattr(site_config, "DEFAULTS_PATH", defaults)
+    environ = write_override(tmp_path, lab_override())
+    assert load_site_config(environ)["aboutMarkdown"] == str((defaults_dir / "about.md").resolve())
