@@ -13,7 +13,7 @@ const DEFAULTS_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "../site-
 
 // An override has to set every key except these. Anything else it inherited
 // would be IWC's name, links, accounts or claims showing up on another site.
-const OPTIONAL_KEYS = new Set([
+export const OPTIONAL_KEYS = new Set([
     "repoBranch", // second sites build from main too
     "collectionFallback", // "none" is off
     "aboutMarkdown", // null keeps the built-in about page

@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { defineName, loadSiteConfig, siteDefines } from "../../site-config.mjs";
+import { OPTIONAL_KEYS, defineName, loadSiteConfig, siteDefines } from "../../site-config.mjs";
 
 const DEFAULTS = JSON.parse(readFileSync(new URL("../../../site-config.json", import.meta.url), "utf8"));
 const OPTIONAL = ["repoBranch", "collectionFallback", "aboutMarkdown", "headerBadge"];
@@ -26,6 +26,11 @@ function writeOverride(override) {
     writeFileSync(path, JSON.stringify(override));
     return { dir, env: { SITE_CONFIG: path } };
 }
+
+test("the optional keys are only the harmless ones", () => {
+    // scripts/tests/test_site_config.py pins the same list for the Python loader
+    assert.deepEqual([...OPTIONAL_KEYS].sort(), [...OPTIONAL].sort());
+});
 
 test("defaults are IWC's", () => {
     assert.deepEqual(loadSiteConfig({}), DEFAULTS);

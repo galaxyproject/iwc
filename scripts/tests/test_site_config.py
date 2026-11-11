@@ -39,6 +39,13 @@ def test_optional_keys_exist():
     assert OPTIONAL_KEYS <= set(DEFAULTS)
 
 
+def test_optional_keys_are_only_the_harmless_ones():
+    # Written out rather than derived: the other tests build their overrides
+    # from OPTIONAL_KEYS, so they can't notice an identity key joining it.
+    # website/tests/unit/site-config.test.mjs pins the same list for the JS loader.
+    assert OPTIONAL_KEYS == {"repoBranch", "collectionFallback", "aboutMarkdown", "headerBadge"}
+
+
 def test_override_replaces_top_level_keys(tmp_path):
     config = load_site_config(write_override(tmp_path, lab_override()))
     assert config["trsOrg"] == "iwc-lab-workflows"
