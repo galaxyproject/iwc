@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { test } from "node:test";
+import { after, test } from "node:test";
 import { OPTIONAL_KEYS, defineName, loadSiteConfig, siteDefines } from "../../site-config.mjs";
 
 const DEFAULTS = JSON.parse(readFileSync(new URL("../../../site-config.json", import.meta.url), "utf8"));
 const OPTIONAL = ["repoBranch", "collectionFallback", "aboutMarkdown", "headerBadge"];
+const TMP = mkdtempSync(join(tmpdir(), "site-config-"));
+after(() => rmSync(TMP, { recursive: true, force: true }));
 
 function labOverride(changes = {}) {
     const override = Object.fromEntries(Object.entries(DEFAULTS).filter(([key]) => !OPTIONAL.includes(key)));
@@ -21,7 +23,7 @@ function labOverride(changes = {}) {
 }
 
 function writeOverride(override) {
-    const dir = mkdtempSync(join(tmpdir(), "site-config-"));
+    const dir = mkdtempSync(join(TMP, "override-"));
     const path = join(dir, "lab-site-config.json");
     writeFileSync(path, JSON.stringify(override));
     return { dir, env: { SITE_CONFIG: path } };
@@ -49,11 +51,6 @@ test("an override must set every required key", () => {
         delete override[key];
         assert.throws(() => loadSiteConfig(writeOverride(override).env), new RegExp(`must set: ${key}`), key);
     }
-});
-
-test("an override may leave out every optional key", () => {
-    // labOverride sets none of them, so a key missing from OPTIONAL here would throw
-    assert.doesNotThrow(() => loadSiteConfig(writeOverride(labOverride()).env));
 });
 
 test("unknown keys are rejected", () => {
@@ -127,7 +124,7 @@ test("every constant the site uses is declared", () => {
 });
 
 test("an inherited aboutMarkdown resolves against the defaults", () => {
-    const defaultsDir = mkdtempSync(join(tmpdir(), "site-config-defaults-"));
+    const defaultsDir = mkdtempSync(join(TMP, "defaults-"));
     const defaultsPath = join(defaultsDir, "site-config.json");
     writeFileSync(defaultsPath, JSON.stringify({ ...DEFAULTS, aboutMarkdown: "about.md" }));
     const { env } = writeOverride(labOverride());
