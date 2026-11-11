@@ -56,7 +56,18 @@ test("unknown keys are rejected", () => {
 });
 
 test("repoUrl must be a GitHub repo", () => {
-    for (const repoUrl of ["https://gitlab.com/a/b", "https://github.com/galaxyproject", "galaxyproject/iwc"]) {
+    const notRepos = [
+        "https://gitlab.com/a/b",
+        "https://github.com/galaxyproject",
+        "galaxyproject/iwc",
+        // The site appends paths to repoUrl, so anything past the repo name breaks its links
+        "https://github.com/a/b/",
+        "https://github.com/a/b.git",
+        "https://github.com/a/b/tree/main",
+        "https://github.com/a/b#readme",
+        "https://github.com/a/b?tab=readme",
+    ];
+    for (const repoUrl of notRepos) {
         assert.throws(() => loadSiteConfig(writeOverride(labOverride({ repoUrl })).env), /repoUrl/, repoUrl);
     }
 });

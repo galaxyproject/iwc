@@ -66,7 +66,20 @@ def test_override_rejects_unknown_keys(tmp_path):
         load_site_config(write_override(tmp_path, lab_override(trsOrganisation="x")))
 
 
-@pytest.mark.parametrize("repo_url", ["https://gitlab.com/a/b", "https://github.com/galaxyproject", "galaxyproject/iwc"])
+@pytest.mark.parametrize(
+    "repo_url",
+    [
+        "https://gitlab.com/a/b",
+        "https://github.com/galaxyproject",
+        "galaxyproject/iwc",
+        # The site appends paths to repoUrl, so anything past the repo name breaks its links
+        "https://github.com/a/b/",
+        "https://github.com/a/b.git",
+        "https://github.com/a/b/tree/main",
+        "https://github.com/a/b#readme",
+        "https://github.com/a/b?tab=readme",
+    ],
+)
 def test_repo_url_must_be_a_github_repo(tmp_path, repo_url):
     with pytest.raises(SiteConfigError, match="repoUrl"):
         load_site_config(write_override(tmp_path, lab_override(repoUrl=repo_url)))

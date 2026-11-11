@@ -26,7 +26,7 @@ OPTIONAL_KEYS = {
 COLLECTION_FALLBACKS = ("none", "directory")
 
 # GitHub is the only host the site links to, and the test-data base is built from it
-GITHUB_REPO_URL = re.compile(r"^https://github\.com/([^/]+)/([^/]+?)/?$")
+GITHUB_REPO_URL = re.compile(r"^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+)(?<!\.git)$")
 
 
 class SiteConfigError(Exception):
@@ -59,7 +59,7 @@ def load_site_config(environ=None):
         raise SiteConfigError(
             f"collectionFallback must be one of {', '.join(COLLECTION_FALLBACKS)}, not {config['collectionFallback']!r}"
         )
-    match = GITHUB_REPO_URL.match(config["repoUrl"])
+    match = GITHUB_REPO_URL.fullmatch(config["repoUrl"])
     if not match:
         raise SiteConfigError(f"repoUrl must look like https://github.com/<owner>/<repo>, not {config['repoUrl']!r}")
     owner, repo = match.groups()

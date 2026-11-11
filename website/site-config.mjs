@@ -23,7 +23,7 @@ const OPTIONAL_KEYS = new Set([
 const COLLECTION_FALLBACKS = ["none", "directory"];
 
 // GitHub is the only host the site links to
-const GITHUB_REPO_URL = /^https:\/\/github\.com\/[^/]+\/[^/]+?\/?$/;
+const GITHUB_REPO_URL = /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9._-]+(?<!\.git)$/;
 
 export function loadSiteConfig(env = process.env) {
     const config = JSON.parse(readFileSync(DEFAULTS_PATH, "utf8"));
