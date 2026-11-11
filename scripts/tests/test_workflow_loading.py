@@ -204,3 +204,17 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
     assert workflow["workflowFile"] == "cat-main.gxwf.yml"
     assert workflow["testFile"] == "cat-main.gxwf-tests.yml"
     assert [t["doc"] for t in workflow["tests"]] == ["fixture test"]
+
+
+@pytest.mark.parametrize(
+    "trs_id, trs_org, expected",
+    [
+        ("#workflow/github.com/iwc-workflows/amplicon/dada2", "iwc-workflows", "amplicon-dada2"),
+        # The org's name also shows up inside the repository name or the host
+        ("#workflow/github.com/lab/my-lab/main", "lab", "my-lab-main"),
+        ("#workflow/github.com/lab/my-lab/other", "lab", "my-lab-other"),
+        ("#workflow/github.com/com/tools/main", "com", "tools-main"),
+    ],
+)
+def test_safe_identifier_drops_only_the_org_prefix(trs_id, trs_org, expected):
+    assert workflow_manifest.create_safe_identifier(trs_id, trs_org) == expected

@@ -355,9 +355,9 @@ def create_safe_identifier(trs_id, trs_org):
 
     We will also lowercase the slug.
     """
-    parts = trs_id.split(f"{trs_org}/")
-    if len(parts) > 1:
-        safe_name = parts[1].replace("/", "-")
+    prefix = f"#workflow/github.com/{trs_org}/"
+    if trs_id.startswith(prefix):
+        safe_name = trs_id[len(prefix):].replace("/", "-")
     else:
         safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
     return safe_name.lower()
