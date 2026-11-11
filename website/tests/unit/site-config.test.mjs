@@ -53,6 +53,10 @@ test("an override may leave out every optional key", () => {
 
 test("unknown keys are rejected", () => {
     assert.throws(() => loadSiteConfig(writeOverride(labOverride({ trsOrganisation: "x" })).env), /unknown keys/);
+    // Every object has these through its prototype; the Python loader rejects them too
+    for (const key of ["constructor", "toString"]) {
+        assert.throws(() => loadSiteConfig(writeOverride(labOverride({ [key]: "x" })).env), /unknown keys/, key);
+    }
 });
 
 test("repoUrl must be a GitHub repo", () => {

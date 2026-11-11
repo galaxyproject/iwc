@@ -36,13 +36,13 @@ export function loadSiteConfig(env = process.env) {
             throw new Error(`${overridePath} must hold a JSON object`);
         }
         const unknown = Object.keys(override)
-            .filter((key) => !(key in config))
+            .filter((key) => !Object.hasOwn(config, key))
             .sort();
         if (unknown.length) {
             throw new Error(`${overridePath} sets unknown keys: ${unknown.join(", ")}`);
         }
         const missing = Object.keys(config)
-            .filter((key) => !OPTIONAL_KEYS.has(key) && !(key in override))
+            .filter((key) => !OPTIONAL_KEYS.has(key) && !Object.hasOwn(override, key))
             .sort();
         if (missing.length) {
             throw new Error(`${overridePath} must set: ${missing.join(", ")}`);
