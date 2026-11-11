@@ -35,8 +35,14 @@ test("the home page is the second site's", () => {
     assert.match(home, /href="https:\/\/github\.com\/example\/second-site\/"/);
 });
 
-test("the featured workflow is on the home page", () => {
-    assert.match(page("index.html"), /second-site-workflows\/cat-native\/main/);
+test("the featured workflow is in the hero, and only that one", () => {
+    // Not the whole page: the filter sidebar and the grid carry every workflow
+    const hero = page("index.html").match(
+        /<astro-island[^>]*component-url="[^"]*HeroSection[^"]*"[^>]*>[\s\S]*?<\/astro-island>/,
+    );
+    assert.ok(hero, "hero island");
+    assert.match(hero[0], /href="\/workflow\/cat-native-main\/"/);
+    assert.doesNotMatch(hero[0], /cat-format2/);
 });
 
 test("directories became collections", () => {
