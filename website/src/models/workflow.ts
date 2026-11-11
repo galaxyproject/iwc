@@ -49,6 +49,10 @@ export interface Workflow {
     diagram_svg?: string;
     trsID: string;
     iwcID: string;
+    /** File the workflow is published under in /data, e.g. {iwcID}.ga or {iwcID}.gxwf.yml */
+    workflowFile: string;
+    /** File the workflow tests are published under in /data, next to workflowFile */
+    testFile: string;
     repoPath: string;
     categories: string[];
     collections: string[];

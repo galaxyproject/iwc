@@ -1,4 +1,3 @@
-import json
 import shutil
 from pathlib import Path
 
@@ -6,7 +5,11 @@ import pytest
 import yaml
 
 import workflow_manifest
-from create_mermaid import load_native_workflow, workflow_to_mermaid_diagrams
+from create_mermaid import (
+    load_expanded_format2,
+    load_native_workflow,
+    workflow_to_mermaid_diagrams,
+)
 
 DATA = Path(__file__).parent / "data"
 
@@ -49,19 +52,37 @@ def output_dir(tmp_path, monkeypatch):
 
 
 def test_native_workflow_is_staged_verbatim(output_dir):
-    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), None, "cat-main")
+    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), "cat-main.ga")
     assert [p.name for p in output_dir.iterdir()] == ["cat-main.ga"]
     assert (output_dir / "cat-main.ga").read_bytes() == (DATA / "cat.ga").read_bytes()
 
 
-@pytest.mark.parametrize("suffix", [".gxwf.yml", ".gxwf.yaml"])
-def test_format2_is_staged_as_converted_ga_and_original(tmp_path, output_dir, suffix):
-    source = tmp_path / f"cat{suffix}"
-    shutil.copy(DATA / "cat.gxwf.yml", source)
-    definition = load_native_workflow(str(source))
-    workflow_manifest.stage_workflow_file(str(source), definition, "cat-main")
-    assert json.loads((output_dir / "cat-main.ga").read_text()) == definition
-    assert (output_dir / f"cat-main{suffix}").read_bytes() == source.read_bytes()
+@pytest.mark.parametrize(
+    "name", ["cat.gxwf.yml", "import-parent.gxwf.yml", "packed.gxwf.yml"]
+)
+def test_format2_is_staged_as_one_self_contained_file(output_dir, name):
+    workflow_manifest.stage_workflow_file(str(DATA / name), "cat-main.gxwf.yml")
+    staged = output_dir / "cat-main.gxwf.yml"
+    assert [p.name for p in output_dir.iterdir()] == [staged.name]
+    # output_dir has no import-child.gxwf.yml, so this only loads if nothing is
+    # left to resolve
+    assert load_expanded_format2(str(staged)) == load_expanded_format2(str(DATA / name))
+
+
+@pytest.mark.parametrize(
+    "source, workflow_file, test_file",
+    [
+        ("cat.ga", "cat-main.ga", "cat-main-tests.yml"),
+        ("cat.gxwf.yml", "cat-main.gxwf.yml", "cat-main.gxwf-tests.yml"),
+        ("cat.gxwf.yaml", "cat-main.gxwf.yml", "cat-main.gxwf-tests.yml"),
+    ],
+)
+def test_staged_tests_are_where_planemo_looks(source, workflow_file, test_file):
+    # planemo test drops only the last extension to find the tests
+    assert workflow_manifest.staged_file_names(source, "cat-main") == (
+        workflow_file,
+        test_file,
+    )
 
 
 def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
@@ -112,4 +133,6 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
     )
     (workflow,) = repo_details["workflows"]
     assert workflow["definition"]["name"] == "Concatenate fixture"
+    assert workflow["workflowFile"] == "cat-main.gxwf.yml"
+    assert workflow["testFile"] == "cat-main.gxwf-tests.yml"
     assert [t["doc"] for t in workflow["tests"]] == ["fixture test"]

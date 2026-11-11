@@ -105,7 +105,7 @@ const _tools = computed(() => {
 });
 
 const workflow_job_input = computed(() => {
-    const config_init_command = `planemo workflow_job_init ${props.workflow?.iwcID}.ga -o ${props.workflow?.iwcID}-job.yml`;
+    const config_init_command = `planemo workflow_job_init ${props.workflow?.workflowFile} -o ${props.workflow?.iwcID}-job.yml`;
     if (!props.workflow || !props.workflow || !props.workflow.workflow_job_input) {
         return `# config file: ${props.workflow?.iwcID}_job.yml file\n${config_init_command}`;
     } else {
@@ -293,9 +293,9 @@ onMounted(() => {
                                 <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
                                     Step 2: Download the workflow
                                 </h4>
-                                <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
+                                <p class="mb-2 text-sm text-chicago-600">Download the workflow file:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.workflowFile}&quot; -o ${workflow?.workflowFile}`" />
                             </div>
 
                             <div class="mb-6">
@@ -304,7 +304,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.testFile}&quot; -o ${workflow?.testFile}\nplanemo test ${workflow?.workflowFile}`" />
                             </div>
 
                             <div class="mb-6">
@@ -325,7 +325,7 @@ onMounted(() => {
                                     Then run the workflow with your job file:
                                 </p>
                                 <CodeBlock
-                                    :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
+                                    :code="`planemo run ${workflow?.workflowFile} ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>
                         </div>
 

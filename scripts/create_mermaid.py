@@ -82,6 +82,20 @@ def workflow_to_mermaid_diagrams(workflow, workflows=None):
     return workflows
 
 
+def _expand_format2(workflow_data, workflow_directory):
+    """Inline @import and packed $graph subworkflows into one Format-2 dict."""
+    return expanded_format2(
+        workflow_data, ConversionOptions(workflow_directory=workflow_directory)
+    ).to_dict()
+
+
+def load_expanded_format2(file_path):
+    """Load a Format-2 workflow as a self-contained Format-2 dict."""
+    with open(file_path, "r") as f:
+        workflow_data = ordered_load(f)
+    return _expand_format2(workflow_data, os.path.dirname(os.path.abspath(file_path)))
+
+
 def load_native_workflow(file_path):
     """Load a .ga or Format-2 workflow as a native (.ga-shaped) dict."""
     with open(file_path, "r") as f:
@@ -93,9 +107,7 @@ def load_native_workflow(file_path):
         return workflow_data
     workflow_directory = os.path.dirname(os.path.abspath(file_path))
     # python_to_workflow alone leaves @import subworkflows as empty steps
-    expanded = expanded_format2(
-        workflow_data, ConversionOptions(workflow_directory=workflow_directory)
-    ).to_dict()
+    expanded = _expand_format2(workflow_data, workflow_directory)
     return python_to_workflow(
         expanded, galaxy_interface=None, workflow_directory=workflow_directory
     )
