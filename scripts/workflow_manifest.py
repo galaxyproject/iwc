@@ -109,6 +109,20 @@ def process_test_file(workflow_test_path, repo_path, raw_data_base):
     return tests
 
 
+def directory_collection(root, directory):
+    """
+    Name a collection after the first directory under the workflows directory:
+    workflows/variant-calling/<repo> gives "Variant Calling". The website turns
+    that back into the slug variant-calling, which is also how the
+    category-descriptions files are named.
+    """
+    parts = os.path.relpath(root, directory).split(os.sep)
+    if len(parts) < 2:
+        # The repository sits directly in the workflows directory
+        return None
+    return parts[0].replace("-", " ").title()
+
+
 def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
@@ -123,6 +137,7 @@ def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None
         site_config = load_site_config()
     trs_org = site_config["trsOrg"]
     raw_data_base = site_config["rawDataBase"]
+    collection_fallback = site_config["collectionFallback"]
     workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:
@@ -214,6 +229,12 @@ def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None
 
                 workflow["dockstore_id"] = dockstore_details["id"]
                 workflow["categories"] = categories
+                if not collections and collection_fallback == "directory":
+                    # A site that doesn't curate Dockstore collections still needs
+                    # them, because the site's navigation is built on them
+                    fallback = directory_collection(root, directory)
+                    if fallback:
+                        collections = [fallback]
                 workflow["collections"] = collections
 
                 doi_selection = dockstore_details.get("doiSelection")

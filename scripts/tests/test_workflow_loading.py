@@ -86,6 +86,60 @@ def test_staged_tests_are_where_planemo_looks(source, workflow_file, test_file):
     )
 
 
+def write_repo(workflows_dir, relative_path):
+    repo = workflows_dir / relative_path
+    repo.mkdir(parents=True)
+    shutil.copy(DATA / "cat.ga", repo / "cat.ga")
+    # Written here rather than committed, for the reason given in the test below
+    (repo / ".dockstore.yml").write_text(
+        yaml.safe_dump(
+            {
+                "version": 1.2,
+                "workflows": [
+                    {"name": "main", "subclass": "Galaxy", "publish": True, "primaryDescriptorPath": "/cat.ga"}
+                ],
+            }
+        )
+    )
+
+
+def load_collections(tmp_path, monkeypatch, fallback, dockstore_collections):
+    workflows_dir = tmp_path / "workflows"
+    write_repo(workflows_dir, "variant-calling/curated")
+    write_repo(workflows_dir, "variant-calling/uncurated")
+    write_repo(workflows_dir, "epigenetics/uncurated-too")
+    write_repo(workflows_dir, "no-category")
+    monkeypatch.setattr(
+        workflow_manifest,
+        "get_dockstore_details",
+        lambda trs_id: ({"id": 1}, [], dockstore_collections if "/curated/" in trs_id else []),
+    )
+    config = {**load_site_config({}), "collectionFallback": fallback}
+    repos = workflow_manifest.find_and_load_compliant_workflows(
+        str(workflows_dir), repo_root=str(tmp_path), site_config=config
+    )
+    return {repo["path"]: repo["workflows"][0]["collections"] for repo in repos}
+
+
+def test_collections_come_only_from_dockstore_by_default(tmp_path, monkeypatch):
+    assert load_collections(tmp_path, monkeypatch, "none", ["Variant Calling"]) == {
+        "./workflows/variant-calling/curated": ["Variant Calling"],
+        "./workflows/variant-calling/uncurated": [],
+        "./workflows/epigenetics/uncurated-too": [],
+        "./workflows/no-category": [],
+    }
+
+
+def test_directory_fallback_fills_missing_collections(tmp_path, monkeypatch):
+    assert load_collections(tmp_path, monkeypatch, "directory", ["Genome Assembly"]) == {
+        # Dockstore's answer wins when there is one
+        "./workflows/variant-calling/curated": ["Genome Assembly"],
+        "./workflows/variant-calling/uncurated": ["Variant Calling"],
+        "./workflows/epigenetics/uncurated-too": ["Epigenetics"],
+        "./workflows/no-category": [],
+    }
+
+
 def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
     # .dockstore.yml is written here rather than committed: planemo treats any
     # directory holding one as a workflow repository to lint and test
