@@ -142,6 +142,10 @@ def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None
     trs_org = site_config["trsOrg"]
     raw_data_base = site_config["rawDataBase"]
     collection_fallback = site_config["collectionFallback"]
+    if os.path.relpath(directory, repo_root).split(os.sep)[0] == "..":
+        raise ValueError(
+            f"The workflows directory {directory} isn't inside the repo root {repo_root}; pass --repo-root"
+        )
     workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:

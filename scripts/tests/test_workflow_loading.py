@@ -243,3 +243,14 @@ def test_directory_collection_links_to_its_own_page(directory, expected):
     assert collection == expected
     route, link = site_slugs(collection)
     assert route == link
+
+
+def test_workflows_outside_the_repo_root_are_refused(tmp_path):
+    # Paths relative to the repo root would start with ../ and every GitHub
+    # and test-data link built from them would be broken
+    write_repo(tmp_path / "lab" / "workflows", "variant-calling/cat")
+    (tmp_path / "iwc").mkdir()
+    with pytest.raises(ValueError, match="isn't inside"):
+        workflow_manifest.find_and_load_compliant_workflows(
+            str(tmp_path / "lab" / "workflows"), repo_root=str(tmp_path / "iwc"), site_config=load_site_config({})
+        )
