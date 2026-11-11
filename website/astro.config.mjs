@@ -2,13 +2,16 @@ import { defineConfig } from "astro/config";
 import vue from "@astrojs/vue";
 import tailwindcss from "@tailwindcss/vite";
 import sentry from "@sentry/astro";
-import { loadSiteConfig, siteDefines } from "./site-config.mjs";
+import { loadSiteConfig, siteDefines, siteTextTransform } from "./site-config.mjs";
 
 const siteConfig = loadSiteConfig();
 
 // https://astro.build/config
 export default defineConfig({
-    integrations: [vue(), sentry()],
+    integrations: [
+        vue({ template: { compilerOptions: { nodeTransforms: [siteTextTransform(siteConfig)] } } }),
+        sentry(),
+    ],
     vite: {
         plugins: [tailwindcss()],
         // See src/site-config.d.ts

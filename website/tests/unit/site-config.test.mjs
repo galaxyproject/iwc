@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { defineName, loadSiteConfig, siteDefines } from "../../site-config.mjs";
+import { defineName, loadSiteConfig, siteDefines, siteTextTransform } from "../../site-config.mjs";
 
 const DEFAULTS = JSON.parse(readFileSync(new URL("../../../site-config.json", import.meta.url), "utf8"));
 const OPTIONAL = ["repoBranch", "collectionFallback", "aboutMarkdown", "headerBadge"];
@@ -90,4 +90,21 @@ test("every constant declared for the site is a config key", () => {
         declared.filter((name) => !defined.includes(name)),
         [],
     );
+});
+
+test("the template transform swaps a config constant for its text", () => {
+    const transform = siteTextTransform({ heroHeadline: "Hello ", featuredTrsIds: [] });
+    const interpolation = (source) => ({ type: 5, content: { loc: { source } }, loc: {} });
+    const replaced = [];
+    const context = { replaceNode: (node) => replaced.push(node) };
+
+    transform(interpolation(" __SITE_HERO_HEADLINE__ "), context);
+    assert.deepEqual(replaced, [{ type: 2, content: "Hello ", loc: {} }]);
+
+    // Ordinary bindings and other node types are left alone
+    transform(interpolation("workflow.name"), context);
+    transform({ type: 1 }, context);
+    assert.equal(replaced.length, 1);
+
+    assert.throws(() => transform(interpolation("__SITE_FEATURED_TRS_IDS__"), context), /isn't a string/);
 });

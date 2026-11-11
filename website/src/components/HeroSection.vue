@@ -12,8 +12,8 @@ defineProps<{
     <div class="relative flex p-4 pb-8 items-center flex-col">
         <div class="text-center relative z-10">
             <h1 class="text-5xl my-6 font-bold">
-                <span class="text-white">Open, peer-reviewed workflows for </span>
-                <span class="text-gold">reproducible science</span>
+                <span class="text-white">{{ __SITE_HERO_HEADLINE__ }}</span>
+                <span class="text-gold">{{ __SITE_HERO_HIGHLIGHT__ }}</span>
             </h1>
         </div>
 

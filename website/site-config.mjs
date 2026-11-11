@@ -67,6 +67,28 @@ export function loadSiteConfig(env = process.env) {
     return config;
 }
 
+// Vite's define only reaches script. This does the same job for Vue templates:
+// {{ __SITE_HERO_HEADLINE__ }} is compiled as the plain text it stands for, so a
+// hydrated component carries static text and not a binding.
+export function siteTextTransform(config) {
+    const values = Object.fromEntries(Object.entries(config).map(([key, value]) => [defineName(key), value]));
+    const INTERPOLATION = 5;
+    const TEXT = 2;
+    return (node, context) => {
+        if (node.type !== INTERPOLATION) {
+            return;
+        }
+        const name = node.content.loc.source.trim();
+        if (!(name in values)) {
+            return;
+        }
+        if (typeof values[name] !== "string") {
+            throw new Error(`${name} isn't a string, so it can't be used as template text`);
+        }
+        context.replaceNode({ type: TEXT, content: values[name], loc: node.loc });
+    };
+}
+
 // siteUrl -> __SITE_SITE_URL__
 export function defineName(key) {
     return `__SITE_${key.replace(/([A-Z])/g, "_$1").toUpperCase()}__`;
