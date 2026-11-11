@@ -494,6 +494,12 @@ def main():
             stage_workflow_file(workflow_path, workflow["workflowFile"])
             stage_workflow_test_file(workflow.get('tests', None), workflow["testFile"])
 
+    # The home page drops a featured workflow it can't find, so say so here
+    written_trs_ids = {workflow["trsID"] for item in workflow_data for workflow in item["workflows"]}
+    for trs_id in site_config["featuredTrsIds"]:
+        if trs_id not in written_trs_ids:
+            print(f"::warning::Featured workflow isn't in the site: {trs_id}")
+
     # Keep original manifest
     write_to_json(workflow_data, args.manifest)
 
