@@ -72,14 +72,38 @@ export function loadSiteConfig(env = process.env) {
 // hydrated component carries static text and not a binding.
 export function siteTextTransform(config) {
     const values = Object.fromEntries(Object.entries(config).map(([key, value]) => [defineName(key), value]));
-    const INTERPOLATION = 5;
+    // Vue's NodeTypes, written out so this file loads without node_modules;
+    // tests/unit/site-text-transform.test.mjs runs it in the real compiler
+    const ELEMENT = 1;
     const TEXT = 2;
+    const INTERPOLATION = 5;
+    const refuse = (source) => {
+        // Vue compiles it to _ctx.__SITE_...__, which define never reaches
+        throw new Error(
+            `"${source}" uses a site constant in a template, which only works as a bare {{ __SITE_NAME__ }}; use it in <script setup> instead`,
+        );
+    };
     return (node, context) => {
+        if (node.type === ELEMENT) {
+            // The start tag's own source, because v-if and v-for are taken off
+            // node.props before this transform runs
+            const { loc, children } = node;
+            const startTag = children.length
+                ? loc.source.slice(0, children[0].loc.start.offset - loc.start.offset)
+                : loc.source;
+            if (startTag.includes("__SITE_")) {
+                refuse(startTag);
+            }
+            return;
+        }
         if (node.type !== INTERPOLATION) {
             return;
         }
         const name = node.content.loc.source.trim();
         if (!(name in values)) {
+            if (name.includes("__SITE_")) {
+                refuse(name);
+            }
             return;
         }
         if (typeof values[name] !== "string") {
