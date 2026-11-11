@@ -111,6 +111,46 @@ python scripts/workflow_manifest.py
 
 This creates `website-astro/public/workflow_manifest.json` with metadata for all workflows.
 
+## 🪐 Building a second site
+
+Another repository of workflows can build this site for itself, with its own name, links and
+Dockstore organization, without forking it. This was added for
+[IWC Lab](https://github.com/galaxyproject/iwc-lab). Everything that is IWC's own lives in [`site-config.json`](../site-config.json) at the
+repository root. The second site writes its own JSON file with the same keys and points
+`SITE_CONFIG` at it for both steps of the build:
+
+```bash
+# From a checkout of this repository, with the other repository's workflows at ../lab/workflows
+export SITE_CONFIG=../lab/site/site-config.json
+python scripts/workflow_manifest.py --workflows ../lab/workflows --repo-root ../lab
+cd website && pnpm install --frozen-lockfile && pnpm build
+```
+
+- **Every key is required**, apart from `repoBranch`, `collectionFallback`, `aboutMarkdown` and
+  `headerBadge`. A missing key fails the build and names itself. This is on purpose: a site that
+  left out `trsOrg` would show IWC's Dockstore entries, and one that left out `heroHeadline` would
+  call its workflows peer-reviewed. Expect a new key to break your build when you move to a newer
+  commit of this repository; add it to your config.
+- **`analytics` and `sentry`** take your own Plausible domain and Sentry DSN, or `null` to leave
+  them out. They are required so that you don't report into IWC's.
+- **`collectionFallback: "directory"`** names a collection after the directory a workflow sits in
+  under `workflows/`, for workflows that are in no Dockstore collection. The site's navigation is
+  built on collections, so a site that doesn't curate them on Dockstore needs this.
+- **`aboutMarkdown`** is a Markdown file that replaces the about page. Its path is relative to the
+  config file, and its first `# ` heading becomes the page title.
+- **`headerBadge`** puts a small pill after the header title, e.g. `"Lab"`.
+- **`repoUrl`** has to be a GitHub repository. Links to workflow sources and the raw URLs of test
+  data are built from it and `repoBranch`.
+
+A workflow still has to be published on Dockstore under `trsOrg` to appear. The manifest script
+doesn't empty `--output-dir` first, so start from a clean checkout.
+
+To replace the logos or the text on collection pages, see [OVERLAY.md](OVERLAY.md).
+
+When you add a value to the site that is specific to IWC, add a key for it to `site-config.json`
+and read it through its `__SITE_*__` constant (see `src/site-config.d.ts`), rather than writing it
+into a page.
+
 ## 🎨 Styling
 
 The site uses a custom Galaxy color scheme defined in `tailwind.config.ts`:
