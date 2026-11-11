@@ -27,14 +27,6 @@ const workflowAnnotation = computed(() => {
     return w.annotation as string;
 });
 
-const workflowUuid = computed(() => {
-    const w = props.workflow as Record<string, unknown>;
-    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).uuid) {
-        return (w.definition as Record<string, string>).uuid;
-    }
-    return w.uuid as string;
-});
-
 const workflowRelease = computed(() => {
     const w = props.workflow as Record<string, unknown>;
     if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).release) {
@@ -46,7 +38,7 @@ const workflowRelease = computed(() => {
 
 <template>
     <div
-        :id="`workflow-${workflowUuid}`"
+        :id="`workflow-${workflow.iwcID}`"
         class="group relative px-5 py-4 border-b border-ebony-clay-100 transition-all duration-200 odd:bg-bay-of-many-50/30 hover:bg-bay-of-many-50">
         <!-- Hover accent bar -->
         <div

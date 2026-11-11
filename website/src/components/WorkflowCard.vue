@@ -30,18 +30,10 @@ const workflowAnnotation = computed(() => {
     }
     return w.annotation as string;
 });
-
-const workflowUuid = computed(() => {
-    const w = props.workflow as Record<string, unknown>;
-    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).uuid) {
-        return (w.definition as Record<string, string>).uuid;
-    }
-    return w.uuid as string;
-});
 </script>
 
 <template>
-    <div :id="`workflow-${workflowUuid}`" class="group relative h-full">
+    <div :id="`workflow-${workflow.iwcID}`" class="group relative h-full">
         <!-- Hover accent bar -->
         <div
             class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200 z-10" />

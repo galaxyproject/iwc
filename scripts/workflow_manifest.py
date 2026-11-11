@@ -5,7 +5,7 @@ import requests
 import re
 import shutil
 from urllib.parse import quote_plus, quote
-from create_mermaid import walk_directory
+from create_mermaid import load_expanded_format2, load_native_workflow, walk_directory
 from planemo.galaxy.workflows import job_template
 
 OUTPUT_DIR = "website/public/data"
@@ -154,8 +154,8 @@ def find_and_load_compliant_workflows(directory):
                     root, workflow["primaryDescriptorPath"].lstrip("/")
                 )
                 try:
-                    with open(workflow_path) as f:
-                        workflow["definition"] = json.load(f)
+                    # Format-2 is converted so the website sees one definition shape
+                    workflow["definition"] = load_native_workflow(workflow_path)
                     workflow['workflow_job_input'] = job_template(workflow_path)
                 except Exception as e:
                     print(
@@ -191,6 +191,9 @@ def find_and_load_compliant_workflows(directory):
                 trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
                 workflow["iwcID"] = create_safe_identifier(trsID)
+                workflow["workflowFile"], workflow["testFile"] = staged_file_names(
+                    workflow_path, workflow["iwcID"]
+                )
                 workflow["repoPath"] = root
 
                 dockstore_details, categories, collections = get_dockstore_details(
@@ -214,9 +217,12 @@ def find_and_load_compliant_workflows(directory):
 
                 if not "testParameterFiles" in workflow:
                     print(f"{root}/.dockstore does not contain testParameterFiles. Looking for file...")
-                    workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-tests.yml"
+                    # Planemo's convention: drop only the last extension, so
+                    # foo.gxwf.yml pairs with foo.gxwf-tests.yml
+                    workflow_stem = os.path.splitext(workflow_path)[0]
+                    workflow_test_path = f"{workflow_stem}-tests.yml"
                     if not os.path.exists(workflow_test_path):
-                        workflow_test_path = f"{workflow_path.rsplit('.ga', 1)[0]}-test.yml"
+                        workflow_test_path = f"{workflow_stem}-test.yml"
                     if os.path.exists(workflow_test_path):
                         print(f"file found at {workflow_test_path}")
                         workflow["tests"] = process_test_file(workflow_test_path, root)
@@ -326,42 +332,59 @@ def create_safe_identifier(trs_id):
     return safe_name.lower()
 
 
-def stage_workflow_file(source_path, iwc_id):
+def staged_file_names(source_path, iwc_id):
     """
-    Copy a workflow .ga file to the output directory, filed by the iwcID
+    Return the file names a workflow and its tests are published under.
 
-    Args:
-        source_path: Path to the source .ga file
-        iwc_id: iwc id to use as the safe filename
+    Format-2 is published as a .gxwf.yml. Its tests drop only that last
+    extension, which is where `planemo test` looks for them.
+    """
+    if source_path.endswith(".ga"):
+        return f"{iwc_id}.ga", f"{iwc_id}-tests.yml"
+    return f"{iwc_id}.gxwf.yml", f"{iwc_id}.gxwf-tests.yml"
+
+
+def stage_workflow_file(source_path, workflow_file):
+    """
+    Stage a workflow in the output directory as workflow_file.
+
+    A .ga is copied as is. Format-2 is staged with its @import and packed
+    subworkflows inlined, so the published file works on its own.
     """
     if not os.path.exists(source_path):
         print(f"Workflow file not found: {source_path}")
         return
 
-    safe_filename = f"{iwc_id}.ga"
-    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+    dest_path = os.path.join(OUTPUT_DIR, workflow_file)
 
     try:
-        shutil.copy2(source_path, dest_path)
-        print(f"Copied workflow file to {dest_path}")
+        if source_path.endswith(".ga"):
+            shutil.copy2(source_path, dest_path)
+        else:
+            # Serialize before opening, so a failure can't leave a partial file
+            content = yaml.safe_dump(
+                load_expanded_format2(source_path), sort_keys=False, allow_unicode=True
+            )
+            with open(dest_path, "w") as f:
+                f.write(content)
+        print(f"Staged workflow file at {dest_path}")
     except Exception as e:
-        print(f"Error copying workflow file {source_path} to {dest_path}: {e}")
+        print(f"Error staging workflow file {source_path} to {dest_path}: {e}")
 
 
-def stage_workflow_test_file(test_data, iwc_id):
+def stage_workflow_test_file(test_data, test_file):
     """
-    Copy a workflow -test.yml file to the output directory, filed by the iwcID
+    Write a workflow's tests to the output directory as test_file
 
     Args:
         test_data: test dict data
-        iwc_id: iwc id to use as the safe filename
+        test_file: file name to publish the tests under
     """
 
-    safe_filename = f"{iwc_id}-tests.yml"
-    dest_path = os.path.join(OUTPUT_DIR, safe_filename)
+    dest_path = os.path.join(OUTPUT_DIR, test_file)
 
     if test_data is None or len(test_data) == 0:
-        print(f"Not test data found for workflow {iwc_id}.ga")
+        print(f"No test data found for {test_file}")
         return
 
     with open(dest_path, "w") as test_yaml:
@@ -399,14 +422,14 @@ if __name__ == "__main__":
     # Write index file
     write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
 
-    # Stage .ga and test.yml files for the website
+    # Stage workflow and test files for the website
     for item in workflow_data:
         for workflow in item["workflows"]:
             workflow_path = os.path.join(
                 item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
-            stage_workflow_file(workflow_path, workflow["iwcID"])
-            stage_workflow_test_file(workflow.get('tests', None), workflow["iwcID"])
+            stage_workflow_file(workflow_path, workflow["workflowFile"])
+            stage_workflow_test_file(workflow.get('tests', None), workflow["testFile"])
 
     # Keep original manifest
     write_to_json(workflow_data, "workflow_manifest.json")
