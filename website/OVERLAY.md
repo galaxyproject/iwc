@@ -14,7 +14,8 @@ these paths before it runs the build.
 
 The slug of a collection is its name in lower case with spaces as hyphens, so "Variant Calling"
 reads `category-descriptions/variant-calling.md`. With `collectionFallback: "directory"` that is
-the directory name under `workflows/`.
+the directory name under `workflows/`, lower-cased, with any run of characters other than letters
+and digits turned into one hyphen (`genome_annotation` reads `genome-annotation.md`).
 
 A second site can also add files of its own anywhere under `public/`, for example images its
 about page links to. It should leave `public/data/` and `public/workflow_manifest.json` alone,

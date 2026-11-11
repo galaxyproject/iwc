@@ -1,3 +1,4 @@
+import re
 import shutil
 from pathlib import Path
 
@@ -218,3 +219,27 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
 )
 def test_safe_identifier_drops_only_the_org_prefix(trs_id, trs_org, expected):
     assert workflow_manifest.create_safe_identifier(trs_id, trs_org) == expected
+
+
+def site_slugs(collection):
+    # The two ways the website turns a collection name into a URL: the page
+    # route in collection/[slug].astro and navigateToCollection in utils
+    route = collection.lower().replace(" ", "-")
+    link = re.sub(r"[^a-z0-9-]", "", re.sub(r"\s+", "-", collection.lower()))
+    return route, link
+
+
+@pytest.mark.parametrize(
+    "directory, expected",
+    [
+        ("variant-calling", "Variant Calling"),
+        ("genome_annotation", "Genome Annotation"),
+        ("chip--seq", "Chip Seq"),
+        ("single.cell", "Single Cell"),
+    ],
+)
+def test_directory_collection_links_to_its_own_page(directory, expected):
+    collection = workflow_manifest.directory_collection(f"workflows/{directory}/repo", "workflows")
+    assert collection == expected
+    route, link = site_slugs(collection)
+    assert route == link

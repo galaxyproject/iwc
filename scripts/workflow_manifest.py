@@ -120,7 +120,11 @@ def directory_collection(root, directory):
     if len(parts) < 2:
         # The repository sits directly in the workflows directory
         return None
-    return parts[0].replace("-", " ").title()
+    # The site builds the collection page's route and its links with two
+    # different slug rules; they only agree on single-space-separated letters
+    # and digits, so genome_annotation has to become "Genome Annotation"
+    words = [word for word in re.split(r"[^A-Za-z0-9]+", parts[0]) if word]
+    return " ".join(words).title() or None
 
 
 def find_and_load_compliant_workflows(directory, repo_root=".", site_config=None):
