@@ -120,8 +120,10 @@ repository root. The second site writes its own JSON file with the same keys and
 `SITE_CONFIG` at it for both steps of the build:
 
 ```bash
-# From a checkout of this repository, with the other repository's workflows at ../lab/workflows
-export SITE_CONFIG=../lab/site/site-config.json
+# From a checkout of this repository, with the other repository's workflows at ../lab/workflows.
+# SITE_CONFIG has to be absolute: a relative path resolves against the current directory, and
+# the two steps run from different ones.
+export SITE_CONFIG="$(realpath ../lab/site/site-config.json)"
 python scripts/workflow_manifest.py --workflows ../lab/workflows --repo-root ../lab
 cd website && pnpm install --frozen-lockfile && pnpm build
 ```
