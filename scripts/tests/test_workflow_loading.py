@@ -128,10 +128,12 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
         workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], [])
     )
 
+    # An absolute --workflows outside the cwd, as a second site's build passes
     (repo_details,) = workflow_manifest.find_and_load_compliant_workflows(
-        str(tmp_path / "workflows")
+        str(tmp_path / "workflows"), repo_root=str(tmp_path)
     )
     (workflow,) = repo_details["workflows"]
+    assert repo_details["path"] == workflow["repoPath"] == "./workflows/lab/cat"
     assert workflow["definition"]["name"] == "Concatenate fixture"
     assert workflow["workflowFile"] == "cat-main.gxwf.yml"
     assert workflow["testFile"] == "cat-main.gxwf-tests.yml"
