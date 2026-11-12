@@ -39,6 +39,7 @@ This step produces the coverage information every binner needs.
 
 1. Bowtie2 maps each sample's reads against its own assembly, and Samtools sorts the alignments by coordinate.
 2. Contig depths are summarised with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly.
+   For MaxBin2, the matrix is reduced to the contig name and its total average depth, without the header line. MaxBin2 reads the first number after the contig name as its abundance, so the full matrix would make it use the contig length instead.
 3. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.
 4. COMEBin expects each sample's alignments nested in a collection, which is prepared here.
 
