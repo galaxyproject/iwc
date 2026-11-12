@@ -43,6 +43,7 @@ This step produces the coverage information every binner needs.
 4. Bowtie2 maps every sample against every assembly.
 5. Contig depths are summarised per assembly with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly with the coverage and variance of every sample.
 6. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.
+7. For MaxBin2, the depth table is converted into one abundance file per read sample, containing the contig name and that sample's depth, without the header line or the variance columns. MaxBin2 reads the first number after the contig name as its abundance, so the full table would make it use the contig length instead, and MaxBin2 only uses cross-sample coverage when it gets one abundance file per sample.
 
 The depth table produced by `jgi_summarize_bam_contig_depths` starts with `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). Each read sample then contributes a depth column and a variance column. This gives each assembly's contigs a coverage profile across all read samples; “JGI depth table” refers to this format, not to an additional input database.
 
