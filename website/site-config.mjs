@@ -1,0 +1,140 @@
+// Site config for the Astro build.
+//
+// ../site-config.json holds IWC's values. A second site built from this repo
+// points SITE_CONFIG at its own JSON file, which is merged over those values
+// one top-level key at a time. scripts/site_config.py does the same for the
+// manifest script, so keep the two in step.
+
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const DEFAULTS_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "../site-config.json");
+
+// An override has to set every key except these. Anything else it inherited
+// would be IWC's name, links, accounts or claims showing up on another site.
+export const OPTIONAL_KEYS = new Set([
+    "repoBranch", // second sites build from main too
+    "collectionFallback", // "none" is off
+    "aboutMarkdown", // null keeps the built-in about page
+    "headerBadge", // null renders nothing
+]);
+
+const COLLECTION_FALLBACKS = ["none", "directory"];
+
+// GitHub is the only host the site links to
+const GITHUB_REPO_URL = /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9._-]+(?<!\.git)$/;
+
+export function loadSiteConfig(env = process.env, defaultsPath = DEFAULTS_PATH) {
+    const config = JSON.parse(readFileSync(defaultsPath, "utf8"));
+    resolveAboutMarkdown(config, dirname(defaultsPath));
+
+    if (env.SITE_CONFIG) {
+        const overridePath = resolve(env.SITE_CONFIG);
+        const override = JSON.parse(readFileSync(overridePath, "utf8"));
+        if (override === null || typeof override !== "object" || Array.isArray(override)) {
+            throw new Error(`${overridePath} must hold a JSON object`);
+        }
+        const unknown = Object.keys(override)
+            .filter((key) => !Object.hasOwn(config, key))
+            .sort();
+        if (unknown.length) {
+            throw new Error(`${overridePath} sets unknown keys: ${unknown.join(", ")}`);
+        }
+        const missing = Object.keys(config)
+            .filter((key) => !OPTIONAL_KEYS.has(key) && !Object.hasOwn(override, key))
+            .sort();
+        if (missing.length) {
+            throw new Error(`${overridePath} must set: ${missing.join(", ")}`);
+        }
+        resolveAboutMarkdown(override, dirname(overridePath));
+        Object.assign(config, override);
+    }
+
+    if (!COLLECTION_FALLBACKS.includes(config.collectionFallback)) {
+        throw new Error(
+            `collectionFallback must be one of ${COLLECTION_FALLBACKS.join(", ")}, not ${JSON.stringify(config.collectionFallback)}`,
+        );
+    }
+    if (!GITHUB_REPO_URL.test(config.repoUrl)) {
+        throw new Error(
+            `repoUrl must look like https://github.com/<owner>/<repo>, not ${JSON.stringify(config.repoUrl)}`,
+        );
+    }
+    return config;
+}
+
+// Against the file that set it, so an inherited path keeps pointing at the defaults' copy
+function resolveAboutMarkdown(config, configDir) {
+    if (config.aboutMarkdown) {
+        config.aboutMarkdown = resolve(configDir, config.aboutMarkdown);
+    }
+}
+
+// Vite's define only reaches script. This does the same job for Vue templates:
+// {{ __SITE_HERO_HEADLINE__ }} is compiled as the plain text it stands for, so a
+// hydrated component carries static text and not a binding.
+export function siteTextTransform(config) {
+    const values = Object.fromEntries(Object.entries(config).map(([key, value]) => [defineName(key), value]));
+    // Vue's NodeTypes, written out so this file loads without node_modules;
+    // tests/unit/site-text-transform.test.mjs runs it in the real compiler
+    const ELEMENT = 1;
+    const TEXT = 2;
+    const INTERPOLATION = 5;
+    const refuse = (source) => {
+        // Vue compiles it to _ctx.__SITE_...__, which define never reaches
+        throw new Error(
+            `"${source}" uses a site constant in a template, which only works as a bare {{ __SITE_NAME__ }}; use it in <script setup> instead`,
+        );
+    };
+    return (node, context) => {
+        if (node.type === ELEMENT) {
+            // The start tag's own source, because v-if and v-for are taken off
+            // node.props before this transform runs
+            const { loc, children } = node;
+            const startTag = children.length
+                ? loc.source.slice(0, children[0].loc.start.offset - loc.start.offset)
+                : loc.source;
+            if (startTag.includes("__SITE_")) {
+                refuse(startTag);
+            }
+            return;
+        }
+        if (node.type !== INTERPOLATION) {
+            return;
+        }
+        const name = node.content.loc.source.trim();
+        if (!(name in values)) {
+            if (name.includes("__SITE_")) {
+                refuse(name);
+            }
+            return;
+        }
+        if (typeof values[name] !== "string") {
+            throw new Error(`${name} isn't a string, so it can't be used as template text`);
+        }
+        context.replaceNode({ type: TEXT, content: values[name], loc: node.loc });
+    };
+}
+
+// siteUrl -> __SITE_SITE_URL__
+export function defineName(key) {
+    return `__SITE_${key.replace(/([A-Z])/g, "_$1").toUpperCase()}__`;
+}
+
+// Vite swaps each of these identifiers for its literal before bundling, in the
+// pages and in the hydrated components alike. src/site-config.d.ts declares them.
+export function siteDefines(config) {
+    const defines = {};
+    for (const [key, value] of Object.entries(config)) {
+        const name = defineName(key);
+        defines[name] = JSON.stringify(value);
+        if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+            // So __SITE_SENTRY__.dsn becomes the string itself, not a lookup on an object literal
+            for (const [property, propertyValue] of Object.entries(value)) {
+                defines[`${name}.${property}`] = JSON.stringify(propertyValue);
+            }
+        }
+    }
+    return defines;
+}

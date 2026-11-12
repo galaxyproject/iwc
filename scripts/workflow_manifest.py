@@ -1,3 +1,4 @@
+import argparse
 import os
 import json
 import yaml
@@ -7,6 +8,7 @@ import shutil
 from urllib.parse import quote_plus, quote
 from create_mermaid import load_expanded_format2, load_native_workflow, walk_directory
 from planemo.galaxy.workflows import job_template
+from site_config import load_site_config
 
 OUTPUT_DIR = "website/public/data"
 
@@ -96,31 +98,60 @@ def extract_date_from_changelog(changelog_content):
     return None
 
 
-def process_test_file(workflow_test_path, root):
+def process_test_file(workflow_test_path, repo_path, raw_data_base):
     with open(workflow_test_path) as f:
         tests = yaml.safe_load(f)
     # Process test dictionary to replace path keys with location keys
     if tests:
         for test in tests:
             for input_item in test["job"].values():
-                path_to_location(input_item, root)
+                path_to_location(input_item, repo_path, raw_data_base)
     return tests
 
 
-def find_and_load_compliant_workflows(directory):
+def directory_collection(root, directory):
+    """
+    Name a collection after the first directory under the workflows directory:
+    workflows/variant-calling/<repo> gives "Variant Calling". The website turns
+    that back into the slug variant-calling, which is also how the
+    category-descriptions files are named.
+    """
+    parts = os.path.relpath(root, directory).split(os.sep)
+    if len(parts) < 2:
+        # The repository sits directly in the workflows directory
+        return None
+    # The site builds the collection page's route and its links with two
+    # different slug rules; they only agree on single-space-separated letters
+    # and digits, so genome_annotation has to become "Genome Annotation"
+    words = [word for word in re.split(r"[^A-Za-z0-9]+", parts[0]) if word]
+    return " ".join(words).title() or None
+
+
+def find_and_load_compliant_workflows(directory, repo_root, site_config):
     """
     Find all .dockstore.yml files in the given directory and its subdirectories.
     Read the contents of these files and add the path of the file to the content.
     Return a list of all collected data.
 
+    Paths in the output are relative to repo_root, the root of the repository
+    the workflows live in, because the website builds GitHub and raw-file links
+    from them.
     """
+    trs_org = site_config["trsOrg"]
+    raw_data_base = site_config["rawDataBase"]
+    collection_fallback = site_config["collectionFallback"]
+    if os.path.relpath(directory, repo_root).split(os.sep)[0] == "..":
+        raise ValueError(
+            f"The workflows directory {directory} isn't inside the repo root {repo_root}; pass --repo-root"
+        )
     workflow_data = []
     for root, _, files in os.walk(directory):
         if ".dockstore.yml" in files:
             dockstore_path = os.path.join(root, ".dockstore.yml")
             with open(dockstore_path) as f:
                 workflow_details = yaml.safe_load(f)
-            workflow_details["path"] = root
+            repo_path = "./" + os.path.relpath(root, repo_root)
+            workflow_details["path"] = repo_path
             workflow_data.append(workflow_details)
 
             # Now inspect the details which are something like this:
@@ -188,13 +219,13 @@ def find_and_load_compliant_workflows(directory):
                 workflow["updated"] = updated_isoformat
 
                 dirname = os.path.dirname(workflow_path).split("/")[-1]
-                trsID = f"#workflow/github.com/iwc-workflows/{dirname}/{workflow['name'] or 'main'}"
+                trsID = f"#workflow/github.com/{trs_org}/{dirname}/{workflow['name'] or 'main'}"
                 workflow["trsID"] = trsID
-                workflow["iwcID"] = create_safe_identifier(trsID)
+                workflow["iwcID"] = create_safe_identifier(trsID, trs_org)
                 workflow["workflowFile"], workflow["testFile"] = staged_file_names(
                     workflow_path, workflow["iwcID"]
                 )
-                workflow["repoPath"] = root
+                workflow["repoPath"] = repo_path
 
                 dockstore_details, categories, collections = get_dockstore_details(
                     trsID
@@ -204,6 +235,12 @@ def find_and_load_compliant_workflows(directory):
 
                 workflow["dockstore_id"] = dockstore_details["id"]
                 workflow["categories"] = categories
+                if not collections and collection_fallback == "directory":
+                    # A site that doesn't curate Dockstore collections still needs
+                    # them, because the site's navigation is built on them
+                    fallback = directory_collection(root, directory)
+                    if fallback:
+                        collections = [fallback]
                 workflow["collections"] = collections
 
                 doi_selection = dockstore_details.get("doiSelection")
@@ -225,7 +262,7 @@ def find_and_load_compliant_workflows(directory):
                         workflow_test_path = f"{workflow_stem}-test.yml"
                     if os.path.exists(workflow_test_path):
                         print(f"file found at {workflow_test_path}")
-                        workflow["tests"] = process_test_file(workflow_test_path, root)
+                        workflow["tests"] = process_test_file(workflow_test_path, repo_path, raw_data_base)
                     else:
                         print(f"Test Missing: {workflow_test_path}")
                 else:
@@ -233,7 +270,7 @@ def find_and_load_compliant_workflows(directory):
                     for test in workflow["testParameterFiles"]:
                         workflow_test_path = os.path.join(root, test.lstrip("/"))
                         if os.path.exists(workflow_test_path):
-                            tests += process_test_file(workflow_test_path, root)
+                            tests += process_test_file(workflow_test_path, repo_path, raw_data_base)
                         else:
                             raise Exception(f"Listed test file doesn't exist: {test}")
                     workflow["tests"] = tests
@@ -242,7 +279,7 @@ def find_and_load_compliant_workflows(directory):
     return workflow_data
 
 
-def path_to_location(input_item, root):
+def path_to_location(input_item, repo_path, raw_data_base):
     if isinstance(input_item, dict):
         if input_item.get("class") == "File":
             if "path" in input_item:
@@ -251,11 +288,11 @@ def path_to_location(input_item, root):
                     input_item["location"] = input_item["path"]
                 else:
                     # Create location URL from path for downloading files
-                    relative_path = os.path.join(root.replace("./", ""), input_item["path"].lstrip("/"))
+                    relative_path = os.path.join(repo_path.replace("./", ""), input_item["path"].lstrip("/"))
                     # URL-encode the path to handle spaces and special characters
                     # Use safe='/' to keep forward slashes unencoded as path separators
                     encoded_path = quote(relative_path, safe='/')
-                    input_item["location"] = f"https://raw.githubusercontent.com/galaxyproject/iwc/main/{encoded_path}"
+                    input_item["location"] = f"{raw_data_base}{encoded_path}"
                     del input_item["path"]
             if "filetype" not in input_item:
                 # Add filetype if not present
@@ -303,7 +340,7 @@ def path_to_location(input_item, root):
             if input_item.get("class") == "Collection":
                 # If it's a directory, we can recursively call this function
                 for element in input_item["elements"]:
-                    path_to_location(element, root)
+                    path_to_location(element, repo_path, raw_data_base)
 
 
 def write_to_json(data, filename):
@@ -317,16 +354,16 @@ def write_to_json(data, filename):
         print(f"Error writing to file {filename}: {e}")
 
 
-def create_safe_identifier(trs_id):
+def create_safe_identifier(trs_id, trs_org):
     """
-    Generate a safe and pretty filename from the TRS ID, keeping only the IWC-local portion.
+    Generate a safe and pretty filename from the TRS ID, keeping only the portion after the org.
     For example, #workflow/github.com/iwc-workflows/amplicon/dada2 becomes amplicon-dada2
 
     We will also lowercase the slug.
     """
-    parts = trs_id.split("iwc-workflows/")
-    if len(parts) > 1:
-        safe_name = parts[1].replace("/", "-")
+    prefix = f"#workflow/github.com/{trs_org}/"
+    if trs_id.startswith(prefix):
+        safe_name = trs_id[len(prefix):].replace("/", "-")
     else:
         safe_name = trs_id.replace("#workflow/github.com/", "").replace("/", "-")
     return safe_name.lower()
@@ -344,7 +381,7 @@ def staged_file_names(source_path, iwc_id):
     return f"{iwc_id}.gxwf.yml", f"{iwc_id}.gxwf-tests.yml"
 
 
-def stage_workflow_file(source_path, workflow_file):
+def stage_workflow_file(source_path, workflow_file, output_dir):
     """
     Stage a workflow in the output directory as workflow_file.
 
@@ -355,7 +392,7 @@ def stage_workflow_file(source_path, workflow_file):
         print(f"Workflow file not found: {source_path}")
         return
 
-    dest_path = os.path.join(OUTPUT_DIR, workflow_file)
+    dest_path = os.path.join(output_dir, workflow_file)
 
     try:
         if source_path.endswith(".ga"):
@@ -372,7 +409,7 @@ def stage_workflow_file(source_path, workflow_file):
         print(f"Error staging workflow file {source_path} to {dest_path}: {e}")
 
 
-def stage_workflow_test_file(test_data, test_file):
+def stage_workflow_test_file(test_data, test_file, output_dir):
     """
     Write a workflow's tests to the output directory as test_file
 
@@ -381,7 +418,7 @@ def stage_workflow_test_file(test_data, test_file):
         test_file: file name to publish the tests under
     """
 
-    dest_path = os.path.join(OUTPUT_DIR, test_file)
+    dest_path = os.path.join(output_dir, test_file)
 
     if test_data is None or len(test_data) == 0:
         print(f"No test data found for {test_file}")
@@ -391,10 +428,41 @@ def stage_workflow_test_file(test_data, test_file):
         yaml.dump(test_data, test_yaml, default_flow_style=False)
 
 
-if __name__ == "__main__":
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    walk_directory("./workflows")
-    workflow_data = find_and_load_compliant_workflows("./workflows")
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Build the website's workflow data from a directory of workflow repositories.",
+        epilog="Site values (Dockstore org, repository) come from site-config.json, or the file named by $SITE_CONFIG.",
+    )
+    parser.add_argument(
+        "--workflows",
+        default="./workflows",
+        help="Directory to search for .dockstore.yml files. A *_diagrams.md file is written next to every workflow found.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=OUTPUT_DIR,
+        help="Where to write the per-workflow JSON, the indexes and the staged workflow files.",
+    )
+    parser.add_argument(
+        "--manifest",
+        default="workflow_manifest.json",
+        help="Where to write the full manifest. website/public/workflow_manifest.json links to the one at the root of this repository.",
+    )
+    parser.add_argument(
+        "--repo-root",
+        default=".",
+        help="Root of the repository the workflows live in. Workflow paths are recorded relative to it.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    args = parse_args(argv)
+    site_config = load_site_config()
+    output_dir = args.output_dir
+    os.makedirs(output_dir, exist_ok=True)
+    walk_directory(args.workflows)
+    workflow_data = find_and_load_compliant_workflows(args.workflows, args.repo_root, site_config)
 
     index_data = []
     for item in workflow_data:
@@ -415,24 +483,32 @@ if __name__ == "__main__":
             safe_filename = f"{workflow['iwcID']}.json"
 
             # Write individual workflow file
-            filepath = os.path.join(OUTPUT_DIR, safe_filename)
+            filepath = os.path.join(output_dir, safe_filename)
             print(f"Writing workflow to {filepath}")
             write_to_json(workflow, filepath)
 
     # Write index file
-    write_to_json(index_data, os.path.join(OUTPUT_DIR, "index.json"))
+    write_to_json(index_data, os.path.join(output_dir, "index.json"))
 
     # Stage workflow and test files for the website
     for item in workflow_data:
         for workflow in item["workflows"]:
             workflow_path = os.path.join(
-                item["path"], workflow["primaryDescriptorPath"].lstrip("/")
+                args.repo_root, item["path"], workflow["primaryDescriptorPath"].lstrip("/")
             )
-            stage_workflow_file(workflow_path, workflow["workflowFile"])
-            stage_workflow_test_file(workflow.get('tests', None), workflow["testFile"])
+            stage_workflow_file(workflow_path, workflow["workflowFile"], output_dir)
+            stage_workflow_test_file(
+                workflow.get('tests', None), workflow["testFile"], output_dir
+            )
+
+    # The home page drops a featured workflow it can't find, so say so here
+    written_trs_ids = {workflow["trsID"] for item in workflow_data for workflow in item["workflows"]}
+    for trs_id in site_config["featuredTrsIds"]:
+        if trs_id not in written_trs_ids:
+            print(f"::warning::Featured workflow isn't in the site: {trs_id}")
 
     # Keep original manifest
-    write_to_json(workflow_data, "workflow_manifest.json")
+    write_to_json(workflow_data, args.manifest)
 
     # Generate lightweight search index for the website
     # Contains all fields needed for search AND display (replaces LightweightWorkflow)
@@ -454,6 +530,10 @@ if __name__ == "__main__":
             }
             search_index.append(search_entry)
 
-    search_index_path = os.path.join(OUTPUT_DIR, "search-index.json")
+    search_index_path = os.path.join(output_dir, "search-index.json")
     write_to_json(search_index, search_index_path)
     print(f"Search index written to {search_index_path} ({len(search_index)} entries)")
+
+
+if __name__ == "__main__":
+    main()

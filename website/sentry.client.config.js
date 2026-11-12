@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/astro";
 
 Sentry.init({
-    dsn: "https://ced6a9e98249fd81925d7f2fd1efd4ac@sentry.galaxyproject.org/24",
+    // Only bundled when the site config sets sentry, see astro.config.mjs
+    dsn: __SITE_SENTRY__.dsn,
     enabled: import.meta.env.PROD,
 });

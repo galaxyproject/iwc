@@ -7,6 +7,8 @@ on:
       - 'website/**'
       - 'scripts/workflow_manifest.py'
       - 'scripts/create_mermaid.py'
+      - 'scripts/site_config.py'
+      - 'site-config.json'
       - 'scripts/tests/**'
       - 'requirements.txt'
 
@@ -53,6 +55,10 @@ jobs:
         run: pnpm run build
         working-directory: ./website
 
+      - name: Test site config loader
+        run: pnpm run test:unit
+        working-directory: ./website
+
       - name: Install Playwright
         run: pnpm exec playwright install --with-deps
         working-directory: ./website
@@ -68,3 +74,50 @@ jobs:
           name: playwright-report
           path: ./website/playwright-report
           retention-days: 30
+
+  # Builds the site a second time with a made-up site config, the way another
+  # workflows repository would, so the override path keeps working.
+  second-site:
+    runs-on: ubuntu-latest
+    env:
+      SITE_CONFIG: ${{ github.workspace }}/scripts/tests/data/second-site/site-config.json
+
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generate the fixture site's data
+        run: python ./scripts/tests/second_site_fixture.py
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+          cache-dependency-path: website/pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ./website
+
+      - name: Build Astro Static Site
+        run: pnpm run build
+        working-directory: ./website
+
+      - name: Check the built site
+        run: pnpm run test:second-site
+        working-directory: ./website

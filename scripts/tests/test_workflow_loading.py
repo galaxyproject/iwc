@@ -1,3 +1,5 @@
+import json
+import re
 import shutil
 from pathlib import Path
 
@@ -5,6 +7,7 @@ import pytest
 import yaml
 
 import workflow_manifest
+from site_config import load_site_config
 from create_mermaid import (
     load_expanded_format2,
     load_native_workflow,
@@ -44,15 +47,14 @@ def test_subworkflows_are_inlined(name):
 
 
 @pytest.fixture
-def output_dir(tmp_path, monkeypatch):
+def output_dir(tmp_path):
     out = tmp_path / "out"
     out.mkdir()
-    monkeypatch.setattr(workflow_manifest, "OUTPUT_DIR", str(out))
     return out
 
 
 def test_native_workflow_is_staged_verbatim(output_dir):
-    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), "cat-main.ga")
+    workflow_manifest.stage_workflow_file(str(DATA / "cat.ga"), "cat-main.ga", str(output_dir))
     assert [p.name for p in output_dir.iterdir()] == ["cat-main.ga"]
     assert (output_dir / "cat-main.ga").read_bytes() == (DATA / "cat.ga").read_bytes()
 
@@ -61,7 +63,7 @@ def test_native_workflow_is_staged_verbatim(output_dir):
     "name", ["cat.gxwf.yml", "import-parent.gxwf.yml", "packed.gxwf.yml"]
 )
 def test_format2_is_staged_as_one_self_contained_file(output_dir, name):
-    workflow_manifest.stage_workflow_file(str(DATA / name), "cat-main.gxwf.yml")
+    workflow_manifest.stage_workflow_file(str(DATA / name), "cat-main.gxwf.yml", str(output_dir))
     staged = output_dir / "cat-main.gxwf.yml"
     assert [p.name for p in output_dir.iterdir()] == [staged.name]
     # output_dir has no import-child.gxwf.yml, so this only loads if nothing is
@@ -83,6 +85,61 @@ def test_staged_tests_are_where_planemo_looks(source, workflow_file, test_file):
         workflow_file,
         test_file,
     )
+
+
+def write_repo(workflows_dir, relative_path):
+    repo = workflows_dir / relative_path
+    repo.mkdir(parents=True)
+    shutil.copy(DATA / "cat.ga", repo / "cat.ga")
+    # Written here rather than committed, for the reason given in the test below
+    (repo / ".dockstore.yml").write_text(
+        yaml.safe_dump(
+            {
+                "version": 1.2,
+                "workflows": [
+                    {"name": "main", "subclass": "Galaxy", "publish": True, "primaryDescriptorPath": "/cat.ga"}
+                ],
+            }
+        )
+    )
+    return repo
+
+
+def load_collections(tmp_path, monkeypatch, fallback, dockstore_collections):
+    workflows_dir = tmp_path / "workflows"
+    write_repo(workflows_dir, "variant-calling/curated")
+    write_repo(workflows_dir, "variant-calling/uncurated")
+    write_repo(workflows_dir, "epigenetics/uncurated-too")
+    write_repo(workflows_dir, "no-category")
+    monkeypatch.setattr(
+        workflow_manifest,
+        "get_dockstore_details",
+        lambda trs_id: ({"id": 1}, [], dockstore_collections if "/curated/" in trs_id else []),
+    )
+    config = {**load_site_config({}), "collectionFallback": fallback}
+    repos = workflow_manifest.find_and_load_compliant_workflows(
+        str(workflows_dir), repo_root=str(tmp_path), site_config=config
+    )
+    return {repo["path"]: repo["workflows"][0]["collections"] for repo in repos}
+
+
+def test_collections_come_only_from_dockstore_by_default(tmp_path, monkeypatch):
+    assert load_collections(tmp_path, monkeypatch, "none", ["Variant Calling"]) == {
+        "./workflows/variant-calling/curated": ["Variant Calling"],
+        "./workflows/variant-calling/uncurated": [],
+        "./workflows/epigenetics/uncurated-too": [],
+        "./workflows/no-category": [],
+    }
+
+
+def test_directory_fallback_fills_missing_collections(tmp_path, monkeypatch):
+    assert load_collections(tmp_path, monkeypatch, "directory", ["Genome Assembly"]) == {
+        # Dockstore's answer wins when there is one
+        "./workflows/variant-calling/curated": ["Genome Assembly"],
+        "./workflows/variant-calling/uncurated": ["Variant Calling"],
+        "./workflows/epigenetics/uncurated-too": ["Epigenetics"],
+        "./workflows/no-category": [],
+    }
 
 
 def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
@@ -117,7 +174,8 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
                             "class": "File",
                             "location": "https://example.org/input.txt",
                             "filetype": "txt",
-                        }
+                        },
+                        "local dataset": {"class": "File", "path": "test-data/in put.txt"},
                     },
                     "outputs": {},
                 }
@@ -127,12 +185,123 @@ def test_format2_repo_is_loaded_with_its_tests(tmp_path, monkeypatch):
     monkeypatch.setattr(
         workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], [])
     )
+    lab_config = {
+        **load_site_config({}),
+        "trsOrg": "iwc-lab-workflows",
+        "rawDataBase": "https://raw.githubusercontent.com/galaxyproject/iwc-lab/main/",
+    }
 
+    # An absolute --workflows outside the cwd, as a second site's build passes
     (repo_details,) = workflow_manifest.find_and_load_compliant_workflows(
-        str(tmp_path / "workflows")
+        str(tmp_path / "workflows"), repo_root=str(tmp_path), site_config=lab_config
     )
     (workflow,) = repo_details["workflows"]
+    assert repo_details["path"] == workflow["repoPath"] == "./workflows/lab/cat"
+    assert workflow["trsID"] == "#workflow/github.com/iwc-lab-workflows/cat/main"
+    assert workflow["iwcID"] == "cat-main"
+    assert workflow["tests"][0]["job"]["local dataset"]["location"] == (
+        "https://raw.githubusercontent.com/galaxyproject/iwc-lab/main/workflows/lab/cat/test-data/in%20put.txt"
+    )
     assert workflow["definition"]["name"] == "Concatenate fixture"
     assert workflow["workflowFile"] == "cat-main.gxwf.yml"
     assert workflow["testFile"] == "cat-main.gxwf-tests.yml"
     assert [t["doc"] for t in workflow["tests"]] == ["fixture test"]
+
+
+@pytest.mark.parametrize(
+    "trs_id, trs_org, expected",
+    [
+        ("#workflow/github.com/iwc-workflows/amplicon/dada2", "iwc-workflows", "amplicon-dada2"),
+        # The org's name also shows up inside the repository name or the host
+        ("#workflow/github.com/lab/my-lab/main", "lab", "my-lab-main"),
+        ("#workflow/github.com/lab/my-lab/other", "lab", "my-lab-other"),
+        ("#workflow/github.com/com/tools/main", "com", "tools-main"),
+    ],
+)
+def test_safe_identifier_drops_only_the_org_prefix(trs_id, trs_org, expected):
+    assert workflow_manifest.create_safe_identifier(trs_id, trs_org) == expected
+
+
+def site_slugs(collection):
+    # The two ways the website turns a collection name into a URL: the page
+    # route in collection/[slug].astro and navigateToCollection in utils
+    route = collection.lower().replace(" ", "-")
+    link = re.sub(r"[^a-z0-9-]", "", re.sub(r"\s+", "-", collection.lower()))
+    return route, link
+
+
+@pytest.mark.parametrize(
+    "directory, expected",
+    [
+        ("variant-calling", "Variant Calling"),
+        ("genome_annotation", "Genome Annotation"),
+        ("chip--seq", "Chip Seq"),
+        ("single.cell", "Single Cell"),
+    ],
+)
+def test_directory_collection_links_to_its_own_page(directory, expected):
+    collection = workflow_manifest.directory_collection(f"workflows/{directory}/repo", "workflows")
+    assert collection == expected
+    route, link = site_slugs(collection)
+    assert route == link
+
+
+def test_workflows_outside_the_repo_root_are_refused(tmp_path):
+    # Paths relative to the repo root would start with ../ and every GitHub
+    # and test-data link built from them would be broken
+    write_repo(tmp_path / "lab" / "workflows", "variant-calling/cat")
+    (tmp_path / "iwc").mkdir()
+    with pytest.raises(ValueError, match="isn't inside"):
+        workflow_manifest.find_and_load_compliant_workflows(
+            str(tmp_path / "lab" / "workflows"), repo_root=str(tmp_path / "iwc"), site_config=load_site_config({})
+        )
+
+
+def test_main_writes_everything_where_it_is_told(tmp_path, monkeypatch, capsys):
+    repo_root = tmp_path / "lab"
+    write_repo(repo_root / "workflows", "variant-calling/cat")
+    monkeypatch.setattr(workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], []))
+    monkeypatch.delenv("SITE_CONFIG", raising=False)
+    # Somewhere neither the defaults nor the repo is, so nothing leans on the cwd
+    monkeypatch.chdir(tmp_path)
+    out = tmp_path / "out"
+    manifest = tmp_path / "manifest.json"
+
+    workflow_manifest.main(
+        [
+            "--workflows", str(repo_root / "workflows"),
+            "--repo-root", str(repo_root),
+            "--output-dir", str(out),
+            "--manifest", str(manifest),
+        ]
+    )
+
+    assert sorted(p.name for p in out.iterdir()) == ["cat-main.ga", "cat-main.json", "index.json", "search-index.json"]
+    assert json.loads(manifest.read_text())[0]["path"] == "./workflows/variant-calling/cat"
+    # IWC's featured workflows aren't in this repository
+    featured = load_site_config({})["featuredTrsIds"]
+    warnings = [line for line in capsys.readouterr().out.splitlines() if line.startswith("::warning::")]
+    assert warnings == [f"::warning::Featured workflow isn't in the site: {trs_id}" for trs_id in featured]
+
+
+def test_iwc_default_run_keeps_iwc_paths_and_urls(tmp_path, monkeypatch):
+    # How IWC's own build calls the script: from the repo root, no flags for
+    # the workflows or the repo root, and no SITE_CONFIG
+    repo = write_repo(tmp_path / "workflows", "variant-calling/cat")
+    (repo / "cat-tests.yml").write_text(
+        yaml.safe_dump([{"doc": "t", "job": {"in": {"class": "File", "path": "test-data/in.txt"}}, "outputs": {}}])
+    )
+    monkeypatch.setattr(workflow_manifest, "get_dockstore_details", lambda trs_id: ({"id": 1}, [], []))
+    monkeypatch.delenv("SITE_CONFIG", raising=False)
+    monkeypatch.chdir(tmp_path)
+
+    workflow_manifest.main(["--output-dir", "out", "--manifest", "manifest.json"])
+
+    (repo_details,) = json.loads((tmp_path / "manifest.json").read_text())
+    (workflow,) = repo_details["workflows"]
+    assert repo_details["path"] == workflow["repoPath"] == "./workflows/variant-calling/cat"
+    assert workflow["trsID"] == "#workflow/github.com/iwc-workflows/cat/main"
+    assert workflow["iwcID"] == "cat-main"
+    assert workflow["tests"][0]["job"]["in"]["location"] == (
+        "https://raw.githubusercontent.com/galaxyproject/iwc/main/workflows/variant-calling/cat/test-data/in.txt"
+    )
