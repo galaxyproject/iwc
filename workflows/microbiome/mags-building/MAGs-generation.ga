@@ -75,7 +75,7 @@
                 260
             ],
             "data": {
-                "text": "## 2. Read grouping\n\nGroup paired short reads, nanopore and PacBio reads separately. Original mode keeps samples separate; grouped mode merges metadata-defined groups; hybrid mode combines grouped and original reads. Empty sample-matched files are grouped when long reads are missing; the assembly then gets no long reads. Supply long reads for all samples or none."
+                "text": "## 2. Read grouping\n\nGroup paired short reads, nanopore and PacBio reads separately. Original mode keeps samples separate; grouped mode merges metadata-defined groups; hybrid mode combines grouped and original reads. Empty sample-matched files stand in for missing long reads."
             }
         },
         {
@@ -88,7 +88,7 @@
             ],
             "size": [
                 880,
-                4140
+                3300
             ],
             "data": {
                 "title": "Read grouping"
@@ -104,18 +104,8 @@
                 43,
                 44,
                 45,
-                72,
-                73,
-                74,
-                75,
-                76,
-                77,
-                78,
-                79,
-                80,
-                81,
-                82,
-                83
+                67,
+                68
             ],
             "child_comments": [
                 2
@@ -134,7 +124,7 @@
                 260
             ],
             "data": {
-                "text": "## 3. Assembly\n\nMEGAHIT assembles short reads. metaSPAdes assembles each sample or group separately and can also use supplied long reads, which must cover every sample in the same order. Alternatively, provide custom assemblies. Their identifiers and order must match the selected samples. QUAST checks the selected assemblies."
+                "text": "## 3. Assembly\n\nMEGAHIT assembles short reads. metaSPAdes can also use supplied long reads. Alternatively, provide custom assemblies. Their identifiers and order must match the selected samples. QUAST checks the selected assemblies."
             }
         },
         {
@@ -350,7 +340,7 @@
         {
             "class": "Person",
             "identifier": "https://orcid.org/0000-0001-9852-1987",
-            "name": "B\u00e9r\u00e9nice Batut"
+            "name": "Bérénice Batut"
         },
         {
             "class": "Person",
@@ -360,7 +350,7 @@
         {
             "class": "Person",
             "identifier": "",
-            "name": "Patrick B\u00fchler"
+            "name": "Patrick Bühler"
         },
         {
             "class": "Person",
@@ -381,7 +371,7 @@
     "format-version": "0.1",
     "license": "MIT",
     "name": "Metagenome-Assembled Genomes (MAGs) generation",
-    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles metagenomic short reads with optional long reads, bins the assemblies with five binners, refines the bins with DAS Tool and/or Binette, and reports dereplicated MAGs with their quality and abundance.\n\nThis workflow can be used on its own or integrated into other workflows. It is part of a **suite of workflows for end-to-end MAG generation and annotation** (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete suite and its capabilities). A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use it.\n\nThis workflow:\n\n1. [Groups reads using different possible strategies](#step-1-read-grouping),\n2. [Assembles metagenomic short reads with optional long reads](#step-2-assembly-and-assembly-selection),\n3. [Bins the assemblies with five binners](#step-3-binning),\n4. [Refines the bins with DAS Tool and/or Binette](#step-4-bin-refinement),\n5. [Filters MAGs by quality and dereplicates them](#step-5-mag-quality-filtering-and-dereplication),\n6. [Generates abundance estimates and reports](#step-6-abundance-and-reports).\n\n## Subworkflow dependencies and update order\n\nThis workflow embeds the following dependencies:\n\n- [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step 47).\n- [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step 55).\n- [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step 66).\n\nEmbedded workflows are snapshots, not live references. Update and validate the affected standalone assembly or binning subworkflow first, and merge that change into IWC before synchronizing its embedded copy here. Check the parent input/output connections and defaults, update the documentation, and rerun the affected integration tests. Grouping helpers have no separate standalone dependency and should be updated and tested here.\n\nThe end-to-end MAG workflow depends on this workflow: propagate changes there only after updating and validating MAG generation. The maintenance order is **standalone assembly/binning \u2192 MAG generation \u2192 end-to-end MAG workflow**, rather than editing independent copies of the same subworkflow.\n\n## Inputs\n\n\nThe form starts with the reads, then the assembly options, the sample grouping, the binning and refinement settings, and finally the MAG selection thresholds.\n\n### Reads\n\n- **Trimmed reads** (required): the original samples as a `list:paired` collection.\n- **Trimmed Nanopore reads** and **Trimmed PacBio reads** (optional): two independent original-read `list` collections. Long reads are used only by metaSPAdes.\n\nReads must be quality-filtered with host reads removed. Prepare short reads with [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main) and [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main). Prepare long reads with [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main) and [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main).\n\n### Assembly\n\n- **Choose Assembler**: `MEGAHIT` (default), `metaSPAdes` or `Custom Assembly`.\n- **Custom Assemblies**: required only with `Custom Assembly`; a `list` of assemblies, one per selected sample or group.\n- **Minimum length of contigs to output** (default: 200).\n\n### Sample grouping\n\n- **Use grouping?**:\n  - `Use original samples` (default): bin each sample on its own reads.\n  - `Use grouping`: merge the reads of the samples that belong to the same group before assembly and binning.\n  - `Use grouping and original samples`: run both, using grouped reads where they exist and original reads otherwise.\n- **Metadata** and **Sample grouping column** (default: `group`): the table that defines the groups.\n  - Metadata is optional, but it is the only way to define explicit groups. Without it, the grouping tool merges all samples into one group.\n   - Use distinct sample and group names, and avoid underscores in group names, because of the pinned `fastq_groupmerge` (`1.0.2+galaxy0`) output discovery pattern.\n   - Use only letters, digits, underscores, hyphens and periods in sample and group identifiers. CheckM2 replaces other characters with underscores; the quality-based collection filter compares those names with the original identifiers and would otherwise discard mismatched bins.\n   - In grouped-only mode, samples missing from the metadata are omitted by `fastq_groupmerge`. Include every sample you intend to analyse.\n\n### Binning and refinement\n\n- **Binning strategy**: `Single-coverage binning (own/merged reads)` (default), `Multi-coverage binning (all samples)` or `Both`.\n- **Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.\n- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model used by SemiBin in single-coverage mode.\n- **Bin refinement tool**: `Binette` (default), `DAS Tool` or `Both`.\n- **CheckM2 Database**: the reference database used by Binette and by the pooled and final MAG quality assessments.\n- **Minimum MAG completeness percentage** (default: 75) and **Contamination weight (Binette)** (default: 2): the Binette settings used in both coverage branches.\n\n### MAG selection thresholds\n\n- **Minimum MAG completeness percentage** (default: 75): also controls dRep's completeness filter, in addition to the Binette refinement threshold.\n- **Minimum MAG length** (default: 50000),\n- **Maximum MAG contamination percentage** (default: 25),\n- **ANI threshold for dereplication** (default: 0.95).\n\nThese thresholds select the representative MAGs after CheckM2 assessment.\n\n## Step 1: Read grouping\n\nGrouping merges the reads of samples that belong to the same experimental group, so that a group can be assembled and binned as one sample. It is done separately for short reads, nanopore reads and PacBio reads.\n\n- **Original mode** keeps every sample separate.\n- **Grouped mode** merges the reads of each metadata-defined group.\n- **Hybrid mode** keeps both: grouped reads where a group exists, original reads otherwise.\n- Empty, sample-matched files stand in for missing long reads, so that a run without long reads keeps the same sample structure.\n\n**Group short and long reads consistently**: use the same metadata table and the same grouping column for all read types. The workflow groups each read type on its own and then matches the results by identifier, so the groups must have the same names; otherwise the grouped long reads cannot be paired with the grouped short reads of the same group.\n\n## Step 2: Assembly and assembly selection\n\nEach selected sample or group is assembled into one assembly.\n\n- **MEGAHIT** assembles short reads only.\n- **metaSPAdes** can additionally use the grouped or per-sample nanopore and PacBio reads.\n- **Custom Assembly** takes your own assemblies instead of running an assembler.\n\nThe assembly selector passes through the output of the chosen assembler or the custom assemblies. QUAST assesses those assemblies and produces the assembly report; it does not rank alternative assemblies or choose which one to bin.\n\n**Custom assemblies must follow the selected samples.** Provide one FASTA per selected sample or group, in the same order, with identifiers matching the selected reads. Binning and coverage rely on this correspondence.\n\n**Per-sample assemblies do not become a co-assembly.** Grouping merges reads, not assemblies. If your reads are grouped, supply one assembly per group, or let the workflow assemble the group; it does not combine five per-sample FASTAs into one co-assembly. If you want bins from a co-assembly, provide that co-assembly as a single element.\n\n## Step 3: Binning\n\nBinning splits each assembly into candidate genome bins. Five binners are available: CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin. Each uses a different combination of contig composition, coverage and marker genes, and each is optional.\n\nThe binning strategy decides which reads provide the coverage:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped against its own original sample or group-merged reads. A co-assembly therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all original per-sample read sets, even when the assembly was built from grouped reads. Each sample keeps its own coverage profile.\n- **Both**: run both branches and keep the union of their refined bins. Conflicting flattened identifiers receive `_#` suffixes.\n\nA member-restricted alternative, which would map only the samples belonging to each co-assembly, is **not implemented**; it is different from both pooled single coverage and all-sample multi coverage. There is no automatic fallback between strategies.\n\nThe multi-coverage branch builds its assembly \u00d7 read-sample matrix with native Flatten, Nested Cross Product and Apply Rules operations. These reuse the original read datasets instead of writing interlaced or de-interlaced FASTQ files, so intermediate read storage drops; the number of mapping jobs and BAM files still grows as assemblies \u00d7 samples.\n\nA disabled binner is skipped, and its candidate results are replaced by empty collections, so the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\nCONCOCT read length is computed automatically from both input mates: total sequence length divided by total read count, rounded to the nearest integer. Single-coverage uses the selected or group-merged reads, multi-coverage uses all original samples. No manual read length is needed.\n\n## Step 4: Bin refinement\n\nRefinement reconciles the candidate bins of the individual binners into a final, non-redundant set, separately in each coverage branch.\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n- **Both** runs DAS Tool and Binette.\n\nThis workflow merges the selected refiner outputs within each coverage branch, then merges the branches.\n\n## Step 5: MAG quality filtering and dereplication\n\nThe refined bins of all samples and groups are pooled and assessed with CheckM2.\n\n- CheckM2 does not report quality for degenerate or very short bins. The workflow therefore keeps only assessed bins before dereplication: the quality table is reduced to its identifier column, and the bin collection is filtered to that list. A single unassessed bin can then not abort dereplication and the downstream steps.\n- **dRep** dereplicates the assessed MAGs with the selected minimum length, maximum contamination and ANI thresholds, and selects one representative per species-level cluster.\n\n## Step 6: Abundance and reports\n\n- **CoverM** estimates the abundance of each representative MAG in the original samples, and the per-sample tables are combined into one table.\n- **CheckM**, **CheckM2** and **QUAST** assess the quality of the representative MAGs, and the assembly-quality tables are combined into one table.\n- All results are collected in a single **MultiQC report**.\n\nGenome annotation and taxonomic annotation are not part of this workflow. Use the dedicated workflows instead:\n\n- [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n- [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n- [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n- [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\n## Outputs\n\nThe workflow returns the final MAG tables (quality, abundance, MultiQC report) together with intermediate outputs you can inspect:\n\n- **Coverage depth matrices**, one per assembly and coverage branch.\n- **Raw bins** of each enabled binner, per assembly.\n- **Refined bins** of each coverage branch, plus the selected and dereplicated MAGs.\n\nThe coverage depth matrices come from `jgi_summarize_bam_contig_depths`. Their first three columns are `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). They are followed by one depth/variance column pair per BAM file: one pair for single coverage, and one pair per original sample for multi coverage.\n\n## Optional modifications\n\nSome modifications can be made in the workflow editor for specific use cases:\n\n- **Compare binners and refiners**: add CheckM/CheckM2 after each binner or refiner and compare completeness, contamination and number of bins.\n- **Differential abundance**: compare MAG abundance between sample groups with MaAsLin2.\n- **Comparison with a catalogue**: download MAGs for similar samples from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and compare them with yours, e.g. with dRep.\n\n## Workflow structure\n\nThis workflow is the parent of six embedded sub-workflows: it adds the shared inputs and the downstream analysis. The embedded workflows perform:\n\n- paired short-read grouping,\n- Nanopore grouping,\n- PacBio grouping,\n- assembly and assembly selection,\n- single-coverage binning,\n- multi-coverage binning.\n\nRefiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded copies currently retain boolean binner controls and a completeness default of 75; the pending standalone 1.1 workflows use `Yes`/`No` controls and a default of 40. Synchronizing those interfaces is a prerequisite to publishing this parent as embedding the standalone releases. Each stage is enclosed in a workflow-editor frame with a short explanation.\n\n## Citation\n\nWhen publishing results, cite the FAIRyMAGs workflow suite ([preprint, doi:10.64898/2026.07.31.741430](https://doi.org/10.64898/2026.07.31.741430)) and the tools used in your analysis. Record the workflow version and Galaxy server so the analysis can be reproduced.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024\u20132028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-W\u00fcrttemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n\n## Talks and Posters\n\n* **ELIXIR All Hands Meeting 2025:** [Slides](https://f1000research.com/slides/14-595)\n* **Galaxy Community Conference 2026 (GCC2026):** [Poster and Talk](https://zenodo.org/records/21128145)\n* **HAL 2026:** [Publication](https://hal.science/hal-05724928)\n* **FAIRyMAGs - a series of FAIR Galaxy workflows for the generation of metagenome assembled genomes** [Preprint](https://doi.org/10.64898/2026.07.31.741430)\n",
+    "readme": "# Metagenome-Assembled Genomes (MAGs) Generation\n\nThis workflow assembles metagenomic short reads with optional long reads, bins the assemblies with five binners, refines the bins with DAS Tool and/or Binette, and reports dereplicated MAGs with their quality and abundance.\n\nThis workflow can be used on its own or integrated into other workflows. It is part of a **suite of workflows for end-to-end MAG generation and annotation** (check the [FAIRyMAGs repository](https://github.com/usegalaxy-eu/FAIRyMAGs) for the complete suite and its capabilities). A dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on how to use it.\n\nThis workflow:\n\n1. [Groups reads using different possible strategies](#step-1-read-grouping),\n2. [Assembles metagenomic short reads with optional long reads](#step-2-assembly-and-assembly-selection),\n3. [Bins the assemblies with five binners](#step-3-binning),\n4. [Refines the bins with DAS Tool and/or Binette](#step-4-bin-refinement),\n5. [Filters MAGs by quality and dereplicates them](#step-5-mag-quality-filtering-and-dereplication),\n6. [Generates abundance estimates and reports](#step-6-abundance-and-reports).\n\n## Subworkflow dependencies and update order\n\nThis workflow embeds the following dependencies:\n\n- [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step 47).\n- [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step 55).\n- [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step 66).\n\nEmbedded workflows are snapshots, not live references. Update and validate the affected standalone assembly or binning subworkflow first, and merge that change into IWC before synchronizing its embedded copy here. Check the parent input/output connections and defaults, update the documentation, and rerun the affected integration tests. Grouping helpers have no separate standalone dependency and should be updated and tested here.\n\nThe end-to-end MAG workflow depends on this workflow: propagate changes there only after updating and validating MAG generation. The maintenance order is **standalone assembly/binning → MAG generation → end-to-end MAG workflow**, rather than editing independent copies of the same subworkflow.\n\n## Inputs\n\n\nThe form starts with the reads, then the assembly options, the sample grouping, the binning and refinement settings, and finally the MAG selection thresholds.\n\n### Reads\n\n- **Trimmed reads** (required): the original samples as a `list:paired` collection.\n- **Trimmed Nanopore reads** and **Trimmed PacBio reads** (optional): two independent original-read `list` collections. Long reads are used only by metaSPAdes.\n\nReads must be quality-filtered with host reads removed. Prepare short reads with [Short Read QC & Trimming](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main) and [Host Contamination Removal (Short Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main). Prepare long reads with [Nanopore Pre-processing](https://iwc.galaxyproject.org/workflow/nanopore-pre-processing-main) and [Host Contamination Removal (Long Reads)](https://iwc.galaxyproject.org/workflow/host-contamination-removal-long-reads-main).\n\n### Assembly\n\n- **Choose Assembler**: `MEGAHIT` (default), `metaSPAdes` or `Custom Assembly`.\n- **Custom Assemblies**: required only with `Custom Assembly`; a `list` of assemblies, one per selected sample or group.\n- **Minimum length of contigs to output** (default: 200).\n\n### Sample grouping\n\n- **Use grouping?**:\n  - `Use original samples` (default): bin each sample on its own reads.\n  - `Use grouping`: merge the reads of the samples that belong to the same group before assembly and binning.\n  - `Use grouping and original samples`: run both, using grouped reads where they exist and original reads otherwise.\n- **Metadata** and **Sample grouping column** (default: `group`): the table that defines the groups.\n  - Metadata is optional, but it is the only way to define explicit groups. Without it, the grouping tool merges all samples into one group.\n   - Use distinct sample and group names, and avoid underscores in group names, because of the pinned `fastq_groupmerge` (`1.0.2+galaxy0`) output discovery pattern.\n   - Use only letters, digits, underscores, hyphens and periods in sample and group identifiers. CheckM2 replaces other characters with underscores; the quality-based collection filter compares those names with the original identifiers and would otherwise discard mismatched bins.\n   - In grouped-only mode, samples missing from the metadata are omitted by `fastq_groupmerge`. Include every sample you intend to analyse.\n\n### Binning and refinement\n\n- **Binning strategy**: `Single-coverage binning (own/merged reads)` (default), `Multi-coverage binning (all samples)` or `Both`.\n- **Run COMEBin**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: enabled): enable or skip each binner. Keep at least one binner enabled.\n- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model used by SemiBin in single-coverage mode.\n- **Bin refinement tool**: `Binette` (default), `DAS Tool` or `Both`.\n- **CheckM2 Database**: the reference database used by Binette and by the pooled and final MAG quality assessments.\n- **Minimum MAG completeness percentage** (default: 75) and **Contamination weight (Binette)** (default: 2): the Binette settings used in both coverage branches.\n\n### MAG selection thresholds\n\n- **Minimum MAG completeness percentage** (default: 75): also controls dRep's completeness filter, in addition to the Binette refinement threshold.\n- **Minimum MAG length** (default: 50000),\n- **Maximum MAG contamination percentage** (default: 25),\n- **ANI threshold for dereplication** (default: 0.95).\n\nThese thresholds select the representative MAGs after CheckM2 assessment.\n\n## Step 1: Read grouping\n\nGrouping merges the reads of samples that belong to the same experimental group, so that a group can be assembled and binned as one sample. It is done separately for short reads, nanopore reads and PacBio reads.\n\n- **Original mode** keeps every sample separate.\n- **Grouped mode** merges the reads of each metadata-defined group.\n- **Hybrid mode** keeps both: grouped reads where a group exists, original reads otherwise.\n- Empty, sample-matched files stand in for missing long reads, so that a run without long reads keeps the same sample structure.\n\n**Group short and long reads consistently**: use the same metadata table and the same grouping column for all read types. The workflow groups each read type on its own and then matches the results by identifier, so the groups must have the same names; otherwise the grouped long reads cannot be paired with the grouped short reads of the same group.\n\n## Step 2: Assembly and assembly selection\n\nEach selected sample or group is assembled into one assembly.\n\n- **MEGAHIT** assembles short reads only.\n- **metaSPAdes** can additionally use the grouped or per-sample nanopore and PacBio reads.\n- **Custom Assembly** takes your own assemblies instead of running an assembler.\n\nThe assembly selector passes through the output of the chosen assembler or the custom assemblies. QUAST assesses those assemblies and produces the assembly report; it does not rank alternative assemblies or choose which one to bin.\n\n**Custom assemblies must follow the selected samples.** Provide one FASTA per selected sample or group, in the same order, with identifiers matching the selected reads. Binning and coverage rely on this correspondence.\n\n**Per-sample assemblies do not become a co-assembly.** Grouping merges reads, not assemblies. If your reads are grouped, supply one assembly per group, or let the workflow assemble the group; it does not combine five per-sample FASTAs into one co-assembly. If you want bins from a co-assembly, provide that co-assembly as a single element.\n\n## Step 3: Binning\n\nBinning splits each assembly into candidate genome bins. Five binners are available: CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin. Each uses a different combination of contig composition, coverage and marker genes, and each is optional.\n\nThe binning strategy decides which reads provide the coverage:\n\n- **Single-coverage binning (own/merged reads)** (default): each assembly is mapped against its own original sample or group-merged reads. A co-assembly therefore has one pooled coverage profile in this branch.\n- **Multi-coverage binning (all samples)**: every assembly is mapped against all original per-sample read sets, even when the assembly was built from grouped reads. Each sample keeps its own coverage profile.\n- **Both**: run both branches and keep the union of their refined bins. Conflicting flattened identifiers receive `_#` suffixes.\n\nA member-restricted alternative, which would map only the samples belonging to each co-assembly, is **not implemented**; it is different from both pooled single coverage and all-sample multi coverage. There is no automatic fallback between strategies.\n\nThe multi-coverage branch builds its assembly × read-sample matrix with native Flatten, Nested Cross Product and Apply Rules operations. These reuse the original read datasets instead of writing interlaced or de-interlaced FASTQ files, so intermediate read storage drops; the number of mapping jobs and BAM files still grows as assemblies × samples.\n\nA disabled binner is skipped, and its candidate results are replaced by empty collections, so the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\nCONCOCT read length is computed automatically from both input mates: total sequence length divided by total read count, rounded to the nearest integer. Single-coverage uses the selected or group-merged reads, multi-coverage uses all original samples. No manual read length is needed.\n\n## Step 4: Bin refinement\n\nRefinement reconciles the candidate bins of the individual binners into a final, non-redundant set, separately in each coverage branch.\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n- **Both** runs DAS Tool and Binette.\n\nThis workflow merges the selected refiner outputs within each coverage branch, then merges the branches.\n\n## Step 5: MAG quality filtering and dereplication\n\nThe refined bins of all samples and groups are pooled and assessed with CheckM2.\n\n- CheckM2 does not report quality for degenerate or very short bins. The workflow therefore keeps only assessed bins before dereplication: the quality table is reduced to its identifier column, and the bin collection is filtered to that list. A single unassessed bin can then not abort dereplication and the downstream steps.\n- **dRep** dereplicates the assessed MAGs with the selected minimum length, maximum contamination and ANI thresholds, and selects one representative per species-level cluster.\n\n## Step 6: Abundance and reports\n\n- **CoverM** estimates the abundance of each representative MAG in the original samples, and the per-sample tables are combined into one table.\n- **CheckM**, **CheckM2** and **QUAST** assess the quality of the representative MAGs, and the assembly-quality tables are combined into one table.\n- All results are collected in a single **MultiQC report**.\n\nGenome annotation and taxonomic annotation are not part of this workflow. Use the dedicated workflows instead:\n\n- [MAG Genome Annotation](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main)\n- [MAGs Taxonomy Annotation](https://iwc.galaxyproject.org/workflow/mags-taxonomy-annotation-main)\n- [Functional Annotation of Sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main)\n- [AMR Gene Detection](https://iwc.galaxyproject.org/workflow/amr_gene_detection-main)\n\n## Outputs\n\nThe workflow returns the final MAG tables (quality, abundance, MultiQC report) together with intermediate outputs you can inspect:\n\n- **Coverage depth matrices**, one per assembly and coverage branch.\n- **Raw bins** of each enabled binner, per assembly.\n- **Refined bins** of each coverage branch, plus the selected and dereplicated MAGs.\n\nThe coverage depth matrices come from `jgi_summarize_bam_contig_depths`. Their first three columns are `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). They are followed by one depth/variance column pair per BAM file: one pair for single coverage, and one pair per original sample for multi coverage.\n\n## Optional modifications\n\nSome modifications can be made in the workflow editor for specific use cases:\n\n- **Compare binners and refiners**: add CheckM/CheckM2 after each binner or refiner and compare completeness, contamination and number of bins.\n- **Differential abundance**: compare MAG abundance between sample groups with MaAsLin2.\n- **Comparison with a catalogue**: download MAGs for similar samples from [MGnify genomes](https://www.ebi.ac.uk/metagenomics/browse/genomes) and compare them with yours, e.g. with dRep.\n\n## Workflow structure\n\nThis workflow is the parent of six embedded sub-workflows: it adds the shared inputs and the downstream analysis. The embedded workflows perform:\n\n- paired short-read grouping,\n- Nanopore grouping,\n- PacBio grouping,\n- assembly and assembly selection,\n- single-coverage binning,\n- multi-coverage binning.\n\nRefiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded copies currently retain boolean binner controls and a completeness default of 75; the pending standalone 1.1 workflows use `Yes`/`No` controls and a default of 40. Synchronizing those interfaces is a prerequisite to publishing this parent as embedding the standalone releases. Each stage is enclosed in a workflow-editor frame with a short explanation.\n\n## Citation\n\nWhen publishing results, cite the FAIRyMAGs workflow suite ([preprint, doi:10.64898/2026.07.31.741430](https://doi.org/10.64898/2026.07.31.741430)) and the tools used in your analysis. Record the workflow version and Galaxy server so the analysis can be reproduced.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n\n## Talks and Posters\n\n* **ELIXIR All Hands Meeting 2025:** [Slides](https://f1000research.com/slides/14-595)\n* **Galaxy Community Conference 2026 (GCC2026):** [Poster and Talk](https://zenodo.org/records/21128145)\n* **HAL 2026:** [Publication](https://hal.science/hal-05724928)\n* **FAIRyMAGs - a series of FAIR Galaxy workflows for the generation of metagenome assembled genomes** [Preprint](https://doi.org/10.64898/2026.07.31.741430)\n",
     "report": {
         "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
     },
@@ -4662,7 +4652,7 @@
                         },
                         "id": 18,
                         "uuid": "9ae442f7-6f1c-49c4-b7ac-b9a7d2c271ea",
-                        "label": "Read-length statistics \u2014 forward",
+                        "label": "Read-length statistics — forward",
                         "workflow_outputs": []
                     },
                     "19": {
@@ -4693,7 +4683,7 @@
                         },
                         "id": 19,
                         "uuid": "968732e1-4d27-44e4-9dc2-602b06b1a389",
-                        "label": "Read-length statistics \u2014 reverse",
+                        "label": "Read-length statistics — reverse",
                         "workflow_outputs": []
                     },
                     "20": {
@@ -4812,7 +4802,7 @@
                                 "name": "reference_genome"
                             }
                         ],
-                        "label": "Map each sample\u2019s reads to its own assembly with Bowtie2",
+                        "label": "Map each sample’s reads to its own assembly with Bowtie2",
                         "name": "Bowtie2",
                         "outputs": [
                             {
@@ -4946,7 +4936,7 @@
                                 "name": "mode"
                             }
                         ],
-                        "label": "Calculate contig depths from each assembly\u2019s own reads",
+                        "label": "Calculate contig depths from each assembly’s own reads",
                         "name": "Calculate contig depths",
                         "outputs": [
                             {
@@ -5630,7 +5620,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 SemiBin",
+                        "label": "Optional bins bridge — SemiBin",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -5772,7 +5762,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 MetaBAT2",
+                        "label": "Optional bins bridge — MetaBAT2",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -5926,7 +5916,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 MaxBin2",
+                        "label": "Optional bins bridge — MaxBin2",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -6409,7 +6399,7 @@
                 ],
                 "uuid": "0d3f0f2f-537d-4142-9221-f64ea62ce7f4",
                 "version": 1,
-                "readme": "# Single-sample binning workflow\n\nThis workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using the coverage of each sample's own reads, and refines the bins with DAS Tool and/or Binette.\n\nIt performs the coverage estimation, binning and bin refinement stages of the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.\n\n## How single-sample binning works\n\nEach assembly is binned with the coverage of its own reads. Compared with [multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/), which maps the reads of every sample against the assemblies of all samples, this workflow needs far fewer mapping jobs and much less storage, but the binners cannot use abundance patterns across samples, so the bins are usually somewhat worse.\n\nUse single-sample binning when:\n\n- there are many samples,\n- the samples come from unrelated environments, or\n- storage is limited.\n\nPrefer multi-sample binning when resources allow and the samples come from related environments.\n\n## Inputs\n\n- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).\n- **Paired-end reads**: a `list:paired` collection with one element per sample.\n  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.\n  - Reads and assemblies are paired by position, not by element identifier: both collections must have the same number of elements, in the same order (e.g. sorted the same way).\n  - The sample names become the coverage columns of the binners.\n- **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.\n  - Keep at least one binner enabled.\n  - COMEBin is the most time- and resource-consuming binner.\n- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model environment used by SemiBin in single-sample mode.\n- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.\n- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.\n- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette. It does not filter DAS Tool output.\n- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.\n\n## Step 1: Coverage\n\nThis step produces the coverage information every binner needs.\n\n1. Bowtie2 maps each sample's reads against its own assembly, and Samtools sorts the alignments by coordinate.\n2. Contig depths are summarised with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly.\n   For MaxBin2, the matrix is reduced to the contig name and its total average depth, without the header line. MaxBin2 reads the first number after the contig name as its abundance, so the full matrix would make it use the contig length instead.\n3. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.\n4. COMEBin expects each sample's alignments nested in a collection, which is prepared here.\n\n## Step 2: Binning\n\nEach assembly is binned separately by every enabled binner.\n\n| Binner | Inputs used |\n| --- | --- |\n| SemiBin | Contig composition and coverage, with the selected pretrained model environment |\n| CONCOCT | Contig fragments, their coverage table and the estimated read length; fragment clusters are merged back to contigs |\n| MetaBAT2 | Contig composition and coverage |\n| MaxBin2 | Contig composition, coverage and marker genes |\n| COMEBin | Deep-learning binning from contig sequence and coverage; optional |\n\nA binner set to `No` is skipped, and its candidate results are replaced by empty collections so that the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\n## Step 3: Refinement\n\nThe candidate bins are refined with one or both refinement tools:\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n\nSelecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.\n\n## Outputs\n\n- **Coverage depth matrices**: one depth table per assembly, with the coverage of that assembly's own reads.\n- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.\n- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.\n- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.\n\n## Why use this workflow\n\nBinning is a separate workflow here, so it can be reused by larger analysis pipelines without copying or rewiring it.\n\n- It keeps the binning parameters and outputs visible and controllable.\n- It can be combined with different upstream and downstream workflows, e.g. taxonomic classification, genome annotation, functional analysis or benchmarking.\n- It avoids duplicating binning logic inside every pipeline that needs it.\n\nThe IWC [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/) is the comprehensive alternative: it assembles reads, bins with multiple tools, dereplicates the MAGs and reports their quality and abundance in one workflow. Use it when you want MAGs and their evaluation without a specialised downstream workflow, and use this binning workflow when binning is one component of a larger analysis.\n\nWhen this workflow is used as a sub-workflow, the parent workflow can restrict its options, for example by fixing the **Bin refinement tool** parameter so that users can only run one specific refinement tool.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024\u20132028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-W\u00fcrttemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n"
+                "readme": "# Single-sample binning workflow\n\nThis workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using the coverage of each sample's own reads, and refines the bins with DAS Tool and/or Binette.\n\nIt performs the coverage estimation, binning and bin refinement stages of the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.\n\n## How single-sample binning works\n\nEach assembly is binned with the coverage of its own reads. Compared with [multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/), which maps the reads of every sample against the assemblies of all samples, this workflow needs far fewer mapping jobs and much less storage, but the binners cannot use abundance patterns across samples, so the bins are usually somewhat worse.\n\nUse single-sample binning when:\n\n- there are many samples,\n- the samples come from unrelated environments, or\n- storage is limited.\n\nPrefer multi-sample binning when resources allow and the samples come from related environments.\n\n## Inputs\n\n- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).\n- **Paired-end reads**: a `list:paired` collection with one element per sample.\n  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.\n  - Reads and assemblies are paired by position, not by element identifier: both collections must have the same number of elements, in the same order (e.g. sorted the same way).\n  - The sample names become the coverage columns of the binners.\n- **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.\n  - Keep at least one binner enabled.\n  - COMEBin is the most time- and resource-consuming binner.\n- **Environment for the built-in model (SemiBin)** (default: `global`): the pretrained model environment used by SemiBin in single-sample mode.\n- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.\n- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.\n- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette. It does not filter DAS Tool output.\n- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.\n\n## Step 1: Coverage\n\nThis step produces the coverage information every binner needs.\n\n1. Bowtie2 maps each sample's reads against its own assembly, and Samtools sorts the alignments by coordinate.\n2. Contig depths are summarised with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly.\n   For MaxBin2, the matrix is reduced to the contig name and its total average depth, without the header line. MaxBin2 reads the first number after the contig name as its abundance, so the full matrix would make it use the contig length instead.\n3. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.\n4. COMEBin expects each sample's alignments nested in a collection, which is prepared here.\n\n## Step 2: Binning\n\nEach assembly is binned separately by every enabled binner.\n\n| Binner | Inputs used |\n| --- | --- |\n| SemiBin | Contig composition and coverage, with the selected pretrained model environment |\n| CONCOCT | Contig fragments, their coverage table and the estimated read length; fragment clusters are merged back to contigs |\n| MetaBAT2 | Contig composition and coverage |\n| MaxBin2 | Contig composition, coverage and marker genes |\n| COMEBin | Deep-learning binning from contig sequence and coverage; optional |\n\nA binner set to `No` is skipped, and its candidate results are replaced by empty collections so that the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\n## Step 3: Refinement\n\nThe candidate bins are refined with one or both refinement tools:\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n\nSelecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.\n\n## Outputs\n\n- **Coverage depth matrices**: one depth table per assembly, with the coverage of that assembly's own reads.\n- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.\n- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.\n- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.\n\n## Why use this workflow\n\nBinning is a separate workflow here, so it can be reused by larger analysis pipelines without copying or rewiring it.\n\n- It keeps the binning parameters and outputs visible and controllable.\n- It can be combined with different upstream and downstream workflows, e.g. taxonomic classification, genome annotation, functional analysis or benchmarking.\n- It avoids duplicating binning logic inside every pipeline that needs it.\n\nThe IWC [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/) is the comprehensive alternative: it assembles reads, bins with multiple tools, dereplicates the MAGs and reports their quality and abundance in one workflow. Use it when you want MAGs and their evaluation without a specialised downstream workflow, and use this binning workflow when binning is one component of a larger analysis.\n\nWhen this workflow is used as a sub-workflow, the parent workflow can restrict its options, for example by fixing the **Bin refinement tool** parameter so that users can only run one specific refinement tool.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n"
             },
             "input_connections": {
                 "Paired-end reads": {
@@ -6418,7 +6408,7 @@
                     "input_subworkflow_step_id": 1
                 },
                 "Run COMEBin?": {
-                    "id": 67,
+                    "id": 69,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 2
                 },
@@ -6438,22 +6428,22 @@
                     "input_subworkflow_step_id": 9
                 },
                 "Run SemiBin?": {
-                    "id": 68,
+                    "id": 70,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 3
                 },
                 "Run CONCOCT?": {
-                    "id": 69,
+                    "id": 71,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 4
                 },
                 "Run MetaBAT2?": {
-                    "id": 70,
+                    "id": 72,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 5
                 },
                 "Run MaxBin2?": {
-                    "id": 71,
+                    "id": 73,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 6
                 },
@@ -6489,17 +6479,17 @@
             },
             "workflow_outputs": [
                 {
-                    "label": "Single-coverage binning (own/merged reads) \u2014 DAS Tool bins",
+                    "label": "Single-coverage binning (own/merged reads) — DAS Tool bins",
                     "output_name": "DAS Tool bins",
                     "uuid": "ca6fc6e8-4f76-4abe-aeff-79bc787d7caa"
                 },
                 {
-                    "label": "Single-coverage binning (own/merged reads) \u2014 Binette bins",
+                    "label": "Single-coverage binning (own/merged reads) — Binette bins",
                     "output_name": "Binette bins",
                     "uuid": "e62f2c48-59f7-4d0c-8c6e-4d18e6b18a8e"
                 },
                 {
-                    "label": "Single-coverage binning (own/merged reads) \u2014 coverage depths",
+                    "label": "Single-coverage binning (own/merged reads) — coverage depths",
                     "output_name": "Coverage depth matrices",
                     "uuid": "f9fd05df-74e7-4ad0-a745-b2a1078b4bff"
                 }
@@ -6733,7 +6723,7 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "Single-coverage binning (own/merged reads) \u2014 merged refined bins",
+                    "label": "Single-coverage binning (own/merged reads) — merged refined bins",
                     "output_name": "output",
                     "uuid": "5486b7ca-c06b-4199-9fa9-dd56f1035527"
                 }
@@ -7052,7 +7042,7 @@
                         "workflow_outputs": []
                     },
                     "1": {
-                        "annotation": "Paired-end reads of each sample (list:paired), quality-trimmed and host-removed. Each sample's reads are mapped against every assembly. Multi-sample binning is most effective with up to ~20 samples (performance peaks around 20; Mineeva et al., Nat. Commun. 2025, https://doi.org/10.1038/s41467-026-71521-w). Using more than 20 samples can lead to extensive resource usage (N\u00b2 mappings, large storage). For more than 20 samples or unrelated environments, single-sample binning may be cheaper.",
+                        "annotation": "Paired-end reads of each sample (list:paired), quality-trimmed and host-removed. Each sample's reads are mapped against every assembly. Multi-sample binning is most effective with up to ~20 samples (performance peaks around 20; Mineeva et al., Nat. Commun. 2025, https://doi.org/10.1038/s41467-026-71521-w). Using more than 20 samples can lead to extensive resource usage (N² mappings, large storage). For more than 20 samples or unrelated environments, single-sample binning may be cheaper.",
                         "content_id": null,
                         "errors": null,
                         "id": 1,
@@ -7750,7 +7740,7 @@
                         },
                         "id": 21,
                         "uuid": "7e279609-78fb-4228-bde2-64b430f05a4b",
-                        "label": "Read-length statistics \u2014 forward",
+                        "label": "Read-length statistics — forward",
                         "workflow_outputs": []
                     },
                     "22": {
@@ -7781,7 +7771,7 @@
                         },
                         "id": 22,
                         "uuid": "f4127452-4189-431b-8a92-303f9669b0c5",
-                        "label": "Read-length statistics \u2014 reverse",
+                        "label": "Read-length statistics — reverse",
                         "workflow_outputs": []
                     },
                     "23": {
@@ -8632,7 +8622,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 SemiBin",
+                        "label": "Optional bins bridge — SemiBin",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -8774,7 +8764,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 MetaBAT2",
+                        "label": "Optional bins bridge — MetaBAT2",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -8928,7 +8918,7 @@
                             }
                         },
                         "inputs": [],
-                        "label": "Optional bins bridge \u2014 MaxBin2",
+                        "label": "Optional bins bridge — MaxBin2",
                         "name": "Pick parameter value",
                         "outputs": [
                             {
@@ -9451,7 +9441,7 @@
                 ],
                 "uuid": "9b674961-0b3c-4f8f-97e6-f225e018198f",
                 "version": 1,
-                "readme": "# Multi-sample binning workflow\n\nThis workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using cross-sample read coverage, and refines the bins with DAS Tool and/or Binette.\n\nIt performs cross-sample coverage estimation, binning and bin refinement for the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.\n\n## How multi-sample binning works\n\nIn single-sample binning, each assembly is binned with the coverage of its own reads. In multi-sample binning, the reads of every sample are mapped against the assembly of every sample, so each contig gets one coverage profile per sample. Binners can then separate organisms that have similar composition but different abundance patterns across samples.\n\nTwo details are worth knowing before starting:\n\n- Each sample's reads are mapped against each sample's assembly, and every assembly is binned on its own. The workflow does not concatenate all assemblies into one co-assembly and split the resulting bins afterwards.\n- The mapping workload grows as N\u00b2 for N samples: N read sets \u00d7 N assemblies. Storage grows quickly too, even though the workflow reuses the original FASTQ datasets instead of writing intermediate read files.\n\n**Note on sample count:** Multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage (N\u00b2 mappings and substantial storage requirements). For many samples or samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.\n\n## Inputs\n\n- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).\n  - Every sample's reads are mapped against every assembly, so the element identifiers of the reads and assemblies do not need to match.\n  - The number of assemblies does not need to equal the number of read samples: a single co-assembly binned with the coverage of all samples is a valid input.\n- **Paired-end reads**: a `list:paired` collection with one element per sample.\n  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.\n  - The sample names become the coverage columns of the binners.\n  - **Use with caution for large datasets:** multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage, as the mapping workload grows as N\u00b2 (N read sets \u00d7 N assemblies) and storage requirements increase substantially. For many samples or unrelated environments, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.\n- **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.\n  - Keep at least one binner enabled.\n  - COMEBin is the most time- and resource-consuming binner.\n- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.\n- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.\n- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette. It does not filter DAS Tool output.\n- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.\n\n## Step 1: Coverage\n\nThis step produces the coverage information every binner needs.\n\n1. The read pairs of all samples are flattened into one flat list of files, and the assemblies are used as they are.\n2. A nested cross product pairs each assembly with every flattened read file.\n3. Apply Rules rebuilds, for each assembly, the paired reads of each sample and the matching assembly reference. These are collection operations on the original datasets: no interlaced or de-interlaced FASTQ file is written.\n4. Bowtie2 maps every sample against every assembly.\n5. Contig depths are summarised per assembly with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly with the coverage and variance of every sample.\n6. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.\n7. For MaxBin2, the depth table is converted into one abundance file per read sample, containing the contig name and that sample's depth, without the header line or the variance columns. MaxBin2 reads the first number after the contig name as its abundance, so the full table would make it use the contig length instead, and MaxBin2 only uses cross-sample coverage when it gets one abundance file per sample.\n\nThe depth table produced by `jgi_summarize_bam_contig_depths` starts with `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). Each read sample then contributes a depth column and a variance column. This gives each assembly's contigs a coverage profile across all read samples; \u201cJGI depth table\u201d refers to this format, not to an additional input database.\n\n## Step 2: Binning\n\nEach assembly is binned separately by every enabled binner.\n\n| Binner | Inputs used |\n| --- | --- |\n| SemiBin | Contig composition and cross-sample coverage, in co-binning mode |\n| CONCOCT | Contig fragments, their coverage table and the estimated read length; fragment clusters are merged back to contigs |\n| MetaBAT2 | Contig composition and cross-sample coverage |\n| MaxBin2 | Contig composition, cross-sample coverage and marker genes |\n| COMEBin | Deep-learning binning from contig sequence and coverage; optional |\n\nA binner set to `No` is skipped, and its candidate results are replaced by empty collections so that the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\n## Step 3: Refinement\n\nThe candidate bins are refined with one or both refinement tools:\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n\nSelecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.\n\n## Outputs\n\n- **Coverage depth matrices**: one depth table per assembly, with the coverage of all original samples.\n- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.\n- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.\n- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.\n\n## Why use this workflow\n\nBinning is a separate workflow here, so it can be reused by larger analysis pipelines without copying or rewiring it.\n\n- It keeps the binning parameters and outputs visible and controllable.\n- It can be combined with different upstream and downstream workflows, e.g. taxonomic classification, genome annotation, functional analysis or benchmarking.\n- It avoids duplicating binning logic inside every pipeline that needs it.\n\nThe IWC [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/) is the comprehensive alternative: it assembles reads, bins with multiple tools, dereplicates the MAGs and reports their quality and abundance in one workflow. Use it when you want MAGs and their evaluation without a specialised downstream workflow, and use this binning workflow when binning is one component of a larger analysis.\n\nThrough the workflow editor, an upstream or downstream workflow can also restrict this one, for example to a single refinement tool.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024\u20132028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-W\u00fcrttemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n"
+                "readme": "# Multi-sample binning workflow\n\nThis workflow turns metagenomic assemblies into metagenomic bins with five binners (CONCOCT, MaxBin2, MetaBAT2, SemiBin and COMEBin), using cross-sample read coverage, and refines the bins with DAS Tool and/or Binette.\n\nIt performs cross-sample coverage estimation, binning and bin refinement for the [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/).\nA dedicated [learning pathway](https://galaxyproject.github.io/training-material/learning-pathways/mags.html) provides detailed guidance on MAG generation in Galaxy, including the binning tools used here.\n\n## How multi-sample binning works\n\nIn single-sample binning, each assembly is binned with the coverage of its own reads. In multi-sample binning, the reads of every sample are mapped against the assembly of every sample, so each contig gets one coverage profile per sample. Binners can then separate organisms that have similar composition but different abundance patterns across samples.\n\nTwo details are worth knowing before starting:\n\n- Each sample's reads are mapped against each sample's assembly, and every assembly is binned on its own. The workflow does not concatenate all assemblies into one co-assembly and split the resulting bins afterwards.\n- The mapping workload grows as N² for N samples: N read sets × N assemblies. Storage grows quickly too, even though the workflow reuses the original FASTQ datasets instead of writing intermediate read files.\n\n**Note on sample count:** Multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage (N² mappings and substantial storage requirements). For many samples or samples from unrelated environments where cross-sample coverage adds little, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.\n\n## Inputs\n\n- **Assemblies**: a `list` collection of assemblies from any assembler (e.g. MEGAHIT or metaSPAdes).\n  - Every sample's reads are mapped against every assembly, so the element identifiers of the reads and assemblies do not need to match.\n  - The number of assemblies does not need to equal the number of read samples: a single co-assembly binned with the coverage of all samples is a valid input.\n- **Paired-end reads**: a `list:paired` collection with one element per sample.\n  - Reads should be quality-trimmed and host-removed, e.g. with the IWC [short-read quality control](https://iwc.galaxyproject.org/workflow/short-read-qc-trimming-main/) and [host contamination removal](https://iwc.galaxyproject.org/workflow/host-contamination-removal-short-reads-main/) workflows.\n  - The sample names become the coverage columns of the binners.\n  - **Use with caution for large datasets:** multi-sample binning is most effective with up to ~20 samples. Performance usually peaks around 20 samples ([Mineeva et al., *Nat. Commun.* 2025](https://www.nature.com/articles/s41467-026-71521-w)). Using more than 20 samples can lead to extensive resource usage, as the mapping workload grows as N² (N read sets × N assemblies) and storage requirements increase substantially. For many samples or unrelated environments, [single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) is often the cheaper choice.\n- **Run COMEBin?**, **Run SemiBin?**, **Run CONCOCT?**, **Run MetaBAT2?** and **Run MaxBin2?** (default: `Yes`): enable or skip each binner independently.\n  - Keep at least one binner enabled.\n  - COMEBin is the most time- and resource-consuming binner.\n- **Bin refinement tool** (default: `Binette`): `Binette`, `DAS Tool` or `Both`.\n- **CheckM2 Database**: the CheckM2 reference database Binette uses to assess bin quality.\n- **Minimum MAG completeness percentage** (default: 40): the minimum bin completeness used by Binette. It does not filter DAS Tool output.\n- **Contamination weight (Binette)** (default: 2): the contamination penalty used in Binette's scoring.\n\n## Step 1: Coverage\n\nThis step produces the coverage information every binner needs.\n\n1. The read pairs of all samples are flattened into one flat list of files, and the assemblies are used as they are.\n2. A nested cross product pairs each assembly with every flattened read file.\n3. Apply Rules rebuilds, for each assembly, the paired reads of each sample and the matching assembly reference. These are collection operations on the original datasets: no interlaced or de-interlaced FASTQ file is written.\n4. Bowtie2 maps every sample against every assembly.\n5. Contig depths are summarised per assembly with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly with the coverage and variance of every sample.\n6. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.\n7. For MaxBin2, the depth table is converted into one abundance file per read sample, containing the contig name and that sample's depth, without the header line or the variance columns. MaxBin2 reads the first number after the contig name as its abundance, so the full table would make it use the contig length instead, and MaxBin2 only uses cross-sample coverage when it gets one abundance file per sample.\n\nThe depth table produced by `jgi_summarize_bam_contig_depths` starts with `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). Each read sample then contributes a depth column and a variance column. This gives each assembly's contigs a coverage profile across all read samples; “JGI depth table” refers to this format, not to an additional input database.\n\n## Step 2: Binning\n\nEach assembly is binned separately by every enabled binner.\n\n| Binner | Inputs used |\n| --- | --- |\n| SemiBin | Contig composition and cross-sample coverage, in co-binning mode |\n| CONCOCT | Contig fragments, their coverage table and the estimated read length; fragment clusters are merged back to contigs |\n| MetaBAT2 | Contig composition and cross-sample coverage |\n| MaxBin2 | Contig composition, cross-sample coverage and marker genes |\n| COMEBin | Deep-learning binning from contig sequence and coverage; optional |\n\nA binner set to `No` is skipped, and its candidate results are replaced by empty collections so that the refinement steps keep their structure. Raw binner outputs are only available for binners that ran.\n\n## Step 3: Refinement\n\nThe candidate bins are refined with one or both refinement tools:\n\n- **DAS Tool** scores the contig-to-bin assignments of all enabled binners and selects a non-redundant set of bins.\n- **Binette** evaluates the candidate FASTA bins with CheckM2 and refines them with the selected completeness and contamination settings.\n\nSelecting **Both** runs DAS Tool and Binette independently on the candidate bins, allowing you to benefit from their different refinement approaches. The two output sets must then be combined and dereplicated downstream; this workflow does not perform dereplication. Dereplication reduces redundant genomes but does not enforce unique contig membership, so contigs can still end up in multiple retained bins. If exclusive contig assignments are required, inspect and resolve overlaps explicitly.\n\n## Outputs\n\n- **Coverage depth matrices**: one depth table per assembly, with the coverage of all original samples.\n- **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.\n- **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.\n- **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.\n\n## Why use this workflow\n\nBinning is a separate workflow here, so it can be reused by larger analysis pipelines without copying or rewiring it.\n\n- It keeps the binning parameters and outputs visible and controllable.\n- It can be combined with different upstream and downstream workflows, e.g. taxonomic classification, genome annotation, functional analysis or benchmarking.\n- It avoids duplicating binning logic inside every pipeline that needs it.\n\nThe IWC [MAGs generation workflow](https://iwc.galaxyproject.org/workflow/mags-building-main/) is the comprehensive alternative: it assembles reads, bins with multiple tools, dereplicates the MAGs and reports their quality and abundance in one workflow. Use it when you want MAGs and their evaluation without a specialised downstream workflow, and use this binning workflow when binning is one component of a larger analysis.\n\nThrough the workflow editor, an upstream or downstream workflow can also restrict this one, for example to a single refinement tool.\n\n## Funding\n\nThis workflow was developed as part of the [**FAIRyMAGs** project](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp/fairymags), funded as a commissioned service of the [**Biodiversity, Food Security and Pathogens (BFSP) ELIXIR Scientific Programme 2024–2028**](https://elixir-europe.org/how-we-work/scientific-programme/science/bfsp).\n\nThe project was also supported by the **European Galaxy Server**, funded by the German Federal Ministry of Education and Research (BMBF; 031 A538A de.NBI-RBC) and the **Ministry of Science, Research and the Arts Baden-Württemberg (MWK)** within the framework of **LIBIS/de.NBI Freiburg**.\n"
             },
             "input_connections": {
                 "Paired-end reads": {
@@ -9465,7 +9455,7 @@
                     "input_subworkflow_step_id": 0
                 },
                 "Run COMEBin?": {
-                    "id": 67,
+                    "id": 69,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 2
                 },
@@ -9480,22 +9470,22 @@
                     "input_subworkflow_step_id": 8
                 },
                 "Run SemiBin?": {
-                    "id": 68,
+                    "id": 70,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 3
                 },
                 "Run CONCOCT?": {
-                    "id": 69,
+                    "id": 71,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 4
                 },
                 "Run MetaBAT2?": {
-                    "id": 70,
+                    "id": 72,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 5
                 },
                 "Run MaxBin2?": {
-                    "id": 71,
+                    "id": 73,
                     "output_name": "output_param_text",
                     "input_subworkflow_step_id": 6
                 },
@@ -9526,17 +9516,17 @@
             },
             "workflow_outputs": [
                 {
-                    "label": "Multi-coverage binning (all samples) \u2014 DAS Tool bins",
+                    "label": "Multi-coverage binning (all samples) — DAS Tool bins",
                     "output_name": "DAS Tool bins",
                     "uuid": "37a93238-0070-46c3-b204-91b197d785cd"
                 },
                 {
-                    "label": "Multi-coverage binning (all samples) \u2014 Binette bins",
+                    "label": "Multi-coverage binning (all samples) — Binette bins",
                     "output_name": "Binette bins",
                     "uuid": "d1771e24-5ba5-4cca-b7b0-28985afe49b0"
                 },
                 {
-                    "label": "Multi-coverage binning (all samples) \u2014 coverage depths",
+                    "label": "Multi-coverage binning (all samples) — coverage depths",
                     "output_name": "Coverage depth matrices",
                     "uuid": "2a5cbb1f-9e7b-4cd3-9a21-45af6b34fc02"
                 }
@@ -9770,7 +9760,7 @@
             "when": null,
             "workflow_outputs": [
                 {
-                    "label": "Multi-coverage binning (all samples) \u2014 merged refined bins",
+                    "label": "Multi-coverage binning (all samples) — merged refined bins",
                     "output_name": "output",
                     "uuid": "654d64e1-b293-40ba-a231-6ce38a1989c3"
                 }
@@ -10043,7 +10033,7 @@
                         "workflow_outputs": []
                     },
                     "2": {
-                        "annotation": "Optional long reads in FASTQ format, only used by metaSPAdes. Leave empty to assemble from short reads only. If given, provide exactly one file for every short-read group, with the same element identifiers in the same order as the trimmed paired reads: metaSPAdes pairs them by position.",
+                        "annotation": "Optional long reads in FASTQ format, only used by metaSPAdes. Match element identifiers to the trimmed paired reads. A subset of groups is supported; groups without matching long reads use short reads alone, and unrelated identifiers are ignored.",
                         "content_id": null,
                         "errors": null,
                         "id": 2,
@@ -10070,7 +10060,7 @@
                         "workflow_outputs": []
                     },
                     "3": {
-                        "annotation": "Optional long reads in FASTQ format, only used by metaSPAdes. Leave empty to assemble from short reads only. If given, provide exactly one file for every short-read group, with the same element identifiers in the same order as the trimmed paired reads: metaSPAdes pairs them by position.",
+                        "annotation": "Optional long reads in FASTQ format, only used by metaSPAdes. Match element identifiers to the trimmed paired reads. A subset of groups is supported; groups without matching long reads use short reads alone, and unrelated identifiers are ignored.",
                         "content_id": null,
                         "errors": null,
                         "id": 3,
@@ -10261,9 +10251,43 @@
                     },
                     "9": {
                         "annotation": "",
-                        "content_id": "__UNZIP_COLLECTION__",
+                        "content_id": "__APPLY_RULES__",
                         "errors": null,
                         "id": 9,
+                        "input_connections": {
+                            "input": {
+                                "id": 1,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Apply rules",
+                        "name": "Apply rules",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1200,
+                            "top": 310
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__APPLY_RULES__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [0, 2], \"type\": \"list_identifiers\"}, {\"columns\": [1], \"type\": \"paired_identifier\"}], \"rules\": [{\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}, {\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "002693f1-7100-4244-b7b1-5aa126d8dbdf",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "10": {
+                        "annotation": "",
+                        "content_id": "__UNZIP_COLLECTION__",
+                        "errors": null,
+                        "id": 10,
                         "input_connections": {
                             "input": {
                                 "id": 1,
@@ -10297,11 +10321,11 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "10": {
+                    "11": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
                         "errors": null,
-                        "id": 10,
+                        "id": 11,
                         "input_connections": {
                             "input_param_type|input_param": {
                                 "id": 4,
@@ -10342,11 +10366,11 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "11": {
+                    "12": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
                         "errors": null,
-                        "id": 11,
+                        "id": 12,
                         "input_connections": {
                             "input_param_type|input_param": {
                                 "id": 4,
@@ -10387,11 +10411,11 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "12": {
+                    "13": {
                         "annotation": "",
                         "content_id": "wc_gnu",
                         "errors": null,
-                        "id": 12,
+                        "id": 13,
                         "input_connections": {
                             "input1": {
                                 "id": 8,
@@ -10421,11 +10445,11 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "13": {
+                    "14": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/megahit/megahit/1.2.9+galaxy2",
                         "errors": null,
-                        "id": 13,
+                        "id": 14,
                         "input_connections": {
                             "input_option|batchmode|pair_input": {
                                 "id": 1,
@@ -10436,7 +10460,7 @@
                                 "output_name": "output"
                             },
                             "when": {
-                                "id": 11,
+                                "id": 12,
                                 "output_name": "output_param_boolean"
                             }
                         },
@@ -10482,14 +10506,14 @@
                         "when": "$(inputs.when)",
                         "workflow_outputs": []
                     },
-                    "14": {
+                    "15": {
                         "annotation": "",
                         "content_id": "param_value_from_file",
                         "errors": null,
-                        "id": 14,
+                        "id": 15,
                         "input_connections": {
                             "input1": {
-                                "id": 12,
+                                "id": 13,
                                 "output_name": "out_file1"
                             }
                         },
@@ -10516,18 +10540,18 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "15": {
+                    "16": {
                         "annotation": "",
                         "content_id": "__DUPLICATE_FILE_TO_COLLECTION__",
                         "errors": null,
-                        "id": 15,
+                        "id": 16,
                         "input_connections": {
                             "input": {
                                 "id": 7,
                                 "output_name": "out_file1"
                             },
                             "number": {
-                                "id": 14,
+                                "id": 15,
                                 "output_name": "integer_param"
                             }
                         },
@@ -10554,18 +10578,18 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "16": {
+                    "17": {
                         "annotation": "",
                         "content_id": "__RELABEL_FROM_FILE__",
                         "errors": null,
-                        "id": 16,
+                        "id": 17,
                         "input_connections": {
                             "how|labels": {
                                 "id": 8,
                                 "output_name": "output"
                             },
                             "input": {
-                                "id": 15,
+                                "id": 16,
                                 "output_name": "output"
                             }
                         },
@@ -10597,14 +10621,98 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "17": {
+                    "18": {
+                        "annotation": "Match optional long reads to short-read group identifiers; preserve their order and discard unrelated groups.",
+                        "content_id": "__HARMONIZELISTS__",
+                        "errors": null,
+                        "id": 18,
+                        "input_connections": {
+                            "input1": {
+                                "id": 17,
+                                "output_name": "output"
+                            },
+                            "input2": {
+                                "id": 2,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Match Nanopore reads by group identifier",
+                        "name": "Harmonize two collections",
+                        "outputs": [
+                            {
+                                "name": "output1",
+                                "type": "input"
+                            },
+                            {
+                                "name": "output2",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1700,
+                            "top": 180
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__HARMONIZELISTS__",
+                        "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"input2\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "d2af5edc-cc87-4f8b-86c6-edcc56d00199",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "19": {
+                        "annotation": "Match optional long reads to short-read group identifiers; preserve their order and discard unrelated groups.",
+                        "content_id": "__HARMONIZELISTS__",
+                        "errors": null,
+                        "id": 19,
+                        "input_connections": {
+                            "input1": {
+                                "id": 17,
+                                "output_name": "output"
+                            },
+                            "input2": {
+                                "id": 3,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Match PacBio reads by group identifier",
+                        "name": "Harmonize two collections",
+                        "outputs": [
+                            {
+                                "name": "output1",
+                                "type": "input"
+                            },
+                            {
+                                "name": "output2",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1700,
+                            "top": 670
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__HARMONIZELISTS__",
+                        "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"input2\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "2f4b6f9a-c371-4c12-83cb-d03d4cd0d751",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "20": {
                         "annotation": "Order custom assemblies by short-read group identifier before selecting assemblies or mapping QUAST. An absent input becomes null datasets, so assembly modes can still run.",
                         "content_id": "__HARMONIZELISTS__",
                         "errors": null,
-                        "id": 17,
+                        "id": 20,
                         "input_connections": {
                             "input1": {
-                                "id": 16,
+                                "id": 17,
                                 "output_name": "output"
                             },
                             "input2": {
@@ -10639,30 +10747,353 @@
                         "when": null,
                         "workflow_outputs": []
                     },
-                    "18": {
-                        "annotation": "",
-                        "content_id": "toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/4.3.0+galaxy3",
+                    "21": {
+                        "annotation": "Start with one empty dataset per short-read group and replace it with matching long reads when available.",
+                        "content_id": "__MERGE_COLLECTION__",
                         "errors": null,
-                        "id": 18,
+                        "id": 21,
                         "input_connections": {
-                            "file_processing|arf|nanopore": {
-                                "id": 2,
+                            "inputs_0|input": {
+                                "id": 17,
                                 "output_name": "output"
                             },
-                            "file_processing|arf|pacbio": {
-                                "id": 3,
-                                "output_name": "output"
-                            },
-                            "file_processing|singlePaired|input": {
-                                "id": 1,
-                                "output_name": "output"
-                            },
-                            "when": {
-                                "id": 10,
-                                "output_name": "output_param_boolean"
+                            "inputs_1|input": {
+                                "id": 18,
+                                "output_name": "output2"
                             }
                         },
                         "inputs": [],
+                        "label": "Fill groups without Nanopore reads",
+                        "name": "Merge collections",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1850,
+                            "top": 180
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__MERGE_COLLECTION__",
+                        "tool_state": "{\"advanced\": {\"conflict\": {\"duplicate_options\": \"keep_last\", \"__current_case__\": 4}}, \"inputs\": [{\"__index__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.0.0",
+                        "type": "tool",
+                        "uuid": "6ffe9794-5c3c-44c2-ae29-49d75865a6e5",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "22": {
+                        "annotation": "Start with one empty dataset per short-read group and replace it with matching long reads when available.",
+                        "content_id": "__MERGE_COLLECTION__",
+                        "errors": null,
+                        "id": 22,
+                        "input_connections": {
+                            "inputs_0|input": {
+                                "id": 17,
+                                "output_name": "output"
+                            },
+                            "inputs_1|input": {
+                                "id": 19,
+                                "output_name": "output2"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Fill groups without PacBio reads",
+                        "name": "Merge collections",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1850,
+                            "top": 670
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__MERGE_COLLECTION__",
+                        "tool_state": "{\"advanced\": {\"conflict\": {\"duplicate_options\": \"keep_last\", \"__current_case__\": 4}}, \"inputs\": [{\"__index__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.0.0",
+                        "type": "tool",
+                        "uuid": "1cdcfc54-1dda-45c8-b208-dfab7ea016c3",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "23": {
+                        "annotation": "Replace null datasets from an absent long-read input with empty FASTA placeholders, after matching groups by identifier.",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                        "errors": null,
+                        "id": 23,
+                        "input_connections": {
+                            "style_cond|type_cond|pick_from_0|value": {
+                                "id": 21,
+                                "output_name": "output"
+                            },
+                            "style_cond|type_cond|pick_from_1|value": {
+                                "id": 17,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Pick optional Nanopore reads when they exist",
+                        "name": "Pick parameter value",
+                        "outputs": [
+                            {
+                                "name": "data_param",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1900,
+                            "top": 260
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "b19e21af9c52",
+                            "name": "pick_value",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "0.2.0",
+                        "type": "tool",
+                        "uuid": "f2ae9d6c-a31f-4a94-9505-2da007998da8",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "24": {
+                        "annotation": "Replace null datasets from an absent long-read input with empty FASTA placeholders, after matching groups by identifier.",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                        "errors": null,
+                        "id": 24,
+                        "input_connections": {
+                            "style_cond|type_cond|pick_from_0|value": {
+                                "id": 22,
+                                "output_name": "output"
+                            },
+                            "style_cond|type_cond|pick_from_1|value": {
+                                "id": 17,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Pick optional PacBio reads when they exist",
+                        "name": "Pick parameter value",
+                        "outputs": [
+                            {
+                                "name": "data_param",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 1900,
+                            "top": 670
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+                        "tool_shed_repository": {
+                            "changeset_revision": "b19e21af9c52",
+                            "name": "pick_value",
+                            "owner": "iuc",
+                            "tool_shed": "toolshed.g2.bx.psu.edu"
+                        },
+                        "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "0.2.0",
+                        "type": "tool",
+                        "uuid": "e6c3e452-7b42-4394-be25-04df1ef401fe",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "25": {
+                        "annotation": "",
+                        "content_id": "__APPLY_RULES__",
+                        "errors": null,
+                        "id": 25,
+                        "input_connections": {
+                            "input": {
+                                "id": 23,
+                                "output_name": "data_param"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Apply rules to Nanopore reads",
+                        "name": "Apply rules",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 2500,
+                            "top": 410
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__APPLY_RULES__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [0, 1], \"type\": \"list_identifiers\"}], \"rules\": [{\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "6ae40b71-d88b-4d25-867b-f428dc13b644",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "26": {
+                        "annotation": "",
+                        "content_id": "__APPLY_RULES__",
+                        "errors": null,
+                        "id": 26,
+                        "input_connections": {
+                            "input": {
+                                "id": 24,
+                                "output_name": "data_param"
+                            }
+                        },
+                        "inputs": [],
+                        "label": "Apply rules to PacBio reads",
+                        "name": "Apply rules",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 2500,
+                            "top": 670
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__APPLY_RULES__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"columns\": [0, 1], \"type\": \"list_identifiers\"}], \"rules\": [{\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"error\": null, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "59410d84-f3ad-4eed-b0c6-db9a2ac91867",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "27": {
+                        "annotation": "",
+                        "content_id": "__FILTER_EMPTY_DATASETS__",
+                        "errors": null,
+                        "id": 27,
+                        "input_connections": {
+                            "input": {
+                                "id": 25,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Filter empty datasets",
+                                "name": "replacement"
+                            }
+                        ],
+                        "label": "Remove datasets when Nanopore reads do not exist",
+                        "name": "Filter empty datasets",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 2850,
+                            "top": 260
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__FILTER_EMPTY_DATASETS__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "35811edf-443e-4b34-af36-b10c7bedc0a8",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "28": {
+                        "annotation": "",
+                        "content_id": "__FILTER_EMPTY_DATASETS__",
+                        "errors": null,
+                        "id": 28,
+                        "input_connections": {
+                            "input": {
+                                "id": 26,
+                                "output_name": "output"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool Filter empty datasets",
+                                "name": "replacement"
+                            }
+                        ],
+                        "label": "Remove datasets when PacBio reads do not exist",
+                        "name": "Filter empty datasets",
+                        "outputs": [
+                            {
+                                "name": "output",
+                                "type": "input"
+                            }
+                        ],
+                        "position": {
+                            "left": 2850,
+                            "top": 500
+                        },
+                        "post_job_actions": {},
+                        "tool_id": "__FILTER_EMPTY_DATASETS__",
+                        "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": {\"__class__\": \"RuntimeValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_uuid": null,
+                        "tool_version": "1.1.0",
+                        "type": "tool",
+                        "uuid": "b51f7065-2c3f-4c9b-8072-4393d8e00c3b",
+                        "when": null,
+                        "workflow_outputs": []
+                    },
+                    "29": {
+                        "annotation": "",
+                        "content_id": "toolshed.g2.bx.psu.edu/repos/nml/metaspades/metaspades/4.3.0+galaxy3",
+                        "errors": null,
+                        "id": 29,
+                        "input_connections": {
+                            "file_processing|arf|nanopore": {
+                                "id": 27,
+                                "output_name": "output"
+                            },
+                            "file_processing|arf|pacbio": {
+                                "id": 28,
+                                "output_name": "output"
+                            },
+                            "file_processing|singlePaired|input": {
+                                "id": 9,
+                                "output_name": "output"
+                            },
+                            "when": {
+                                "id": 11,
+                                "output_name": "output_param_boolean"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "description": "runtime parameter for tool metaSPAdes",
+                                "name": "file_processing|arf"
+                            },
+                            {
+                                "description": "runtime parameter for tool metaSPAdes",
+                                "name": "file_processing|arf"
+                            },
+                            {
+                                "description": "runtime parameter for tool metaSPAdes",
+                                "name": "file_processing|singlePaired"
+                            }
+                        ],
                         "label": "metaSPAdes",
                         "name": "metaSPAdes",
                         "outputs": [
@@ -10724,7 +11155,7 @@
                             "owner": "nml",
                             "tool_shed": "toolshed.g2.bx.psu.edu"
                         },
-                        "tool_state": "{\"file_processing\": {\"is_select\": \"individual\", \"__current_case__\": 1, \"singlePaired\": {\"sPaired\": \"paired_collection\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}, \"type_paired\": \"pe\", \"orientation\": \"fr\"}, \"library_number\": \"true\", \"additional_reads\": {\"selector\": \"false\", \"__current_case__\": 1}, \"arf\": {\"nanopore\": {\"__class__\": \"ConnectedValue\"}, \"pacbio\": {\"__class__\": \"ConnectedValue\"}}}, \"kmer_cond\": {\"kmer_sel\": \"auto\", \"__current_case__\": 0}, \"mode_sel\": null, \"optional_output\": [\"ag\", \"ags\", \"cn\", \"sc\"], \"phred_offset\": \"auto\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+                        "tool_state": "{\"file_processing\": {\"is_select\": \"co\", \"__current_case__\": 0, \"singlePaired\": {\"sPaired\": \"paired_collection\", \"__current_case__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}, \"type_paired\": \"pe\", \"orientation\": \"fr\"}, \"library_number\": \"true\", \"additional_reads\": {\"selector\": \"false\", \"__current_case__\": 1}, \"arf\": {\"nanopore\": {\"__class__\": \"ConnectedValue\"}, \"pacbio\": {\"__class__\": \"ConnectedValue\"}}}, \"kmer_cond\": {\"kmer_sel\": \"auto\", \"__current_case__\": 0}, \"mode_sel\": null, \"optional_output\": [\"ag\", \"ags\", \"cn\", \"sc\"], \"phred_offset\": \"auto\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
                         "tool_uuid": null,
                         "tool_version": "4.3.0+galaxy3",
                         "type": "tool",
@@ -10753,22 +11184,22 @@
                             }
                         ]
                     },
-                    "19": {
+                    "30": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
                         "errors": null,
-                        "id": 19,
+                        "id": 30,
                         "input_connections": {
                             "style_cond|type_cond|pick_from_0|value": {
-                                "id": 18,
+                                "id": 29,
                                 "output_name": "out_cn"
                             },
                             "style_cond|type_cond|pick_from_1|value": {
-                                "id": 13,
+                                "id": 14,
                                 "output_name": "output"
                             },
                             "style_cond|type_cond|pick_from_2|value": {
-                                "id": 17,
+                                "id": 20,
                                 "output_name": "output2"
                             }
                         },
@@ -10815,22 +11246,22 @@
                             }
                         ]
                     },
-                    "20": {
+                    "31": {
                         "annotation": "",
                         "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy2",
                         "errors": null,
-                        "id": 20,
+                        "id": 31,
                         "input_connections": {
                             "mode|in|inputs": {
-                                "id": 19,
+                                "id": 30,
                                 "output_name": "data_param"
                             },
                             "mode|reads|input_1": {
-                                "id": 9,
+                                "id": 10,
                                 "output_name": "forward"
                             },
                             "mode|reads|input_2": {
-                                "id": 9,
+                                "id": 10,
                                 "output_name": "reverse"
                             }
                         },
@@ -10949,7 +11380,7 @@
                 "tags": [],
                 "uuid": "8df4b66a-d05c-47da-9cab-b52b74db6143",
                 "version": 1,
-                "release": "1.3"
+                "release": "1.2"
             },
             "input_connections": {
                 "Trimmed paired reads from grouped samples": {
@@ -10968,13 +11399,13 @@
                     "input_subworkflow_step_id": 5
                 },
                 "Trimmed nanopore reads from grouped samples": {
-                    "id": 77,
-                    "output_name": "data_param",
+                    "id": 67,
+                    "output_name": "output",
                     "input_subworkflow_step_id": 2
                 },
                 "Trimmed PacBio reads from grouped samples": {
-                    "id": 83,
-                    "output_name": "data_param",
+                    "id": 68,
+                    "output_name": "output",
                     "input_subworkflow_step_id": 3
                 },
                 "Custom Assemblies": {
@@ -11012,10 +11443,86 @@
             ]
         },
         "67": {
+            "annotation": "Keep the sample structure when optional nanopore reads are absent; supplied reads take precedence.",
+            "content_id": "__MERGE_COLLECTION__",
+            "errors": null,
+            "id": 67,
+            "input_connections": {
+                "inputs_0|input": {
+                    "id": 44,
+                    "output_name": "Grouped or original long reads"
+                },
+                "inputs_1|input": {
+                    "id": 29,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Selected nanopore reads with structured empty fallback",
+            "name": "Merge collections",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1210,
+                "top": 420
+            },
+            "post_job_actions": {},
+            "tool_id": "__MERGE_COLLECTION__",
+            "tool_state": "{\"advanced\": {\"conflict\": {\"duplicate_options\": \"keep_first\", \"__current_case__\": 3}}, \"inputs\": [{\"__index__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "26c0a62d-058d-4a0d-b066-dee800abe636",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "68": {
+            "annotation": "Keep the sample structure when optional PacBio reads are absent; supplied reads take precedence.",
+            "content_id": "__MERGE_COLLECTION__",
+            "errors": null,
+            "id": 68,
+            "input_connections": {
+                "inputs_0|input": {
+                    "id": 45,
+                    "output_name": "Grouped or original long reads"
+                },
+                "inputs_1|input": {
+                    "id": 29,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Selected PacBio reads with structured empty fallback",
+            "name": "Merge collections",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1210,
+                "top": 720
+            },
+            "post_job_actions": {},
+            "tool_id": "__MERGE_COLLECTION__",
+            "tool_state": "{\"advanced\": {\"conflict\": {\"duplicate_options\": \"keep_first\", \"__current_case__\": 3}}, \"inputs\": [{\"__index__\": 0, \"input\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"input\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "3d593310-b11e-4663-8ccd-8738e4abb8b2",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "69": {
             "annotation": "Turn the selected strategy into a boolean that enables the branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 67,
+            "id": 69,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 10,
@@ -11056,11 +11563,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "68": {
+        "70": {
             "annotation": "Turn the selected strategy into a boolean that enables the branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 68,
+            "id": 70,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 11,
@@ -11101,11 +11608,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "69": {
+        "71": {
             "annotation": "Turn the selected strategy into a boolean that enables the branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 69,
+            "id": 71,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 12,
@@ -11146,11 +11653,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "70": {
+        "72": {
             "annotation": "Turn the selected strategy into a boolean that enables the branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 70,
+            "id": 72,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 13,
@@ -11191,11 +11698,11 @@
             "when": null,
             "workflow_outputs": []
         },
-        "71": {
+        "73": {
             "annotation": "Turn the selected strategy into a boolean that enables the branch only when requested.",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 71,
+            "id": 73,
             "input_connections": {
                 "input_param_type|input_param": {
                     "id": 14,
@@ -11234,458 +11741,6 @@
             "type": "tool",
             "uuid": "4de88e79-8e88-422a-b71e-18ff55b44406",
             "when": null,
-            "workflow_outputs": []
-        },
-        "72": {
-            "annotation": "Drop the empty fallbacks, so only nanopore reads that were supplied remain.",
-            "content_id": "__FILTER_EMPTY_DATASETS__",
-            "errors": null,
-            "id": 72,
-            "input_connections": {
-                "input": {
-                    "id": 30,
-                    "output_name": "data_param"
-                }
-            },
-            "inputs": [],
-            "label": "Keep supplied nanopore reads",
-            "name": "Filter empty datasets",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 420
-            },
-            "post_job_actions": {},
-            "tool_id": "__FILTER_EMPTY_DATASETS__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.1.0",
-            "type": "tool",
-            "uuid": "48e32017-7252-4462-85c2-d6dc1709d214",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "73": {
-            "annotation": "List the identifiers of the supplied nanopore reads.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "errors": null,
-            "id": 73,
-            "input_connections": {
-                "input_collection": {
-                    "id": 72,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "List supplied nanopore read identifiers",
-            "name": "Extract element identifiers",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "txt"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 720
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "tool_shed_repository": {
-                "changeset_revision": "3e27acfa4830",
-                "name": "collection_element_identifiers",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.0.3",
-            "type": "tool",
-            "uuid": "50cc886b-a17c-4739-80cd-72ff457ba8ab",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "74": {
-            "annotation": "Count the supplied nanopore read files.",
-            "content_id": "wc_gnu",
-            "errors": null,
-            "id": 74,
-            "input_connections": {
-                "input1": {
-                    "id": 73,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Count supplied nanopore read files",
-            "name": "Line/Word/Character count",
-            "outputs": [
-                {
-                    "name": "out_file1",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 1020
-            },
-            "post_job_actions": {},
-            "tool_id": "wc_gnu",
-            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "caa68914-0c26-41eb-b809-f106d0ee0eeb",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "75": {
-            "annotation": "Turn the supplied nanopore file count into an integer.",
-            "content_id": "param_value_from_file",
-            "errors": null,
-            "id": 75,
-            "input_connections": {
-                "input1": {
-                    "id": 74,
-                    "output_name": "out_file1"
-                }
-            },
-            "inputs": [],
-            "label": "Read supplied nanopore file count as an integer",
-            "name": "Parse parameter value",
-            "outputs": [
-                {
-                    "name": "integer_param",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 1320
-            },
-            "post_job_actions": {},
-            "tool_id": "param_value_from_file",
-            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "5487e57b-e075-4521-a496-dedd758f9dd1",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "76": {
-            "annotation": "True when at least one nanopore read file was supplied.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "errors": null,
-            "id": 76,
-            "input_connections": {
-                "input_param_type|input_param": {
-                    "id": 75,
-                    "output_name": "integer_param"
-                }
-            },
-            "inputs": [],
-            "label": "Nanopore reads supplied?",
-            "name": "Map parameter value",
-            "outputs": [
-                {
-                    "name": "output_param_boolean",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 1620
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "tool_shed_repository": {
-                "changeset_revision": "022a635f2283",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"0\", \"to\": \"False\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"True\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.2.0",
-            "type": "tool",
-            "uuid": "3140c435-5ecb-47c6-84d2-5af0cb354f76",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "77": {
-            "annotation": "Pass the grouped nanopore reads on only when nanopore reads were supplied. Otherwise this step is skipped and the assembly runs metaSPAdes without them.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
-            "errors": null,
-            "id": 77,
-            "input_connections": {
-                "style_cond|type_cond|pick_from_0|value": {
-                    "id": 44,
-                    "output_name": "Grouped or original long reads"
-                },
-                "when": {
-                    "id": 76,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Pass grouped nanopore reads to assembly when supplied",
-            "name": "Pick parameter value",
-            "outputs": [
-                {
-                    "name": "data_param",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 1920
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
-            "tool_shed_repository": {
-                "changeset_revision": "b19e21af9c52",
-                "name": "pick_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.2.0",
-            "type": "tool",
-            "uuid": "a87231ed-8488-45e0-a959-7bc030c527bb",
-            "when": "$(inputs.when)",
-            "workflow_outputs": []
-        },
-        "78": {
-            "annotation": "Drop the empty fallbacks, so only PacBio reads that were supplied remain.",
-            "content_id": "__FILTER_EMPTY_DATASETS__",
-            "errors": null,
-            "id": 78,
-            "input_connections": {
-                "input": {
-                    "id": 31,
-                    "output_name": "data_param"
-                }
-            },
-            "inputs": [],
-            "label": "Keep supplied PacBio reads",
-            "name": "Filter empty datasets",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 2220
-            },
-            "post_job_actions": {},
-            "tool_id": "__FILTER_EMPTY_DATASETS__",
-            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"replacement\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.1.0",
-            "type": "tool",
-            "uuid": "dcd786c7-ae6b-477f-96b3-5d612d38a3f8",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "79": {
-            "annotation": "List the identifiers of the supplied PacBio reads.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "errors": null,
-            "id": 79,
-            "input_connections": {
-                "input_collection": {
-                    "id": 78,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "List supplied PacBio read identifiers",
-            "name": "Extract element identifiers",
-            "outputs": [
-                {
-                    "name": "output",
-                    "type": "txt"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 2520
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/collection_element_identifiers/collection_element_identifiers/0.0.3",
-            "tool_shed_repository": {
-                "changeset_revision": "3e27acfa4830",
-                "name": "collection_element_identifiers",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_collection\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.0.3",
-            "type": "tool",
-            "uuid": "087c66b4-615b-4e65-8c7d-99cb2ac06e53",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "80": {
-            "annotation": "Count the supplied PacBio read files.",
-            "content_id": "wc_gnu",
-            "errors": null,
-            "id": 80,
-            "input_connections": {
-                "input1": {
-                    "id": 79,
-                    "output_name": "output"
-                }
-            },
-            "inputs": [],
-            "label": "Count supplied PacBio read files",
-            "name": "Line/Word/Character count",
-            "outputs": [
-                {
-                    "name": "out_file1",
-                    "type": "tabular"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 2820
-            },
-            "post_job_actions": {},
-            "tool_id": "wc_gnu",
-            "tool_state": "{\"include_header\": false, \"input1\": {\"__class__\": \"ConnectedValue\"}, \"options\": [\"lines\"], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "1.0.0",
-            "type": "tool",
-            "uuid": "1661024f-3f09-4d50-936d-e5b854c24904",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "81": {
-            "annotation": "Turn the supplied PacBio file count into an integer.",
-            "content_id": "param_value_from_file",
-            "errors": null,
-            "id": 81,
-            "input_connections": {
-                "input1": {
-                    "id": 80,
-                    "output_name": "out_file1"
-                }
-            },
-            "inputs": [],
-            "label": "Read supplied PacBio file count as an integer",
-            "name": "Parse parameter value",
-            "outputs": [
-                {
-                    "name": "integer_param",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 3120
-            },
-            "post_job_actions": {},
-            "tool_id": "param_value_from_file",
-            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"param_type\": \"integer\", \"remove_newlines\": true, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.1.0",
-            "type": "tool",
-            "uuid": "28906828-819c-41aa-b677-23345de47aed",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "82": {
-            "annotation": "True when at least one PacBio read file was supplied.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "errors": null,
-            "id": 82,
-            "input_connections": {
-                "input_param_type|input_param": {
-                    "id": 81,
-                    "output_name": "integer_param"
-                }
-            },
-            "inputs": [],
-            "label": "PacBio reads supplied?",
-            "name": "Map parameter value",
-            "outputs": [
-                {
-                    "name": "output_param_boolean",
-                    "type": "expression.json"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 3420
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
-            "tool_shed_repository": {
-                "changeset_revision": "022a635f2283",
-                "name": "map_param_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"input_param_type\": {\"type\": \"integer\", \"__current_case__\": 1, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"0\", \"to\": \"False\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"True\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.2.0",
-            "type": "tool",
-            "uuid": "bcd729e9-d6d5-47c9-9a5a-1f5ed0f44c18",
-            "when": null,
-            "workflow_outputs": []
-        },
-        "83": {
-            "annotation": "Pass the grouped PacBio reads on only when PacBio reads were supplied. Otherwise this step is skipped and the assembly runs metaSPAdes without them.",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
-            "errors": null,
-            "id": 83,
-            "input_connections": {
-                "style_cond|type_cond|pick_from_0|value": {
-                    "id": 45,
-                    "output_name": "Grouped or original long reads"
-                },
-                "when": {
-                    "id": 82,
-                    "output_name": "output_param_boolean"
-                }
-            },
-            "inputs": [],
-            "label": "Pass grouped PacBio reads to assembly when supplied",
-            "name": "Pick parameter value",
-            "outputs": [
-                {
-                    "name": "data_param",
-                    "type": "input"
-                }
-            ],
-            "position": {
-                "left": 1210,
-                "top": 3720
-            },
-            "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
-            "tool_shed_repository": {
-                "changeset_revision": "b19e21af9c52",
-                "name": "pick_value",
-                "owner": "iuc",
-                "tool_shed": "toolshed.g2.bx.psu.edu"
-            },
-            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
-            "tool_uuid": null,
-            "tool_version": "0.2.0",
-            "type": "tool",
-            "uuid": "798c1c7b-706a-4a17-b5be-ab52d4ef98e8",
-            "when": "$(inputs.when)",
             "workflow_outputs": []
         }
     },

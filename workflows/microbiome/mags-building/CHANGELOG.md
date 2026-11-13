@@ -36,7 +36,7 @@
 
 ### Fixed
 
-- metaSPAdes 4.3.0+galaxy3 runs in individual mode in the embedded assembly workflow (Metagenomic Assembly 1.3), one job per sample or group. The steps that nested reads per sample and the merges that put empty long-read fallbacks back after grouping are removed. The assembly now receives no long reads when none were supplied, instead of empty files. Long reads are all or nothing per read type: supply none, or one file for every sample.
+- metaSPAdes 4.3.0+galaxy3 in the embedded assembly workflow, in its co-assembly mode, which takes the same per-sample or per-group read lists as before. The read nesting and the long-read handling are unchanged.
 - MaxBin2 2.2.7+galaxy7 and SemiBin 2.5.0+galaxy0 in the embedded binning workflows. A sample where MaxBin2 finds too few marker genes, or where SemiBin finds no bins above the size threshold, now gives an empty bin collection instead of failing the job.
 - MaxBin2 now gets the abundance format it expects in both embedded binning workflows: contig name and total average depth (single coverage), or one such file per read sample (multi coverage), without the header line. MaxBin2 reads the first number after the contig name as the abundance, so the full `jgi_summarize_bam_contig_depths` table made it bin on contig length instead of coverage (see also #1538, #1539, #1540).
 - Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
