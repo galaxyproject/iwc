@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3] - 2026-11-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.17+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/metabat2_jgi_summarize_bam_contig_depths/metabat2_jgi_summarize_bam_contig_depths/2.18.23+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.1.0+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.5.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.17+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/metabat2/metabat2/2.18.23+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/mbernt/maxbin2/maxbin2/2.2.7+galaxy6` was updated to `toolshed.g2.bx.psu.edu/repos/mbernt/maxbin2/maxbin2/2.2.7+galaxy7`
+
 ## [1.2] - 2026-08-24
 
 ### Automatic update
