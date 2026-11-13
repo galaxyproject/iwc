@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9] - 2026-11-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/2.1.1+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/3.0.3+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/stringtie/stringtie/3.0.3+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_read_distribution/5.0.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_read_distribution/5.0.3+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy2`
+
 ## [1.8] - 2026-10-26
 
 ### Automatic update
