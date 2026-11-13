@@ -1,4 +1,4 @@
-- doc: MEGAHIT ignores the long reads, which match the short-read groups as metaSPAdes requires
+- doc: MEGAHIT ignores long reads with unrelated identifiers and different group counts
   job:
     Trimmed paired reads from grouped samples:
       class: Collection
@@ -17,12 +17,23 @@
     Trimmed nanopore reads from grouped samples:
       collection_type: list
       elements:
-      - identifier: test_minigut
+      - identifier: unrelated_nanopore
         class: File
         path: test-data/unused-long-reads.fastq
         filetype: fastqsanger
       class: Collection
-    Trimmed PacBio reads from grouped samples: null
+    Trimmed PacBio reads from grouped samples:
+      collection_type: list
+      elements:
+      - identifier: unrelated_pacbio_1
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      - identifier: unrelated_pacbio_2
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      class: Collection
     Choose Assembler: MEGAHIT
     Custom Assemblies: null
     Minimum length of contigs to output: 100
@@ -175,7 +186,7 @@
               n: 22
               delta: 5
 - doc: Custom assemblies are matched by identifier even when their collection order
-    is reversed; long reads, which match the short-read groups, are ignored
+    is reversed; unused long reads are ignored
   job:
     Trimmed paired reads from grouped samples:
       class: Collection
@@ -204,11 +215,15 @@
     Trimmed nanopore reads from grouped samples:
       collection_type: list
       elements:
-      - identifier: marine_pooled
+      - identifier: unrelated_1
         class: File
         path: test-data/unused-long-reads.fastq
         filetype: fastqsanger
-      - identifier: test_minigut
+      - identifier: unrelated_2
+        class: File
+        path: test-data/unused-long-reads.fastq
+        filetype: fastqsanger
+      - identifier: unrelated_3
         class: File
         path: test-data/unused-long-reads.fastq
         filetype: fastqsanger
@@ -216,11 +231,7 @@
     Trimmed PacBio reads from grouped samples:
       collection_type: list
       elements:
-      - identifier: marine_pooled
-        class: File
-        path: test-data/unused-long-reads.fastq
-        filetype: fastqsanger
-      - identifier: test_minigut
+      - identifier: unrelated_pacbio
         class: File
         path: test-data/unused-long-reads.fastq
         filetype: fastqsanger
@@ -267,7 +278,7 @@
           - has_n_lines:
               n: 22
               delta: 5
-- doc: metaSPAdes runs once per group, each with the long reads of that group
+- doc: metaSPAdes accepts long reads for a subset of sample groups
   job:
     Trimmed paired reads from grouped samples:
       class: Collection
@@ -285,7 +296,7 @@
           location: https://zenodo.org/records/19235149/files/test_minigut_R2.fastq.gz
       - class: Collection
         collection_type: paired
-        identifier: minigut_replicate
+        identifier: short_read_only
         elements:
         - class: File
           identifier: forward
@@ -299,9 +310,6 @@
       elements:
       - class: File
         identifier: test_minigut
-        location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz
-      - class: File
-        identifier: minigut_replicate
         location: https://zenodo.org/records/19235149/files/minigut_reads.fastq.gz
     Trimmed PacBio reads from grouped samples: null
     Choose Assembler: metaSPAdes
@@ -318,7 +326,7 @@
           - has_size:
               value: 1777444
               delta: 300000
-        minigut_replicate:
+        short_read_only:
           asserts:
           - has_text:
               text: '>'
