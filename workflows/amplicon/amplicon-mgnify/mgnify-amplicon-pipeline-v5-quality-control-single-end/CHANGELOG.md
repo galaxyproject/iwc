@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.12] - 2026-11-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.39+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/pjbriggs/trimmomatic/trimmomatic/0.41+galaxy0`
+
 ## [0.11] - 2026-11-02
 
 ### Automatic update
