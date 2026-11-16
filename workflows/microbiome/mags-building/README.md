@@ -17,9 +17,9 @@ This workflow:
 
 This workflow embeds the following dependencies:
 
-- [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step 47).
-- [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step 55).
-- [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step 66).
+- [Single-sample binning](https://iwc.galaxyproject.org/workflow/single-sample-binning-main/) (step `Single-coverage binning (own/merged reads)`).
+- [Multi-sample binning](https://iwc.galaxyproject.org/workflow/multi-sample-binning-main/) (step `Multi-coverage binning (all samples)`).
+- [Metagenomic Assembly](https://iwc.galaxyproject.org/workflow/metagenomic-assembly-main/) (step `Assembly and assembly selection`).
 
 Embedded workflows are snapshots, not live references. Update and validate the affected standalone assembly or binning subworkflow first, and merge that change into IWC before synchronizing its embedded copy here. Check the parent input/output connections and defaults, update the documentation, and rerun the affected integration tests. Grouping helpers have no separate standalone dependency and should be updated and tested here.
 
@@ -108,6 +108,8 @@ The binning strategy decides which reads provide the coverage:
 - **Multi-coverage binning (all samples)**: every assembly is mapped against all original per-sample read sets, even when the assembly was built from grouped reads. Each sample keeps its own coverage profile.
 - **Both**: run both branches and keep the union of their refined bins. Conflicting flattened identifiers receive `_#` suffixes.
 
+MaxBin2 gets its abundance input converted from the coverage depth table: contig name and total average depth for single coverage, or one such file per original read sample for multi coverage, without a header line.
+
 A member-restricted alternative, which would map only the samples belonging to each co-assembly, is **not implemented**; it is different from both pooled single coverage and all-sample multi coverage. There is no automatic fallback between strategies.
 
 The multi-coverage branch builds its assembly × read-sample matrix with native Flatten, Nested Cross Product and Apply Rules operations. These reuse the original read datasets instead of writing interlaced or de-interlaced FASTQ files, so intermediate read storage drops; the number of mapping jobs and BAM files still grows as assemblies × samples.
@@ -175,7 +177,7 @@ This workflow is the parent of six embedded sub-workflows: it adds the shared in
 - single-coverage binning,
 - multi-coverage binning.
 
-Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded Single-sample binning 1.1, Multi-sample binning 1.1 and Metagenomic Assembly 1.2 are the released standalone workflows. The parent keeps boolean binner toggles in its input form and maps them to the standalone `Yes`/`No` inputs, and it passes its own completeness default (75) to the binning subworkflows instead of their default of 40. Each stage is enclosed in a workflow-editor frame with a short explanation.
+Refiner reconciliation, MAG quality assessment, dereplication, abundance estimation and reporting run after these subworkflows. Related standalone workflows are available for [single-sample binning](../single-sample-binning/) and [multi-sample binning](../multi-sample-binning/). The embedded copies are Single-sample binning 1.2 (galaxyproject/iwc#1538), Multi-sample binning 1.2 (galaxyproject/iwc#1539) and Metagenomic Assembly 1.3 (galaxyproject/iwc#1545), step for step. The parent keeps boolean binner toggles in its input form and maps them to the standalone `Yes`/`No` inputs, and it passes its own completeness default (75) to the binning subworkflows instead of their default of 40. Each stage is enclosed in a workflow-editor frame with a short explanation.
 
 ## Citation
 
