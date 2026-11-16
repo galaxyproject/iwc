@@ -12,7 +12,7 @@
 - Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly (Metagenomic Assembly), single-coverage binning and multi-coverage binning.
 - Single-coverage (own/merged reads) and multi-coverage (all samples) coverage strategies, default single.
 - Shared bin-refiner selection (DAS Tool, Binette or both), default Binette.
-- Coverage depth checkpoints and a grouping/coverage test matrix.
+- Coverage depth checkpoints.
 
 ### Changed
 
@@ -28,7 +28,6 @@
 - Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
 - Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
 - Reduce the CI test fixture to two mock samples, so the cross-sample alignment matrix stays small and every test case runs well within the time limit. Coverage-matrix assertions are updated to the two-sample column counts.
-- Reduce the workflow-level test matrix to three cases covering custom assemblies, MEGAHIT and metaSPAdes, original and hybrid read selection, both coverage strategies, nanopore long reads and both refiners, all with COMEBin disabled. Grouped-only mode is not covered by this matrix. The redundant parameter-matrix and per-binner toggle cases are removed; the individual binner controls remain covered by the standalone single- and multi-sample binning workflow tests.
 - Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
 - Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
 - Embed the released standalone workflows Single-sample binning 1.1, Multi-sample binning 1.1 and Metagenomic Assembly 1.2, step for step. The parent keeps its boolean binner toggles and maps them to the standalone `Yes`/`No` inputs with `map_param_value` adapters, and passes its own completeness default (75) to the binning subworkflows.
@@ -47,10 +46,8 @@
 
 ### Tests
 
-- Run only MetaBAT2 in the parent workflow tests, so the full test suite stays within the CI time limit. The tests still cover every parent-level choice (assembler, long reads, grouping, coverage strategy and refiner); the individual binners are tested by the standalone single- and multi-sample binning workflows.
-- The custom-assembly and hybrid cases check coverage-table structure. The nanopore case additionally checks assembly sizes, a dereplicated MAG and row-level identifiers in the downstream tables.
-- The custom-assembly case checks that a Binette bin reaches the merged refined bins and the dRep cluster assignment.
-- The hybrid case checks that the merged refined bins contain the top-ranked Binette bin from both coverage strategies with `_1` and `_2` suffixes, and that Binette bins enter the dRep cluster assignment. Bin identifiers that vary between runs are not asserted.
+- Reduce the parent workflow tests to a single light case, so they fit on a GitHub runner: custom assemblies (no assembler run), hybrid grouped and original samples, both coverage strategies, both refiners and MetaBAT2 as the only binner. Assembly (MEGAHIT, metaSPAdes, long reads) and the individual binners and refiners are covered by the tests of the embedded Metagenomic Assembly and single- and multi-sample binning workflows.
+- The test checks the single- and multi-coverage depth tables for all three selected samples, that the top-ranked Binette bin of the MockGroup co-assembly reaches the merged refined bins from both coverage strategies (`_1` and `_2` suffixes), that Binette bins enter the dRep cluster assignment, and the CoverM and MultiQC reports. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
 - Remove the unused `metadata_mock_community.tsv` test file.
 
 ## [0.9] - 2026-10-01
