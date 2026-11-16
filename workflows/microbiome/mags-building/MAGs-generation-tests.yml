@@ -4,10 +4,12 @@
 # workflows. This test only covers what the parent adds: internal grouping,
 # merging both coverage strategies and both refiners into one bin set, the
 # CheckM2 filter before dRep, and the MAG quality/abundance reporting.
-# Custom assemblies skip the assembler; MetaBAT2 is the only binner.
-# Mock1 and Mock2 are near-identical communities, so Mock1.fasta also stands in
-# for the MockGroup co-assembly.
-- doc: "Hybrid grouped and original samples with custom assemblies, both coverage strategies and both refiners"
+# A custom assembly skips the assembler; MetaBAT2 is the only binner.
+# Grouped samples only: a single (co-)assembly keeps the number of concurrent
+# Binette/CheckM2 jobs low enough for the GitHub runner's memory. Mock1 and
+# Mock2 are near-identical communities, so Mock1.fasta stands in for the
+# MockGroup co-assembly.
+- doc: "Grouped samples with a custom assembly, both coverage strategies and both refiners"
   job:
     Trimmed reads:
       class: Collection
@@ -41,12 +43,6 @@
       - class: File
         identifier: MockGroup
         location: https://zenodo.org/records/22982485/files/Mock1.fasta
-      - class: File
-        identifier: Mock1
-        location: https://zenodo.org/records/22982485/files/Mock1.fasta
-      - class: File
-        identifier: Mock2
-        location: https://zenodo.org/records/22982485/files/Mock2.fasta
     Minimum length of contigs to output: 100
     Environment for the built-in model (SemiBin): global
     Contamination weight (Binette): 100
@@ -62,7 +58,7 @@
     Run MaxBin2?: false
     Trimmed nanopore reads: null
     Trimmed PacBio reads: null
-    Use grouping?: Use grouping and original samples
+    Use grouping?: Use grouping
     Sample grouping column: group
     Binning strategy: Both
     Bin refinement tool: Both
@@ -80,15 +76,7 @@
             text: contigName
           - that: has_n_columns
             n: 5
-        Mock1:
-          asserts:
-          - that: has_n_columns
-            n: 5
-        Mock2:
-          asserts:
-          - that: has_n_columns
-            n: 5
-    # multi coverage maps both original samples to every assembly: 3 + 2x2 columns
+    # multi coverage maps both original samples to the assembly: 3 + 2x2 columns
     "Multi-coverage binning (all samples) — coverage depths":
       class: Collection
       element_tests:
@@ -96,14 +84,6 @@
           asserts:
           - that: has_text
             text: contigName
-          - that: has_n_columns
-            n: 7
-        Mock1:
-          asserts:
-          - that: has_n_columns
-            n: 7
-        Mock2:
-          asserts:
           - that: has_n_columns
             n: 7
     # The top-ranked Binette bin exists in both coverage strategies whenever

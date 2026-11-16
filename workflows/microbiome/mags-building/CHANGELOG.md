@@ -46,8 +46,8 @@
 
 ### Tests
 
-- Reduce the parent workflow tests to a single light case, so they fit on a GitHub runner: custom assemblies (no assembler run), hybrid grouped and original samples, both coverage strategies, both refiners and MetaBAT2 as the only binner. Assembly (MEGAHIT, metaSPAdes, long reads) and the individual binners and refiners are covered by the tests of the embedded Metagenomic Assembly and single- and multi-sample binning workflows.
-- The test checks the single- and multi-coverage depth tables for all three selected samples, that the top-ranked Binette bin of the MockGroup co-assembly reaches the merged refined bins from both coverage strategies (`_1` and `_2` suffixes), that Binette bins enter the dRep cluster assignment, and the CoverM and MultiQC reports. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
+- Reduce the parent workflow tests to a single light case, so they fit on a GitHub runner: a custom co-assembly (no assembler run), grouped samples, both coverage strategies, both refiners and MetaBAT2 as the only binner. Assembly (MEGAHIT, metaSPAdes, long reads) and the individual binners and refiners are covered by the tests of the embedded Metagenomic Assembly and single- and multi-sample binning workflows.
+- Grouped-only mode keeps a single assembly, so few Binette/CheckM2 jobs run at once; the hybrid run with three assemblies exhausted the runner's memory. The test checks the single- and multi-coverage depth tables of the group, that the top-ranked Binette bin of the MockGroup co-assembly reaches the merged refined bins from both coverage strategies (`_1` and `_2` suffixes), that Binette bins enter the dRep cluster assignment, and the CoverM and MultiQC reports. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
 - Remove the unused `metadata_mock_community.tsv` test file.
 
 ## [0.9] - 2026-10-01
