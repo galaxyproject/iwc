@@ -36,7 +36,7 @@ test("the home page is the second site's", () => {
 });
 
 test("the featured workflow is in the hero, and only that one", () => {
-    // Not the whole page: the filter sidebar and the grid carry every workflow
+    // Not the whole page: the filter sheet and the grid carry every workflow
     const hero = page("index.html").match(
         /<astro-island[^>]*component-url="[^"]*HeroSection[^"]*"[^>]*>[\s\S]*?<\/astro-island>/,
     );

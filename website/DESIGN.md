@@ -107,6 +107,17 @@ Clean underline style (not pills):
 - **Trigger**: `text-base font-medium text-chicago-600`
 - **Active**: `text-ebony-clay-900 border-b-4 border-hokey-pokey-500`
 
+### Filter chips
+
+The category bar above the workflow list. Outlined with a small radius (`rounded-md border`),
+not pills; the active chip takes the gold fill.
+
+| State  | Style                                                           |
+| ------ | --------------------------------------------------------------- |
+| Idle   | `bg-white border-ebony-clay-100 text-chicago-700`               |
+| Hover  | `hover:border-hokey-pokey-500 hover:bg-hokey-pokey-500/10`      |
+| Active | `bg-hokey-pokey-500 border-hokey-pokey-500 text-ebony-clay-950` |
+
 ### Buttons
 
 | Variant | Style                                                              |
