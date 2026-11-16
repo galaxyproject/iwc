@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.8.1] - 2026-11-10
+
+### Manual change
+- Restore frame membership (`child_steps`) in consensus-peaks-atac-cutandrun, lost when the README was added (saving with Galaxy's README editor open cleared every frame before Galaxy 26.1).
+
 ## [1.8] - 2026-10-12
 
 ### Automatic update
