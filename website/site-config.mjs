@@ -25,6 +25,10 @@ const COLLECTION_FALLBACKS = ["none", "directory"];
 // GitHub is the only host the site links to
 const GITHUB_REPO_URL = /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9._-]+(?<!\.git)$/;
 
+// A host, an optional port and nothing else before the path, so a typo can't publish a dead link
+const RELATED_SITE_ICONS = ["flask"];
+const RELATED_SITE_URL = /^https:\/\/[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(:[0-9]{1,5})?([/?#]\S*)?$/;
+
 export function loadSiteConfig(env = process.env, defaultsPath = DEFAULTS_PATH) {
     const config = JSON.parse(readFileSync(defaultsPath, "utf8"));
     resolveAboutMarkdown(config, dirname(defaultsPath));
@@ -56,12 +60,30 @@ export function loadSiteConfig(env = process.env, defaultsPath = DEFAULTS_PATH) 
             `collectionFallback must be one of ${COLLECTION_FALLBACKS.join(", ")}, not ${JSON.stringify(config.collectionFallback)}`,
         );
     }
+    if (!isRelatedSite(config.relatedSite)) {
+        throw new Error(
+            `relatedSite must be null or {label, title, url} with an https url, and optionally an icon (${RELATED_SITE_ICONS.join(", ")}), not ${JSON.stringify(config.relatedSite)}`,
+        );
+    }
     if (!GITHUB_REPO_URL.test(config.repoUrl)) {
         throw new Error(
             `repoUrl must look like https://github.com/<owner>/<repo>, not ${JSON.stringify(config.repoUrl)}`,
         );
     }
     return config;
+}
+
+function isRelatedSite(value) {
+    if (value === null) {
+        return true;
+    }
+    return (
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        ["label", "title", "url"].every((key) => typeof value[key] === "string" && value[key].trim()) &&
+        RELATED_SITE_URL.test(value.url) &&
+        (value.icon === undefined || value.icon === null || RELATED_SITE_ICONS.includes(value.icon))
+    );
 }
 
 // Against the file that set it, so an inherited path keeps pointing at the defaults' copy

@@ -19,6 +19,7 @@ declare const __SITE_OG_DESCRIPTION__: string;
 declare const __SITE_HEADER_TITLE__: string;
 declare const __SITE_HEADER_TITLE_SHORT__: string;
 declare const __SITE_HEADER_BADGE__: string | null;
+declare const __SITE_RELATED_SITE__: { label: string; title: string; url: string; icon?: "flask" | null } | null;
 declare const __SITE_HERO_HEADLINE__: string;
 declare const __SITE_HERO_HIGHLIGHT__: string;
 declare const __SITE_FOOTER_BLURB__: string;
