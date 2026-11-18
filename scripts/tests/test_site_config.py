@@ -92,6 +92,42 @@ def test_repo_url_must_be_a_github_repo(tmp_path, repo_url):
         load_site_config(write_override(tmp_path, lab_override(repoUrl=repo_url)))
 
 
+@pytest.mark.parametrize(
+    "related_site",
+    [
+        "https://iwc.galaxyproject.org",
+        {"label": "IWC", "url": "https://iwc.galaxyproject.org"},
+        {"label": "", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org"},
+        {"label": "   ", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org"},
+        {"label": "IWC", "title": " ", "url": "https://iwc.galaxyproject.org"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "javascript:alert(1)"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "http://iwc.galaxyproject.org"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": 123},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://#top"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org:bad"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc galaxyproject.org"},
+        [{"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org"}],
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org", "icon": "beaker"},
+        {"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org", "icon": ["flask"]},
+    ],
+)
+def test_related_site_is_checked(tmp_path, related_site):
+    # Not just "relatedSite": the unknown-keys error on an older loader names it too
+    with pytest.raises(SiteConfigError, match="relatedSite must be"):
+        load_site_config(write_override(tmp_path, lab_override(relatedSite=related_site)))
+
+
+def test_related_site_can_be_left_out_or_point_back(tmp_path):
+    assert load_site_config(write_override(tmp_path, lab_override(relatedSite=None)))["relatedSite"] is None
+    back = {"label": "IWC", "title": "Reviewed workflows", "url": "https://iwc.galaxyproject.org"}
+    assert load_site_config(write_override(tmp_path, lab_override(relatedSite=back)))["relatedSite"] == back
+    deep = {**back, "url": "https://iwc.galaxyproject.org:443/workflows/?q=rna#top"}
+    assert load_site_config(write_override(tmp_path, lab_override(relatedSite=deep)))["relatedSite"] == deep
+    with_icon = {**back, "icon": "flask"}
+    assert load_site_config(write_override(tmp_path, lab_override(relatedSite=with_icon)))["relatedSite"] == with_icon
+
+
 def test_collection_fallback_is_checked(tmp_path):
     with pytest.raises(SiteConfigError, match="collectionFallback"):
         load_site_config(write_override(tmp_path, lab_override(collectionFallback="dir")))

@@ -141,6 +141,12 @@ cd website && pnpm install --frozen-lockfile && pnpm build
 - **`aboutMarkdown`** is a Markdown file that replaces the about page. Its path is relative to the
   config file, and its first `# ` heading becomes the page title.
 - **`headerBadge`** puts a small pill after the header title, e.g. `"Lab"`.
+- **`relatedSite`** adds one link to the header, next to About, for a site that belongs with this
+  one: `{"label": "Experimental", "title": "...", "url": "https://..."}`. `title` is the link's
+  tooltip, and screen readers read it after the label. An optional `"icon": "flask"` puts a small
+  icon after the label; `flask` is the only one so far. IWC uses it to point at the IWC Lab, and
+  the lab can point back. `null` leaves it out. It is required so that a second site doesn't
+  inherit IWC's link, which would be a link to itself.
 - **`repoUrl`** has to be a GitHub repository. Links to workflow sources and the raw URLs of test
   data are built from it and `repoBranch`.
 

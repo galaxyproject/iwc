@@ -28,6 +28,13 @@ test("the home page is the second site's", () => {
     const home = page("index.html");
     assert.equal(title(home), "Second Site Workflows");
     assert.match(home, /Second Site - Fixture Workflows/);
+    // The fixture's relatedSite replaces IWC's, so IWC's link to the lab must not come along
+    assert.doesNotMatch(home, /iwc-lab\.galaxyproject\.org/);
+    assert.match(
+        home,
+        /<a href="https:\/\/sister-site\.example\.org" title="A sister site of the fixture"[^>]*>\s*Sister Site\s*<svg(?=[^>]*lucide-flask-conical)(?=[^>]*aria-hidden="true")[^>]*>[\s\S]*?<\/svg>\s*<span class="sr-only">\s*\(A sister site of the fixture\)\s*<\/span>\s*<\/a>/,
+        "related site link",
+    );
     assert.match(home, />\s*Fixture\s*<\/span>/, "header badge");
     assert.match(home, /Fixture workflows for /);
     assert.match(home, /testing the override/);

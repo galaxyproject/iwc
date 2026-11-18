@@ -78,6 +78,41 @@ test("repoUrl must be a GitHub repo", () => {
     }
 });
 
+test("relatedSite is null or a labelled https link", () => {
+    const back = { label: "IWC", title: "Reviewed workflows", url: "https://iwc.galaxyproject.org" };
+    assert.equal(loadSiteConfig(writeOverride(labOverride({ relatedSite: null })).env).relatedSite, null);
+    assert.deepEqual(loadSiteConfig(writeOverride(labOverride({ relatedSite: back })).env).relatedSite, back);
+    const deep = { ...back, url: "https://iwc.galaxyproject.org:443/workflows/?q=rna#top" };
+    assert.deepEqual(loadSiteConfig(writeOverride(labOverride({ relatedSite: deep })).env).relatedSite, deep);
+    const withIcon = { ...back, icon: "flask" };
+    assert.deepEqual(loadSiteConfig(writeOverride(labOverride({ relatedSite: withIcon })).env).relatedSite, withIcon);
+    const notLinks = [
+        "https://iwc.galaxyproject.org",
+        { label: "IWC", url: "https://iwc.galaxyproject.org" },
+        { ...back, label: "" },
+        { ...back, label: "   " },
+        { ...back, title: " " },
+        { ...back, url: "javascript:alert(1)" },
+        { ...back, url: "http://iwc.galaxyproject.org" },
+        { ...back, url: 123 },
+        { ...back, url: "https://" },
+        { ...back, url: "https://#top" },
+        { ...back, url: "https://iwc.galaxyproject.org:bad" },
+        { ...back, url: "https://iwc galaxyproject.org" },
+        [back],
+        { ...back, icon: "beaker" },
+        { ...back, icon: ["flask"] },
+    ];
+    for (const relatedSite of notLinks) {
+        assert.throws(
+            () => loadSiteConfig(writeOverride(labOverride({ relatedSite })).env),
+            // Not just /relatedSite/: the unknown-keys error on an older loader names it too
+            /relatedSite must be/,
+            JSON.stringify(relatedSite),
+        );
+    }
+});
+
 test("collectionFallback is checked", () => {
     assert.throws(
         () => loadSiteConfig(writeOverride(labOverride({ collectionFallback: "dir" })).env),

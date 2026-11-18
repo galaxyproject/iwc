@@ -28,6 +28,10 @@ COLLECTION_FALLBACKS = ("none", "directory")
 # GitHub is the only host the site links to, and the test-data base is built from it
 GITHUB_REPO_URL = re.compile(r"^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+)(?<!\.git)$")
 
+# A host, an optional port and nothing else before the path, so a typo can't publish a dead link
+RELATED_SITE_ICONS = ("flask",)
+RELATED_SITE_URL = re.compile(r"^https://[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(:[0-9]{1,5})?([/?#]\S*)?$")
+
 
 class SiteConfigError(Exception):
     pass
@@ -59,12 +63,28 @@ def load_site_config(environ=None):
         raise SiteConfigError(
             f"collectionFallback must be one of {', '.join(COLLECTION_FALLBACKS)}, not {config['collectionFallback']!r}"
         )
+    if not is_related_site(config["relatedSite"]):
+        raise SiteConfigError(
+            "relatedSite must be null or {label, title, url} with an https url, and optionally an icon"
+            f" ({', '.join(RELATED_SITE_ICONS)}), not {config['relatedSite']!r}"
+        )
     match = GITHUB_REPO_URL.fullmatch(config["repoUrl"])
     if not match:
         raise SiteConfigError(f"repoUrl must look like https://github.com/<owner>/<repo>, not {config['repoUrl']!r}")
     owner, repo = match.groups()
     config["rawDataBase"] = f"https://raw.githubusercontent.com/{owner}/{repo}/{config['repoBranch']}/"
     return config
+
+
+def is_related_site(value):
+    if value is None:
+        return True
+    return (
+        isinstance(value, dict)
+        and all(isinstance(value.get(key), str) and value[key].strip() for key in ("label", "title", "url"))
+        and RELATED_SITE_URL.fullmatch(value["url"])
+        and value.get("icon") in (None, *RELATED_SITE_ICONS)
+    )
 
 
 def resolve_about_markdown(config, config_dir):
