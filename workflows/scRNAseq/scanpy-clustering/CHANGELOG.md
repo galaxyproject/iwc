@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3] - 2026-11-13
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_import/anndata_import/0.13.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_filter/scanpy_filter/1.12.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_inspect/anndata_inspect/0.13.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.10.9+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/anndata_manipulate/anndata_manipulate/0.13.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_inspect/scanpy_inspect/1.12.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_plot/scanpy_plot/1.12.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_normalize/scanpy_normalize/1.12.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_remove_confounders/scanpy_remove_confounders/1.12.5+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/1.11.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/scanpy_cluster_reduce_dimension/scanpy_cluster_reduce_dimension/1.12.5+galaxy0`
+
 ## [0.2] - 2026-09-07
 
 ### Automatic update
