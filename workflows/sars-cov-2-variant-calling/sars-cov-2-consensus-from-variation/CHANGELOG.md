@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6] - 2026-11-16
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/5.4.0c+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_filter/5.4.0c+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_extractFields/5.4.0c+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/snpsift/snpSift_extractFields/5.4.0c+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.24+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_consensus/bcftools_consensus/1.24+galaxy1`
+
 ## [0.4.5] - 2026-10-19
 
 ### Automatic update
