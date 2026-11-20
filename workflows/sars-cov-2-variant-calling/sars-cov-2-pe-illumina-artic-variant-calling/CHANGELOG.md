@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.9] - 2026-11-16
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.24+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_annotate/bcftools_annotate/1.24+galaxy1`
+
 ## [0.5.8] - 2026-11-02
 
 ### Automatic update
