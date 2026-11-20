@@ -1,0 +1,285 @@
+# Workflow test for pyeuk-panel-inference (derive an amplicon panel from data).
+#
+# Same synthetic reads as pyeuk-haplotype-typing, mapped to a 1.5 kb reference genome
+# (test-data/genome.fasta) in which the two amplicons sit as coverage peaks at
+# chr_test:301-450 and chr_test:901-1050. derive-panel reconstructs both as panel
+# entries ampl_01 / ampl_02. Expected outputs were produced with PyEuk 0.8.1.
+#
+# Test 1 runs the default peak thresholds. Test 2 sets the peak merge gap (500 bp) above
+# the 450 bp spacing between the two amplicons and pads each peak by 25 bp, so the two
+# peaks are joined into one padded 800 bp entry, chr_test:276-1075.
+- doc: >-
+    Targeted-amplicon reads pile onto two genome regions as coverage peaks;
+    derive-panel reconstructs a two-entry amplicon panel (ampl_01, ampl_02) with a
+    BED and a per-peak QC table.
+  job:
+    Paired-end reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: A1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    Reference genome:
+      class: File
+      path: test-data/genome.fasta
+      filetype: fasta
+  outputs:
+    Derived amplicon panel:
+      asserts:
+      - has_n_lines:
+          n: 8
+      - has_line:
+          line: ">ampl_01_L150bp source=derive-panel loc=chr_test:301-450"
+      - has_line:
+          line: ">ampl_02_L150bp source=derive-panel loc=chr_test:901-1050"
+    Coverage peaks:
+      asserts:
+      - has_n_lines:
+          n: 2
+      - has_n_columns:
+          n: 5
+      # One peak per amplicon at chr_test:301-450 and chr_test:901-1050 (BED is 0-based).
+      - has_line_matching:
+          expression: 'chr_test\t300\t450\tampl\t\d+'
+      - has_line_matching:
+          expression: 'chr_test\t900\t1050\tampl\t\d+'
+    Coverage peaks QC:
+      asserts:
+      - has_n_lines:
+          n: 3
+      - has_n_columns:
+          n: 7
+      - has_line:
+          line: "amplicon\tcontig\tstart\tend\tlength\tmax_depth\tmean_depth"
+      - has_line_matching:
+          expression: 'ampl_01\tchr_test\t301\t450\t150\t\d+\t\d+(\.\d+)?'
+      - has_line_matching:
+          expression: 'ampl_02\tchr_test\t901\t1050\t150\t\d+\t\d+(\.\d+)?'
+- doc: >-
+    Non-default peak thresholds. A 500 bp merge gap bridges the 450 bp between the two
+    amplicons and 25 bp of padding extends both ends, so derive-panel reports a single
+    800 bp entry (ampl_01, chr_test:276-1075) instead of two 150 bp ones.
+  job:
+    Paired-end reads:
+      class: Collection
+      collection_type: list:paired
+      elements:
+      - class: Collection
+        type: paired
+        identifier: A1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: A4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/A4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/A4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B1
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B1_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B1_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B2
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B2_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B2_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B3
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B3_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B3_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+      - class: Collection
+        type: paired
+        identifier: B4
+        elements:
+        - identifier: forward
+          class: File
+          path: test-data/B4_R1.fastqsanger.gz
+          filetype: fastqsanger.gz
+        - identifier: reverse
+          class: File
+          path: test-data/B4_R2.fastqsanger.gz
+          filetype: fastqsanger.gz
+    Reference genome:
+      class: File
+      path: test-data/genome.fasta
+      filetype: fasta
+    Peak merge gap: 500
+    Peak padding: 25
+  outputs:
+    Derived amplicon panel:
+      asserts:
+      - has_n_lines:
+          n: 13
+      - has_line:
+          line: ">ampl_01_L800bp source=derive-panel loc=chr_test:276-1075"
+      - not_has_text:
+          text: ">ampl_02"
+    Coverage peaks:
+      asserts:
+      - has_n_lines:
+          n: 1
+      - has_line_matching:
+          expression: 'chr_test\t275\t1075\tampl\t\d+'
+    Coverage peaks QC:
+      asserts:
+      - has_n_lines:
+          n: 2
+      - has_n_columns:
+          n: 7
+      - has_line_matching:
+          expression: 'ampl_01\tchr_test\t276\t1075\t800\t\d+\t\d+(\.\d+)?'
