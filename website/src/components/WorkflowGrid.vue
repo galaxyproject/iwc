@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { useStore } from "@nanostores/vue";
 import Fuse from "fuse.js";
 import {
@@ -14,6 +14,8 @@ import {
 import WorkflowCard from "./WorkflowCard.vue";
 import WorkflowListItem from "./WorkflowListItem.vue";
 import ViewToggle from "./ViewToggle.vue";
+import CategoryChips from "./CategoryChips.vue";
+import { useChipBarFold } from "../composables/useChipBarFold";
 import type { SearchIndexEntry } from "../models/workflow";
 
 const props = defineProps<{
@@ -78,12 +80,28 @@ const handleSearchInput = (e: Event) => {
     const value = (e.target as HTMLInputElement).value;
     localSearchQuery.value = value;
     searchQueryStore.set(value);
+    scrollToFirstResults();
 
     clearTimeout(urlUpdateTimeout);
     urlUpdateTimeout = setTimeout(() => {
         updateSearchUrl(value);
     }, 300);
 };
+
+// The toolbar (search and categories) is pinned to the top of the window from the md
+// breakpoint up, so the categories stay in reach anywhere in the list.
+const sentinel = ref<HTMLElement | null>(null);
+const chipsBox = ref<HTMLElement | null>(null);
+const chipBar = useChipBarFold(sentinel, chipsBox);
+
+// Searching or picking a category from deep in the list brings the first results back into view.
+// The list is back at its place in the page afterwards, which also closes an opened chip bar.
+async function scrollToFirstResults() {
+    if (chipBar.pinned.value && sentinel.value) {
+        await nextTick();
+        window.scrollTo({ top: window.scrollY + sentinel.value.getBoundingClientRect().top });
+    }
+}
 
 onMounted(() => {
     setFilterFromUrl();
@@ -116,15 +134,29 @@ searchQueryStore.subscribe((value) => {
 
 <template>
     <div class="w-full">
-        <!-- Search input -->
-        <div class="mb-4">
+        <div ref="sentinel" class="h-0"></div>
+
+        <!-- Toolbar: search and category chips -->
+        <div
+            class="mb-4 bg-chicago-50 md:sticky md:top-0 md:z-30 md:-mx-8 md:px-8 md:py-3 md:border-b transition-[border-color,box-shadow] duration-200"
+            :class="chipBar.pinned.value ? 'md:border-ebony-clay-100 md:shadow-sm' : 'md:border-transparent'">
             <input
                 type="text"
                 :value="localSearchQuery"
                 placeholder="Search workflows..."
                 class="w-full p-3 border border-chicago-200 bg-white rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-hokey-pokey-500 focus:border-transparent transition-shadow"
                 @input="handleSearchInput" />
+            <div ref="chipsBox" class="md:mt-3">
+                <CategoryChips
+                    :workflows="workflows"
+                    :collapsed="chipBar.collapsed.value"
+                    :can-expand="chipBar.pastFold.value"
+                    @toggle="chipBar.toggle"
+                    @select="scrollToFirstResults" />
+            </div>
         </div>
+        <!-- Takes the height the chip bar gives up when it folds, so the list below stays put -->
+        <div :style="{ height: `${chipBar.spacerHeight.value}px` }"></div>
 
         <!-- Results header row -->
         <div class="flex justify-between items-center mb-4">
@@ -215,6 +247,15 @@ searchQueryStore.subscribe((value) => {
         </div>
     </div>
 </template>
+
+<style>
+/* Keep keyboard focus and anchor targets clear of the pinned toolbar (search plus one row of chips). */
+@media (min-width: 48rem) {
+    html {
+        scroll-padding-top: 8.5rem;
+    }
+}
+</style>
 
 <style scoped>
 /* View switch transition */
