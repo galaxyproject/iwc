@@ -1,0 +1,8 @@
+(function(){try{var e=typeof globalThis<`u`?globalThis:typeof window<`u`?window:typeof global<`u`?global:typeof self<`u`?self:{},t=new e.Error().stack;t&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[t]=`09a4be15-7280-43ac-88e0-ab6f1c203ff1`,e._sentryDebugIdIdentifier=`sentry-dbid-09a4be15-7280-43ac-88e0-ab6f1c203ff1`)}catch{}})();import{r as e,t}from"./chunk-NQOKRVIF.DZBur5oZ.js";import"./chunk-XXDRQBXY.CjSfLAn1.js";import"./chunk-VQ5W62QI.C6GTZuAI.js";import"./MarkdownRenderer.9N9HaQui.js";import"./chunk-55XCU76K.BRUCUmbk.js";import"./chunk-HNE4Q36P.C-yjVW6R.js";import"./chunk-WQQL4CDK.IOule9oQ.js";import"./chunk-ZAUX2LTX.BmvUfhhd.js";import"./chunk-HAGFOTED.CpUyjlGt.js";import"./chunk-UHW7PFBP.DSIcoUKd.js";import"./chunk-AQDTSKZB.bOkiqR5V.js";import"./chunk-YZO67HFG.C5TazXv3.js";import"./chunk-7S6XSTFO.DSkuR5ta.js";import"./chunk-DSNLSHJZ.BkhUSFy5.js";import"./src.DvlYfAZF.js";import{n}from"./chunk-Y2CYZVJY._6PmLIq4.js";var r=t({styles:n(t=>`${e(t)}
+  .swimlane.cluster:not([data-color-id]) rect {
+    stroke: ${t.clusterBorder} !important;
+  }
+  [data-look="neo"].cluster rect {
+    filter: none;
+  }
+`,`getStyles`)});export{r as diagram};
