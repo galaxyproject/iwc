@@ -43,6 +43,7 @@ This step produces the coverage information every binner needs.
 4. Bowtie2 maps every sample against every assembly.
 5. Contig depths are summarised per assembly with `jgi_summarize_bam_contig_depths`, which yields one coverage matrix per assembly with the coverage and variance of every sample.
 6. CONCOCT additionally needs the coverage of its contig fragments, which is computed separately, and the mean read length, which is estimated from both mates of every sample with SeqKit statistics. The estimate is the read-count-weighted mean (total bases divided by total reads), not an average of the per-sample means. No manual read length is required.
+7. For MaxBin2, the depth table is converted into one abundance file per read sample, containing the contig name and that sample's depth, without the header line or the variance columns. MaxBin2 reads the first number after the contig name as its abundance, so the full table would make it use the contig length instead, and MaxBin2 only uses cross-sample coverage when it gets one abundance file per sample.
 
 The depth table produced by `jgi_summarize_bam_contig_depths` starts with `contigName` (contig identifier), `contigLen` (contig length) and `totalAvgDepth` (average depth across the input BAM files). Each read sample then contributes a depth column and a variance column. This gives each assembly's contigs a coverage profile across all read samples; “JGI depth table” refers to this format, not to an additional input database.
 
@@ -72,6 +73,7 @@ Selecting **Both** runs DAS Tool and Binette independently on the candidate bins
 ## Outputs
 
 - **Coverage depth matrices**: one depth table per assembly, with the coverage of all original samples.
+- **MaxBin2 abundance files**: one abundance file per assembly and read sample, as passed to MaxBin2 (contig name, that sample's mean depth, sample tag; no header).
 - **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.
 - **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.
 - **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.
