@@ -1,5 +1,57 @@
 # Changelog
 
+## [1.0] - 2026-10-20
+
+### Breaking changes
+
+- The workflow now takes original short reads and selects grouping, coverage strategy and bin-refiner internally. Existing invocations of the previous interface do not map directly onto the new inputs.
+- The `metaSPAdes Contigs` output is removed. When metaSPAdes is the chosen assembler, the `Selected assemblies` output holds its contigs.
+
+### Added
+
+- Internal grouping selection: original samples, grouped samples, or a hybrid that uses grouped reads where available and original reads otherwise.
+- Embedded subworkflows for paired short-read grouping, nanopore grouping, PacBio grouping, assembly (Metagenomic Assembly), single-coverage binning and multi-coverage binning.
+- Single-coverage (own/merged reads) and multi-coverage (all samples) coverage strategies, default single.
+- Shared bin-refiner selection (DAS Tool, Binette or both), default Binette.
+- Coverage depth checkpoints.
+
+### Changed
+
+- Incorporate the COMEBin 1.1.0+galaxy1 upgrade from IWC PR #1435 in the embedded Multi workflow.
+- Replace interlacing/de-interlacing in embedded Multi with native Flatten, Nested Cross Product and Apply Rules operations, preserving all-sample coverage without writing intermediate FASTQ files.
+- Carry forward the MAG-generation authorship, FAIRyMAGs learning-pathway, funding and publication documentation from PR #1370, while retaining the modular interface documentation.
+- Grouping, coverage strategy and bin-refiner selection now lead the input form; the grouping-column help text is corrected.
+- All five binners (including COMEBin) are independently optional and enabled by default.
+- CONCOCT read length is derived automatically from both input mates using a read-count-weighted mean.
+- Stage tools and embedded workflows are enclosed in native frames with Markdown explanations.
+- Give each stage a distinct matching frame/Markdown color, put Binette first in the refiner selector, and clarify that original short reads drive grouping, assembly, coverage and abundance.
+- Refiner and coverage outputs are reconciled without retaining skipped-branch placeholders.
+- Dereplication is restricted to bins with CheckM2 quality information, so an unassessed degenerate bin cannot abort dRep and the downstream abundance and reporting steps.
+- Selected sample structure is preserved when optional long reads are absent, including skipped assembler branches.
+- Reduce the CI test fixture to two mock samples to keep the cross-sample alignment matrix small. Coverage-matrix assertions are updated to the two-sample column counts.
+- Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
+- Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
+- Embed Single-sample binning 1.2 (#1538), Multi-sample binning 1.2 (#1539) and Metagenomic Assembly 1.3 (#1545) step for step, including their output labels. The parent keeps its own `Assembly Report` and `Selected assemblies` outputs. The parent keeps its boolean binner toggles and maps them to the standalone `Yes`/`No` inputs with `map_param_value` adapters, and passes its own completeness default (75) to the binning subworkflows.
+- Update metaSPAdes to 4.3.0+galaxy3 in the embedded assembly workflow (Metagenomic Assembly 1.3, #1545), in its co-assembly mode, which takes the same per-sample or per-group read lists as before. The read nesting and the long-read handling are unchanged.
+- Update MaxBin2 to 2.2.7+galaxy7 and SemiBin to 2.5.0+galaxy0 in the embedded binning workflows. A sample where MaxBin2 finds too few marker genes, or where SemiBin finds no bins above the size threshold, now gives an empty bin collection instead of failing the job.
+- Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
+
+### Fixed
+
+- MaxBin2 now gets the abundance format it expects in both embedded binning workflows: contig name and total average depth (single coverage), or one such file per read sample (multi coverage), without the header line. MaxBin2 reads the first number after the contig name as the abundance, so the full `jgi_summarize_bam_contig_depths` table made it bin on contig length instead of coverage (see also #1538, #1539, #1540).
+- Correct the installable Tool Shed revision pins for the unchanged CoverM and fastq_groupmerge tool versions.
+- The MultiQC CheckM and CheckM2 section titles are wired to the matching inputs; they were swapped in 0.9. The CoverM section name no longer starts with a space.
+- Rename the `Run COMEBin` input to `Run COMEBin?`, like the other binner toggles.
+- Correct the annotation of the refiner-combining steps: an identifier present in both refiner collections keeps its first copy; no suffix is added.
+
+### Tests
+
+- Reduce the parent workflow tests to two light cases that fit on a GitHub runner. Both use custom assemblies (no assembler run) and MetaBAT2 as the only binner; assembly (MEGAHIT, metaSPAdes, long reads) and the individual binners and refiners are covered by the tests of the embedded Metagenomic Assembly and single- and multi-sample binning workflows.
+- The defaults case (original samples, single coverage, Binette) supplies nanopore reads, so the long-read grouping path runs, and the skipped multi-coverage and DAS Tool branches pass through the bridges and merges. It checks the per-sample coverage tables, an unsuffixed Binette bin in the merged bins, the dRep cluster assignment, CoverM and MultiQC.
+- The grouped case (both coverage strategies, both refiners) checks that only the group is emitted, its single- and multi-coverage depth tables, the top-ranked Binette bin from both strategies (`_1` and `_2` suffixes), the dRep cluster assignment, CoverM and MultiQC. Grouped-only mode keeps a single assembly, so few Binette/CheckM2 jobs run at once; the hybrid mode with three assemblies exhausted the runner's memory. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
+- Add MD5 hashes to the Zenodo test inputs.
+- Remove the unused `metadata_mock_community.tsv` test file.
+
 ## [0.9] - 2026-10-01
 
 ### Automatic update
