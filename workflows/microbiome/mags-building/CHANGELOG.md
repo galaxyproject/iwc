@@ -5,6 +5,7 @@
 ### Breaking changes
 
 - The workflow now takes original short reads and selects grouping, coverage strategy and bin-refiner internally. Existing invocations of the previous interface do not map directly onto the new inputs.
+- The `metaSPAdes Contigs` output is removed. When metaSPAdes is the chosen assembler, the `Selected assemblies` output holds its contigs.
 
 ### Added
 
@@ -30,7 +31,7 @@
 - Reduce the CI test fixture to two mock samples to keep the cross-sample alignment matrix small. Coverage-matrix assertions are updated to the two-sample column counts.
 - Put the reads first in the input form, followed by the assembly options, the sample grouping, the binning and refinement settings and the MAG selection thresholds.
 - Rename the "Coverage strategies" frame to "Binning", because it encloses the binning step, and describe what each step does in its annotation instead of repeating the step label.
-- Embed Single-sample binning 1.2 (#1538), Multi-sample binning 1.2 (#1539) and Metagenomic Assembly 1.3 (#1545) step for step, including their output labels. The parent keeps its own `Assembly Report` and `Selected assemblies` outputs and no longer exports the separate `metaSPAdes Contigs` output; the selected assemblies contain the metaSPAdes contigs when metaSPAdes is chosen. The parent keeps its boolean binner toggles and maps them to the standalone `Yes`/`No` inputs with `map_param_value` adapters, and passes its own completeness default (75) to the binning subworkflows.
+- Embed Single-sample binning 1.2 (#1538), Multi-sample binning 1.2 (#1539) and Metagenomic Assembly 1.3 (#1545) step for step, including their output labels. The parent keeps its own `Assembly Report` and `Selected assemblies` outputs. The parent keeps its boolean binner toggles and maps them to the standalone `Yes`/`No` inputs with `map_param_value` adapters, and passes its own completeness default (75) to the binning subworkflows.
 - Update metaSPAdes to 4.3.0+galaxy3 in the embedded assembly workflow (Metagenomic Assembly 1.3, #1545), in its co-assembly mode, which takes the same per-sample or per-group read lists as before. The read nesting and the long-read handling are unchanged.
 - Update MaxBin2 to 2.2.7+galaxy7 and SemiBin to 2.5.0+galaxy0 in the embedded binning workflows. A sample where MaxBin2 finds too few marker genes, or where SemiBin finds no bins above the size threshold, now gives an empty bin collection instead of failing the job.
 - Restructure the README into one introduction per workflow step and explain the parent role, the grouping consistency requirement, the custom-assembly correspondence, the inspectable outputs and the JGI coverage-table fields.
@@ -46,8 +47,8 @@
 ### Tests
 
 - Reduce the parent workflow tests to two light cases that fit on a GitHub runner. Both use custom assemblies (no assembler run) and MetaBAT2 as the only binner; assembly (MEGAHIT, metaSPAdes, long reads) and the individual binners and refiners are covered by the tests of the embedded Metagenomic Assembly and single- and multi-sample binning workflows.
-- The defaults case (original samples, single coverage, Binette) supplies nanopore reads, so the long-read grouping path runs, and the skipped multi-coverage and DAS Tool branches pass through the bridges and merges. It checks the per-sample coverage tables, an unsuffixed Binette bin in the merged bins, the dRep input, CoverM and MultiQC.
-- The grouped case (both coverage strategies, both refiners) checks that only the group is emitted, its single- and multi-coverage depth tables, the top-ranked Binette bin from both strategies (`_1` and `_2` suffixes), the dRep input, CoverM and MultiQC. Grouped-only mode keeps a single assembly, so few Binette/CheckM2 jobs run at once; the hybrid mode with three assemblies exhausted the runner's memory. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
+- The defaults case (original samples, single coverage, Binette) supplies nanopore reads, so the long-read grouping path runs, and the skipped multi-coverage and DAS Tool branches pass through the bridges and merges. It checks the per-sample coverage tables, an unsuffixed Binette bin in the merged bins, the dRep cluster assignment, CoverM and MultiQC.
+- The grouped case (both coverage strategies, both refiners) checks that only the group is emitted, its single- and multi-coverage depth tables, the top-ranked Binette bin from both strategies (`_1` and `_2` suffixes), the dRep cluster assignment, CoverM and MultiQC. Grouped-only mode keeps a single assembly, so few Binette/CheckM2 jobs run at once; the hybrid mode with three assemblies exhausted the runner's memory. `Mock1.fasta` stands in for the MockGroup co-assembly, since Mock1 and Mock2 are near-identical. Bin identifiers that vary between runs are not asserted.
 - Add MD5 hashes to the Zenodo test inputs.
 - Remove the unused `metadata_mock_community.tsv` test file.
 
