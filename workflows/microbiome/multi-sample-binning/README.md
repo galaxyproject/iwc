@@ -73,6 +73,7 @@ Selecting **Both** runs DAS Tool and Binette independently on the candidate bins
 ## Outputs
 
 - **Coverage depth matrices**: one depth table per assembly, with the coverage of all original samples.
+- **MaxBin2 abundance files**: one abundance file per assembly and read sample, as passed to MaxBin2 (contig name, that sample's mean depth, sample tag; no header).
 - **CONCOCT bins**, **MaxBin2 bins**, **MetaBAT2 bins**, **SemiBin bins** and **COMEBin bins** (when COMEBin ran): one list of bins per assembly.
 - **DAS Tool bins**, **DAS Tool summary** and **DAS Tool contigs2bin report** (when DAS Tool ran): the refined bins, a per-bin summary of completeness and redundancy based on single-copy genes, and the contig-to-bin assignments.
 - **Binette bins**, **Binette input bin quality reports** and **Binette final bin quality report** (when Binette ran): the refined bins, the CheckM2 quality of the bins from each binner, and the CheckM2 quality of the final bins.
