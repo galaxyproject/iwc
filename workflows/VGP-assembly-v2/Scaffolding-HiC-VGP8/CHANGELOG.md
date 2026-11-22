@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.0] - 2026-10-18
+
+### Changes
+- Add option to align Hi-C reads with BWA-MEM instead of BWA-MEM2 (new `Use BWA-MEM instead of BWA-MEM2` parameter) for large genomes. When it is set, the BWA-MEM2 indexers are skipped.
+- Replace the `Trim, Align, deduplicate Hi-C - Scaffolding` subworkflow by `Deduplication and optional alignment on contigs`: Hi-C trimming now happens in the main workflow, and the trimmed reads are used for both the contig and the scaffold alignments. The scaffold alignment step is delegated to the new `optional alignment` subworkflow that selects between BWA-MEM and BWA-MEM2.
+- Duplication statistics on contigs are now reported only by the `Hi-C duplication stats on contigs` output produced by Samtools markdup.
+- Remove the `Column join` (collection_column_join) step, no longer needed.
+
+### Removed
+- Contig-level Pairtools outputs: `Pairtools Multiqc Stats on contigs`, `Pairtools Multiqc on contigs: Plots`, `Hi-C duplication stats on contigs: Raw` and `Hi-C duplication stats on contigs: MultiQc`.
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/gfastats/gfastats/1.3.11+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_map/pretext_map/0.2.4+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.5+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/pretext_snapshot/pretext_snapshot/0.0.7+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.33+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.6+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/compleasm/compleasm/0.2.9+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_fixmate/samtools_fixmate/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_markdup/samtools_markdup/1.22+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/samtools_merge/samtools_merge/1.22+galaxy2`
+
 ## [3.5] - 2026-03-30
 
 ### Changes
