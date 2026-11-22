@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3] - 2026-11-13
+
+### Changed
+- Update metaSPAdes to 4.3.0+galaxy3 (co-assembly mode, which takes the same per-group read lists as before).
+
 ## [1.2] - 2026-10-28
 
 ### Fixed
