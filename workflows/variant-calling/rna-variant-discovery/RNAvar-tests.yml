@@ -1,0 +1,48 @@
+- doc: Test outline for RNAvar
+  job:
+    "Collection of paired-end fastqs":
+      class: Collection
+      collection_type: "list:paired"
+      elements:
+        - class: Collection
+          type: paired
+          identifier: SRR5085167
+          elements:
+            - class: File
+              identifier: forward
+              location: https://zenodo.org/records/13987631/files/SRR5085167_forward.fastqsanger.gz
+              filetype: fastqsanger.gz
+            - class: File
+              identifier: reverse
+              location: https://zenodo.org/records/13987631/files/SRR5085167_reverse.fastqsanger.gz
+              filetype: fastqsanger.gz
+    "Cached reference genome": sacCer3
+    "Genome Annotation":
+      class: File
+      location: https://zenodo.org/records/13987631/files/Saccharomyces_cerevisiae.R64-1-1.113.gtf
+      filetype: gtf
+    "STAR Genome Overhang": 14
+    "Perform Base Recalibration": false
+    "Variant discovery regions":
+      class: File
+      path: test-data/yeast_regions.bed
+      filetype: bed
+    "Variant Exclusion Filter": "FS > 30.0 || QD < 2.0"
+    "SnpEff Genome Version": R64-1-1.115
+  outputs:
+    "Final Annotated Variants":
+      asserts:
+        # Expected variants + VCF Header lines = Total: 74.
+        - has_n_lines:
+            n: 74
+        # Verify the content is scientifically correct by checking for 
+        # the presence of the target chromosome string.
+        - has_text:
+            text: "chrI"
+        # Ensure SnpEff successfully added functional annotations
+        - has_text:
+            text: "ANN="
+    "MultiQC Quality Report":
+      asserts:
+        - has_text:
+            text: "MultiQC"
