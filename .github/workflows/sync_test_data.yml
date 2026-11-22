@@ -1,0 +1,97 @@
+name: Mirror remote test data to depot.galaxyproject.org
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'workflows/**/*test*.yml'
+      - 'scripts/sync_test_data.py'
+      - '.github/workflows/sync_test_data.yml'
+  workflow_dispatch:
+    inputs:
+      check-existing:
+        description: 'Check files that are already mirrored: "size" sends a HEAD request, "full" downloads and hashes them'
+        type: choice
+        options:
+          - none
+          - size
+          - full
+        default: none
+      dry-run:
+        description: 'Download and check hashes without uploading'
+        type: boolean
+        default: false
+      init-manifest:
+        description: 'Start a new manifest if depot does not have one yet (first run only)'
+        type: boolean
+        default: false
+
+# Runs share the manifest on depot, never run two at once
+concurrency:
+  group: sync-test-data
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Mirror test data
+    if: github.repository == 'galaxyproject/iwc'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    # Holds DEPOT_SSH_PRIVATE_KEY; restrict it to the main branch in the repository settings
+    environment: depot-test-data
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests==2.32.3 pyyaml==6.0.2
+      - name: Configure SSH
+        if: ${{ !inputs.dry-run }}
+        env:
+          DEPOT_SSH_PRIVATE_KEY: ${{ secrets.DEPOT_SSH_PRIVATE_KEY }}
+          DEPOT_SSH_KNOWN_HOSTS: ${{ vars.DEPOT_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          install -m 600 /dev/null ~/.ssh/depot
+          printf '%s\n' "$DEPOT_SSH_PRIVATE_KEY" > ~/.ssh/depot
+          printf '%s\n' "$DEPOT_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Mirror test data
+        env:
+          DEPOT_RSYNC_DESTINATION: ${{ vars.DEPOT_RSYNC_DESTINATION || 'iwc@rochefort.galaxyproject.org:' }}
+          CHECK_EXISTING: ${{ inputs.check-existing || 'none' }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          INIT_MANIFEST: ${{ inputs.init-manifest }}
+        run: |
+          args=(--rsync-ssh "ssh -i $HOME/.ssh/depot -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes")
+          if [[ "$CHECK_EXISTING" != "none" ]]; then
+            args+=(--check-existing "$CHECK_EXISTING")
+          fi
+          if [[ "$INIT_MANIFEST" == "true" ]]; then
+            args+=(--init-manifest)
+          fi
+          if [[ "$DRY_RUN" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          set -o pipefail
+          python scripts/sync_test_data.py "${args[@]}" workflows 2>&1 | tee sync.log
+      - name: Summary
+        if: ${{ always() && hashFiles('sync.log') != '' }}
+        run: |
+          {
+            echo '### Test data mirror'
+            echo '```'
+            if grep -q '^Mirrored ' sync.log; then
+              sed -n '/^Mirrored /,$p' sync.log
+            else
+              tail -n 20 sync.log
+            fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
