@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7] - 2026-10-29
+
+### Added
+- `Run ToolDistillator` (default: `Yes`) to make ToolDistillator optional: set it to `No` to skip the collection of standardized annotation metadata. Its bakta section runs only when Bakta runs.
+
+### Fixed
+- Point `toolshed.g2.bx.psu.edu/repos/iuc/collection_column_join/collection_column_join/0.0.3` at its installable changeset revision `4b00d89e8690` (was `3ddd99c7efee`).
+
 ## [0.6] - 2026-09-23
 
 ### Changed

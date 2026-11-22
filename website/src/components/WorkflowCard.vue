@@ -6,7 +6,8 @@ import Card from "./ui/Card.vue";
 import CardHeader from "./ui/CardHeader.vue";
 import CardContent from "./ui/CardContent.vue";
 import Badge from "./ui/Badge.vue";
-import { Tag, Clock } from "lucide-vue-next";
+import { glyphUrl } from "../utils/workflowGlyph";
+import { Tag, Clock } from "@lucide/vue";
 
 const props = defineProps<{
     workflow: SearchIndexEntry | Workflow;
@@ -29,18 +30,10 @@ const workflowAnnotation = computed(() => {
     }
     return w.annotation as string;
 });
-
-const workflowUuid = computed(() => {
-    const w = props.workflow as Record<string, unknown>;
-    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).uuid) {
-        return (w.definition as Record<string, string>).uuid;
-    }
-    return w.uuid as string;
-});
 </script>
 
 <template>
-    <div :id="`workflow-${workflowUuid}`" class="group relative h-full">
+    <div :id="`workflow-${workflow.iwcID}`" class="group relative h-full">
         <!-- Hover accent bar -->
         <div
             class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200 z-10" />
@@ -53,7 +46,15 @@ const workflowUuid = computed(() => {
             ]">
             <!-- Header -->
             <CardHeader :class="compact ? 'p-3' : 'px-6 py-4 pb-2'">
-                <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">
+                <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link flex items-start gap-3">
+                    <img
+                        :src="glyphUrl(workflow.iwcID)"
+                        :width="compact ? 40 : 44"
+                        :height="compact ? 40 : 44"
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        class="shrink-0" />
                     <h2
                         :class="[
                             'font-bold text-ebony-clay-900 group-hover/link:text-hokey-pokey-600 transition-colors duration-200',

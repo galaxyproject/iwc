@@ -164,7 +164,7 @@ searchQueryStore.subscribe((value) => {
                 <TransitionGroup name="list-stagger" appear>
                     <WorkflowListItem
                         v-for="(workflow, index) in filteredWorkflows"
-                        :key="workflow.uuid"
+                        :key="workflow.iwcID"
                         :workflow="workflow"
                         :style="{ '--stagger-delay': `${Math.min(index * 20, 300)}ms` }" />
                 </TransitionGroup>
@@ -175,7 +175,7 @@ searchQueryStore.subscribe((value) => {
                 <TransitionGroup name="grid-stagger" appear>
                     <WorkflowCard
                         v-for="(workflow, index) in filteredWorkflows"
-                        :key="workflow.uuid"
+                        :key="workflow.iwcID"
                         :workflow="workflow"
                         :style="{ '--stagger-delay': `${Math.min(index * 30, 400)}ms` }"
                         compact />

@@ -1,0 +1,73 @@
+name: Dockstore collections
+# Pull requests: check that workflows/dockstore-collections.yml puts every workflow in a collection.
+# main: apply that file to https://dockstore.org/organizations/iwc.
+#
+# Applying needs the DOCKSTORE_TOKEN secret: the Dockstore token (dockstore.org > Account) of a
+# maintainer or admin of the iwc organization. Without it the sync job is a dry run that lists
+# what it would change.
+on:
+  pull_request:
+    paths:
+      - 'workflows/**/.dockstore.yml'
+      - 'workflows/dockstore-collections.yml'
+      - 'scripts/dockstore_collections.py'
+      - 'scripts/tests/test_dockstore_collections.py'
+      - '.github/workflows/dockstore_collections.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'workflows/dockstore-collections.yml'
+  schedule:
+    # Daily at 5 AM UTC. Dockstore registers a workflow some time after its first release is
+    # deployed, so a new workflow is picked up by one of the runs after its merge.
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+    inputs:
+      prune:
+        description: "Also take entries out of collections that dockstore-collections.yml doesn't put them in"
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  check:
+    name: Every workflow is in a collection
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install dependencies
+      run: pip install pyyaml requests pytest
+    - name: Check dockstore-collections.yml
+      run: python scripts/dockstore_collections.py check
+    - name: Test the script
+      run: pytest scripts/tests/test_dockstore_collections.py
+
+  sync:
+    name: Apply collections to Dockstore
+    if: github.event_name != 'pull_request' && github.repository == 'galaxyproject/iwc' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: dockstore-collections-sync
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install dependencies
+      run: pip install pyyaml requests
+    - name: Sync collections
+      env:
+        DOCKSTORE_TOKEN: ${{ secrets.DOCKSTORE_TOKEN }}
+      run: |
+        if [ -z "$DOCKSTORE_TOKEN" ]; then
+          echo "::warning::The DOCKSTORE_TOKEN secret isn't set, so this is a dry run and Dockstore isn't updated"
+        fi
+        python scripts/dockstore_collections.py sync ${DOCKSTORE_TOKEN:+--apply} ${{ inputs.prune && '--prune' || '' }}

@@ -12,6 +12,7 @@ import TabsList from "./ui/TabsList.vue";
 import TabsTrigger from "./ui/TabsTrigger.vue";
 import TabsContent from "./ui/TabsContent.vue";
 import { formatDate, normalizeGalaxyUrl, IWC_SITE_URL } from "../utils";
+import { glyphUrl } from "../utils/workflowGlyph";
 
 const props = defineProps<{
     workflow: Workflow;
@@ -46,7 +47,7 @@ const dockstoreWorkflowPageUrl = computed(() => {
 
 const githubWorkflowUrl = computed(() => {
     const repoPath = props.workflow?.repoPath?.replace(/^\.\//, "");
-    return `https://github.com/galaxyproject/iwc/tree/main/${repoPath}`;
+    return `${__SITE_REPO_URL__}/tree/${__SITE_REPO_BRANCH__}/${repoPath}`;
 });
 
 const doiResolverUrl = computed(() => {
@@ -105,7 +106,7 @@ const _tools = computed(() => {
 });
 
 const workflow_job_input = computed(() => {
-    const config_init_command = `planemo workflow_job_init ${props.workflow?.iwcID}.ga -o ${props.workflow?.iwcID}-job.yml`;
+    const config_init_command = `planemo workflow_job_init ${props.workflow?.workflowFile} -o ${props.workflow?.iwcID}-job.yml`;
     if (!props.workflow || !props.workflow || !props.workflow.workflow_job_input) {
         return `# config file: ${props.workflow?.iwcID}_job.yml file\n${config_init_command}`;
     } else {
@@ -293,9 +294,9 @@ onMounted(() => {
                                 <h4 class="text-lg font-medium mb-2 text-ebony-clay-800">
                                     Step 2: Download the workflow
                                 </h4>
-                                <p class="mb-2 text-sm text-chicago-600">Download the workflow .ga file:</p>
+                                <p class="mb-2 text-sm text-chicago-600">Download the workflow file:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}.ga&quot; -o ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.workflowFile}&quot; -o ${workflow?.workflowFile}`" />
                             </div>
 
                             <div class="mb-6">
@@ -304,7 +305,7 @@ onMounted(() => {
                                 </h4>
                                 <p class="mb-2 text-sm text-chicago-600">Run the workflow tests with Planemo:</p>
                                 <CodeBlock
-                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.iwcID}-tests.yml&quot; -o ${workflow?.iwcID}-tests.yml\nplanemo test ${workflow?.iwcID}.ga`" />
+                                    :code="`curl &quot;${IWC_SITE_URL}/data/${workflow?.testFile}&quot; -o ${workflow?.testFile}\nplanemo test ${workflow?.workflowFile}`" />
                             </div>
 
                             <div class="mb-6">
@@ -325,7 +326,7 @@ onMounted(() => {
                                     Then run the workflow with your job file:
                                 </p>
                                 <CodeBlock
-                                    :code="`planemo run ${workflow?.iwcID}.ga ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
+                                    :code="`planemo run ${workflow?.workflowFile} ${workflow?.iwcID}-job.yml \\\n    --output_directory . \\\n    --download_outputs \\\n    --output_json output.json`" />
                             </div>
                         </div>
 
@@ -366,9 +367,18 @@ onMounted(() => {
         <!-- Right sidebar -->
         <div class="lg:w-80 xl:w-96 2xl:w-1/4 shrink-0">
             <div class="sticky top-4 bg-white border border-ebony-clay-100 rounded-lg p-6 shadow-sm">
-                <h2 class="font-bold text-xl mb-4 text-ebony-clay-900 border-b-2 border-hokey-pokey-500 pb-2">
-                    {{ workflow.definition.name }}
-                </h2>
+                <div class="flex items-start gap-3 mb-4 border-b-2 border-hokey-pokey-500 pb-2">
+                    <a href="/glyphs" title="How to read workflow glyphs" class="shrink-0">
+                        <img
+                            :src="glyphUrl(workflow.iwcID)"
+                            width="48"
+                            height="48"
+                            alt="Workflow glyph: how to read it" />
+                    </a>
+                    <h2 class="font-bold text-xl text-ebony-clay-900">
+                        {{ workflow.definition.name }}
+                    </h2>
+                </div>
                 <p class="mb-4 text-chicago-700">
                     {{ workflow.definition.annotation }}
                 </p>

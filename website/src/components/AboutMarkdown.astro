@@ -1,0 +1,22 @@
+---
+import { readFileSync } from "node:fs";
+import { marked } from "marked";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageTitle } from "../utils";
+import IWCHeader from "./IWCHeader.astro";
+
+interface Props {
+    /** Absolute path of the Markdown file, as the site config resolved it. */
+    path: string;
+}
+
+const markdown = readFileSync(Astro.props.path, "utf8");
+const html = await marked(markdown);
+const title = markdown.match(/^#\s+(.+)$/m)?.[1].trim() ?? "About";
+---
+
+<BaseLayout title={pageTitle(title)} ogTitle={title} twitterTitle={title}>
+    <IWCHeader slot="header" />
+
+    <article slot="content" class="prose prose-lg mx-auto py-16 px-6" set:html={html} />
+</BaseLayout>

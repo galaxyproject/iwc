@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4] - 2026-11-02
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/devteam/vcfsort/vcfsort/1.0.0_rc3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/devteam/vcfsort/vcfsort/1.0.0_rc3+galaxy4`
+
 ## [0.3] - 2026-10-19
 
 ### Automatic update

@@ -24,7 +24,7 @@ const popularWorkflows = computed(() => {
             Get started with one of our most popular workflows, or browse the full library below.
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto px-4">
-            <WorkflowCard v-for="workflow in popularWorkflows" :key="workflow.uuid" :workflow="workflow" compact />
+            <WorkflowCard v-for="workflow in popularWorkflows" :key="workflow.iwcID" :workflow="workflow" compact />
         </div>
     </div>
 </template>

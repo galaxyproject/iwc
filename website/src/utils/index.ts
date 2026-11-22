@@ -1,4 +1,14 @@
-export const IWC_SITE_URL = "https://iwc.galaxyproject.org";
+export const IWC_SITE_URL = __SITE_SITE_URL__;
+
+/**
+ * Title for any page but the home page, so every page ends with the site's short name.
+ *
+ * @param title - The page's own title.
+ * @returns The title followed by the site's short name, e.g. "Reading workflow glyphs | IWC".
+ */
+export function pageTitle(title: string): string {
+    return `${title} | ${__SITE_SHORT_NAME__}`;
+}
 
 /**
  * Formats an ISO timestamp into a readable date string.

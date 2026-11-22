@@ -213,6 +213,29 @@ $ planemo dockstore_init .
 
 to generate a `.dockstore.yml` file.
 
+#### Dockstore collections
+
+Every workflow is listed in at least one [collection](https://dockstore.org/organizations/iwc) on Dockstore, and [iwc.galaxyproject.org](https://iwc.galaxyproject.org) groups the workflows by those collections.
+[dockstore-collections.yml](dockstore-collections.yml) says which collections a workflow is in. It maps directories to collections, and the most specific directory wins.
+
+A workflow in an existing category directory needs nothing: it gets the collections of that directory.
+If you created a new category directory, or the workflow belongs in other collections than its neighbours, add a line under `assignments`:
+
+```yaml
+assignments:
+  virology: [Virology]
+  virology/generic-non-segmented-viral-variant-calling: [Virology, variant-calling]
+```
+
+A collection that doesn't exist on Dockstore yet also needs an entry under `collections`, and is created from it.
+Pull requests fail if a workflow is in no collection. You can run the same check with
+
+```console
+$ python scripts/dockstore_collections.py check
+```
+
+Once your pull request is merged and Dockstore has registered the workflow, a daily GitHub workflow adds it to its collections. There is nothing to do on Dockstore by hand.
+
 We now only need a README.md file that briefly describes the workflow and a CHANGELOG.md file
 that lists changes, additions and fixed. Please follow the formatting and principles proposed on [keepachangelog.com](https://keepachangelog.com/en/1.0.0/).
 

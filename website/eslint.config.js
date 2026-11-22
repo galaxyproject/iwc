@@ -4,6 +4,10 @@ import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 import eslintPluginAstro from "eslint-plugin-astro";
 import globals from "globals";
+import { defineName, loadSiteConfig } from "./site-config.mjs";
+
+// The __SITE_*__ constants Vite defines, one per site config key
+const siteGlobals = Object.fromEntries(Object.keys(loadSiteConfig({})).map((key) => [defineName(key), "readonly"]));
 
 export default defineConfig(
     js.configs.recommended,
@@ -25,6 +29,7 @@ export default defineConfig(
             globals: {
                 ...globals.browser,
                 ...globals.node,
+                ...siteGlobals,
             },
         },
         rules: {

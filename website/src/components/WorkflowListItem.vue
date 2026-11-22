@@ -3,7 +3,8 @@ import { computed } from "vue";
 import type { SearchIndexEntry, Workflow } from "../models/workflow";
 import { formatDate, navigateToCollection } from "../utils/";
 import Badge from "./ui/Badge.vue";
-import { Tag, Clock } from "lucide-vue-next";
+import { glyphUrl } from "../utils/workflowGlyph";
+import { Tag, Clock } from "@lucide/vue";
 
 const props = defineProps<{
     workflow: SearchIndexEntry | Workflow;
@@ -26,14 +27,6 @@ const workflowAnnotation = computed(() => {
     return w.annotation as string;
 });
 
-const workflowUuid = computed(() => {
-    const w = props.workflow as Record<string, unknown>;
-    if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).uuid) {
-        return (w.definition as Record<string, string>).uuid;
-    }
-    return w.uuid as string;
-});
-
 const workflowRelease = computed(() => {
     const w = props.workflow as Record<string, unknown>;
     if (w.definition && typeof w.definition === "object" && (w.definition as Record<string, unknown>).release) {
@@ -45,13 +38,21 @@ const workflowRelease = computed(() => {
 
 <template>
     <div
-        :id="`workflow-${workflowUuid}`"
+        :id="`workflow-${workflow.iwcID}`"
         class="group relative px-5 py-4 border-b border-ebony-clay-100 transition-all duration-200 odd:bg-bay-of-many-50/30 hover:bg-bay-of-many-50">
         <!-- Hover accent bar -->
         <div
             class="absolute left-0 top-0 bottom-0 w-1 bg-hokey-pokey-500 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
 
         <div class="flex items-start gap-6">
+            <img
+                :src="glyphUrl(workflow.iwcID)"
+                width="48"
+                height="48"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                class="hidden sm:block shrink-0 mt-0.5" />
             <!-- Main content -->
             <div class="flex-1 min-w-0">
                 <a :href="`/workflow/${encodeURIComponent(workflow.iwcID)}/`" class="group/link">

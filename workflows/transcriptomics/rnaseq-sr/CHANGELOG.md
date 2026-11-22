@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8] - 2026-10-26
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_geneBody_coverage/5.0.3+galaxy1`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5`
+
 ## [1.7] - 2026-10-19
 
 ### Automatic update

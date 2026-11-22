@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SelectTrigger, type SelectTriggerProps } from "radix-vue";
-import { ChevronDown } from "lucide-vue-next";
+import { ChevronDown } from "@lucide/vue";
 import type { HTMLAttributes } from "vue";
 import { cn } from "@/lib/utils";
 
