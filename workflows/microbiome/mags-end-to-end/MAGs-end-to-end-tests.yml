@@ -1,5 +1,14 @@
-- doc: "Short-read MAG generation: assembly, single-coverage binning, refinement and dereplication. The optional long-read and annotation branches stay disabled here; the annotation subworkflows are tested in their own published workflows."
-  job: &short_read_job
+# Kept deliberately light so it fits on a GitHub runner. Assembly, the
+# individual binners and refiners, the long-read branch and the annotation
+# tools are covered by the tests of the embedded standalone workflows. This
+# case covers what the end-to-end workflow adds: short-read QC and host removal
+# feeding MAG generation, the empty long-read fallbacks when no long reads are
+# given, and passing the dereplicated MAGs to an annotation workflow.
+# Custom assemblies skip the assembler; MetaBAT2 is the only binner. Mock1 and
+# Mock2 yield near-identical bins and the dRep representative varies between
+# runs, so no dereplicated MAG identifier is asserted.
+- doc: "Short reads only, custom assemblies, MetaBAT2 + Binette, dereplication and genome annotation with Bakta and ToolDistillator disabled"
+  job:
     Paired-end short reads:
       class: Collection
       collection_type: list:paired
@@ -10,9 +19,15 @@
         - class: File
           identifier: forward
           location: https://zenodo.org/records/22982485/files/Mock1_R1.fastq.gz
+          hashes:
+          - hash_function: MD5
+            hash_value: 88eeb5f25232df64bf01bccb94743a68
         - class: File
           identifier: reverse
           location: https://zenodo.org/records/22982485/files/Mock1_R2.fastq.gz
+          hashes:
+          - hash_function: MD5
+            hash_value: 69e8415025d686ce83169eed749f9a2b
         collection_type: paired
       - class: Collection
         identifier: Mock2
@@ -20,14 +35,36 @@
         - class: File
           identifier: forward
           location: https://zenodo.org/records/22982485/files/Mock2_R1.fastq.gz
+          hashes:
+          - hash_function: MD5
+            hash_value: edf0441910cdc60f298572685984261e
         - class: File
           identifier: reverse
           location: https://zenodo.org/records/22982485/files/Mock2_R2.fastq.gz
+          hashes:
+          - hash_function: MD5
+            hash_value: 1e7ba2a826bc08cfb6c8e7d0579a34a9
         collection_type: paired
     Long reads provided?: 'No'
     Choose Reference Genome: Use a built-in genome index
     Host or contaminant genome (short reads): apiMel3
-    Choose Assembler: MEGAHIT
+    Choose Assembler: Custom Assembly
+    Custom assemblies:
+      class: Collection
+      collection_type: list
+      elements:
+      - class: File
+        identifier: Mock1
+        location: https://zenodo.org/records/22982485/files/Mock1.fasta
+        hashes:
+        - hash_function: MD5
+          hash_value: 7862bfe58556a337763cdd8d157ba0e8
+      - class: File
+        identifier: Mock2
+        location: https://zenodo.org/records/22982485/files/Mock2.fasta
+        hashes:
+        - hash_function: MD5
+          hash_value: 721fc961fc5bf3958e990463cba036f1
     Minimum length of contigs to output: 100
     Environment for the built-in model (SemiBin): global
     Contamination weight (Binette): 100
@@ -40,7 +77,7 @@
     Run SemiBin?: false
     Run CONCOCT?: false
     Run MetaBAT2?: true
-    Run MaxBin2?: true
+    Run MaxBin2?: false
     Binning strategy: Single-coverage binning (own/merged reads)
     Bin refinement tool: Binette
     Use grouping?: Use original samples
@@ -53,20 +90,10 @@
     Bacterial genome annotation database: V5.0_2023-02-20
     AMRFinderPlus database: amrfinderplus_V3.12_2024-05-02.2
     Run taxonomy annotation?: 'No'
-    Run genome annotation?: 'No'
+    Run genome annotation?: 'Yes'
+    Run Bakta: false
     Run functional annotation?: 'No'
   outputs:
-    Dereplicated MAGs:
-      class: Collection
-      element_tests:
-        Mock1_binette_bin3.fasta:
-          asserts:
-          - that: has_text
-            text: ">"
-        Mock2_binette_bin1.fasta:
-          asserts:
-          - that: has_text
-            text: ">"
     Short-read QC report:
       asserts:
       - that: has_text
@@ -91,31 +118,17 @@
       - that: has_text
         text: "Assembly"
       - that: has_text
-        text: "Mock1_binette_bin3.fasta"
+        text: "binette_bin"
     MAG abundance table:
       asserts:
       - that: has_text
         text: "Genome"
       - that: has_text
-        text: "Mock2_binette_bin1"
+        text: "binette_bin"
     MAG quality and abundance report:
       asserts:
       - that: has_text
         text: "CheckM2"
-
-- doc: "Genome annotation integration: pass dereplicated MAGs to genome annotation, with Bakta and ToolDistillator disabled."
-  job:
-    <<: *short_read_job
-    Run genome annotation?: 'Yes'
-    Run Bakta: false
-  outputs:
-    Dereplicated MAGs:
-      class: Collection
-      element_tests:
-        Mock2_binette_bin1.fasta:
-          asserts:
-          - that: has_text
-            text: ">"
     Genome annotation report:
       asserts:
       - that: has_text

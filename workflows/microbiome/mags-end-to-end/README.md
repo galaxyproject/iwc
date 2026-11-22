@@ -22,7 +22,7 @@ Each analysis is an embedded workflow, so the steps, tools and parameters are vi
   - [MAG Genome Annotation Parallel](https://iwc.galaxyproject.org/workflow/mag-genome-annotation-parallel-main/)
   - [Functional annotation of sequences](https://iwc.galaxyproject.org/workflow/functional-annotation-of-sequences-main/)
 
-The standalone workflows are the right choice when only one part of the analysis is needed. This draft embeds the pending MAG-generation redesign from IWC PR #1454 rather than the currently published interface; it must be synchronized with that PR and the upstream preprocessing workflows before release.
+The standalone workflows are the right choice when only one part of the analysis is needed. The embedded copies match the versions merged in IWC, including the modular MAG-generation workflow from IWC PR #1454.
 
 ### Dependency maintenance: update upstream first
 
@@ -78,7 +78,7 @@ The *Metagenome-Assembled Genomes (MAGs) generation* workflow:
 
 Its input controls are:
 
-- `Choose Assembler`: MEGAHIT assembles the short reads, metaSPAdes assembles them with the long reads, and `Custom Assembly` uses the assemblies in `Custom assemblies` (one per sample, identifiers matching the reads).
+- `Choose Assembler`: MEGAHIT assembles the short reads, metaSPAdes assembles each sample or group from the short reads and, when provided, the matching long reads, and `Custom Assembly` uses the assemblies in `Custom assemblies` (one per sample, identifiers matching the reads).
 - `Sample metadata`, `Use grouping?` and `Sample grouping column` control whether samples are analysed separately, merged into metadata-defined groups, or both.
 - `Binning strategy` selects single-coverage binning (each assembly is covered by its own or its group-merged reads), multi-coverage binning (each assembly is covered by all samples) or both. The five binner switches (`Run COMEBin?`, `Run SemiBin?`, `Run CONCOCT?`, `Run MetaBAT2?`, `Run MaxBin2?`) choose which binners contribute candidate bins, and `Bin refinement tool` merges them with Binette and/or DAS Tool.
 - `CheckM2 Database`, `Minimum MAG completeness percentage` and `Contamination weight (Binette)` set the bin quality thresholds used before refinement.
