@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4] - 2026-11-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/482` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/ucsc_fasplit/fasplit/502`
+- `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/3.1.3+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/iqtree/iqtree/3.1.4+galaxy1`
+
 ## [0.3] - 2026-08-24
 
 ### Automatic update
