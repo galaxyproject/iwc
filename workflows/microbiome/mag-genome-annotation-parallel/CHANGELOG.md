@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8] - 2026-11-23
+
+### Fixed
+- Run `Format Bakta output`, `Merge Bakta Output` and the MultiQC report only when `Run Bakta` is enabled. With Bakta disabled, these steps previously received skipped Bakta outputs and failed, so the workflow could not complete.
+
 ## [0.7] - 2026-10-29
 
 ### Added

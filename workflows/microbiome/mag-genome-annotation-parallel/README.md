@@ -62,6 +62,8 @@ All outputs are consolidated into a single MultiQC report providing a global ove
 ## Input Requirements
 MAG assemblies (FASTA format) provided as a collection in Galaxy.
 
+Bakta is enabled by default; set `Run Bakta` to `No` to skip it. Without Bakta, the merged Bakta summary and the MultiQC report are not produced, while the ISEScan, Integron Finder and PlasmidFinder outputs are.
+
 ToolDistillator is enabled by default; set `Run ToolDistillator` to `No` to skip it. Its bakta section runs only when `Run Bakta` is also enabled.
 
 ## Expected Outputs
@@ -70,7 +72,7 @@ ToolDistillator is enabled by default; set `Run ToolDistillator` to `No` to skip
 - Standardized annotation tables
 - Merged genome annotation matrices
 - Summary statistics files
-- A unified MultiQC report for all genomes
+- A unified MultiQC report for all genomes (when Bakta is run)
 
 ## Funding
 
