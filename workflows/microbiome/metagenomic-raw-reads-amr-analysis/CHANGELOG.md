@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.3] - 2026-11-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/deeparg_short_reads/deeparg_short_reads/1.0.4+galaxy1` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deeparg_short_reads/deeparg_short_reads/1.0.4+galaxy2`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy6`
+
 ## [1.2.2] - 2026-10-19
 
 ### Automatic update
