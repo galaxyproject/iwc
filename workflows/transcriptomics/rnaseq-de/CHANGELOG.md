@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13] - 2026-11-23
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy4` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/deseq2/deseq2/2.11.40.8+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.3+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/volcanoplot/volcanoplot/4.0.4+galaxy0`
+
 ## [0.12] - 2026-08-24
 
 ### Automatic update
