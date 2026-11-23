@@ -109,7 +109,6 @@
         }
     ],
     "format-version": "0.1",
-    "release": "0.1",
     "license": "MIT",
     "name": "SameStr-based shared strain detection from paired-end metagenomic data",
     "readme": "# SameStr-based shared strain detection from paired-end metagenomic data\n\nThis workflow processes paired-end shotgun metagenomic reads from several samples and finds\nstrains they share, for example strains transmitted from a donor to a recipient after a faecal\nmicrobiota transplant, or strains persisting in one person over time. It uses\n[SameStr](https://github.com/danielpodlesny/samestr)\n([Podlesny et al. 2022, *Microbiome*](https://doi.org/10.1186/s40168-022-01251-w)), which compares\nsingle-nucleotide variant (SNV) profiles of species-specific marker genes between samples.\n\nIt performs the following steps:\n\n- **Preprocessing**: quality trimming (Trimmomatic) and host read removal (Bowtie2) with KneadData.\n- **Taxonomic profiling and marker-based alignment**: MetaPhlAn 4 or mOTUs, depending on the\n  selected database, profiles each sample and aligns its reads to the profiler's marker genes.\n- **Strain detection**:\n  - SameStr Convert turns each sample's marker alignments into per-clade SNV profiles.\n  - SameStr Merge and SameStr Filter combine them across samples and keep high-confidence variants.\n  - SameStr Stats, Compare and Summarize compute pairwise Maximum Variant Profile Similarity (MVS)\n    scores and call shared strains.\n\n## Inputs\n\n- **Paired-end reads**: a `list:paired` collection of FASTQ files (`fastqsanger` or\n  `fastqsanger.gz`), one element per sample. Strains are compared between samples, so provide at\n  least two.\n- **Preprocessing: Trimmomatic adapter set**: the adapter sequences Trimmomatic clips (default `NexteraPE`).\n- **Preprocessing: Host reference genome**: the Bowtie2 index of the host genome whose reads are\n  removed (default `hg38`, human).\n- **MetaPhlAn database** and **mOTUs database**: both are optional, and the database you select\n  decides which profiler runs. Select exactly one:\n  - with neither selected, the workflow fails;\n  - with both selected, both profilers run, but SameStr uses only the MetaPhlAn results.\n- **SameStr database**: the SameStr marker database. It must be built from the same profiler\n  database as the one selected above (the same MetaPhlAn or mOTUs database version).\n- **SameStr Convert / Filter / Summarize parameters**: the alignment, variant, position, sample\n  and similarity thresholds of the SameStr steps. The defaults are SameStr's own defaults, and\n  each input's help text describes it.\n\n## Outputs\n\n- **Taxonomic profile**: the taxonomic profile of each sample, from MetaPhlAn (or mOTUs if no\n  MetaPhlAn database was selected).\n- **SameStr SNV profile statistics**: one table per clade with the marker coverage and variant\n  statistics of each sample.\n- **Strain events**: one row per sample pair and clade. It gives the MVS similarity, the number of\n  overlapping positions, and the call: `shared_strain` if the pair shares the strain,\n  `other_strain` if it carries different strains.\n- **Taxon counts**: for each sample, the number of taxa detected at each rank from kingdom to clade.\n- **Strain co-occurrence table**: for each sample pair, the number of taxa shared at each rank,\n  the number of shared strains, and the number of clades analyzed at strain level.\n",
@@ -407,7 +406,7 @@
                 "top": 464.57820691441964
             },
             "tool_id": null,
-            "tool_state": "{\"default\": 3, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_state": "{\"default\": 3, \"validators\": [], \"parameter_type\": \"integer\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
             "uuid": "2c75e52f-5630-488b-b056-307cceeb5d0d",
@@ -623,7 +622,7 @@
                 "top": 1669.6248754855912
             },
             "tool_id": null,
-            "tool_state": "{\"default\": 2, \"validators\": [{\"min\": null, \"max\": null, \"negate\": false, \"type\": \"in_range\"}], \"parameter_type\": \"integer\", \"optional\": false}",
+            "tool_state": "{\"default\": 2, \"validators\": [], \"parameter_type\": \"integer\", \"optional\": false}",
             "tool_version": null,
             "type": "parameter_input",
             "uuid": "20db6106-98d7-451b-b745-6b2f3aebccd5",
@@ -869,12 +868,7 @@
                     "output_name": "unmatched_paired"
                 }
             },
-            "inputs": [
-                {
-                    "description": "runtime parameter for tool Concatenate multiple datasets or collections",
-                    "name": "input1"
-                }
-            ],
+            "inputs": [],
             "label": "Concatenate paired and orphaned reads",
             "name": "Concatenate multiple datasets or collections",
             "outputs": [
@@ -889,7 +883,7 @@
             },
             "post_job_actions": {},
             "tool_id": "cat1",
-            "tool_state": "{\"input1\": {\"__class__\": \"RuntimeValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"RuntimeValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input1\": {\"__class__\": \"ConnectedValue\"}, \"queries\": [{\"__index__\": 0, \"input2\": {\"__class__\": \"ConnectedValue\"}}], \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "1.0.0",
             "type": "tool",
@@ -948,7 +942,7 @@
         },
         "26": {
             "annotation": "Generate taxonomic profiles and marker gene alignments for SameStr",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.6+galaxy1",
             "errors": null,
             "id": 26,
             "input_connections": {
@@ -987,16 +981,16 @@
                 "top": 536.2986005516906
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.4+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/metaphlan/metaphlan/4.2.6+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "56ff60ec416d",
+                "changeset_revision": "558456ba633f",
                 "name": "metaphlan",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"analysis\": {\"analysis_type\": {\"t\": \"rel_ab\", \"__current_case__\": 0, \"tax_lev\": {\"tax_lev\": \"a\", \"__current_case__\": 0, \"split_levels\": false}}, \"min_alignment_len\": null, \"organism_profiling\": null, \"stat\": \"tavg_g\", \"stat_q\": \"0.2\", \"perc_nonzero\": \"0.33\", \"ignore_markers\": null, \"avoid_disqm\": true}, \"inputs\": {\"in\": {\"selector\": \"raw\", \"__current_case__\": 0, \"raw_in\": {\"selector\": \"paired_collection\", \"__current_case__\": 2, \"in\": {\"__class__\": \"ConnectedValue\"}}, \"read_min_len\": \"70\", \"mapping\": {\"bt2_ps\": \"very-sensitive\", \"min_mapq_val\": \"5\"}}, \"db\": {\"db_selector\": \"cached\", \"__current_case__\": 0, \"cached_db\": {\"__class__\": \"ConnectedValue\"}, \"viral_analysis\": {\"profile_vsc\": \"\", \"__current_case__\": 1}}}, \"out\": {\"sample_id_key\": \"SampleID\", \"sample_id\": \"Metaphlan_Analysis\", \"use_group_representative\": false, \"CAMI_format_output\": false, \"skip_unclassified_estimation\": false, \"biom_format_output\": false, \"krona_output\": false}, \"subsample\": {\"selector\": \"no\", \"__current_case__\": 0}, \"test\": \"false\", \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "4.2.4+galaxy0",
+            "tool_version": "4.2.6+galaxy1",
             "type": "tool",
             "uuid": "9772827a-152b-4943-bc51-dd5def2ce127",
             "when": "$(inputs.when)",
@@ -1194,7 +1188,7 @@
         },
         "31": {
             "annotation": "Convert BAM to SNV profiles for SameStr analysis",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy1",
             "errors": null,
             "id": 31,
             "input_connections": {
@@ -1270,23 +1264,23 @@
                 "top": 361.5827321424908
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_convert/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"alignment\": {\"__class__\": \"ConnectedValue\"}, \"alignment_param\": {\"min_aln_identity\": {\"__class__\": \"ConnectedValue\"}, \"min_aln_len\": {\"__class__\": \"ConnectedValue\"}, \"min_base_qual\": {\"__class__\": \"ConnectedValue\"}, \"min_aln_qual\": {\"__class__\": \"ConnectedValue\"}, \"min_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"profile\": {\"__class__\": \"ConnectedValue\"}, \"sample_name\": null, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "24dd3bef-7939-4476-8585-2bab0006541a",
             "when": null,
             "workflow_outputs": []
         },
         "32": {
-            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (<clade>.<sample>) are kept, so they stay unique and sample names may contain underscores.",
+            "annotation": "Turn the per-sample SameStr Convert collections into one flat list of SNV profiles. The inner identifiers (.) are kept, so they stay unique and sample names may contain underscores.",
             "content_id": "__APPLY_RULES__",
             "errors": null,
             "id": 32,
@@ -1321,7 +1315,7 @@
         },
         "33": {
             "annotation": "Merge SNV profiles from multiple samples for cross-sample strain comparison",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy1",
             "errors": null,
             "id": 33,
             "input_connections": {
@@ -1352,16 +1346,16 @@
                 "top": 388.7737881729979
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_merge/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"clade\": null, \"database\": {\"__class__\": \"ConnectedValue\"}, \"input_files\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "68e48efa-bab3-4adf-af44-3f786dda7730",
             "when": null,
@@ -1369,7 +1363,7 @@
         },
         "34": {
             "annotation": "Filter SNV profiles to retain high confidence variants for strain analysis",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy1",
             "errors": null,
             "id": 34,
             "input_connections": {
@@ -1437,10 +1431,6 @@
                 },
                 {
                     "description": "runtime parameter for tool SameStr Filter",
-                    "name": "sample_filtering"
-                },
-                {
-                    "description": "runtime parameter for tool SameStr Filter",
                     "name": "sample_position_filtering"
                 },
                 {
@@ -1473,16 +1463,16 @@
                 "top": 363.3577918435363
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_filter/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"clade_settings\": {\"clade_min_samples\": {\"__class__\": \"ConnectedValue\"}, \"marker_selection\": {\"retain_or_drop\": \"\", \"__current_case__\": 0}, \"marker_trunc_len\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"global_position_filtering\": {\"global_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"global_pos_min_f_vcov\": \"0.0\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"output_settings\": {\"keep_poly\": false, \"keep_mono\": false, \"delete_pos\": false}, \"sample_filtering\": {\"samples_select\": null, \"samples_min_n_hcov\": {\"__class__\": \"ConnectedValue\"}, \"samples_min_f_hcov\": \"0.0\", \"samples_min_m_vcov\": \"0.0\"}, \"sample_position_filtering\": {\"sample_pos_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_pos_min_sd_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"sample_variant_filtering\": {\"sample_var_min_n_vcov\": {\"__class__\": \"ConnectedValue\"}, \"sample_var_min_f_vcov\": {\"__class__\": \"ConnectedValue\"}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "6a37c733-4666-48be-a483-ebaa31e379ce",
             "when": null,
@@ -1558,7 +1548,7 @@
         },
         "37": {
             "annotation": "Generate summary statistics of SNV profiles per sample",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy1",
             "errors": null,
             "id": 37,
             "input_connections": {
@@ -1589,16 +1579,16 @@
                 "top": 771.7928415136683
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_stats/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"dominant_variants\": false, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "b7295639-0e0a-477f-be6d-5432caffbda4",
             "when": null,
@@ -1612,7 +1602,7 @@
         },
         "38": {
             "annotation": "Compare SNV profiles across samples to identify shared strains",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy1",
             "errors": null,
             "id": 38,
             "input_connections": {
@@ -1651,16 +1641,16 @@
                 "top": 355.3042161418655
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_compare/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"database\": {\"__class__\": \"ConnectedValue\"}, \"input_names\": {\"__class__\": \"ConnectedValue\"}, \"input_snvs\": {\"__class__\": \"ConnectedValue\"}, \"variant_comparison_settings\": {\"minority_dominant\": \"\", \"dominant_variants_msa\": false}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "4244ea02-c531-4075-bd0d-330654870a60",
             "when": null,
@@ -1668,7 +1658,7 @@
         },
         "39": {
             "annotation": "Summarize strain sharing results across all sample pairs",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy0",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy1",
             "errors": null,
             "id": 39,
             "input_connections": {
@@ -1728,16 +1718,16 @@
                 "top": 399.3186070278562
             },
             "post_job_actions": {},
-            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy0",
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/samestr/samestr_summarize/1.2025.111+galaxy1",
             "tool_shed_repository": {
-                "changeset_revision": "66378faa1313",
+                "changeset_revision": "0c91ae275f64",
                 "name": "samestr",
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
             "tool_state": "{\"arguments\": {\"aln_pair_min_overlap\": {\"__class__\": \"ConnectedValue\"}, \"aln_pair_min_similarity\": {\"__class__\": \"ConnectedValue\"}}, \"database\": {\"__class__\": \"ConnectedValue\"}, \"overlaps\": {\"__class__\": \"ConnectedValue\"}, \"similarities\": {\"__class__\": \"ConnectedValue\"}, \"tax_profiles\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
-            "tool_version": "1.2025.111+galaxy0",
+            "tool_version": "1.2025.111+galaxy1",
             "type": "tool",
             "uuid": "905dd7e6-db74-4975-91f0-100e4077ab0d",
             "when": null,
@@ -1765,6 +1755,7 @@
         "microbiome",
         "shared-strains"
     ],
-    "uuid": "4f48d55a-f17c-40ca-9e67-e95c0d8886e7",
-    "version": 6
+    "uuid": "f7b4f9af-1e83-40b4-baf0-a4ccf738f6dd",
+    "version": 1,
+    "release": "0.2"
 }
