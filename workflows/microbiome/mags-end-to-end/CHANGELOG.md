@@ -5,7 +5,7 @@
 ### Added
 - Synchronize the embedded MAG-generation workflow with the version merged in IWC PR #1454 (MaxBin2 2.2.7+galaxy7 with per-sample abundance files, SemiBin 2.5.0+galaxy0, metaSPAdes 4.3.0+galaxy3 run per sample or group, Metagenomic Assembly 1.3), and reconnect the renamed `Run COMEBin?` input.
 - Synchronize short-read QC, short-read host removal and Nanopore preprocessing with their merged releases, and reconnect the redesigned MAG-generation dependency by input label.
-- Test one light case (custom assemblies, MetaBAT2 + Binette, dereplication, genome annotation with Bakta disabled) with run-stable assertions only, as the dRep representative between near-identical samples varies between runs.
+- Test one light case (custom assemblies, MetaBAT2 + Binette, dereplication, annotation disabled) with run-stable assertions only, as the dRep representative between near-identical samples varies between runs.
 - Update the embedded MAG Genome Annotation Parallel workflow to merged release 0.7, with ToolDistillator disabled internally and no exposed control.
 - Document the subworkflow dependencies and upstream-first update order.
 - End-to-end workflow covering short-read quality control and host removal, optional long-read preprocessing and host removal, MAG generation with assembly, binning and dereplication, and optional taxonomy, genome and functional annotation of the MAGs
