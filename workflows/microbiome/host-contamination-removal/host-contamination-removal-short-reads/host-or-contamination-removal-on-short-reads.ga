@@ -1,6 +1,6 @@
 {
     "a_galaxy_workflow": "true",
-    "annotation": "This workflow takes paired-end Illumina fastq(.gz) files and runs Bowtie to map the reads against a reference genome (human, by default) and keep only the reads that do not align. MultiQC is used to aggregate the mapping reports.",
+    "annotation": "This workflow takes paired-end Illumina fastq(.gz) files and removes host or contaminant reads (human, by default) with Bowtie2 (alignment), Deacon (minimizer-based depletion) or Deacon followed by Bowtie2. MultiQC aggregates the Bowtie2 mapping reports.",
     "comments": [],
     "creator": [
         {
@@ -54,7 +54,7 @@
             "outputs": [],
             "position": {
                 "left": 0,
-                "top": 78.4156068912526
+                "top": 132
             },
             "tool_id": null,
             "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictions\": [\"Use a built-in genome index\", \"Use a reference genome from the history\"], \"parameter_type\": \"text\", \"optional\": false}",
@@ -80,8 +80,8 @@
             "name": "Input dataset collection",
             "outputs": [],
             "position": {
-                "left": 56.69321833627876,
-                "top": 275.7547956222944
+                "left": 0,
+                "top": 264
             },
             "tool_id": null,
             "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null, \"column_definitions\": null}",
@@ -92,10 +92,37 @@
             "workflow_outputs": []
         },
         "2": {
-            "annotation": "Reads not mapping to this reference genome will be kept",
+            "annotation": "Bowtie2: align reads to the host/contaminant reference and keep the unaligned pairs (default). Deacon: fast minimizer-based depletion. Deacon then Bowtie2: run Deacon first and align the remaining reads with Bowtie2 for the most complete removal.",
             "content_id": null,
             "errors": null,
             "id": 2,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Bowtie2: align reads to the host/contaminant reference and keep the unaligned pairs (default). Deacon: fast minimizer-based depletion. Deacon then Bowtie2: run Deacon first and align the remaining reads with Bowtie2 for the most complete removal.",
+                    "name": "Host removal tool"
+                }
+            ],
+            "label": "Host removal tool",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 0
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictions\": [\"Bowtie2\", \"Deacon\", \"Deacon then Bowtie2\"], \"default\": \"Bowtie2\", \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "52f219f3-c92b-41e7-af45-1ece7d887d60",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Reads not mapping to this reference genome will be kept",
+            "content_id": null,
+            "errors": null,
+            "id": 3,
             "input_connections": {},
             "inputs": [
                 {
@@ -107,8 +134,8 @@
             "name": "Input parameter",
             "outputs": [],
             "position": {
-                "left": 55.16447412560919,
-                "top": 395.9174929065588
+                "left": 0,
+                "top": 528
             },
             "tool_id": null,
             "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
@@ -118,11 +145,38 @@
             "when": null,
             "workflow_outputs": []
         },
-        "3": {
+        "4": {
+            "annotation": "Built-in Deacon index (e.g. panhuman-1) used when Deacon is selected with a built-in genome index. Ignored otherwise.",
+            "content_id": null,
+            "errors": null,
+            "id": 4,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Built-in Deacon index (e.g. panhuman-1) used when Deacon is selected with a built-in genome index. Ignored otherwise.",
+                    "name": "Deacon index"
+                }
+            ],
+            "label": "Deacon index",
+            "name": "Input parameter",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 396
+            },
+            "tool_id": null,
+            "tool_state": "{\"multiple\": false, \"validators\": [], \"restrictOnConnections\": true, \"parameter_type\": \"text\", \"optional\": false}",
+            "tool_version": null,
+            "type": "parameter_input",
+            "uuid": "34737bdf-7709-4104-bb2b-8e8a821d6b7d",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
             "annotation": "Select a reference genome from the history",
             "content_id": null,
             "errors": null,
-            "id": 3,
+            "id": 5,
             "input_connections": {},
             "inputs": [
                 {
@@ -134,8 +188,8 @@
             "name": "Input dataset",
             "outputs": [],
             "position": {
-                "left": 5.82386827650555,
-                "top": 720.0370527711409
+                "left": 0,
+                "top": 681
             },
             "tool_id": null,
             "tool_state": "{\"optional\": true, \"tag\": null}",
@@ -145,15 +199,58 @@
             "when": null,
             "workflow_outputs": []
         },
-        "4": {
-            "annotation": "",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+        "6": {
+            "annotation": "Combine the selected tool and reference source",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
             "errors": null,
-            "id": 4,
+            "id": 6,
             "input_connections": {
-                "input_param_type|input_param": {
+                "components_0|param_type|component_value": {
+                    "id": 2,
+                    "output_name": "output"
+                },
+                "components_2|param_type|component_value": {
                     "id": 0,
                     "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Combine tool and reference choice",
+            "name": "compose_text_param",
+            "outputs": [
+                {
+                    "name": "out1",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 300,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/compose_text_param/compose_text_param/0.1.1",
+            "tool_shed_repository": {
+                "changeset_revision": "e188c9826e0f",
+                "name": "compose_text_param",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"components\": [{\"__index__\": 0, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}}, {\"__index__\": 1, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": \"|\"}}, {\"__index__\": 2, \"param_type\": {\"select_param_type\": \"text\", \"__current_case__\": 0, \"component_value\": {\"__class__\": \"ConnectedValue\"}}}], \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.1.1",
+            "type": "tool",
+            "uuid": "4fdc760b-e4eb-464b-a743-c4910f75743f",
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Run Bowtie2 with a built-in index?",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 6,
+                    "output_name": "out1"
                 }
             },
             "inputs": [
@@ -162,7 +259,7 @@
                     "name": "input_param_type"
                 }
             ],
-            "label": null,
+            "label": "Run Bowtie2 with a built-in index?",
             "name": "Map parameter value",
             "outputs": [
                 {
@@ -171,7 +268,97 @@
                 }
             ],
             "position": {
-                "left": 281.6708521251207,
+                "left": 600,
+                "top": 429
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Bowtie2|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Deacon then Bowtie2|Use a built-in genome index\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "99b14e48-b88c-40d5-984e-fa320a005a75",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "8": {
+            "annotation": "Run Bowtie2 with a reference from the history?",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 8,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 6,
+                    "output_name": "out1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
+            "label": "Run Bowtie2 with a reference from the history?",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 633
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Deacon then Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "49989a68-bea1-4a9b-8e25-8268d23bf7cc",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "9": {
+            "annotation": "Run Deacon with a built-in index?",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 9,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 6,
+                    "output_name": "out1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
+            "label": "Run Deacon with a built-in index?",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 600,
                 "top": 0
             },
             "post_job_actions": {},
@@ -182,23 +369,23 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Use a built-in genome index\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Deacon|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Deacon then Bowtie2|Use a built-in genome index\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "ec5ec63e-3814-4ea1-80c2-1f026514be8c",
+            "uuid": "50b36c41-0a7f-4477-9cd4-96947db77925",
             "when": null,
             "workflow_outputs": []
         },
-        "5": {
-            "annotation": "",
+        "10": {
+            "annotation": "Run Deacon with an index built from the history reference?",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
             "errors": null,
-            "id": 5,
+            "id": 10,
             "input_connections": {
                 "input_param_type|input_param": {
-                    "id": 0,
-                    "output_name": "output"
+                    "id": 6,
+                    "output_name": "out1"
                 }
             },
             "inputs": [
@@ -207,7 +394,7 @@
                     "name": "input_param_type"
                 }
             ],
-            "label": null,
+            "label": "Run Deacon with an index built from the history reference?",
             "name": "Map parameter value",
             "outputs": [
                 {
@@ -216,8 +403,8 @@
                 }
             ],
             "position": {
-                "left": 281.02535796623073,
-                "top": 168.96166521551612
+                "left": 600,
+                "top": 204
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
@@ -227,27 +414,117 @@
                 "owner": "iuc",
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             },
-            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Use a reference genome from the history\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Deacon|Use a reference genome from the history\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Deacon then Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
             "tool_uuid": null,
             "tool_version": "0.2.0",
             "type": "tool",
-            "uuid": "6ca71f29-0c73-43b5-9852-519094b0288a",
+            "uuid": "636e1fda-0e4c-477b-a21e-8f0bdf88984b",
             "when": null,
             "workflow_outputs": []
         },
-        "6": {
-            "annotation": "",
+        "11": {
+            "annotation": "Is Bowtie2 run?",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 11,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 6,
+                    "output_name": "out1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
+            "label": "Is Bowtie2 run?",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 1062
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Bowtie2|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}, {\"__index__\": 2, \"from\": \"Deacon then Bowtie2|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 3, \"from\": \"Deacon then Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "b17d9361-377c-4d85-88a8-2c3e1a27fe45",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "12": {
+            "annotation": "Is Deacon run?",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "errors": null,
+            "id": 12,
+            "input_connections": {
+                "input_param_type|input_param": {
+                    "id": 6,
+                    "output_name": "out1"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Map parameter value",
+                    "name": "input_param_type"
+                }
+            ],
+            "label": "Is Deacon run?",
+            "name": "Map parameter value",
+            "outputs": [
+                {
+                    "name": "output_param_boolean",
+                    "type": "expression.json"
+                }
+            ],
+            "position": {
+                "left": 600,
+                "top": 858
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/map_param_value/map_param_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "022a635f2283",
+                "name": "map_param_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input_param_type\": {\"type\": \"text\", \"__current_case__\": 0, \"input_param\": {\"__class__\": \"ConnectedValue\"}, \"mappings\": [{\"__index__\": 0, \"from\": \"Deacon|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 1, \"from\": \"Deacon|Use a reference genome from the history\", \"to\": \"True\"}, {\"__index__\": 2, \"from\": \"Deacon then Bowtie2|Use a built-in genome index\", \"to\": \"True\"}, {\"__index__\": 3, \"from\": \"Deacon then Bowtie2|Use a reference genome from the history\", \"to\": \"True\"}]}, \"output_param_type\": \"boolean\", \"unmapped\": {\"on_unmapped\": \"default\", \"__current_case__\": 2, \"default_value\": \"False\"}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "20a4224c-9fa4-4d36-b309-43cc88874493",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "13": {
+            "annotation": "Reference genome FASTA from the history, if given",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 6,
+            "id": 13,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 3,
+                    "id": 5,
                     "output_name": "output"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Pick reference genome from history",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -256,8 +533,8 @@
                 }
             ],
             "position": {
-                "left": 280.76609629096004,
-                "top": 721.36794885063
+                "left": 300,
+                "top": 655
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
@@ -275,22 +552,322 @@
             "when": null,
             "workflow_outputs": []
         },
-        "7": {
-            "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
-            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0",
+        "14": {
+            "annotation": "Build a Deacon minimizer index from the reference genome in the history",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_index_build/deacon_index_build/0.19.1+galaxy0",
             "errors": null,
-            "id": 7,
+            "id": 14,
             "input_connections": {
-                "library|input_1": {
+                "input": {
+                    "id": 13,
+                    "output_name": "data_param"
+                },
+                "when": {
+                    "id": 10,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Deacon index build",
+            "name": "deacon_index_build",
+            "outputs": [
+                {
+                    "name": "index_output",
+                    "type": "deacon.idx"
+                }
+            ],
+            "position": {
+                "left": 900,
+                "top": 630
+            },
+            "post_job_actions": {
+                "HideDatasetActionindex_output": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "index_output"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_index_build/deacon_index_build/0.19.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "7d5cdcb4f74f",
+                "name": "deacon_index_build",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"k\": \"31\", \"w\": \"15\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.19.1+galaxy0",
+            "type": "tool",
+            "uuid": "c048afaa-21f0-4e71-a9fb-903da477b7e9",
+            "workflow_outputs": [],
+            "when": "$(inputs.when)"
+        },
+        "15": {
+            "annotation": "Deacon index built from the history reference",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "errors": null,
+            "id": 15,
+            "input_connections": {
+                "style_cond|type_cond|pick_from_0|value": {
+                    "id": 14,
+                    "output_name": "index_output"
+                }
+            },
+            "inputs": [],
+            "label": "Pick Deacon index",
+            "name": "Pick parameter value",
+            "outputs": [
+                {
+                    "name": "data_param",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1200,
+                "top": 665
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "b19e21af9c52",
+                "name": "pick_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "a37f8cd0-5c84-4609-b09e-7b4f5cc50943",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "16": {
+            "annotation": "Remove reads sharing minimizers with the built-in Deacon index",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_filter/deacon_filter/0.19.1+galaxy0",
+            "errors": null,
+            "id": 16,
+            "input_connections": {
+                "fastx_input|pair": {
                     "id": 1,
                     "output_name": "output"
                 },
-                "reference_genome|index": {
-                    "id": 2,
+                "index_type|from_dm": {
+                    "id": 4,
                     "output_name": "output"
                 },
                 "when": {
-                    "id": 4,
+                    "id": 9,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Deacon-deplete reads with a built-in index",
+            "name": "deacon_filter",
+            "outputs": [
+                {
+                    "name": "pair_out",
+                    "type": "input"
+                },
+                {
+                    "name": "json",
+                    "type": "json"
+                },
+                {
+                    "name": "file_single",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1500,
+                "top": 258
+            },
+            "post_job_actions": {
+                "HideDatasetActionpair_out": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "pair_out"
+                },
+                "HideDatasetActionjson": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "json"
+                },
+                "RenameDatasetActionpair_out": {
+                    "action_arguments": {
+                        "newname": "Reads without host or contaminant reads (Deacon)"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "pair_out"
+                },
+                "RenameDatasetActionjson": {
+                    "action_arguments": {
+                        "newname": "Deacon summary"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "json"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_filter/deacon_filter/0.19.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "93cbf97b251f",
+                "name": "deacon_filter",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"abs_threshold\": \"2\", \"deplete\": true, \"discard_quality\": false, \"fastx_input\": {\"is_select\": \"paired\", \"__current_case__\": 1, \"pair\": {\"__class__\": \"ConnectedValue\"}, \"check_pairs\": false}, \"index_type\": {\"is_select\": \"dm\", \"__current_case__\": 1, \"from_dm\": {\"__class__\": \"ConnectedValue\"}}, \"ordered\": false, \"prefix_length\": \"0\", \"rel_threshold\": \"0.01\", \"rename\": false, \"summary\": true, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.19.1+galaxy0",
+            "type": "tool",
+            "uuid": "496b349b-2f86-42d0-afaa-947202b70f50",
+            "workflow_outputs": [],
+            "when": "$(inputs.when)"
+        },
+        "17": {
+            "annotation": "Remove reads sharing minimizers with the Deacon index built from the history reference",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_filter/deacon_filter/0.19.1+galaxy0",
+            "errors": null,
+            "id": 17,
+            "input_connections": {
+                "fastx_input|pair": {
+                    "id": 1,
+                    "output_name": "output"
+                },
+                "index_type|index_file": {
+                    "id": 15,
+                    "output_name": "data_param"
+                },
+                "when": {
+                    "id": 10,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Deacon-deplete reads with an index from the history reference",
+            "name": "deacon_filter",
+            "outputs": [
+                {
+                    "name": "pair_out",
+                    "type": "input"
+                },
+                {
+                    "name": "json",
+                    "type": "json"
+                },
+                {
+                    "name": "file_single",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1500,
+                "top": 534
+            },
+            "post_job_actions": {
+                "HideDatasetActionpair_out": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "pair_out"
+                },
+                "HideDatasetActionjson": {
+                    "action_arguments": {},
+                    "action_type": "HideDatasetAction",
+                    "output_name": "json"
+                },
+                "RenameDatasetActionpair_out": {
+                    "action_arguments": {
+                        "newname": "Reads without host or contaminant reads (Deacon)"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "pair_out"
+                },
+                "RenameDatasetActionjson": {
+                    "action_arguments": {
+                        "newname": "Deacon summary"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "json"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/deacon_filter/deacon_filter/0.19.1+galaxy0",
+            "tool_shed_repository": {
+                "changeset_revision": "93cbf97b251f",
+                "name": "deacon_filter",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"abs_threshold\": \"2\", \"deplete\": true, \"discard_quality\": false, \"fastx_input\": {\"is_select\": \"paired\", \"__current_case__\": 1, \"pair\": {\"__class__\": \"ConnectedValue\"}, \"check_pairs\": false}, \"index_type\": {\"is_select\": \"own\", \"__current_case__\": 0, \"index_file\": {\"__class__\": \"ConnectedValue\"}}, \"ordered\": false, \"prefix_length\": \"0\", \"rel_threshold\": \"0.01\", \"rename\": false, \"summary\": true, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.19.1+galaxy0",
+            "type": "tool",
+            "uuid": "7a9c0370-29b9-49b5-81e4-7a10bce62eeb",
+            "workflow_outputs": [],
+            "when": "$(inputs.when)"
+        },
+        "18": {
+            "annotation": "Use the Deacon-depleted reads as Bowtie2 input if Deacon was run, otherwise the input reads",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "errors": null,
+            "id": 18,
+            "input_connections": {
+                "style_cond|type_cond|pick_from_0|value": {
+                    "id": 16,
+                    "output_name": "pair_out"
+                },
+                "style_cond|type_cond|pick_from_1|value": {
+                    "id": 17,
+                    "output_name": "pair_out"
+                },
+                "style_cond|type_cond|pick_from_2|value": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Pick reads for Bowtie2",
+            "name": "Pick parameter value",
+            "outputs": [
+                {
+                    "name": "data_param",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1800,
+                "top": 357
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "b19e21af9c52",
+                "name": "pick_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 2, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "810a9952-d55d-4147-a2a9-14db9fbbcb94",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "19": {
+            "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0",
+            "errors": null,
+            "id": 19,
+            "input_connections": {
+                "library|input_1": {
+                    "id": 18,
+                    "output_name": "data_param"
+                },
+                "reference_genome|index": {
+                    "id": 3,
+                    "output_name": "output"
+                },
+                "when": {
+                    "id": 7,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -321,8 +898,8 @@
                 }
             ],
             "position": {
-                "left": 590,
-                "top": 220
+                "left": 2100,
+                "top": 302
             },
             "post_job_actions": {
                 "HideDatasetActionoutput": {
@@ -381,22 +958,22 @@
                 }
             ]
         },
-        "8": {
+        "20": {
             "annotation": "Map the reads against a reference genome and output the ones not mapping the reference genome",
             "content_id": "toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/2.5.5+galaxy0",
             "errors": null,
-            "id": 8,
+            "id": 20,
             "input_connections": {
                 "library|input_1": {
-                    "id": 1,
-                    "output_name": "output"
+                    "id": 18,
+                    "output_name": "data_param"
                 },
                 "reference_genome|own_file": {
-                    "id": 6,
+                    "id": 13,
                     "output_name": "data_param"
                 },
                 "when": {
-                    "id": 5,
+                    "id": 8,
                     "output_name": "output_param_boolean"
                 }
             },
@@ -427,8 +1004,8 @@
                 }
             ],
             "position": {
-                "left": 583.0983940566894,
-                "top": 687.0728724784599
+                "left": 2100,
+                "top": 771
             },
             "post_job_actions": {
                 "HideDatasetActionoutput": {
@@ -487,23 +1064,23 @@
                 }
             ]
         },
-        "9": {
-            "annotation": "",
+        "21": {
+            "annotation": "Bowtie2 mapping statistics of the run that was executed",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
             "errors": null,
-            "id": 9,
+            "id": 21,
             "input_connections": {
                 "style_cond|type_cond|pick_from_0|value": {
-                    "id": 7,
+                    "id": 19,
                     "output_name": "mapping_stats"
                 },
                 "style_cond|type_cond|pick_from_1|value": {
-                    "id": 8,
+                    "id": 20,
                     "output_name": "mapping_stats"
                 }
             },
             "inputs": [],
-            "label": null,
+            "label": "Pick Bowtie2 mapping statistics",
             "name": "Pick parameter value",
             "outputs": [
                 {
@@ -512,8 +1089,8 @@
                 }
             ],
             "position": {
-                "left": 914.0589217808392,
-                "top": 568.5347411945083
+                "left": 2400,
+                "top": 679
             },
             "post_job_actions": {},
             "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
@@ -531,15 +1108,19 @@
             "when": null,
             "workflow_outputs": []
         },
-        "10": {
+        "22": {
             "annotation": "Aggregation of the mapping statistics for all samples",
             "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5",
             "errors": null,
-            "id": 10,
+            "id": 22,
             "input_connections": {
                 "results_0|software_cond|input": {
-                    "id": 9,
+                    "id": 21,
                     "output_name": "data_param"
+                },
+                "when": {
+                    "id": 11,
+                    "output_name": "output_param_boolean"
                 }
             },
             "inputs": [
@@ -561,8 +1142,8 @@
                 }
             ],
             "position": {
-                "left": 1232.49970545868,
-                "top": 531.2493397805739
+                "left": 2700,
+                "top": 628
             },
             "post_job_actions": {
                 "HideDatasetActionstats": {
@@ -590,7 +1171,7 @@
             "tool_version": "1.35+galaxy5",
             "type": "tool",
             "uuid": "c982928f-6392-4608-a8c7-88046300a4b1",
-            "when": null,
+            "when": "$(inputs.when)",
             "workflow_outputs": [
                 {
                     "label": "MultiQC HTML Report",
@@ -598,14 +1179,135 @@
                     "uuid": "62e6de76-2033-413e-9f5c-7f97a3e1741d"
                 }
             ]
+        },
+        "23": {
+            "annotation": "Reads remaining after the last host-removal step that was run",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "errors": null,
+            "id": 23,
+            "input_connections": {
+                "style_cond|type_cond|pick_from_0|value": {
+                    "id": 19,
+                    "output_name": "output_unaligned_read_pairs"
+                },
+                "style_cond|type_cond|pick_from_1|value": {
+                    "id": 20,
+                    "output_name": "output_unaligned_read_pairs"
+                },
+                "style_cond|type_cond|pick_from_2|value": {
+                    "id": 16,
+                    "output_name": "pair_out"
+                },
+                "style_cond|type_cond|pick_from_3|value": {
+                    "id": 17,
+                    "output_name": "pair_out"
+                }
+            },
+            "inputs": [],
+            "label": "Pick reads without host or contamination",
+            "name": "Pick parameter value",
+            "outputs": [
+                {
+                    "name": "data_param",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 2400,
+                "top": 873
+            },
+            "post_job_actions": {
+                "RenameDatasetActiondata_param": {
+                    "action_arguments": {
+                        "newname": "Reads without host or contaminant reads"
+                    },
+                    "action_type": "RenameDatasetAction",
+                    "output_name": "data_param"
+                }
+            },
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "b19e21af9c52",
+                "name": "pick_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 2, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 3, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "f9cb856d-5fa6-4ced-b12f-3ad942deaf5d",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "Reads without Host or Contamination",
+                    "output_name": "data_param",
+                    "uuid": "a1ddbc19-223d-4962-9a52-706a68465983"
+                }
+            ]
+        },
+        "24": {
+            "annotation": "Deacon summary of the run that was executed",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "errors": null,
+            "id": 24,
+            "input_connections": {
+                "style_cond|type_cond|pick_from_0|value": {
+                    "id": 16,
+                    "output_name": "json"
+                },
+                "style_cond|type_cond|pick_from_1|value": {
+                    "id": 17,
+                    "output_name": "json"
+                },
+                "when": {
+                    "id": 12,
+                    "output_name": "output_param_boolean"
+                }
+            },
+            "inputs": [],
+            "label": "Pick Deacon summary",
+            "name": "Pick parameter value",
+            "outputs": [
+                {
+                    "name": "data_param",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1800,
+                "top": 581
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/iuc/pick_value/pick_value/0.2.0",
+            "tool_shed_repository": {
+                "changeset_revision": "b19e21af9c52",
+                "name": "pick_value",
+                "owner": "iuc",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"style_cond\": {\"pick_style\": \"first\", \"__current_case__\": 0, \"type_cond\": {\"param_type\": \"data\", \"__current_case__\": 4, \"pick_from\": [{\"__index__\": 0, \"value\": {\"__class__\": \"ConnectedValue\"}}, {\"__index__\": 1, \"value\": {\"__class__\": \"ConnectedValue\"}}]}}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_uuid": null,
+            "tool_version": "0.2.0",
+            "type": "tool",
+            "uuid": "1ab699dd-940b-480c-ab2c-4e297b175138",
+            "when": "$(inputs.when)",
+            "workflow_outputs": [
+                {
+                    "label": "Deacon Summary",
+                    "output_name": "data_param",
+                    "uuid": "85bbf04e-f8f2-4326-8fbf-d4affef63c6a"
+                }
+            ]
         }
     },
     "tags": [
         "microbiome",
         "contamination",
-        "short_reads"
+        "short_reads",
+        "deacon"
     ],
     "uuid": "cb7bb503-6f9a-4b62-9e3d-6bcafd9ae869",
     "version": 1,
-    "release": "0.7"
+    "release": "0.8"
 }
