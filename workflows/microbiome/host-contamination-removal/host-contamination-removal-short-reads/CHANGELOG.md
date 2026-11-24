@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8] - 2026-11-24
+
+### Added
+- Add Deacon as a host removal tool: new `Host removal tool` input to choose between `Bowtie2` (default), `Deacon` and `Deacon then Bowtie2`
+- Add `Deacon index` input (built-in Deacon index); with a reference genome from the history, a Deacon index is built from it
+- Add `Reads without Host or Contamination` output with the filtered reads, whatever the selected tool, and `Deacon Summary` output
+
 ## [0.7] - 2026-10-23
 
 ### Automatic update
