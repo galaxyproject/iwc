@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1] - 2026-11-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_text_file_with_recurring_lines/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/megahit/megahit/1.2.9+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/megahit/megahit/1.2.9+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/quast/quast/5.3.0+galaxy3`
+- `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_stats/seqkit_stats/2.8.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_stats/seqkit_stats/2.14.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/0.1.0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.6.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.5+galaxy3` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_awk_tool/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.2.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.3.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/drep_dereplicate/drep_dereplicate/3.7.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/drep_dereplicate/drep_dereplicate/4.0.3+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/1.2.5+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/checkm_lineage_wf/checkm_lineage_wf/1.3.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy6`
+
 ## [1.0] - 2026-10-20
 
 ### Breaking changes
