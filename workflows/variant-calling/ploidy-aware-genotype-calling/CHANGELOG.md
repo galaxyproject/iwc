@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.7] - 2026-11-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy5` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/multiqc/multiqc/1.35+galaxy6`
+- `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_norm/bcftools_norm/1.24+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/bcftools_norm/bcftools_norm/1.24+galaxy2`
+
 ## [0.1.6] - 2026-11-02
 
 ### Automatic update
