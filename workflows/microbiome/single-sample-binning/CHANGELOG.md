@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3] - 2026-11-24
+
+### Automatic update
+- `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_stats/seqkit_stats/2.8.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/seqkit_stats/seqkit_stats/2.14.0+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/0.1.0` was updated to `toolshed.g2.bx.psu.edu/repos/bgruening/text_processing/tp_cat/9.11+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.5.0+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/semibin/semibin/2.6.1+galaxy0`
+- `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.2.1+galaxy0` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/binette/binette/1.3.0+galaxy0`
+
 ## [1.2] - 2026-11-11
 
 - Update MaxBin2 to 2.2.7+galaxy7. A sample with too few marker genes now gives an empty bin collection instead of failing the job.
