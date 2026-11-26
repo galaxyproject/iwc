@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4] - 2026-11-26
+
+### Update
+- `toolshed.g2.bx.psu.edu/repos/iuc/coreprofiler_allele_calling/coreprofiler_allele_calling/2.0.0+galaxy2` was updated to `toolshed.g2.bx.psu.edu/repos/iuc/coreprofiler_allele_calling/coreprofiler_allele_calling/2.1.0+galaxy0`
+
 ## [1.3] - 2026-10-05
 
 ### Automatic update
