@@ -1,0 +1,315 @@
+{
+    "a_galaxy_workflow": "true",
+    "annotation": "This workflow organizes pre-processed FASTQ data into groups based on user-defined criteria (e.g., metadata or sample IDs). The grouped outputs can be used for tasks such as co-assembly or merging sequencing runs.",
+    "comments": [],
+    "creator": [
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0002-3602-7884",
+            "name": "Mina Hojat Ansari"
+        },
+        {
+            "class": "Person",
+            "identifier": "https://orcid.org/0000-0003-2982-388X",
+            "name": "Paul Zierep"
+        }
+    ],
+    "format-version": "0.1",
+    "license": "MIT",
+    "name": "Grouped FASTQ merging",
+    "readme": "# **Grouped FASTQ merging workflow**\n\nThis workflow organizes and merges paired-end FASTQ datasets into group-specific outputs using user-defined metadata.  \nIt is designed to support a variety of downstream analyses by preparing merged datasets at the group or sample level. \nThese grouped datasets for example can be used for subsequent group co-assembly, enabling downstream analysis of group-level metagenomes.\n\n---\n\n## **Inputs**\n- **Metadata File**: A two-column tabular file mapping sample IDs to group IDs.\n- **Paired-end Reads**:\n  Paired-end FASTQ reads (input as a list of paired collections).\n\n---\n\n## **Outputs**\n- **Grouped Paired Reads**:\n  Concatenated paired-end FASTQ datasets organized by group.\n  These are ready for downstream analysis such as coassembly or per-group processing.\n\n---\n\n## **Example Use Cases**\n- **Co-assembly**: Merge reads across individuals or conditions (e.g., healthy vs. diseased) for group-level assembly.  \n- **Technical replicates**: Merge sequencing runs from the same sample into one dataset.  \n- **Batch processing**: Organize reads into demographic categories (e.g., age groups, sexes) or experimental conditions.\n\n---\n\n## **Workflow Steps**\n1. **Input Data**:\n   - Provide metadata and paired FASTQ collections.\n2. **Group Assignment**:\n   - Assign samples to groups based on metadata.\n   - Organize paired reads into group-specific datasets.\n3. **Concatenation**:\n   - Concatenate reads within each group to produce group-specific FASTQ collections.",
+    "report": {
+        "markdown": "\n# Workflow Execution Report\n\n## Workflow Inputs\n```galaxy\ninvocation_inputs()\n```\n\n## Workflow Outputs\n```galaxy\ninvocation_outputs()\n```\n\n## Workflow\n```galaxy\nworkflow_display()\n```\n"
+    },    
+    "steps": {
+        "0": {
+            "annotation": "a two-column tab-delimited file including the sample_id and the group_id ",
+            "content_id": null,
+            "errors": null,
+            "id": 0,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "a two column tab-delimited file including the sample_id and the group_id ",
+                    "name": "metadata"
+                }
+            ],
+            "label": "metadata",
+            "name": "Input dataset",
+            "outputs": [],
+            "position": {
+                "left": 230.29174057551228,
+                "top": 142.54353161851182
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null}",
+            "tool_version": null,
+            "type": "data_input",
+            "uuid": "ab171f10-2b60-4268-b88a-c61d5c2ba278",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "1": {
+            "annotation": "Paired-end reads that have been trimmed and processed.",
+            "content_id": null,
+            "errors": null,
+            "id": 1,
+            "input_connections": {},
+            "inputs": [
+                {
+                    "description": "Paired-end reads that have been trimmed and processed.",
+                    "name": "Trimmed paired reads"
+                }
+            ],
+            "label": "Trimmed paired reads",
+            "name": "Input dataset collection",
+            "outputs": [],
+            "position": {
+                "left": 0,
+                "top": 330
+            },
+            "tool_id": null,
+            "tool_state": "{\"optional\": false, \"tag\": null, \"collection_type\": \"list:paired\", \"fields\": null}",
+            "tool_version": null,
+            "type": "data_collection_input",
+            "uuid": "15a68c4a-0b5f-4340-a014-46190dab7ebe",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "2": {
+            "annotation": "Separating forward and reverse reads from paired-end collection.",
+            "content_id": "__UNZIP_COLLECTION__",
+            "errors": null,
+            "id": 2,
+            "input_connections": {
+                "input": {
+                    "id": 1,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Unzip",
+            "name": "Unzip collection",
+            "outputs": [
+                {
+                    "name": "forward",
+                    "type": "input"
+                },
+                {
+                    "name": "reverse",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 270,
+                "top": 450
+            },
+            "post_job_actions": {},
+            "tool_id": "__UNZIP_COLLECTION__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "b112a4f4-ae2d-4fb2-aaf0-3d5839e70fc7",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "3": {
+            "annotation": "Add group tags to reverse reads using metadata.",
+            "content_id": "__TAG_FROM_FILE__",
+            "errors": null,
+            "id": 3,
+            "input_connections": {
+                "input": {
+                    "id": 2,
+                    "output_name": "reverse"
+                },
+                "tags": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Tag reverse",
+            "name": "Tag elements",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 550,
+                "top": 0
+            },
+            "post_job_actions": {},
+            "tool_id": "__TAG_FROM_FILE__",
+            "tool_state": "{\"how\": \"add\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"tags\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "bb02f573-9d56-4b18-a093-58b91ede674f",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "4": {
+            "annotation": "Add group tags to forward reads using metadata.",
+            "content_id": "__TAG_FROM_FILE__",
+            "errors": null,
+            "id": 4,
+            "input_connections": {
+                "input": {
+                    "id": 2,
+                    "output_name": "forward"
+                },
+                "tags": {
+                    "id": 0,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Tag forward",
+            "name": "Tag elements",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 721.8613163658088,
+                "top": 403.97143233429034
+            },
+            "post_job_actions": {},
+            "tool_id": "__TAG_FROM_FILE__",
+            "tool_state": "{\"how\": \"add\", \"input\": {\"__class__\": \"ConnectedValue\"}, \"tags\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "f93c1372-0146-4b38-b495-fb82b77ffbdf",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "5": {
+            "annotation": "Zip the forward and reverse tagged collections into paired datasets.",
+            "content_id": "__ZIP_COLLECTION__",
+            "errors": null,
+            "id": 5,
+            "input_connections": {
+                "input_forward": {
+                    "id": 4,
+                    "output_name": "output"
+                },
+                "input_reverse": {
+                    "id": 3,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Zip collection",
+            "name": "Zip collections",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 875.2237614394693,
+                "top": 67.50729524905923
+            },
+            "post_job_actions": {},
+            "tool_id": "__ZIP_COLLECTION__",
+            "tool_state": "{\"input_forward\": {\"__class__\": \"ConnectedValue\"}, \"input_reverse\": {\"__class__\": \"ConnectedValue\"}, \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.0.0",
+            "type": "tool",
+            "uuid": "8b70fe67-48e7-4321-b0f1-d6c099b09719",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "6": {
+            "annotation": "Apply metadata rules to restructure collections and assign group identifiers.",
+            "content_id": "__APPLY_RULES__",
+            "errors": null,
+            "id": 6,
+            "input_connections": {
+                "input": {
+                    "id": 5,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [],
+            "label": "Apply rules",
+            "name": "Apply rules",
+            "outputs": [
+                {
+                    "name": "output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1214.437315627287,
+                "top": 73.02884765763103
+            },
+            "post_job_actions": {},
+            "tool_id": "__APPLY_RULES__",
+            "tool_state": "{\"input\": {\"__class__\": \"ConnectedValue\"}, \"rules\": {\"mapping\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [2, 0], \"connectable\": true, \"editing\": false, \"is_workflow\": false, \"type\": \"list_identifiers\"}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"columns\": [1], \"connectable\": true, \"is_workflow\": false, \"type\": \"paired_identifier\"}], \"rules\": [{\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier0\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"identifier1\", \"warn\": null}, {\"collapsible_value\": {\"__class__\": \"RuntimeValue\"}, \"connectable\": true, \"error\": null, \"is_workflow\": false, \"type\": \"add_column_metadata\", \"value\": \"tags\", \"warn\": null}]}, \"__page__\": 0, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.1.0",
+            "type": "tool",
+            "uuid": "f5bbb40c-ece1-482b-8e01-3fd4ffedd440",
+            "when": null,
+            "workflow_outputs": []
+        },
+        "7": {
+            "annotation": "Concatenate reads within each group to produce group-specific FASTQ collections.",
+            "content_id": "toolshed.g2.bx.psu.edu/repos/artbio/concatenate_multiple_datasets/cat_multi_datasets/1.4.3",
+            "errors": null,
+            "id": 7,
+            "input_connections": {
+                "global_condition|inputs": {
+                    "id": 6,
+                    "output_name": "output"
+                }
+            },
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Concatenate multiple datasets",
+                    "name": "global_condition"
+                }
+            ],
+            "label": "Concatenate",
+            "name": "Concatenate multiple datasets",
+            "outputs": [
+                {
+                    "name": "paired_output",
+                    "type": "input"
+                }
+            ],
+            "position": {
+                "left": 1280.901945156481,
+                "top": 436.58318935558367
+            },
+            "post_job_actions": {},
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/artbio/concatenate_multiple_datasets/cat_multi_datasets/1.4.3",
+            "tool_shed_repository": {
+                "changeset_revision": "5b1b635232ed",
+                "name": "concatenate_multiple_datasets",
+                "owner": "artbio",
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            },
+            "tool_state": "{\"dataset_names\": false, \"global_condition\": {\"input_type\": \"paired_collection\", \"__current_case__\": 1, \"inputs\": {\"__class__\": \"ConnectedValue\"}, \"paired_cat_type\": \"by_strand\"}, \"headers\": \"0\", \"__page__\": null, \"__rerun_remap_job_id__\": null}",
+            "tool_version": "1.4.3",
+            "type": "tool",
+            "uuid": "4cbea8fd-74f1-4242-a758-3f1e9a987cb5",
+            "when": null,
+            "workflow_outputs": [
+                {
+                    "label": "paired_output",
+                    "output_name": "paired_output",
+                    "uuid": "70c11440-edc9-41ba-9209-f84d1ca7931b"
+                }
+            ]
+        }
+    },
+    "tags": [],
+    "uuid": "bf2ce571-171f-418e-aad3-2ae7417b13d4",
+    "version": 1,
+    "release": "0.1"
+}
